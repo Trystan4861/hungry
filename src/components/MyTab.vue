@@ -2,13 +2,11 @@
     <div class="my-tab">
       <ul class="nav nav-tabs">
         <!-- Mostramos cada pestaña en la cabecera -->
-        <li class="nav-item" v-for="(tab, index) in tabs" :key="index">
+        <li class="nav-item" :class="{ active: this.activeTab === index }" v-for="(tab, index) in tabs" :key="index">
           <a
             class="nav-link"
             :class="{ active: this.activeTab === index }"
-            @click="activateTab(index)"
-            
-          >
+            @click="activateTab(index)">
             {{ tab.title }}
           </a>
         </li>
@@ -45,6 +43,17 @@
   </script>
   
   <style scoped>
+    .my-tab
+    {
+      max-width: 400px
+    }
+    .nav-tabs .nav-link{
+      background-color: #585858;
+      color: white;
+    }
+    .nav-tabs .nav-link.active{
+      background-color: #e6e6e6;
+    }
     a.nav-link
     {
         cursor: pointer;
