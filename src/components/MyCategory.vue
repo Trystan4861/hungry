@@ -7,7 +7,9 @@
 </template>
   
 <script>
-    export default {
+import { ref } from 'vue';
+import { onLongPress } from '@vueuse/core';
+export default {
         name: 'MyCategory',
         props: {
             text: {
@@ -23,10 +25,17 @@
                 default: false
             }
         },
-        methods:{
-            handleClick(){
+        setup(){
+            const category = ref(null);
+            onLongPress(category, () => {
+              console.log('Long click detected!');
+            });
+            function handleClick(){
                 this.$emit('categoryClick');
             }
+            return {
+                handleClick
+            };
         }
     };
 </script>
@@ -37,6 +46,7 @@
     background-color: #bcb9b9;
     padding: 10px;
     margin-inline-end: 2px;
+    scroll-snap-align: left;
 }
 .my-category {
     cursor: pointer;

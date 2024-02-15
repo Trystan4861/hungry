@@ -58,6 +58,7 @@ export default {
 {
   overflow-x: scroll;
   scrollbar-width: thin;
+  scroll-snap-type: x proximity;
 }
 .my-categories-list {
   display: flex;
