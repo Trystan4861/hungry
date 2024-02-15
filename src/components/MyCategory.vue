@@ -1,15 +1,14 @@
 <template>
     <div class="my-category-container">
-        <div class="my-category" :style="{ backgroundColor: bgColor }" @click="handleClick">
+        <div class="my-category" :style="{ backgroundColor: bgColor }" @click="handleClick"  @mousedown="handleMouseDown"  @mouseup="handleMouseUp">
             <p class="category-title" :class="{active: isActive}">{{ text }}</p>
         </div>
     </div>
 </template>
   
 <script>
-import { ref } from 'vue';
-import { onLongPress } from '@vueuse/core';
-export default {
+    import { ref } from 'vue';
+    export default {
         name: 'MyCategory',
         props: {
             text: {
@@ -25,16 +24,28 @@ export default {
                 default: false
             }
         },
-        setup(){
-            const category = ref(null);
-            onLongPress(category, () => {
-              console.log('Long click detected!');
-            });
-            function handleClick(){
-                this.$emit('categoryClick');
-            }
+        setup(props, { emit }) {
+            const longPressTimeout = ref(null);
+            const handleClick = () => {
+                emit('categoryClick');
+            };
+
+            const handleMouseDown = () => {
+                if (props.isActive)
+                longPressTimeout.value = setTimeout(() => {
+                    emit('categoryLongClick');
+                }, 1000); 
+            };
+
+            const handleMouseUp = () => {
+                if (props.isActive)
+                clearTimeout(longPressTimeout.value);
+            };
+
             return {
-                handleClick
+                handleClick,
+                handleMouseDown,
+                handleMouseUp
             };
         }
     };
@@ -46,7 +57,6 @@ export default {
     background-color: #bcb9b9;
     padding: 10px;
     margin-inline-end: 2px;
-    scroll-snap-align: left;
 }
 .my-category {
     cursor: pointer;
