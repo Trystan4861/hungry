@@ -3,13 +3,25 @@
     <h1 class="mb-4"><i class=""></i> Hungry!</h1>
     <my-tab :tabs="tabsData" @tabChanged="handleTabChange">
       <template v-slot:tabContent0>
-        <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" />
-        <p>Hola</p>
+        <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
+        <div class="form-control" v-if="categoria!==null">
+          <input type="text" v-model="nuevoProducto" name="nuevoProducto" id="nuevoProducto" placeholder="Ingrese un nuevo producto">
+          <button @click="agregarProducto">Añadir</button>
+        </div>
+    <MyModal 
+      ref="myModalRef"
+      :title="'Cambiar «'+categoria?.text+'»'" 
+      message="Introduzca un nuevo nombre para la categoría" 
+      :value="inputText"
+      @inputModalChange="handleInputModalChange"
+    />
       </template>    
       
       <template v-slot:tabContent1>
         <div>
-
+          <ul>
+            <li v-for="(producto,index) in productos" :key="index">{{ producto }}</li>
+          </ul>
         </div>
       </template>
       
@@ -32,24 +44,42 @@
 <script>
 import MyCategoriesList from './components/MyCategoriesList.vue';
 import MyTab from './components/MyTab.vue';
+import MyModal from './components/MyModal.vue';
+
 import { ref } from 'vue';
 
 export default {
   name: 'App',
   components: {
     MyTab,
-    MyCategoriesList
+    MyCategoriesList,
+    MyModal
+  },
+  data(){
+    return{
+      categoria: this.categoriesData[0].text,
+      id_categoria:-1,
+      nuevoProducto: '',
+      inputText:'',
+      productos:[]
+    }
   },
   methods:{
+    handleInputModalChange(newText) {
+      this.categoriesData[this.id_categoria].text = newText;
+    },
     handleTabChange(index) {
       console.log('Se ha cambiado la pestaña a:', index);
-      // Aquí puedes realizar cualquier acción adicional que desees
     },
     handleCategorySelected(category,index) {
-      console.log(`Se ha cambiado la categoría a ${category.text} con indice ${index}`);
-      // Aquí puedes realizar cualquier acción adicional que desees
-    }
-
+      this.categoria=category;
+      this.inputText=category.text;
+      this.id_categoria=index;
+      this.nuevoProducto='';
+    },
+    handleCategoryLongClick(){
+      this.$refs.myModalRef.openModal();
+    },
   },
   setup() {
       const tabsData= ref([
