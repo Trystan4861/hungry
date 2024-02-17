@@ -48,7 +48,7 @@ import MyInput from './components/MyInput.vue';
 import MyButton from './components/MyButton.vue';
 import MySelect from './components/MySelect.vue';
 import { ref } from 'vue';
-import logo from "./assets/hungry.svg";
+import logo from "@assets/hungry.svg";
 
 export default {
   name: 'App',
@@ -120,10 +120,10 @@ export default {
         {text:'', bgColor:'#6e1952'},
       ]);
       const supermercados=ref([
-        {text:'Cualquier Supermercado', logo:'./src/assets/hungry.svg'},
-        {text:'Carrefour', logo:'./src/assets/carrefour.svg'},
-        {text:'Mercadona', logo:'./src/assets/mercadona.svg'},
-        {text:'La Carmela', logo:'./src/assets/super_carmela.svg'}
+        {text:'Cualquier Supermercado', logo:'@assets/hungry.svg'},
+        {text:'Carrefour', logo:'@assets/carrefour.svg'},
+        {text:'Mercadona', logo:'@assets/mercadona.svg'},
+        {text:'La Carmela', logo:'@assets/super_carmela.svg'}
       ])
       //const selectedSupermercado = ref('');
       return {tabsData, categoriesData,supermercados}
