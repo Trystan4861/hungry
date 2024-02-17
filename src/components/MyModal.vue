@@ -56,7 +56,8 @@ export default {
         this.handleButtonClick();
       }
     }
-  }
+  },
+  emits: ['inputModalChange']
 };
 </script>
 

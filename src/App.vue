@@ -1,20 +1,19 @@
 <template>
   <div class="container mt-5">
-    <h1 class="mb-4"><i class=""></i> Hungry!</h1>
+    <h1 class="mb-4">Hungry!<img class="logo" :src="logo"></h1>
     <my-tab :tabs="tabsData" @tabChanged="handleTabChange">
       <template v-slot:tabContent0>
         <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
-        <div class="form-control" v-if="categoria!==null">
-          <input type="text" v-model="nuevoProducto" name="nuevoProducto" id="nuevoProducto" placeholder="Ingrese un nuevo producto">
-          <button @click="agregarProducto">Añadir</button>
-        </div>
-    <MyModal 
-      ref="myModalRef"
-      :title="'Cambiar «'+categoria?.text+'»'" 
-      message="Introduzca un nuevo nombre para la categoría" 
-      :value="inputText"
-      @inputModalChange="handleInputModalChange"
-    />
+        <MySelect :options="supermercados" selectName="supermercado" />
+        <MyInput v-model="nuevoProducto" :placeholder="'Añade elementos aquí'" />
+        <MyButton text="Añadir" @click="handleAddClick"/>
+        <MyModal 
+          ref="myModalRef"
+          :title="`Cambiar «${categoria?.text}»`" 
+          message="Introduzca un nuevo nombre para la categoría" 
+          :value="inputText"
+          @inputModalChange="handleInputModalChange"
+        />
       </template>    
       
       <template v-slot:tabContent1>
@@ -45,23 +44,30 @@
 import MyCategoriesList from './components/MyCategoriesList.vue';
 import MyTab from './components/MyTab.vue';
 import MyModal from './components/MyModal.vue';
-
+import MyInput from './components/MyInput.vue';
+import MyButton from './components/MyButton.vue';
+import MySelect from './components/MySelect.vue';
 import { ref } from 'vue';
+import logo from "./assets/hungry.svg";
 
 export default {
   name: 'App',
   components: {
     MyTab,
     MyCategoriesList,
-    MyModal
+    MyModal,
+    MyInput,
+    MyButton,
+    MySelect,
   },
   data(){
     return{
       categoria: this.categoriesData[0].text,
-      id_categoria:-1,
-      nuevoProducto: '',
+      id_categoria:0,
+      nuevoProducto: '', // Inicializa nuevoProducto con el valor deseado
       inputText:'',
-      productos:[]
+      productos:[],
+      logo:logo
     }
   },
   methods:{
@@ -80,13 +86,16 @@ export default {
     handleCategoryLongClick(){
       this.$refs.myModalRef.openModal();
     },
+    handleAddClick(){
+      console.log()
+    }
   },
   setup() {
       const tabsData= ref([
         { title: '+' },
         { title: 'A>Z' },
         { title: 'Por Categoría' },
-        { title: 'Lista' },
+        { title: 'Para Comprar' },
       ]);
       const categoriesData= ref([
         {text:'Carnicería', bgColor:'#d83c3d'},
@@ -110,17 +119,49 @@ export default {
         {text:'', bgColor:'#5e186e'},
         {text:'', bgColor:'#6e1952'},
       ]);
-      return {tabsData, categoriesData}
+      const supermercados=ref([
+        {text:'Cualquier Supermercado', logo:'./src/assets/hungry.svg'},
+        {text:'Carrefour', logo:'./src/assets/carrefour.svg'},
+        {text:'Mercadona', logo:'./src/assets/mercadona.svg'},
+        {text:'La Carmela', logo:'./src/assets/super_carmela.svg'}
+      ])
+      //const selectedSupermercado = ref('');
+      return {tabsData, categoriesData,supermercados}
   }
 };
 </script>
 
 <style>
-
+.console {
+    background-color: grey;
+    min-height: 500px;
+    color: black;
+}
 body
 {
   --bs-body-bg: black;
   --bs-body-color: white;
+}
+#agregarProducto {
+  display: flex;
+  height: 100% !important;
+  width: 25%;
+  margin-top: 3px;
+  padding: 10px;
+  justify-content: center;
+}
+#nuevoProducto
+{
+  height: 100%;
+  width: 75%;
+}
+#agregarProductoWrapper
+{
+  height: 50px;
+  display: flex;
+}
+.logo{
+  width: 60px;
 }
 /* Estilos globales de la aplicación */
 </style>

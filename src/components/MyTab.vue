@@ -20,27 +20,29 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'MyTab',
-    props: {
-      tabs: {
-        type: Array,
-        required: true
-      }
-    },
-    data() {
-      return {
-        activeTab: 0 // Índice de la pestaña activa
-      };
-    },
-    methods: {
+<script>
+export default {
+  name: 'MyTab',
+  props: {
+    tabs: {
+      type: Array,
+      required: true
+    }
+  },
+  data() {
+    return {
+      activeTab: 0 // Índice de la pestaña activa
+    };
+  },
+  methods: {
     activateTab(index) {
       this.activeTab = index;
       this.$emit('tabChanged', index);
     }
-  }  };
-  </script>
+  },
+  emits: ['tabChanged'] // Declarar el evento tabChanged para evitar la advertencia
+};
+</script>
   
   <style scoped>
     .my-tab
