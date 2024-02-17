@@ -139,11 +139,6 @@ export default {
 </script>
 
 <style>
-.console {
-    background-color: grey;
-    min-height: 500px;
-    color: black;
-}
 body
 {
   --bs-body-bg: black;
