@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-    <h1 class="mb-4">Hungry!<img class="logo" :src="logo"></h1>
+    <h1 class="mb-4">Hungry!<img class="logo" :src="hungryLogo"></h1>
     <my-tab :tabs="tabsData" @tabChanged="handleTabChange">
       <template v-slot:tabContent0>
         <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
@@ -48,7 +48,14 @@ import MyInput from './components/MyInput.vue';
 import MyButton from './components/MyButton.vue';
 import MySelect from './components/MySelect.vue';
 import { ref } from 'vue';
-import logo from "@assets/hungry.svg";
+import hungryLogo from "/src/assets/hungry.svg";
+import carrefourLogo from "/src/assets/carrefour.svg";
+import carmelaLogo from "/src/assets/super_carmela.svg";
+import mercadonaLogo from "/src/assets/mercadona.svg";
+import addLogo from "/src/assets/add.svg";
+import a2zLogo from "/src/assets/a2z.svg";
+import categoriasLogo from "/src/assets/categorias.svg";
+import cartLogo from "/src/assets/cart.svg";
 
 export default {
   name: 'App',
@@ -67,7 +74,7 @@ export default {
       nuevoProducto: '', // Inicializa nuevoProducto con el valor deseado
       inputText:'',
       productos:[],
-      logo:logo
+      logo:hungryLogo
     }
   },
   methods:{
@@ -92,10 +99,10 @@ export default {
   },
   setup() {
       const tabsData= ref([
-        { title: '+' },
-        { title: 'A>Z' },
-        { title: 'Por Categoría' },
-        { title: 'Para Comprar' },
+        { logo:addLogo },
+        { title: '',logo:a2zLogo },
+        { title: '',logo:categoriasLogo },
+        { title: '',logo:cartLogo },
       ]);
       const categoriesData= ref([
         {text:'Carnicería', bgColor:'#d83c3d'},
@@ -120,13 +127,13 @@ export default {
         {text:'', bgColor:'#6e1952'},
       ]);
       const supermercados=ref([
-        {text:'Cualquier Supermercado', logo:'@assets/hungry.svg'},
-        {text:'Carrefour', logo:'@assets/carrefour.svg'},
-        {text:'Mercadona', logo:'@assets/mercadona.svg'},
-        {text:'La Carmela', logo:'@assets/super_carmela.svg'}
+        {text:'Cualquier Supermercado', logo:hungryLogo},
+        {text:'Carrefour', logo:carrefourLogo},
+        {text:'Mercadona', logo:mercadonaLogo},
+        {text:'La Carmela', logo:carmelaLogo}
       ])
       //const selectedSupermercado = ref('');
-      return {tabsData, categoriesData,supermercados}
+      return {tabsData, categoriesData,supermercados,hungryLogo}
   }
 };
 </script>

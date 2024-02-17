@@ -7,7 +7,7 @@
             class="nav-link"
             :class="{ active: this.activeTab === index }"
             @click="activateTab(index)">
-            {{ tab.title }}
+            <img :src="tab.logo?tab.logo:emptyIMG" class="logo"> {{ tab.title }}
           </a>
         </li>
       </ul>
@@ -31,7 +31,9 @@ export default {
   },
   data() {
     return {
-      activeTab: 0 // Índice de la pestaña activa
+      activeTab: 0, // Índice de la pestaña activa
+      emptyIMG:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII="
+
     };
   },
   methods: {
@@ -40,25 +42,35 @@ export default {
       this.$emit('tabChanged', index);
     }
   },
-  emits: ['tabChanged'] // Declarar el evento tabChanged para evitar la advertencia
+  emits: ['tabChanged'], // Declarar el evento tabChanged para evitar la advertencia
 };
 </script>
   
-  <style scoped>
-    .my-tab
-    {
-      max-width: 400px
-    }
-    .nav-tabs .nav-link{
-      background-color: #585858;
-      color: white;
-    }
-    .nav-tabs .nav-link.active{
-      background-color: #e6e6e6;
-    }
-    a.nav-link
-    {
-        cursor: pointer;
-    }
-  /* No es necesario definir estilos adicionales ya que Bootstrap proporciona estilos */
-  </style>
+<style scoped>
+  .my-tab
+  {
+    max-width: 400px;
+  }
+  .nav-tabs{
+    justify-content: space-between;
+  }
+  .nav-tabs .nav-link{
+    background-color: #585858;
+    color: white;
+    display: flex;
+    justify-content: center;
+    width: 99px;
+  }
+  .nav-tabs .nav-link.active{
+    background-color: #e6e6e6;
+  }
+  a.nav-link
+  {
+    min-width: 25%;
+    cursor: pointer;
+  }
+  .logo{
+    width: 50px;
+  }
+
+</style>
