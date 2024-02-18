@@ -111,6 +111,8 @@ export default {
   overflow-x: scroll;
   scrollbar-width: thin;
   scroll-snap-type: x proximity;
+  align-items: center;
+  display: flex;
   height: 110px;
 }
 
