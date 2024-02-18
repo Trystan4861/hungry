@@ -11,6 +11,9 @@ dependencies:
   core-js:
     specifier: ^3.8.3
     version: 3.8.3
+  sweetalert2:
+    specifier: ^11.10.5
+    version: 11.10.5
   volar-service-vetur:
     specifier: ^0.0.30
     version: 0.0.30
@@ -6900,6 +6903,10 @@ packages:
       picocolors: 1.0.0
       stable: 0.1.8
     dev: true
+
+  /sweetalert2@11.10.5:
+    resolution: {integrity: sha512-q9eE3EKhMcpIDU/Xcz7z5lk8axCGkgxwK47gXGrrfncnBJWxHPPHnBVAjfsVXcTt8Yi8U6HNEcBRSu+qGeyFdA==}
+    dev: false
 
   /table@6.8.1:
     resolution: {integrity: sha512-Y4X9zqrCftUhMeH2EptSSERdVKt/nEdijTOacGD/97EKjhQ/Qs8RTlEGABSJNNN8lac9kheH+af7yAkEWlgneA==}
