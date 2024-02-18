@@ -78,7 +78,9 @@ export default {
       });
 
       // Activar el subcomponente más cercano al centro
-      activeCategoryIndex.value = Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
+      let index=Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
+      activeCategoryIndex.value = index
+      emit('categorySelected', props.categories[index], index);
       // Emitir evento o activar el subcomponente según sea necesario
     };
 
@@ -91,7 +93,7 @@ export default {
         behavior: 'smooth',
         block: 'center',
         inline: 'center'
-      });
+      })
     };
 
     return {
@@ -118,11 +120,12 @@ export default {
 
 .my-categories-list {
   display: flex;
+  position: relative;
+  left: 598px;
+  padding-right: 598px;
 }
 
 .categories-padding {
-  width: 2330px;
-  padding-left: 30%;
-  padding-right: 30%;
+  width: 2928px;
 }
 </style>
