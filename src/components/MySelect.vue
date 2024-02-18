@@ -1,8 +1,8 @@
 <template>
   <div class="my-select" @click="toggleDropdown">
-    <div class="selected-option"><img :src="selectedOption.logo">{{ selectedOption.text ? selectedOption.text : placeholder }}</div>
+    <div class="selected-option" tabindex="0" @blur="closeDropdown"><img :src="selectedOption.logo">{{ selectedOption.text ? selectedOption.text : placeholder }}</div>
     <div class="dropdown" :class="{ show: showDropdown }">
-      <div v-for="(option, index) in options" :key="index" class="option" @click.stop="selectOption(option)">
+      <div v-for="(option, index) in options" :key="index" class="option" @mousedown="selectOption(option,index)">
         <img :src="option.logo" alt="Logo" class="option-logo"> {{ option.text }}
       </div>
     </div>
@@ -32,10 +32,13 @@ export default {
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
     },
-    selectOption(option) {
+    selectOption(option,index) {
       this.selectedOption = option;
       this.showDropdown = false;
-      this.$emit('select', option);
+      this.$emit('select', option,index);
+    },
+    closeDropdown() {
+      this.showDropdown = false;
     }
   }
 };
@@ -44,7 +47,6 @@ export default {
 <style scoped>
 .my-select {
   position: relative;
-  display: inline-block;
   width: 100%;
 }
 
