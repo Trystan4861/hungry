@@ -4,7 +4,7 @@
     <my-tab :tabs="tabsData" @tabChanged="handleTabChange">
       <template v-slot:tabContent0>
         <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
-        <MySelect :options="supermercados" selectName="supermercado" />
+        <MySelect :options="supermercados" v-model="supermercado" selectName="supermercado" @select="handleSelect"/>
         <MyInput v-model="nuevoProducto" :placeholder="'Añade elementos aquí'" />
         <MyButton text="Añadir" @click="handleAddClick"/>
         <MyModal 
@@ -17,17 +17,11 @@
       </template>    
       
       <template v-slot:tabContent1>
-        <div>
-          <ul>
-            <li v-for="(producto,index) in productos" :key="index">{{ producto }}</li>
-          </ul>
-        </div>
+        <MyProductList :productList="productos" orderBy="name"/>
       </template>
       
       <template v-slot:tabContent2>
-        <div>
-
-        </div>
+        <MyProductList :productList="productos" orderBy="categoryId"/>
       </template>
 
       <template v-slot:tabContent3>
@@ -47,7 +41,9 @@ import MyModal from './components/MyModal.vue';
 import MyInput from './components/MyInput.vue';
 import MyButton from './components/MyButton.vue';
 import MySelect from './components/MySelect.vue';
+import MyProductList from './components/MyProductList.vue';
 import { ref } from 'vue';
+import Swal from 'sweetalert2';
 import hungryLogo from "/src/assets/hungry.svg";
 import carrefourLogo from "/src/assets/carrefour.svg";
 import carmelaLogo from "/src/assets/super_carmela.svg";
@@ -66,12 +62,15 @@ export default {
     MyInput,
     MyButton,
     MySelect,
+    MyProductList
   },
   data(){
     return{
       categoria: this.categoriesData[0].text,
       id_categoria:0,
       nuevoProducto: '', // Inicializa nuevoProducto con el valor deseado
+      supermercado: '',
+      id_supermercado:-1,
       inputText:'',
       productos:[],
       logo:hungryLogo
@@ -94,7 +93,33 @@ export default {
       this.$refs.myModalRef.openModal();
     },
     handleAddClick(){
-      console.log()
+      if (this.nuevoProducto==='')
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debes introducir un nombre para el nuevo producto',
+          confirmButtonText: 'Aceptar'
+        })
+        return false;
+      }
+      if (this.id_supermercado<0)
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debes seleccionar qué supermercado asignarás a ' + this.nuevoProducto,
+          confirmButtonText: 'Aceptar'
+        })
+        return false;
+      }
+      this.productos.push({text:this.nuevoProducto,categoria:this.categoriesData[this.id_categoria],id_categoria:this.id_categoria,supermercado:this.supermercados[this.id_supermercado],id_supermercado:this.id_supermercado});
+      this.nuevoProducto="";
+    },
+    handleSelect(selected,index)
+    {
+      this.supermercado=selected.text;
+      this.id_supermercado=index;
     }
   },
   setup() {
@@ -143,24 +168,6 @@ body
 {
   --bs-body-bg: black;
   --bs-body-color: white;
-}
-#agregarProducto {
-  display: flex;
-  height: 100% !important;
-  width: 25%;
-  margin-top: 3px;
-  padding: 10px;
-  justify-content: center;
-}
-#nuevoProducto
-{
-  height: 100%;
-  width: 75%;
-}
-#agregarProductoWrapper
-{
-  height: 50px;
-  display: flex;
 }
 .logo{
   width: 60px;
