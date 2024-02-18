@@ -1,7 +1,7 @@
 <template>
   <div class="my-categories-list-container" ref="containerRef" @scroll="handleScroll">
     <div class="categories-padding">
-      <div class="my-categories-list">
+      <div class="my-categories-list" :style="categoryListStyle">
         <MyCategory
           v-for="(category, index) in categories"
           :key="index"
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import MyCategory from './MyCategory.vue';
 
 export default {
@@ -38,6 +38,18 @@ export default {
     categoriesState.value[0] = true;
     activeCategoryIndex.value = 0;
     const containerRef = ref(null);
+
+    const updateScreenSize = () => {
+      updateCategoryListStyle();
+    };
+    onMounted(() => {
+      updateScreenSize();
+    });
+    window.addEventListener('resize', updateScreenSize);
+    // Eliminar el event listener cuando se desmonta el componente
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', updateScreenSize);
+    });
 
     const handleCategoryClick = (index) => {
       scrollIntoView(index);
@@ -76,25 +88,41 @@ export default {
           closestCategory = category;
         }
       });
-
-      // Activar el subcomponente más cercano al centro
       let index=Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
       activeCategoryIndex.value = index
       emit('categorySelected', props.categories[index], index);
-      // Emitir evento o activar el subcomponente según sea necesario
     };
 
-    const scrollIntoView = (index) => {
+    const scrollIntoView = (index,behavior='smooth') => {
       const container=containerRef.value;
       if (!container)
         return false;
       const categoryElement = container.querySelectorAll('.my-category')[index];
       categoryElement.scrollIntoView({
-        behavior: 'smooth',
+        behavior,
         block: 'center',
         inline: 'center'
       })
     };
+    const categoryListStyle = ref({});
+    const updateCategoryListStyle = () => {
+      let index=activeCategoryIndex.value;
+      console.log("entra "+index);
+      const container = containerRef.value;
+      if (!container) return;
+      const categoriesList = container.querySelector('.my-category');
+      const categorieWidth = categoriesList.clientWidth;
+      const containerWidth = container.clientWidth;
+
+      const paddingLeftRight = (containerWidth-categorieWidth) / 2;
+
+      categoryListStyle.value = {
+        left: `${paddingLeftRight}px`,
+        paddingRight: `${paddingLeftRight}px`
+      };
+      setTimeout(scrollIntoView,1,index,'instant'); //para que cuando se cambia de tamaño la pantalla no se autoseleccione una categoría nueva
+    };
+    watch(() => Screen.width, updateCategoryListStyle);
 
     return {
       activeCategoryIndex,
@@ -102,7 +130,8 @@ export default {
       handleCategoryClick,
       handleCategoryLongClick,
       containerRef,
-      handleScroll
+      handleScroll,
+      categoryListStyle
     };
   }
 };
@@ -125,7 +154,4 @@ export default {
   padding-right: 598px;
 }
 
-.categories-padding {
-  width: 2928px;
-}
 </style>
