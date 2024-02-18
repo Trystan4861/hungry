@@ -47,10 +47,6 @@ export default {
 </script>
   
 <style scoped>
-  .my-tab
-  {
-    max-width: 400px;
-  }
   .nav-tabs{
     justify-content: space-between;
   }
@@ -59,7 +55,9 @@ export default {
     color: white;
     display: flex;
     justify-content: center;
-    width: 99px;
+  }
+  .nav-item{
+    width: 24.9%;
   }
   .nav-tabs .nav-link.active{
     background-color: #e6e6e6;
