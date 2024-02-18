@@ -48,6 +48,7 @@ export default {
   
 <style scoped>
   .nav-tabs{
+    --bs-nav-tabs-border-color: black;
     justify-content: space-between;
   }
   .nav-tabs .nav-link{
