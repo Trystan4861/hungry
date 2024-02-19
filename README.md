@@ -15,10 +15,11 @@ Está inspirada en una aplicación (ya retirada de la appstore) llamada igualmen
 
 Aquí tienes algunas imágenes que muestran la interfaz de usuario de nuestra aplicación:
 
-![Captura de Pantalla 1](screenshots/Screenshot1.png)
-![Captura de Pantalla 2](screenshots/Screenshot2.png)
-![Captura de Pantalla 3](screenshots/Screenshot3.png)
-![Captura de Pantalla 4](screenshots/Screenshot4.png)
+<img src="screenshots/Screenshot1.png" alt="Screenshot 1" style="width:45%">
+<img src="screenshots/Screenshot2.png" alt="Screenshot 2" style="width:45%">
+<img src="screenshots/Screenshot3.png" alt="Screenshot 3" style="width:45%">
+<img src="screenshots/Screenshot4.png" alt="Screenshot 4" style="width:45%">
+
 
 ## Instalación
 
