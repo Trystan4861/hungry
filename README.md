@@ -1,6 +1,6 @@
 # Bienvenido a Hungry! by trystan4861
 
-![Logo de Hungru!](https://ik.imagekit.io/trystan4861/hungry/hungry.svg){height=100px}
+<img src="https://ik.imagekit.io/trystan4861/hungry/hungry.svg" alt="Logo de Hungry" style="height:100px;">
 
 ¡Gracias por elegir nuestra aplicación! [Nombre de tu Aplicación] es una herramienta poderosa diseñada para [breve descripción de tu aplicación y su propósito].
 
