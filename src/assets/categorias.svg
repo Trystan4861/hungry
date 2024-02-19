@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-  <path d="M 509.27 408.984 L 606.07 576.645 L 412.47 576.645 L 509.27 408.984 Z" style="fill: rgb(219, 119, 43);" transform="matrix(-0.707107, -0.707107, 0.707107, -0.707107, 100.533821, 976.632507)" bx:shape="triangle 412.47 408.984 193.6 167.661 0.5 0 1@0faee7a7"/>
-  <rect x="355.172" y="413.485" width="154.372" height="154.372" style="fill: rgb(252, 180, 0); transform-box: fill-box; transform-origin: 50% 50%;" rx="11.438" ry="11.438" transform="matrix(0.93191, -0.36269, 0.36269, 0.93191, -238.953542, -253.166203)"/>
-  <path d="M 197.712 97.704 L 296.453 169.443 L 258.737 285.52 L 136.687 285.52 L 98.971 169.443 Z" style="fill: rgb(98, 208, 104); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(0.970273, 0.242012, -0.242012, 0.970273, 96.822549, -23.512048)" bx:shape="n-gon 197.712 201.526 103.822 103.822 5 0 1@453cd263"/>
-  <path d="M 230.392 79.023 L 319.974 130.743 L 319.974 234.183 L 230.392 285.903 L 140.81 234.183 L 140.81 130.743 Z" style="fill: rgb(36, 135, 154); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(0.920675, 0.39033, -0.39033, 0.920675, 132.256577, 40.820045)" bx:shape="n-gon 230.392 182.463 103.44 103.44 6 0 1@1fb6094c"/>
-</svg>
