@@ -22,7 +22,7 @@ Aquí tienes algunas imágenes que muestran la interfaz de usuario de nuestra ap
 
 ## Instalación
 
-Para instalar y ejecutar [Nombre de tu Aplicación], sigue estos pasos:
+Para instalar y ejecutar «Hungry!», sigue estos pasos:
 
 1. Clona este repositorio en tu máquina local.
 2. Instala las dependencias utilizando el gestor de paquetes de tu preferencia.
