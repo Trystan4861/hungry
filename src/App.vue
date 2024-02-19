@@ -44,14 +44,15 @@ import MySelect from './components/MySelect.vue';
 import MyProductList from './components/MyProductList.vue';
 import { ref } from 'vue';
 import Swal from 'sweetalert2';
-import hungryLogo from "/src/assets/hungry.svg";
-import carrefourLogo from "/src/assets/carrefour.svg";
-import carmelaLogo from "/src/assets/super_carmela.svg";
-import mercadonaLogo from "/src/assets/mercadona.svg";
-import addLogo from "/src/assets/add.svg";
-import a2zLogo from "/src/assets/a2z.svg";
-import categoriasLogo from "/src/assets/categorias.svg";
-import cartLogo from "/src/assets/cart.svg";
+/**logos **/
+import hungryLogo from "./public/images/hungry.svg";
+import carrefourLogo from "./public/images/carrefour.svg";
+import carmelaLogo from "./public/images/super_carmela.svg";
+import mercadonaLogo from "./public/images/mercadona.svg";
+import addLogo from "./public/images/add.svg";
+import a2zLogo from "./public/images/a2z.svg";
+import categoriasLogo from "./public/images/categorias.svg";
+import cartLogo from "./public/images/cart.svg";
 
 export default {
   name: 'App',
