@@ -1,6 +1,9 @@
 <template>
     <div class="my-category-container">
-        <div class="my-category" :style="{ backgroundColor: bgColor }" @click="handleClick"  @mousedown="handleMouseDown"  @mouseup="handleMouseUp">
+        <div class="my-category" :style="{ backgroundColor: bgColor }" 
+        @click="handleClick"  
+        @mousedown="handleMouseDown" @mouseup="handleMouseUp" 
+        @touchstart="handleMouseDown" @touchend="handleMouseUp">
             <p class="category-title" :class="{active: isActive}">{{ text }}</p>
         </div>
     </div>
@@ -77,7 +80,7 @@
     color: #fff; /* Color de texto del tooltip */
     padding: 10px; /* Espaciado interno del tooltip */
     max-width: 300px; /* Ancho máximo del tooltip */
-    z-index: 10000; /* Z-index para que esté por encima de otros elementos */
+    z-index: 1000; /* Z-index para que esté por encima de otros elementos */
     white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
     overflow:visible ; /* Ocultar el texto que desborde */
     display: none; /* Agregar puntos suspensivos al texto que desborde */
