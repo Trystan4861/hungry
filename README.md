@@ -26,7 +26,7 @@ Para instalar y ejecutar «Hungry!», sigue estos pasos:
 
 1. Clona este repositorio en tu máquina local.
 2. Instala las dependencias utilizando el gestor de paquetes de tu preferencia.
-3. Ejecuta la aplicación utilizando el comando `npm start` o `yarn start`.
+3. Ejecuta la aplicación utilizando el comando `npm run dev`.
 4. ¡Disfruta de «Hungry!¢!
 
 ## Uso
