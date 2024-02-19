@@ -6,7 +6,7 @@
         <span class="close" @click="closeModal">&times;</span>
       </div>
       <p>{{ message }}</p>
-      <input type="text" name="inputText" id="inputText" v-model="inputText" @keydown.enter="handleEnterKey">
+      <input type="text" ref="inputText" name="inputText" id="inputText" v-model="inputText" @keydown.enter="handleEnterKey">
       <button @click="handleButtonClick">Guardar cambios</button>
     </div>
   </div>
@@ -43,6 +43,10 @@ export default {
   methods: {
     openModal() {
       this.visible = true;
+      setTimeout(this.inputFocus,50);
+    },
+    inputFocus(){
+      this.$refs.inputText.focus();
     },
     closeModal() {
       this.visible = false;
@@ -55,9 +59,9 @@ export default {
       if (event.key === 'Enter') {
         this.handleButtonClick();
       }
-    }
+    },
   },
-  emits: ['inputModalChange']
+  emits: ['inputModalChange'],
 };
 </script>
 
@@ -72,6 +76,9 @@ export default {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
+  display:flex;
+  justify-content: center;
+  align-items: center;
 }
 .cabecera-modal{
   justify-content: space-between;
