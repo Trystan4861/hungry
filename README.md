@@ -1,6 +1,6 @@
 # Bienvenido a Hungry! by trystan4861
 
-<img src="https://ik.imagekit.io/trystan4861/hungry/hungry.svg" alt="Logo de Hungry" style="height:100px;">
+<img src="https://ik.imagekit.io/trystan4861/hungry/hungry.svg" alt="Logo de Hungry" style="height:100px;"> [![Netlify Status](https://api.netlify.com/api/v1/badges/88f22b9a-dd72-4dce-8964-19e19426b546/deploy-status)](https://netlify.com)
 
 ¡Gracias por elegir nuestra aplicación! «Hungry!» es una herramienta poderosa diseñada para realizar listas de la compra con diversas funcionalidades.
 Está inspirada en una aplicación (ya retirada de la appstore) llamada igualmente «Hungry!» pero con divesas mejoras.
@@ -8,7 +8,7 @@ Está inspirada en una aplicación (ya retirada de la appstore) llamada igualmen
 ## Características Principales
 
 - **Funcionalidad 1:** Permite crear distintos productos, asignándoles una categoría y un supermercado específico para su posterior compra.
-- **Funcionalidad 2:** Es totalmente responsive y permite modificar tanto los productos como los nombres de las categorías.
+- **Funcionalidad 2:** Es totalmente responsiva y permite modificar tanto los productos como los nombres de las categorías.
 - **Funcionalidad 3:** En continuo desarrollo y mejora.
 
 ## Capturas de Pantalla
