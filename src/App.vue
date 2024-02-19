@@ -5,7 +5,7 @@
       <template v-slot:tabContent0>
         <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
         <MySelect :options="supermercados" v-model="supermercado" selectName="supermercado" @select="handleSelect"/>
-        <MyInput v-model="nuevoProducto" :placeholder="'Añade elementos aquí'" />
+        <MyInput v-model="nuevoProducto" :placeholder="'Añade elementos aquí'" :autofocus="true"/>
         <MyButton text="Añadir" @click="handleAddClick"/>
         <MyModal 
           ref="myModalRef"
@@ -155,6 +155,9 @@ export default {
       ])
       //const selectedSupermercado = ref('');
       return {tabsData, categoriesData,supermercados}
+  },
+  mounted(){
+    setTimeout(this.nuevoProductoFocus,500);
   }
 };
 </script>

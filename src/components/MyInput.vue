@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <input type="text" v-model="inputValue" :placeholder="placeholder">
+    <input ref="myInput" type="text" v-model="inputValue" :placeholder="placeholder">
   </div>
 </template>
 
@@ -15,6 +15,10 @@ export default {
     placeholder: {
       type: String,
       default: 'Añade elementos aquí'
+    },
+    autofocus:{
+      type: Boolean,
+      default:false
     }
   },
   data() {
@@ -32,7 +36,17 @@ export default {
       this.$emit('update:modelValue', newValue);
     }
   },
-  emits: ['update:modelValue']
+  methods:{
+    focusInput() {
+      if (!this.autofocus) return;
+      this.$refs.myInput.focus();
+    }
+  },
+  emits: ['update:modelValue'],
+  mounted() {
+    // Llama a la función para enfocar el input después de que el componente se monte
+      setTimeout(this.focusInput,500);
+  }
 };
 </script>
 
