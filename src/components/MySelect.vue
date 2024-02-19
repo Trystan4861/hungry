@@ -1,15 +1,17 @@
 <template>
   <div class="my-select" @click="toggleDropdown">
-    <div class="selected-option" tabindex="0" @blur="closeDropdown"><img :src="selectedOption.logo">{{ selectedOption.text ? selectedOption.text : placeholder }}</div>
+    <div class="selected-option" tabindex="0" @blur="closeDropdown"><MyImageLoader :image="selectedOption.logo" />{{ selectedOption.text ? selectedOption.text : placeholder }}</div>
     <div class="dropdown" :class="{ show: showDropdown }">
       <div v-for="(option, index) in options" :key="index" class="option" @mousedown="selectOption(option,index)">
-        <img :src="option.logo" alt="Logo" class="option-logo"> {{ option.text }}
+        <MyImageLoader :image="option.logo" :className="'option-logo'" /> {{ option.text }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import MyImageLoader from './MyImageLoader.vue';
+
 export default {
   name: 'MySelect',
   props: {
@@ -40,6 +42,9 @@ export default {
     closeDropdown() {
       this.showDropdown = false;
     }
+  },
+  components:{
+    MyImageLoader
   }
 };
 </script>

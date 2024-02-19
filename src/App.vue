@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-    <h1 class="mb-4">Hungry!<img class="logo" :src="hungryLogo"></h1>
+    <h1 class="mb-4 text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" /></h1>
     <my-tab :tabs="tabsData" @tabChanged="handleTabChange">
       <template v-slot:tabContent0>
         <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
@@ -42,17 +42,11 @@ import MyInput from './components/MyInput.vue';
 import MyButton from './components/MyButton.vue';
 import MySelect from './components/MySelect.vue';
 import MyProductList from './components/MyProductList.vue';
+import MyImageLoader from './components/MyImageLoader.vue';
+
 import { ref } from 'vue';
 import Swal from 'sweetalert2';
 /**logos **/
-import hungryLogo from "./public/images/hungry.svg";
-import carrefourLogo from "./public/images/carrefour.svg";
-import carmelaLogo from "./public/images/super_carmela.svg";
-import mercadonaLogo from "./public/images/mercadona.svg";
-import addLogo from "./public/images/add.svg";
-import a2zLogo from "./public/images/a2z.svg";
-import categoriasLogo from "./public/images/categorias.svg";
-import cartLogo from "./public/images/cart.svg";
 
 export default {
   name: 'App',
@@ -63,7 +57,8 @@ export default {
     MyInput,
     MyButton,
     MySelect,
-    MyProductList
+    MyProductList,
+    MyImageLoader
   },
   data(){
     return{
@@ -74,7 +69,6 @@ export default {
       id_supermercado:-1,
       inputText:'',
       productos:[],
-      logo:hungryLogo
     }
   },
   methods:{
@@ -126,10 +120,10 @@ export default {
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
       const tabsData= ref([
-        { logo:addLogo },
-        { title: '',logo:a2zLogo },
-        { title: '',logo:categoriasLogo },
-        { title: '',logo:cartLogo },
+        { logo:'add.svg' },
+        { title: '',logo:'a2z.svg' },
+        { title: '',logo:'categorias.svg' },
+        { title: '',logo:'cart.svg' },
       ]);
       const categoriesData= ref([
         {text:'Carnicería', bgColor:'#d83c3d'},
@@ -154,13 +148,13 @@ export default {
         {text:'', bgColor:'#6e1952'},
       ]);
       const supermercados=ref([
-        {text:'Cualquier Supermercado', logo:hungryLogo},
-        {text:'Carrefour', logo:carrefourLogo},
-        {text:'Mercadona', logo:mercadonaLogo},
-        {text:'La Carmela', logo:carmelaLogo}
+        {text:'Cualquier Supermercado', logo:'hungry.svg'},
+        {text:'Carrefour', logo:'carrefour.svg'},
+        {text:'Mercadona', logo:'mercadona.svg'},
+        {text:'La Carmela', logo:'super_carmela.svg'},
       ])
       //const selectedSupermercado = ref('');
-      return {tabsData, categoriesData,supermercados,hungryLogo}
+      return {tabsData, categoriesData,supermercados}
   }
 };
 </script>

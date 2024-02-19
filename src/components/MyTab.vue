@@ -7,7 +7,7 @@
             class="nav-link"
             :class="{ active: this.activeTab === index }"
             @click="activateTab(index)">
-            <img :src="tab.logo?tab.logo:emptyIMG" class="logo"> {{ tab.title }}
+            <MyImageLoader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
           </a>
         </li>
       </ul>
@@ -19,8 +19,9 @@
       </div>
     </div>
   </template>
-  
 <script>
+import MyImageLoader from './MyImageLoader.vue';
+
 export default {
   name: 'MyTab',
   props: {
@@ -43,6 +44,9 @@ export default {
     }
   },
   emits: ['tabChanged'], // Declarar el evento tabChanged para evitar la advertencia
+  components:{
+    MyImageLoader
+  }
 };
 </script>
   
