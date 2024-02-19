@@ -123,6 +123,7 @@ export default {
     }
   },
   setup() {
+      document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
       const tabsData= ref([
         { logo:addLogo },
         { title: '',logo:a2zLogo },
