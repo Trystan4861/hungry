@@ -107,7 +107,6 @@ export default {
     const categoryListStyle = ref({});
     const updateCategoryListStyle = () => {
       let index=activeCategoryIndex.value;
-      console.log("entra "+index);
       const container = containerRef.value;
       if (!container) return;
       const categoriesList = container.querySelector('.my-category');
