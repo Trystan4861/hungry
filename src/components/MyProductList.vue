@@ -24,12 +24,19 @@ export default {
       default: 'name' // Valor por defecto: ordenar por nombre
     }
   },
-  computed: {
+computed: {
     sortedProductList() {
       if (this.orderBy === 'name') {
         return this.productList.slice().sort((a, b) => a.text.localeCompare(b.text));
       } else if (this.orderBy === 'categoryId') {
-        return this.productList.slice().sort((a, b) => a.id_categoria - b.id_categoria);
+        // Ordenar primero por id_categoria y luego por text
+        return this.productList.slice().sort((a, b) => {
+          if (a.id_categoria !== b.id_categoria) {
+            return a.id_categoria - b.id_categoria;
+          } else {
+            return a.text.localeCompare(b.text);
+          }
+        });
       }
       return this.productList;
     }
