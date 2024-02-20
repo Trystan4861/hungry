@@ -1,47 +1,78 @@
 <template>
-    <div class="my-tab">
-      <ul class="nav nav-tabs">
-        <!-- Mostramos cada pestaña en la cabecera -->
-        <li class="nav-item" :class="{ active: this.activeTab === index }" v-for="(tab, index) in tabs" :key="index">
-          <a
-            class="nav-link"
-            :class="{ active: this.activeTab === index }"
-            @click="activateTab(index)">
-            <MyImageLoader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
-          </a>
-        </li>
-      </ul>
-      <!-- Mostramos el contenido de la pestaña activa -->
-      <div class="tab-content">
-        <div class="tab-pane fade show" :class="{ active: this.activeTab === index }" :id="'tab' + index" v-for="(tab, index) in tabs" :key="index">
-            <slot :name="'tabContent' + index"></slot>
-        </div>
+  <div class="my-tab" ref="containerRef">
+    <ul class="nav nav-tabs">
+      <!-- Mostramos cada pestaña en la cabecera -->
+      <li class="nav-item" :class="{ active: this.activeTab === index }" v-for="(tab, index) in tabs" :key="index" :style="tabStyle">
+        <a
+          class="nav-link"
+          :class="{ active: this.activeTab === index }"
+          @click="activateTab(index)">
+          <MyImageLoader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
+        </a>
+      </li>
+    </ul>
+    <!-- Mostramos el contenido de la pestaña activa -->
+    <div class="tab-content">
+      <div class="tab-pane fade show" :class="{ active: this.activeTab === index }" :id="'tab' + index" v-for="(tab, index) in tabs" :key="index">
+          <slot :name="'tabContent' + index"></slot>
       </div>
     </div>
-  </template>
+  </div>
+</template>
 <script>
 import MyImageLoader from './MyImageLoader.vue';
+import {ref, watch, onMounted, onBeforeUnmount} from 'vue';
 
 export default {
   name: 'MyTab',
   props: {
     tabs: {
       type: Array,
-      required: true
+      required: true,
+    },
+    defaultActive:{
+      type: Number,
+      default:0
     }
   },
   data() {
     return {
-      activeTab: 0, // Índice de la pestaña activa
       emptyIMG:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII="
-
     };
+  },
+  setup(props){
+      const containerRef = ref(null);
+      const activeTab = ref(props.defaultActive)
+      watch(() => props.defaultActive, (newValue) => {
+        activeTab.value = newValue;
+      });
+      const tabStyle = ref({});
+      const updateTabStyle = () => {
+        console.log("entro")
+        const container = containerRef.value;
+        if (!container) return;
+        const containerWidth = container.clientWidth;
+        const widthStyle = (((containerWidth-60) / 4)-1);
+        tabStyle.value = {width: `${widthStyle}px`};
+      };
+      onMounted(()=>{
+        window.addEventListener('resize', updateTabStyle);
+        updateTabStyle();
+        })
+      onBeforeUnmount(() => {
+        window.removeEventListener('resize', updateTabStyle);
+      });
+      return {
+        tabStyle,
+        containerRef,
+        activeTab
+      }
   },
   methods: {
     activateTab(index) {
       this.activeTab = index;
       this.$emit('tabChanged', index);
-    }
+    },
   },
   emits: ['tabChanged'], // Declarar el evento tabChanged para evitar la advertencia
   components:{
@@ -51,6 +82,9 @@ export default {
 </script>
   
 <style scoped>
+  li.nav-item:first-child {
+    max-width: 60px;
+  }
   .nav-tabs{
     --bs-nav-tabs-border-color: black;
     justify-content: space-between;
@@ -59,15 +93,20 @@ export default {
     background-color: #585858;
     color: white;
     display: flex;
+    height:100%;
     justify-content: center;
-  }
-  .nav-item{
-    width: 24.9%;
   }
   .nav-tabs .nav-link.active{
     background-color: #e6e6e6;
+    color:black;
   }
-  a.nav-link
+  .nav-item:nth-child(2) .nav-link.active img,
+  .nav-item:nth-child(5) .nav-link.active img,
+  .nav-item:first-child .nav-link.active img{
+    filter: grayscale(1) brightness(100) invert(1);
+  }
+
+a.nav-link
   {
     min-width: 25%;
     cursor: pointer;
