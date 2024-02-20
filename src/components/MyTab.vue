@@ -48,7 +48,6 @@ export default {
       });
       const tabStyle = ref({});
       const updateTabStyle = () => {
-        console.log("entro")
         const container = containerRef.value;
         if (!container) return;
         const containerWidth = container.clientWidth;
