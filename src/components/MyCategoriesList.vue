@@ -44,8 +44,8 @@ export default {
     };
     onMounted(() => {
       updateScreenSize();
+      window.addEventListener('resize', updateScreenSize);
     });
-    window.addEventListener('resize', updateScreenSize);
     // Eliminar el event listener cuando se desmonta el componente
     onBeforeUnmount(() => {
       window.removeEventListener('resize', updateScreenSize);
@@ -121,7 +121,6 @@ export default {
       };
       setTimeout(scrollIntoView,1,index,'instant'); //para que cuando se cambia de tamaño la pantalla no se autoseleccione una categoría nueva
     };
-    watch(() => Screen.width, updateCategoryListStyle);
 
     return {
       activeCategoryIndex,

@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       inputValue: this.modelValue
-    };
+    }
   },
   watch: {
     modelValue(newValue) {
