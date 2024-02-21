@@ -1,14 +1,21 @@
 <template>
-  <div class="my-product" :data-supermercado="product.id_supermercado" :data-categoria="product.id_categoria" @click="handleClick">
+  <div class="my-product" 
+    :data-supermercado="product.id_supermercado" 
+    :data-categoria="product.id_categoria" 
+    @click="handleClick"
+    @mousedown="handleMouseDown" @mouseup="handleMouseUp" 
+    @touchstart="handleMouseDown" @touchend="handleMouseUp"
+  >
     <span  :style="{ backgroundColor: product.categoria.bgColor }" class="productCategory" />
-    <div :style="{display: isSelected ? 'flex' : 'none'}" class="product" :class="{selected: isSelected, done: isDone}">
-      <p class="productAmount">{{ product.amount || 1 }}</p>
+    <div class="product" :class="{selected: product.selected, done: product.done && canBeDone}">
+      <p :style="{display: product.selected ? 'block' : 'none'}" class="productAmount">{{ product.amount || 1 }}&nbsp;</p>
       <p class="productText">{{ product.text }}</p>
     </div>
   </div>
 </template>
 
 <script>
+import {ref} from 'vue';
 export default {
   name: 'MyProduct',
   props: {
@@ -16,21 +23,42 @@ export default {
       type: Object,
       required: true
     },
-    isSelected:{
-      type: Boolean,
-      default:true
-    },
-    isDone:{
-      type: Boolean,
-      default: true
+    canBeDone:{
+      type:Boolean,
+      default: false
     }
   },
-  methods:{
-    handleClick(){
-      this.$emit('click');
-    }
+  setup(props,{emit}){
+    const longPressTimeout = ref(null);
+    const longClicked = ref(false);
+
+    const handleClick = () => {
+      if (!longClicked.value)
+        emit('click:product', props.product);
+      else
+        longClicked.value = false;
+    };
+
+    const handleMouseDown = () => {
+      if (props.canBeDone) return;
+      longClicked.value = false; // Reinicia longClicked a falso al comenzar el clic
+      longPressTimeout.value = setTimeout(() => {
+        longClicked.value = true; // Establece longClicked a verdadero si se mantiene pulsado
+        emit('longClick:product', props.product);
+      }, 1000); 
+    };
+
+    const handleMouseUp = () => {
+      clearTimeout(longPressTimeout.value);
+    };
+
+    return {
+      handleClick,
+      handleMouseDown,
+      handleMouseUp
+    };
   },
-  emits:['click']
+  emits:['click:product','longClick:product']
 };
 </script>
 
@@ -44,8 +72,10 @@ export default {
   height: 1.875rem;
   display: flex;
   cursor: pointer;
+  user-select: none;
 }
 .product{
+  display: flex;
   padding-left: .625rem;
 }
 .selected{

@@ -50,7 +50,8 @@
                 handleMouseDown,
                 handleMouseUp
             };
-        }
+        },
+        emits:['categoryClick','categoryLongClick']
     };
 </script>
 
