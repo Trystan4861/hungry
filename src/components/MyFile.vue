@@ -1,7 +1,7 @@
 <template>
   <div class="file-select">
     <input type="file" @change="handleFileChange" id="MyFile" :accept="accept">
-    <label class="btn btn-primary" for="MyFile">Importar Configuración</label>
+    <label class="btn btn-primary" for="MyFile">{{ text}}</label>
   </div>
 </template>
 
@@ -10,13 +10,17 @@
 export default {
   name: 'MyFileReader',
   props:{
+    text:{
+      type: String,
+      default: 'Seleccionar archivo'
+    },
     maxFileSize: {
       type: Number,
       default: null
     },
     fileName: {
-      type: String,
-      default:''
+      validator: (value)=>value instanceof RegExp || typeof value === 'string',
+      default: () => /^.*hungry.*\.json$/i
     },
     accept:{
       type: String,
@@ -25,7 +29,8 @@ export default {
   },
   setup(props, {emit}) {
     const handleFileChange = async (event) => {
-      if (props.fileName!='') if (event.target.files[0].name.toLowerCase()!=props.fileName) return emit('fileReadError',`Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`)
+      const regex = typeof props.fileName === 'string' ? new RegExp(props.fileName, 'i') : props.fileName;
+      if (props.fileName !== '' && !regex.test(event.target.files[0].name)) return emit('fileReadError',`Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`)
       if (props.maxFileSize!=null) if (event.target.files[0].size>props.maxFileSize)  return emit('fileReadError',`Archivo demasiado grande,<br>tamaño máximo ${props.maxFileSize/1024}KB`)
       try {
         emit('fileReaded', await readFile(event.target.files[0]));
