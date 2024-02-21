@@ -3,6 +3,7 @@
     <h1 class="mb-4 text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" /></h1>
     <MyTab :tabs="tabsData" :defaultActive="1">
       <template v-slot:tabContent0>
+        <MyCheckbox :required="true" v-for="index in [0,1]" :key="index" :value="index" :label="CONFIG_NAMES[index]" v-model:checkedValues="configs2Export" :group="'configs2Export'" @lastCheckedDeletionAttempt="handleConfigLastCheckedDeletionAttempt" @update:checkedValues="handleUpdateConfigCheckedValues" />
         <MyButton :text="'Exportar Configuración'" @click="exportConfig" />
         <MyFileReader @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :fileName="'hungry.json'" :maxFileSize="20*1024" :accept="'application/json'"/>
       </template>
@@ -39,6 +40,7 @@
 <script>
 import { localStorageService } from './localStorageService.js';
 import MyCategoriesList from './components/MyCategoriesList.vue';
+import MyCheckbox from './components/MyCheckbox.vue';
 import MyTab from './components/MyTab.vue';
 import MyModal from './components/MyModal.vue';
 import MyInput from './components/MyInput.vue';
@@ -97,6 +99,7 @@ export default {
   components:{
     MyButton,
     MyCategoriesList,
+    MyCheckbox,
     MyFileReader,
     MyImageLoader,
     MyInput,
@@ -113,6 +116,7 @@ export default {
       inputText:'',
       nuevoProducto:'', // Inicializa nuevoProducto con el valor deseado
       supermercado:'',
+      configs2Export:[]
     }
   },
   methods:{
@@ -124,6 +128,19 @@ export default {
     },
     exportConfig(){
       downloadJSON({name:'Hungry!',categorias:this.categoriesData,productos:this.productsData})
+    },
+    handleUpdateConfigCheckedValues(data){
+      console.log(data);
+    },
+    handleConfigLastCheckedDeletionAttempt(data){
+        console.log("swall")
+        Swal.fire({
+          icon:'error',
+          title:'Error',
+          html:"Debe seleccionar al menos<br>una configuración a exportar",
+          confirmButtonText:'Aceptar'
+        })
+      console.log(data);
     },
     handleFileReaded(data){
       if (data.name!="Hungry!")
@@ -196,6 +213,7 @@ export default {
     }
   },
   setup() {
+      const CONFIG_NAMES = ['Categorías','Productos'];
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
       const tabsData= ref([
         { logo:'config.svg'},
@@ -219,7 +237,7 @@ export default {
         {text:'La Carmela', logo:'super_carmela.svg'},
       ])
       //const selectedSupermercado = ref('');
-      return {tabsData, categoriesData,supermercados, productsData}
+      return {tabsData, categoriesData,supermercados, productsData,CONFIG_NAMES}
   },
   mounted(){
     //this.categoriesData.value = getCategoriesDataFromLocalStorage();
