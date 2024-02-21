@@ -1,11 +1,17 @@
 <template>
   <div class="container mt-5">
     <h1 class="mb-4 text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" /></h1>
-    <MyTab :tabs="tabsData" :defaultActive="1">
+    <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged">
       <template v-slot:tabContent0>
-        <MyCheckbox :required="true" v-for="index in [0,1]" :key="index" :value="index" :label="CONFIG_NAMES[index]" v-model:checkedValues="configs2Export" :group="'configs2Export'" @lastCheckedDeletionAttempt="handleConfigLastCheckedDeletionAttempt" @update:checkedValues="handleUpdateConfigCheckedValues" />
-        <MyButton :text="'Exportar Configuración'" @click="exportConfig" />
-        <MyFileReader @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :fileName="'hungry.json'" :maxFileSize="20*1024" :accept="'application/json'"/>
+        <MyCard>
+          <p>Selecciona qué configuración deseas exportar:</p>
+          <MyCheckbox v-for="index in [0,1]" :key="index" :value="index" :label="CONFIG_NAMES[index]" v-model:checkedValues="configs2Export" :group="'configs2Export'" @lastCheckedDeletionAttempt="handleConfigLastCheckedDeletionAttempt" @update:checkedValues="handleUpdateConfigCheckedValues" />
+          <br>
+          <MyButton :text="'Exportar Configuración Seleccionada'" @click="exportConfig" />
+        </MyCard>
+        <MyCard :borderStyle="'rounded-bottom'">
+          <MyFileReader :text="'Importar Configuración'" @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :maxFileSize="20*1024" :accept="'application/json'"/>
+        </MyCard>
       </template>
       <template v-slot:tabContent1>
         <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
@@ -22,16 +28,22 @@
       </template>    
       
       <template v-slot:tabContent2>
-        <MyProductList :productList="productsData" orderBy="name" />
+        <MyCard :min-height="alturaDisponible" :heightModifier="-152" :borderStyle="'rounded-bottom'">
+          <MyProductList :productList="productsData" orderBy="name" />
+        </MyCard>
       </template>
       
       <template v-slot:tabContent3>
-        <MyProductList :productList="productsData" orderBy="categoryId" />
+        <MyCard :min-height="alturaDisponible" :heightModifier="-152" :borderStyle="'rounded-bottom'">
+          <MyProductList :productList="productsData" orderBy="categoryId" />
+        </MyCard>
       </template>
 
       <template v-slot:tabContent4>
         <MySelect :options="supermercados" selectName="supermercado" @select="handleSelect" :selectedValue="-1" />
-        <MyProductList :productList="productsData" orderBy="categoryId" />
+        <MyCard :min-height="alturaDisponible" :heightModifier="-202" :borderStyle="'rounded-bottom'">
+          <MyProductList :productList="productsData" orderBy="categoryId" />
+        </MyCard>
       </template>
     </MyTab>
   </div>
@@ -39,6 +51,7 @@
 
 <script>
 import { localStorageService } from './localStorageService.js';
+import MyCard from './components/MyCard.vue';
 import MyCategoriesList from './components/MyCategoriesList.vue';
 import MyCheckbox from './components/MyCheckbox.vue';
 import MyTab from './components/MyTab.vue';
@@ -98,6 +111,7 @@ export default {
   name:'App',
   components:{
     MyButton,
+    MyCard,
     MyCategoriesList,
     MyCheckbox,
     MyFileReader,
@@ -116,7 +130,9 @@ export default {
       inputText:'',
       nuevoProducto:'', // Inicializa nuevoProducto con el valor deseado
       supermercado:'',
-      configs2Export:[]
+      configs2Export:[],
+      defaultTabActive:2,
+      alturaDisponible:0
     }
   },
   methods:{
@@ -127,7 +143,17 @@ export default {
       localStorageService.setItem(where, what);
     },
     exportConfig(){
+      if (this.configs2Export.length==0)
+        return Swal.fire({
+          icon:'error',
+          title:'Error',
+          html:"Debe seleccionar al menos<br>una configuración a exportar",
+          confirmButtonText:'Aceptar'
+        })
       downloadJSON({name:'Hungry!',categorias:this.categoriesData,productos:this.productsData})
+    },
+    handleTabHeightChanged(data){
+      this.alturaDisponible=data;
     },
     handleUpdateConfigCheckedValues(data){
       console.log(data);
@@ -247,10 +273,42 @@ export default {
 </script>
 
 <style>
-body
+html,body
 {
   --bs-body-bg:black;
   --bs-body-color:white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 100% de la altura de la ventana */
+  margin: 0; /* Eliminar el margen predeterminado del body */
+  padding: 0; /* Eliminar el padding predeterminado del body */
+  overflow: hidden;
+}
+#app{
+  height: 100%!important;
+}
+.container {
+  height: 100%;
+  flex-grow: 1; /* Esto hará que .container se expanda */
+  display: flex;
+  flex-direction: column;
+}
+.tabs-container{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Esto hace que el contenido se expanda */
+  overflow-y: auto; /* Para permitir el desplazamiento si el contenido excede la altura disponible */
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f0f0f0;
+}
+.tabs-container::-webkit-scrollbar{
+  width: 5px;
+}
+.tabs-container::-webkit-scrollbar-track{
+  background: #f0f0f0;
+}
+.tabs-container::-webkit-scrollbar-thumb{
+  background: #888;
 }
 .logo{
   width:60px;
