@@ -57,6 +57,12 @@
       </template>
     </MyTab>
   </div>
+  <MyModalSlot ref="myModalSlotRef">
+    <h1 class="text-center">{{ productoSeleccionado?.text }}</h1>
+    <MyButton :text="'Editar Producto'" @click="handleEditarProducto" />
+    <br>
+    <MyButton  class="mt-15" :btn="'danger'" :text="'Eliminar Producto'" @click="handleEliminarProducto" />
+  </MyModalSlot>
 </template>
 
 <script>
@@ -72,7 +78,7 @@ import MySelect from './components/MySelect.vue';
 import MyProductList from './components/MyProductList.vue';
 import MyImageLoader from './components/MyImageLoader.vue';
 import MyFileReader from './components/MyFile.vue';
-
+import MyModalSlot from './components/MyModalSlot.vue';
 import { ref } from 'vue';
 import Swal from 'sweetalert2';
 /**logos **/
@@ -128,6 +134,7 @@ export default {
     MyImageLoader,
     MyInput,
     MyModal,
+    MyModalSlot,
     MyProductList,
     MySelect,
     MyTab,
@@ -142,7 +149,8 @@ export default {
       supermercado:'',
       configs2Export:[],
       defaultTabActive:2,
-      alturaDisponible:0
+      alturaDisponible:0,
+      productoSeleccionado:{}
     }
   },
   methods:{
@@ -163,10 +171,31 @@ export default {
         })
       downloadJSON({name:'Hungry!',categorias:this.categoriesData,productos:this.productsData})
     },
+    handleEditarProducto(){
+      console.log(this.productoSeleccionado.id)
+    },
+    handleEliminarProducto(){
+      Swal.fire({
+        title: '¿Estás seguro de que quieres eliminar el producto?',
+        text: 'Esta acción no se puede deshacer',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          let index=this.findIndex(this.productoSeleccionado)
+          this.productsData.splice(index, 1)
+          localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData)
+          this.productoSeleccionado=null;
+          this.$refs.myModalSlotRef.closeModal();
+
+        }
+      });
+    },
     handleShoplistClick(product)
     {
       let index=this.findIndex(product)
-      console.log(index)
       this.productsData[index].done=!this.productsData[index].done
     },
     handleClickProduct(product){
@@ -175,7 +204,8 @@ export default {
       this.productsData[index].done=false
     },
     handeLongClickProduct(product){
-      console.log("longClick:product",product)
+      this.productoSeleccionado=product;
+      this.$refs.myModalSlotRef.openModal();
     },
     handleTabHeightChanged(data){
       this.alturaDisponible=data;
@@ -183,15 +213,13 @@ export default {
     handleUpdateConfigCheckedValues(data){
       console.log(data);
     },
-    handleConfigLastCheckedDeletionAttempt(data){
-        console.log("swall")
+    handleConfigLastCheckedDeletionAttempt(){
         Swal.fire({
           icon:'error',
           title:'Error',
           html:"Debe seleccionar al menos<br>una configuración a exportar",
           confirmButtonText:'Aceptar'
         })
-      console.log(data);
     },
     handleFileReaded(data){
       if (data.name!="Hungry!")
