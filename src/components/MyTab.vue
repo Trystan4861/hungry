@@ -1,5 +1,5 @@
 <template>
-  <div class="my-tab" ref="containerRef">
+  <div class="my-tab" ref="tabsContainerRef">
     <ul class="nav nav-tabs">
       <!-- Mostramos cada pestaña en la cabecera -->
       <li class="nav-item" :class="{ active: this.activeTab === index }" v-for="(tab, index) in tabs" :key="index" :style="tabStyle">
@@ -40,19 +40,20 @@ export default {
       emptyIMG:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII="
     };
   },
-  setup(props){
-      const containerRef = ref(null);
+  setup(props,{emit}){
+      const tabsContainerRef = ref(null);
       const activeTab = ref(props.defaultActive)
       watch(() => props.defaultActive, (newValue) => {
         activeTab.value = newValue;
       });
       const tabStyle = ref({});
       const updateTabStyle = () => {
-        const container = containerRef.value;
+        const container = tabsContainerRef.value;
         if (!container) return;
         const containerWidth = container.clientWidth;
         const widthStyle = (((containerWidth-60) / 4)-1);
         tabStyle.value = {width: `${widthStyle}px`};
+        emit('tabHeightChanged',container.clientHeight)
       };
       onMounted(()=>{
         window.addEventListener('resize', updateTabStyle);
@@ -63,7 +64,7 @@ export default {
       });
       return {
         tabStyle,
-        containerRef,
+        tabsContainerRef,
         activeTab
       }
   },
@@ -73,7 +74,7 @@ export default {
       this.$emit('tabChanged', index);
     },
   },
-  emits: ['tabChanged'], // Declarar el evento tabChanged para evitar la advertencia
+  emits: ['tabChanged','tabHeightChanged'], // Declarar el evento tabChanged para evitar la advertencia
   components:{
     MyImageLoader
   }
@@ -81,6 +82,20 @@ export default {
 </script>
   
 <style scoped>
+  .my-tab {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .tab-content {
+    flex-grow: 1; /* Esto permite que el contenido de la pestaña se expanda para ocupar el espacio restante */
+    display: flex;
+    flex-direction: column;
+  }
+  .tab-pane {
+    flex-grow: 1;
+    overflow-y: auto; /* Permite el desplazamiento si el contenido excede el alto disponible */
+  }
   li.nav-item:first-child {
     max-width: 60px;
   }
@@ -98,17 +113,18 @@ export default {
   .nav-tabs .nav-link.active{
     background-color: #e6e6e6;
     color:black;
+    border: 0;
   }
   .nav-item:nth-child(2) .nav-link.active img,
   .nav-item:nth-child(5) .nav-link.active img,
   .nav-item:first-child .nav-link.active img{
     filter: grayscale(1) brightness(100) invert(1);
   }
-
-a.nav-link
+  a.nav-link
   {
     min-width: 25%;
     cursor: pointer;
+    padding: 0;
   }
   .logo{
     width: 50px;

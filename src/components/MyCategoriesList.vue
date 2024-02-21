@@ -38,17 +38,26 @@ export default {
     categoriesState.value[0] = true;
     activeCategoryIndex.value = 0;
     const containerRef = ref(null);
+    const observer=ref(null);
 
     const updateScreenSize = () => {
       updateCategoryListStyle();
     };
     onMounted(() => {
-      updateScreenSize();
       window.addEventListener('resize', updateScreenSize);
+      observer.value = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            updateScreenSize();
+          }
+        });
+      }, {});
+      observer.value.observe(containerRef.value);
     });
     // Eliminar el event listener cuando se desmonta el componente
     onBeforeUnmount(() => {
       window.removeEventListener('resize', updateScreenSize);
+      if (observer.value) observer.value.disconnect();
     });
 
     const handleCategoryClick = (index) => {
@@ -109,12 +118,10 @@ export default {
       let index=activeCategoryIndex.value;
       const container = containerRef.value;
       if (!container) return;
-      const categoriesList = container.querySelector('.my-category');
-      const categorieWidth = categoriesList.clientWidth;
+      const category = container.querySelector('.my-category');
+      const categorieWidth = category.clientWidth;
       const containerWidth = container.clientWidth;
-
       const paddingLeftRight = (containerWidth-categorieWidth) / 2;
-
       categoryListStyle.value = {
         left: `${paddingLeftRight}px`,
         paddingRight: `${paddingLeftRight}px`
@@ -143,6 +150,7 @@ export default {
   align-items: center;
   display: flex;
   height: 110px;
+  background-color: #585858;
 }
 
 .my-categories-list {

@@ -1,5 +1,5 @@
 <template>
-    <div class="my-category-container">
+    <div class="my-category-container" :class="{ 'selected': isActive }">
         <div class="my-category" :style="{ backgroundColor: bgColor }" 
         @click="handleClick"  
         @mousedown="handleMouseDown" @mouseup="handleMouseUp" 
@@ -88,5 +88,10 @@
 .category-title.active
 {
     display: block;
+}
+.selected {
+  /* Estilos cuando está seleccionado */
+  box-shadow: 0 0 5px #000;
+  background-color: #fff; /* Borde distintivo */
 }
 </style>
