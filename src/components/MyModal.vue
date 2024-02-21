@@ -86,19 +86,19 @@ export default {
 .modal-content {
   background-color: #7e7d7d;
   margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
+  padding: 1.25rem;
+  border: .0625rem solid #888;
   width: 80%;
   max-width: 600px;
 }
 
 .close {
   position: relative;
-  top: -20px;
-  right:-5px;
+  top: -1.25rem;
+  right:-0.3125rem;
   color: #aaa;
   float: right;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: bold;
 }
 

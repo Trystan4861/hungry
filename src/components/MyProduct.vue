@@ -1,8 +1,10 @@
 <template>
   <div class="my-product" :data-supermercado="product.id_supermercado" :data-categoria="product.id_categoria" @click="handleClick">
-    <span  :style="{ backgroundColor: product.categoria.bgColor }" class="categoria-producto" />
-    <p :style="{display: product.amount !== 0?'none':'block'}" class="amount">{{ product.amount }}</p>
-    <p class="text">{{ product.text }}</p>
+    <span  :style="{ backgroundColor: product.categoria.bgColor }" class="productCategory" />
+    <div :style="{display: isSelected ? 'flex' : 'none'}" class="product" :class="{selected: isSelected, done: isDone}">
+      <p class="productAmount">{{ product.amount || 1 }}</p>
+      <p class="productText">{{ product.text }}</p>
+    </div>
   </div>
 </template>
 
@@ -13,6 +15,14 @@ export default {
     product: {
       type: Object,
       required: true
+    },
+    isSelected:{
+      type: Boolean,
+      default:true
+    },
+    isDone:{
+      type: Boolean,
+      default: true
     }
   },
   methods:{
@@ -25,23 +35,23 @@ export default {
 </script>
 
 <style scoped>
-.categoria-producto{
-  width: 25px;
-  height: 25px;
+.productCategory{
+  width: 1.5625rem;
+  height: 1.5625rem;
 }
 .my-product {
   width: 100%;
-  height: 30px;
-  padding-left: 10px;
+  height: 1.875rem;
   display: flex;
   cursor: pointer;
 }
-.text{
-  padding-left: 15px;
+.product{
+  padding-left: .625rem;
 }
-.amount {
-  color: white;
-  font-size: 18px;
-  padding-left: 20px;
+.selected{
+  font-weight: bold;
+}
+.done{
+  text-decoration: line-through;
 }
 </style>

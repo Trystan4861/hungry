@@ -45,8 +45,8 @@ computed: {
 </script>
 <style scoped>
 .my-product-list {
-  margin-top: 20px;
-  margin-left: 10px;
+  margin-top: 1.25rem;
+  margin-left: .625rem;
   display: flex;
   flex-wrap: wrap;
 }

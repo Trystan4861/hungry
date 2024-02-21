@@ -56,11 +56,11 @@ export default {
 }
 
 .selected-option {
-  padding-left: 10px;
+  padding-left: .625rem;
   background-color: gray;
-  border: 1px solid #ccc;
+  border: .0625rem solid #ccc;
   cursor: pointer;
-  height: 50px;
+  height: 3.125rem;
   flex-wrap: wrap;
   align-items: center;
   display: flex;
@@ -72,10 +72,10 @@ export default {
   left: 0;
   width: 100%;
   background-color: gray;
-  border: 1px solid #ccc;
+  border: .0625rem solid #ccc;
   border-top: none;
-  border-radius: 0 0 4px 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 .25rem .25rem;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, 0.1);
   z-index: 1000;
   display: none;
 }
@@ -85,8 +85,8 @@ export default {
 }
 
 .dropdown .option {
-  padding-left: 10px;
-  padding-bottom: 10px;
+  padding-left: .625rem;
+  padding-bottom: .625rem;
   cursor: pointer;
 }
 
@@ -95,9 +95,9 @@ export default {
   color: black;
 }
 .option{
-  max-height: 50px;
+  max-height: 3.125rem;
 }
 .my-select img{
-  max-height: 45px;
+  max-height: 2.8125rem;
 }
 </style>

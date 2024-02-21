@@ -58,7 +58,7 @@ export default {
 
 input {
   width: 100%;
-  height: 50px;
-  border: 2px solid sandybrown;
+  height: 3.125rem;
+  border: .125rem solid sandybrown;
 }
 </style>

@@ -26,16 +26,16 @@ export default {
   computed: {
     // Computa el estilo basado en el prop borderStyle
     cardStyle() {
-      let borderRadius = '0px';
+      let borderRadius = '0';
       switch (this.borderStyle.toLowerCase()) {
         case 'rounded':
-          borderRadius = '8px';
+          borderRadius = '.5rem';
           break;
         case 'rounded-bottom':
-          borderRadius = '0 0 8px 8px';
+          borderRadius = '0 0 .5rem .5rem';
           break;
         case 'rounded-top':
-          borderRadius = '8px 8px 0 0';
+          borderRadius = '.5rem .5rem 0 0';
           break;
       }
       return {
@@ -50,12 +50,12 @@ export default {
 <style scoped>
 .card {
   background-color: #333;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 5px;
+  border-radius: 0 0 .5rem .5rem;
+  box-shadow: 0 .25rem .375rem rgba(0, 0, 0, 0.1);
+  padding: .3125rem;
 }
 
 .card-body {
-  padding: 5px;
+  padding: .3125rem;
 }
 </style>

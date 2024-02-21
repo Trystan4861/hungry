@@ -149,15 +149,13 @@ export default {
   scroll-snap-type: x proximity;
   align-items: center;
   display: flex;
-  height: 110px;
+  height: 6.875rem;
   background-color: #585858;
 }
 
 .my-categories-list {
   display: flex;
   position: relative;
-  left: 598px;
-  padding-right: 598px;
 }
 
 </style>

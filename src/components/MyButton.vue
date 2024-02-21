@@ -27,6 +27,6 @@ export default {
   button
   {
     width: 100%;
-    height: 50px;
+    height: 3.125rem;
   }
 </style>

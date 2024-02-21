@@ -63,7 +63,7 @@ export default {
   display: inline-flex;
   cursor: pointer;
   width: 100%;
-  height: 50px;
+  height: 3.125rem;
   justify-content: center;
   align-content: center;
 }
@@ -73,7 +73,7 @@ export default {
 .file-select label{
   width: 100%;
   height: 100%;
-  padding-top: 10px;  
+  padding-top: .625rem;  
 }
 /* Estilos opcionales para el componente */
 </style>

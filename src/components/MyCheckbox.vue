@@ -65,6 +65,6 @@ export default {
 </script>
 <style scoped>
   label{
-    padding-left: 10px;
+    padding-left: .625rem;
   }
 </style>
