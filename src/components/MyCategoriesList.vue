@@ -61,7 +61,7 @@ export default {
     });
 
     const handleCategoryClick = (index) => {
-      scrollIntoView(index);
+      scrollIntoView(index,'instant');
       activeCategoryIndex.value = index;
       emit('categorySelected', props.categories[index], index);
     };

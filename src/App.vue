@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-5">
     <h1 class="mb-4 text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" /></h1>
-    <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged">
+    <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" >
       <template v-slot:tabContent0> <!-- Configuration -->
         <MyCard>
           <p>Selecciona qué configuración deseas exportar:</p>
@@ -18,13 +18,6 @@
         <MySelect :options="supermercados" v-model="supermercado" selectName="supermercado" @select="handleSelect" />
         <MyInput v-model="nuevoProducto" :placeholder="'Añade elementos aquí'" :autofocus="true" />
         <MyButton text="Añadir" @click="handleAddClick" />
-        <MyModal 
-          ref="myModalRef"
-          :title="`Cambiar «${categoria?.text}»`" 
-          message="Introduzca un nuevo nombre para la categoría" 
-          :value="inputText"
-          @inputModalChange="handleInputModalChange"
-        />
       </template>    
       
       <template v-slot:tabContent2> <!-- orderBy name -->
@@ -71,7 +64,6 @@ import MyCard from './components/MyCard.vue';
 import MyCategoriesList from './components/MyCategoriesList.vue';
 import MyCheckbox from './components/MyCheckbox.vue';
 import MyTab from './components/MyTab.vue';
-import MyModal from './components/MyModal.vue';
 import MyInput from './components/MyInput.vue';
 import MyButton from './components/MyButton.vue';
 import MySelect from './components/MySelect.vue';
@@ -79,7 +71,7 @@ import MyProductList from './components/MyProductList.vue';
 import MyImageLoader from './components/MyImageLoader.vue';
 import MyFileReader from './components/MyFile.vue';
 import MyModalSlot from './components/MyModalSlot.vue';
-import { ref } from 'vue';
+import { ref, createApp } from 'vue';
 import Swal from 'sweetalert2';
 /**logos **/
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData'];
@@ -133,7 +125,6 @@ export default {
     MyFileReader,
     MyImageLoader,
     MyInput,
-    MyModal,
     MyModalSlot,
     MyProductList,
     MySelect,
@@ -154,7 +145,9 @@ export default {
     }
   },
   methods:{
-    findIndex(product){return this.productsData.findIndex(item => item === product)},
+    findIndex(what,where){return where.findIndex(item => item === what)},
+    findProductIndex(product){this.findIndex(product,this.productsData)},
+    findCategoryIndex(category){this.findIndex(category,this.categoriesData)},
     setAndSave(where,what)
     {
       if(where==LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS]) this.categoriesData=what
@@ -172,7 +165,22 @@ export default {
       downloadJSON({name:'Hungry!',categorias:this.categoriesData,productos:this.productsData})
     },
     handleEditarProducto(){
-      console.log(this.productoSeleccionado.id)
+      const vm = createApp(MyCategoriesList, {
+        categories: this.categoriesData // Pasar las propiedades necesarias al componente
+      }).mount(document.createElement('div')); // Montar el componente Vue en un div creado dinámicamente
+      const htmlContent = vm.$el.outerHTML; 
+      Swal.fire({
+        title: 'Seleccionar categoría',
+        html: htmlContent,
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Acción a realizar si se confirma el SweetAlert2
+          // this.handleCategorySelectedEditProduct(vm.$props.selectedCategory); // Llama a la función con la categoría seleccionada
+        }
+      });
     },
     handleEliminarProducto(){
       Swal.fire({
@@ -181,10 +189,14 @@ export default {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí',
-        cancelButtonText: 'No'
+        cancelButtonText: 'No',
+        customClass: {
+          cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
+        }
       }).then((result) => {
         if (result.isConfirmed) {
-          let index=this.findIndex(this.productoSeleccionado)
+          let index=this.findProductIndex(this.productoSeleccionado)
           this.productsData.splice(index, 1)
           localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData)
           this.productoSeleccionado=null;
@@ -195,17 +207,35 @@ export default {
     },
     handleShoplistClick(product)
     {
-      let index=this.findIndex(product)
+      let index=this.findProductIndex(product)
       this.productsData[index].done=!this.productsData[index].done
     },
     handleClickProduct(product){
-      let index=this.findIndex(product)
+      let index=this.findProductIndex(product)
       this.productsData[index].selected=!this.productsData[index].selected
       this.productsData[index].done=false
     },
     handeLongClickProduct(product){
       this.productoSeleccionado=product;
-      this.$refs.myModalSlotRef.openModal();
+      Swal.fire({
+        title: product.text,
+        text: '¿Qué desea hacer?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Editar Producto',
+        cancelButtonText: 'Eliminar Producto',
+        customClass: {
+          confirmButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
+          cancelButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.handleEditarProducto()
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          this.handleEliminarProducto()
+        }
+      });
+
     },
     handleTabHeightChanged(data){
       this.alturaDisponible=data;
@@ -247,18 +277,31 @@ export default {
         })
         return false;
     },
-    handleInputModalChange(newText) {
-      this.categoriesData[this.id_categoria].text = newText;
-      localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], this.categoriesData);
-    },
     handleCategorySelected(category,index) {
       this.categoria = category;
       this.id_categoria= index;
       this.nuevoProducto = '';
     },
-    handleCategoryLongClick(){
-      this.inputText=this.categoria.text;
-      this.$refs.myModalRef.openModal();
+    handleCategoryLongClick() {
+      Swal.fire({
+        title: `Cambiar «${this.categoria?.text}»`,
+        text: 'Introduzca un nuevo nombre para la categoría',
+        input: 'text',
+        inputValue: this.categoria.text,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar cambios',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-info' // Clase CSS para el botón de cancelación (No)
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const newText = result.value;
+          this.categoriesData[this.id_categoria].text = newText;
+          localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], this.categoriesData);
+        }
+      });
     },
     handleAddClick(){
       if (this.nuevoProducto==='')
