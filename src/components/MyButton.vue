@@ -1,6 +1,6 @@
 <template>
   <div class="my-button">
-    <button class="btn btn-success" @click="submit">{{ text }}</button>
+    <button :class="['btn', `btn-${btn}`]" @click="submit">{{ text }}</button>
   </div>
 </template>
 
@@ -11,6 +11,10 @@ export default {
     text: {
       type: String,
       required: true
+    },
+    btn:{
+      type:String,
+      default: "success"
     }
   },
   methods: {
@@ -27,6 +31,6 @@ export default {
   button
   {
     width: 100%;
-    height: 50px;
+    height: 3.125rem;
   }
 </style>

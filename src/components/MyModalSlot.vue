@@ -2,66 +2,29 @@
   <div class="modal" v-show="visible" :style="{ display: visible ? 'block' : 'none' }">
     <div class="modal-content">
       <div class="d-flex cabecera-modal">
-        <h2>{{ title }}</h2>
         <span class="close" @click="closeModal">&times;</span>
       </div>
-      <p>{{ message }}</p>
-      <input type="text" ref="inputText" name="inputText" id="inputText" v-model="inputText" @keydown.enter="handleEnterKey">
-      <button @click="handleButtonClick">Guardar cambios</button>
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'MyModal',
-  props: {
-    title: {
-      type: String,
-      default: 'Modal Title'
-    },
-    message: {
-      type: String,
-      default: 'Modal Message'
-    },
-    value: {
-      type: String,
-      default: ''
-    }
-  },
+  name: 'MyModalSlot',
   data() {
     return {
-      inputText: this.value,
       visible: false
     };
-  },
-  watch: {
-    value(newValue) {
-      this.inputText = newValue;
-    }
   },
   methods: {
     openModal() {
       this.visible = true;
-      setTimeout(this.inputFocus,50);
-    },
-    inputFocus(){
-      this.$refs.inputText.focus();
     },
     closeModal() {
       this.visible = false;
     },
-    handleButtonClick() {
-      this.$emit('inputModalChange', this.inputText);
-      this.closeModal();
-    },
-    handleEnterKey(event) {
-      if (event.key === 'Enter') {
-        this.handleButtonClick();
-      }
-    },
   },
-  emits: ['inputModalChange'],
 };
 </script>
 
@@ -81,7 +44,7 @@ export default {
   align-items: center;
 }
 .cabecera-modal{
-  justify-content: space-between;
+  justify-content: end;
 }
 .modal-content {
   background-color: #7e7d7d;

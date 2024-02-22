@@ -50,7 +50,8 @@
                 handleMouseDown,
                 handleMouseUp
             };
-        }
+        },
+        emits:['categoryClick','categoryLongClick']
     };
 </script>
 
@@ -58,15 +59,15 @@
 .my-category-container
 {
     background-color: #bcb9b9;
-    padding: 10px;
-    margin-inline-end: 2px;
+    padding: .625rem;
+    margin-inline-end: .125rem;
 }
 .my-category {
     cursor: pointer;
-    padding: 20px;
-    border: 1px solid black;
-    height: 80px;
-    width: 80px;
+    padding: 1.25rem;
+    border: .0625rem solid black;
+    height: 5rem;
+    width: 5rem;
     position: relative;
     overflow: visible; /* Ocultar el contenido que desborde */}
 .category-title
@@ -78,8 +79,8 @@
     transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.5); /* Color de fondo del tooltip */
     color: #fff; /* Color de texto del tooltip */
-    padding: 10px; /* Espaciado interno del tooltip */
-    max-width: 300px; /* Ancho máximo del tooltip */
+    padding: .625rem; /* Espaciado interno del tooltip */
+    max-width: 18.75rem; /* Ancho máximo del tooltip */
     z-index: 1000; /* Z-index para que esté por encima de otros elementos */
     white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
     overflow:visible ; /* Ocultar el texto que desborde */
@@ -91,7 +92,7 @@
 }
 .selected {
   /* Estilos cuando está seleccionado */
-  box-shadow: 0 0 5px #000;
+  box-shadow: 0 0 .3125rem #000;
   background-color: #fff; /* Borde distintivo */
 }
 </style>

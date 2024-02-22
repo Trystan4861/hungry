@@ -97,7 +97,7 @@ export default {
     overflow-y: auto; /* Permite el desplazamiento si el contenido excede el alto disponible */
   }
   li.nav-item:first-child {
-    max-width: 60px;
+    max-width: 3.75rem;
   }
   .nav-tabs{
     --bs-nav-tabs-border-color: black;
@@ -127,7 +127,7 @@ export default {
     padding: 0;
   }
   .logo{
-    width: 50px;
+    width: 3.125rem;
   }
 
 </style>
