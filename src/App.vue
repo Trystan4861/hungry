@@ -50,57 +50,27 @@
       </template>
     </MyTab>
   </div>
-  <MyModalSlot ref="myModalSlotRef">
-    <h1 class="text-center">{{ productoSeleccionado?.text }}</h1>
-    <MyButton :text="'Editar Producto'" @click="handleEditarProducto" />
-    <br>
-    <MyButton  class="mt-15" :btn="'danger'" :text="'Eliminar Producto'" @click="handleEliminarProducto" />
-  </MyModalSlot>
 </template>
 
 <script>
-import { localStorageService } from './localStorageService.js';
-import MyCard from './components/MyCard.vue';
-import MyCategoriesList from './components/MyCategoriesList.vue';
-import MyCheckbox from './components/MyCheckbox.vue';
-import MyTab from './components/MyTab.vue';
-import MyInput from './components/MyInput.vue';
-import MyButton from './components/MyButton.vue';
-import MySelect from './components/MySelect.vue';
-import MyProductList from './components/MyProductList.vue';
-import MyImageLoader from './components/MyImageLoader.vue';
-import MyFileReader from './components/MyFile.vue';
-import MyModalSlot from './components/MyModalSlot.vue';
-import { ref, createApp } from 'vue';
-import Swal from 'sweetalert2';
-/**logos **/
+import { localStorageService }  from './localStorageService.js';
+import MyCard                   from './components/MyCard.vue';
+import MyCategoriesList         from './components/MyCategoriesList.vue';
+import MyCheckbox               from './components/MyCheckbox.vue';
+import MyTab                    from './components/MyTab.vue';
+import MyInput                  from './components/MyInput.vue';
+import MyButton                 from './components/MyButton.vue';
+import MySelect                 from './components/MySelect.vue';
+import MyProductList            from './components/MyProductList.vue';
+import MyImageLoader            from './components/MyImageLoader.vue';
+import MyFileReader             from './components/MyFile.vue';
+import { ref, createApp }       from 'vue';
+import { useStore }             from 'vuex';
+import Swal                     from 'sweetalert2';
+
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData'];
 const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
-
-const initialData = [
-  [
-    {id:0,text:'Categoría 1', bgColor:'#d83c3d'},
-    {id:1,text:'Categoría 2', bgColor:'#d8993c'},
-    {id:2,text:'Categoría 3', bgColor:'#b9d83c'},
-    {id:3,text:'Categoría 4', bgColor:'#5bd83c'},
-    {id:4,text:'Categoría 5', bgColor:'#3dd87a'},
-    {id:5,text:'Categoría 6', bgColor:'#47ffff'},
-    {id:6,text:'Categoría 7', bgColor:'#3b7ad7'},
-    {id:7,text:'Categoría 8', bgColor:'#5b3cd8'},
-    {id:8,text:'Categoría 9', bgColor:'#b83cd8'},
-    {id:9,text:'Categoría 10', bgColor:'#d83ba4'},
-    {id:10,text:'Categoría 11', bgColor:'#6f1918'},
-    {id:11,text:'Categoría 12', bgColor:'#704c1a'},
-    {id:12,text:'Categoría 13', bgColor:'#5d6f19'},
-    {id:13,text:'Categoría 14', bgColor:'#2b6f18'},
-    {id:14,text:'Categoría 15', bgColor:'#1f8448'},
-    {id:15,text:'Categoría 16', bgColor:'#196f70'},
-    {id:16,text:'Categoría 17', bgColor:'#183c6e'},
-    {id:17,text:'Categoría 18', bgColor:'#2c186f'},
-    {id:18,text:'Categoría 19', bgColor:'#5e186e'},
-    {id:19,text:'Categoría 20', bgColor:'#6e1952'},
-  ],[]];
 
 function downloadJSON(obj, filename = 'hungry.json') {
   const json = JSON.stringify(obj); // Convertir el objeto a formato JSON
@@ -125,7 +95,6 @@ export default {
     MyFileReader,
     MyImageLoader,
     MyInput,
-    MyModalSlot,
     MyProductList,
     MySelect,
     MyTab,
@@ -133,13 +102,13 @@ export default {
   data(){
     return{
       categoria:this.categoriesData[0].text,
-      id_categoria:0,
+      id_categoria:this.categoriesData[0].id,
       id_supermercado:-1,
       inputText:'',
       nuevoProducto:'', // Inicializa nuevoProducto con el valor deseado
       supermercado:'',
       configs2Export:[],
-      defaultTabActive:2,
+      defaultTabActive:1,
       alturaDisponible:0,
       productoSeleccionado:{}
     }
@@ -169,6 +138,7 @@ export default {
         categories: this.categoriesData // Pasar las propiedades necesarias al componente
       }).mount(document.createElement('div')); // Montar el componente Vue en un div creado dinámicamente
       const htmlContent = vm.$el.outerHTML; 
+      console.log(htmlContent);
       Swal.fire({
         title: 'Seleccionar categoría',
         html: htmlContent,
@@ -241,8 +211,7 @@ export default {
       this.alturaDisponible=data;
     },
     handleUpdateConfigCheckedValues(data){
-      console.log(data);
-    },
+      console.log(data);    },
     handleConfigLastCheckedDeletionAttempt(){
         Swal.fire({
           icon:'error',
@@ -335,15 +304,15 @@ export default {
     }
   },
   setup() {
-      const CONFIG_NAMES = ['Categorías','Productos'];
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
-      const tabsData= ref([
-        { logo:'config.svg'},
-        { logo:'add.svg'},
-        { logo:'a2z.svg'},
-        { logo:'categorias.svg'},
-        { logo:'cart.svg'},
-      ]);
+
+      const store=useStore();
+      const storeGet=store.getters;
+
+      const initialData=[storeGet.getCategorias,[]]
+      const CONFIG_NAMES = storeGet.getConfigNames();
+      const tabsData= storeGet.getTabs();
+
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
       const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
    
@@ -359,10 +328,15 @@ export default {
         {text:'La Carmela', logo:'super_carmela.svg'},
       ])
       //const selectedSupermercado = ref('');
-      return {tabsData, categoriesData,supermercados, productsData,CONFIG_NAMES}
+      return {
+        CONFIG_NAMES,
+        tabsData, 
+        productsData,
+        categoriesData,
+        supermercados, 
+      }
   },
   mounted(){
-    //this.categoriesData.value = getCategoriesDataFromLocalStorage();
     setTimeout(this.nuevoProductoFocus,500);
   }
 };
@@ -409,5 +383,4 @@ html,body
 .logo{
   width:60px;
 }
-/* Estilos globales de la aplicación */
 </style>

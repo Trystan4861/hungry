@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <input ref="myInput" type="text" v-model="inputValue" :placeholder="placeholder">
+    <input ref="myInput" type="text" id="input" v-model="inputValue" :placeholder="placeholder">
   </div>
 </template>
 
