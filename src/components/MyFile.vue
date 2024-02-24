@@ -10,75 +10,47 @@
 export default {
   name: 'MyFileReader',
   props:{
-    text:{
-      type: String,
-      default: 'Seleccionar archivo'
-    },
-    maxFileSize: {
-      type: Number,
-      default: null
-    },
-    fileName: {
-      validator: (value)=>value instanceof RegExp || typeof value === 'string',
-      default: () => /^.*hungry.*\.json$/i
-    },
-    accept:{
-      type: String,
-      default: "*.*"
-    }
+    text:{ type: String, default: 'Seleccionar archivo' },
+    maxFileSize: { type: Number, default: null },
+    fileName: { validator: (value)=>value instanceof RegExp || typeof value === 'string', default: () => /^.*hungry.*\.json$/i },
+    accept:{ type: String, default: "*.*" },
+    forceFileName:{ type: Boolean, default: false }
   },
   setup(props, {emit}) {
+    const readFile = (inputFile) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) =>{
+        try {  
+          const json = JSON.parse(event.target.result); 
+          resolve(json)
+        } catch (e) {  
+          reject("El archivo a importar debe ser un archivo de configuración de «Hungry!» válido")
+        }
+      }
+      reader.onerror = (event) =>reject(event.target.error);
+      reader.readAsText(inputFile);
+    });
+
     const handleFileChange = async (event) => {
       const regex = typeof props.fileName === 'string' ? new RegExp(props.fileName, 'i') : props.fileName;
-      if (props.fileName !== '' && !regex.test(event.target.files[0].name)) return emit('fileReadError',`Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`)
+      if (props.forceFileName && props.fileName !== '' && !regex.test(event.target.files[0].name)) return emit('fileReadError',`Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`)
       if (props.maxFileSize!=null) if (event.target.files[0].size>props.maxFileSize)  return emit('fileReadError',`Archivo demasiado grande,<br>tamaño máximo ${props.maxFileSize/1024}KB`)
       try {
         emit('fileReaded', await readFile(event.target.files[0]));
-        event.target.value='';
       } catch (err) {
         emit('fileReadError',err.message);
       }
+      event.target.value='';
     };
 
-    const readFile = (inputFile) => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (event) =>{
-        try {  
-            const json = JSON.parse(event.target.result); 
-            resolve(json)
-          } catch (e) {  
-            reject("El archivo a importar debe ser un archivo de configuración de Hungry! válido")
-          }
-        }
-        reader.onerror = (event) =>reject(event.target.error);
-        reader.readAsText(inputFile);
-      });
-
-    return {
-      handleFileChange,
-    };
+    return { handleFileChange, };
   },
   emits: ['fileReaded','fileReadError']
 };
 </script>
 
 <style>
-.file-select{
-  position: relative;
-  display: inline-flex;
-  cursor: pointer;
-  width: 100%;
-  height: 3.125rem;
-  justify-content: center;
-  align-content: center;
-}
-.file-select input[type="file"] {
-  display: none;
-}
-.file-select label{
-  width: 100%;
-  height: 100%;
-  padding-top: .625rem;  
-}
-/* Estilos opcionales para el componente */
+.file-select{ position: relative; display: inline-flex; cursor: pointer; width: 100%; height: 3.125rem; justify-content: center; }
+input[type="file"] {display: none;}
+label{ width: 100%; height: 100%; padding-top: .625rem;}
 </style>

@@ -21,30 +21,14 @@ export default {
     MyProduct
   },
   props: {
-    productList: {
-      type: Array,
-      required: true
-    },
-    orderBy: {
-      type: String,
-      default: 'name' // Valor por defecto: ordenar por nombre
-    },
-    selected:{
-      type: Boolean,
-      default: false
-    },
-    canBeDone:{
-      type: Boolean,
-      default: false
-    }
+    productList:  { type: Array,    required: true  },
+    orderBy:      { type: String,   default: 'name' },
+    selected:     { type: Boolean,  default: false  },
+    canBeDone:    { type: Boolean,  default: false  }
   },
   methods:{
-    handleClick(product){
-      this.$emit('click:product',product);
-    },
-    handleLongClick(product){
-      this.$emit('longClick:product',product);
-    }
+    handleClick(product){this.$emit('click:product',product)},
+    handleLongClick(product){ this.$emit('longClick:product',product)}
   },
   computed: {
     sortedProductList() {
@@ -69,6 +53,7 @@ export default {
   emits:['click:product','longClick:product']
 };
 </script>
+
 <style scoped>
 .my-product-list {
   margin-top: 1.25rem;

@@ -2,31 +2,10 @@ import { createStore } from 'vuex';
 
 export default createStore({
   state: {
-    defaultTabActive:1,
-    alturaDisponible:0,
-    varIDCategoria:-1,
-    categorias: [
-        {id:0,text:'Categoría 1', bgColor:'#d83c3d'},
-        {id:1,text:'Categoría 2', bgColor:'#d8993c'},
-        {id:2,text:'Categoría 3', bgColor:'#b9d83c'},
-        {id:3,text:'Categoría 4', bgColor:'#5bd83c'},
-        {id:4,text:'Categoría 5', bgColor:'#3dd87a'},
-        {id:5,text:'Categoría 6', bgColor:'#47ffff'},
-        {id:6,text:'Categoría 7', bgColor:'#3b7ad7'},
-        {id:7,text:'Categoría 8', bgColor:'#5b3cd8'},
-        {id:8,text:'Categoría 9', bgColor:'#b83cd8'},
-        {id:9,text:'Categoría 10', bgColor:'#d83ba4'},
-        {id:10,text:'Categoría 11', bgColor:'#6f1918'},
-        {id:11,text:'Categoría 12', bgColor:'#704c1a'},
-        {id:12,text:'Categoría 13', bgColor:'#5d6f19'},
-        {id:13,text:'Categoría 14', bgColor:'#2b6f18'},
-        {id:14,text:'Categoría 15', bgColor:'#1f8448'},
-        {id:15,text:'Categoría 16', bgColor:'#196f70'},
-        {id:16,text:'Categoría 17', bgColor:'#183c6e'},
-        {id:17,text:'Categoría 18', bgColor:'#2c186f'},
-        {id:18,text:'Categoría 19', bgColor:'#5e186e'},
-        {id:19,text:'Categoría 20', bgColor:'#6e1952'},
-      ],
+    appStatic:{
+      alturaDisponible:0,
+      varIDCategoria:-1,
+      localStorageKeys:['categoriesData','productsData'],
       tabs: [
         { logo:'config.svg'},
         { logo:'add.svg'},
@@ -37,31 +16,66 @@ export default createStore({
       configNames:[
         'Categorías',
         'Productos'
-      ]
+      ],
+    },
+    configuracion:{
+      defaultTabActive:1,
+      categorias: [
+        {id: 0, text:'Categoría 1',  bgColor:'#d83c3d', visible:true},
+        {id: 1, text:'Categoría 2',  bgColor:'#d8993c', visible:true},
+        {id: 2, text:'Categoría 3',  bgColor:'#b9d83c', visible:true},
+        {id: 3, text:'Categoría 4',  bgColor:'#5bd83c', visible:true},
+        {id: 4, text:'Categoría 5',  bgColor:'#3dd87a', visible:true},
+        {id: 5, text:'Categoría 6',  bgColor:'#47ffff', visible:true},
+        {id: 6, text:'Categoría 7',  bgColor:'#3b7ad7', visible:true},
+        {id: 7, text:'Categoría 8',  bgColor:'#5b3cd8', visible:true},
+        {id: 8, text:'Categoría 9',  bgColor:'#b83cd8', visible:true},
+        {id: 9, text:'Categoría 10', bgColor:'#d83ba4', visible:true},
+        {id:10, text:'Categoría 11', bgColor:'#6f1918', visible:true},
+        {id:11, text:'Categoría 12', bgColor:'#704c1a', visible:true},
+        {id:12, text:'Categoría 13', bgColor:'#5d6f19', visible:true},
+        {id:13, text:'Categoría 14', bgColor:'#2b6f18', visible:true},
+        {id:14, text:'Categoría 15', bgColor:'#1f8448', visible:true},
+        {id:15, text:'Categoría 16', bgColor:'#196f70', visible:true},
+        {id:16, text:'Categoría 17', bgColor:'#183c6e', visible:true},
+        {id:17, text:'Categoría 18', bgColor:'#2c186f', visible:true},
+        {id:18, text:'Categoría 19', bgColor:'#5e186e', visible:true},
+        {id:19, text:'Categoría 20', bgColor:'#6e1952', visible:true},
+      ],
+      productos:[]
+    },
   },
   mutations: {
-    setCategorias(state, categorias){state.categorias = categorias},
+    setCategories(state, categorias){state.configuracion.categorias = categorias},
+    setProducts(state, productos){state.configuracion.productos = productos},
     updateCategoria(state, payload){
       const {id, text, bgColor} = payload;
-      const categoria = state.categorias.find(categoria => categoria.id === id);
-      if(categoria){
-        categoria.text = text;
-        categoria.bgColor = bgColor;
+      const index = state.configuracion.categorias.findIndex(categoria => categoria.id === id);
+      if(!index<0){
+        state.configuracion.categorias[index].text = text;
+        state.configuracion.categorias[index].bgColor = bgColor;
       }
     },
-    setDefaultTabActive(state,defaultTabActive){state.defaultTabActive = defaultTabActive},
-    setAlturaDisponible(state, alturaDisponible){state.alturaDisponible = alturaDisponible},
-    setVarIDCategoria(state, varIDCategoria){state.varIDCategoria = varIDCategoria},
+    setDefaultTabActive(state,defaultTabActive){state.configuracion.defaultTabActive = defaultTabActive},
+    setConfiguracion(state, configuracion){state.configuracion = configuracion},
   },
   actions: {
+    setConfiguracion    ({ commit }, configuracion    ) {commit('setConfiguracion',     configuracion)},
+    setProductos        ({ commit }, productos        ) {commit('setProducts',          productos)},
+    setCategorias       ({ commit }, productos        ) {commit('setCategories',        productos)},
+    setDefaultTabActive ({ commit }, defaultTabActive ) {commit('setDefaultTabActive',  defaultTabActive)},
   },
   getters: {
-    getCategoriaFromID: (state)=>(id)=>state.categorias.find(categoria => categoria.id === id),
-    getDefaultTabActive:(state)=>(  )=>state.defaultTabActive,
-    getCategorias:      (state)=>(  )=>state.categorias,
-    getAlturaDisponible:(state)=>(  )=>state.alturaDisponible,
-    getTabs:            (state)=>(  )=>state.tabs,
-    getConfigNames:     (state)=>(  )=>state.configNames,
-    getVarIDCategoria:  (state)=>(  )=>state.varIDCategoria,
+    getConfiguracion:   (state)=>(  )=>state.configuracion,
+    getCategorias:      (state)=>(  )=>state.configuracion.categorias,
+    getCategoriaFromID: (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
+    getDefaultTabActive:(state)=>(  )=>state.configuracion.defaultTabActive,
+    getProductos:       (state)=>(  )=>state.configuracion.productos,
+
+    getAlturaDisponible:(state)=>(  )=>state.appStatic.alturaDisponible,
+    getTabs:            (state)=>(  )=>state.appStatic.tabs,
+    getConfigNames:     (state)=>(  )=>state.appStatic.configNames,
+    getVarIDCategoria:  (state)=>(  )=>state.appStatic.varIDCategoria,
+    getLocalStorageKeys:(state)=>(  )=>state.appStatic.localStorageKeys,
   }
-});
+                    });

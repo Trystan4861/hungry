@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <input ref="myInput" type="text" id="input" v-model="inputValue" :placeholder="placeholder">
+    <input ref="myInput" type="text" :id="inputID" v-model="inputValue" :placeholder="placeholder">
   </div>
 </template>
 
@@ -23,7 +23,8 @@ export default {
   },
   data() {
     return {
-      inputValue: this.modelValue
+      inputValue: this.modelValue,
+      inputID: `input-${Math.random().toString(36).slice(2)}`,
     }
   },
   watch: {
@@ -61,4 +62,6 @@ input {
   height: 3.125rem;
   border: .125rem solid sandybrown;
 }
+input:focus-visible { outline: 0; }
+
 </style>

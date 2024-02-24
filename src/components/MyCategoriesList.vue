@@ -29,51 +29,52 @@ export default {
     categories: {
       type: Array,
       required: true
-    }
+    },
   },
   emits: ['categorySelected', 'categoryLongClick'],
   setup(props, { emit }) {
     const activeCategoryIndex = ref(null);
+    const activeCategory = ref({})
     const categoriesState = ref({});
     categoriesState.value[0] = true;
     activeCategoryIndex.value = 0;
     const containerRef = ref(null);
-    const observer=ref(null);
+    const observer = ref(null);
 
-    const updateScreenSize = () => {
-      updateCategoryListStyle();
+    const seleccionarCategoria = (id_categoria) => {
+      let index=props.categories.findIndex(categoria => categoria.id === id_categoria);
+      activeCategory.value=props.categories[index]
+      activeCategoryIndex.value = index;
     };
+    const centrarCategoriaActiva=()=>{ scrollIntoView(activeCategoryIndex.value,'instant') }
+    const updateScreenSize = () => { updateCategoryListStyle() };
     onMounted(() => {
       window.addEventListener('resize', updateScreenSize);
-      observer.value = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            updateScreenSize();
-          }
-        });
-      }, {});
+      observer.value = new IntersectionObserver((entries) => {entries.forEach(entry => { if (entry.isIntersecting) updateScreenSize() })}, {});
       observer.value.observe(containerRef.value);
     });
-    // Eliminar el event listener cuando se desmonta el componente
     onBeforeUnmount(() => {
       window.removeEventListener('resize', updateScreenSize);
       if (observer.value) observer.value.disconnect();
     });
 
     const handleCategoryClick = (index) => {
-      scrollIntoView(index,'instant');
       activeCategoryIndex.value = index;
+      scrollIntoView(activeCategoryIndex.value,'instant')
       emit('categorySelected', props.categories[index], index);
     };
     const handleCategoryLongClick = (index) => {
       activeCategoryIndex.value = index;
+      scrollIntoView(activeCategoryIndex.value,'instant')
       emit('categoryLongClick', props.categories[index]);
-      scrollIntoView(index);
     };
 
     watch(activeCategoryIndex, (newValue, oldValue) => {
       if (oldValue !== null) categoriesState.value[oldValue] = false;
-      if (newValue !== null) categoriesState.value[newValue] = true;
+      if (newValue !== null) {
+        categoriesState.value[newValue] = true;
+        activeCategory.value = props.categories[newValue]
+      }
     });
 
     const handleScroll = () => {
@@ -103,9 +104,8 @@ export default {
     };
 
     const scrollIntoView = (index,behavior='smooth') => {
-      const container=containerRef.value;
-      if (!container)
-        return false;
+      const container = containerRef.value;
+      if (!container) return false;
       const categoryElement = container.querySelectorAll('.my-category')[index];
       categoryElement.scrollIntoView({
         behavior,
@@ -115,9 +115,9 @@ export default {
     };
     const categoryListStyle = ref({});
     const updateCategoryListStyle = () => {
-      let index=activeCategoryIndex.value;
       const container = containerRef.value;
       if (!container) return;
+      let index = activeCategoryIndex.value;
       const category = container.querySelector('.my-category');
       const categorieWidth = category.clientWidth;
       const containerWidth = container.clientWidth;
@@ -126,17 +126,21 @@ export default {
         left: `${paddingLeftRight}px`,
         paddingRight: `${paddingLeftRight}px`
       };
-      setTimeout(scrollIntoView,1,index,'instant'); //para que cuando se cambia de tamaño la pantalla no se autoseleccione una categoría nueva
+      if (!index<0)
+        setTimeout(centrarCategoriaActiva,1); //para que cuando se cambia de tamaño la pantalla no se autoseleccione una categoría nueva
     };
 
     return {
       activeCategoryIndex,
+      activeCategory,
       categoriesState,
       handleCategoryClick,
       handleCategoryLongClick,
       containerRef,
       handleScroll,
-      categoryListStyle
+      categoryListStyle,
+      seleccionarCategoria,
+      centrarCategoriaActiva
     };
   }
 };

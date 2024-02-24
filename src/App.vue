@@ -3,14 +3,9 @@
     <h1 class="mb-4 text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" /></h1>
     <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" >
       <template v-slot:tabContent0> <!-- Configuration -->
-        <MyCard>
-          <p>Selecciona qué configuración deseas exportar:</p>
-          <MyCheckbox v-for="index in [0,1]" :key="index" :value="index" :label="CONFIG_NAMES[index]" v-model:checkedValues="configs2Export" :group="'configs2Export'" @lastCheckedDeletionAttempt="handleConfigLastCheckedDeletionAttempt" @update:checkedValues="handleUpdateConfigCheckedValues" />
-          <br>
-          <MyButton :text="'Exportar Configuración Seleccionada'" @click="exportConfig" />
-        </MyCard>
-        <MyCard :borderStyle="'rounded-bottom'">
-          <MyFileReader :text="'Importar Configuración'" @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :maxFileSize="20*1024" :accept="'application/json'"/>
+        <MyCard :min-height="alturaDisponible">
+          <SlotConfigurationExport :configNames="CONFIG_NAMES" />
+          <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
         </MyCard>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
@@ -50,40 +45,33 @@
       </template>
     </MyTab>
   </div>
+  <div id="anchorEditarProducto" class="d-none">
+    <div id="divEditarProducto">
+      <MyCategoriesList ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado.id_categoria" />
+      <MyInput v-model="productoAEditar" :placeholder="productoAEditar" :autofocus="true" />
+    </div>
+  </div>  
 </template>
 
 <script>
 import { localStorageService }  from './localStorageService.js';
 import MyCard                   from './components/MyCard.vue';
 import MyCategoriesList         from './components/MyCategoriesList.vue';
-import MyCheckbox               from './components/MyCheckbox.vue';
 import MyTab                    from './components/MyTab.vue';
 import MyInput                  from './components/MyInput.vue';
 import MyButton                 from './components/MyButton.vue';
 import MySelect                 from './components/MySelect.vue';
 import MyProductList            from './components/MyProductList.vue';
 import MyImageLoader            from './components/MyImageLoader.vue';
-import MyFileReader             from './components/MyFile.vue';
-import { ref, createApp }       from 'vue';
+import { ref, watch }                  from 'vue';
 import { useStore }             from 'vuex';
 import Swal                     from 'sweetalert2';
+import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
+import SlotConfigurationImport  from './components/SlotConfigurationImport.vue';
 
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData'];
 const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
-
-function downloadJSON(obj, filename = 'hungry.json') {
-  const json = JSON.stringify(obj); // Convertir el objeto a formato JSON
-  const blob = new Blob([json], { type:'application/json'}); // Crear un objeto Blob con el contenido JSON
-  const link = document.createElement('a'); // Crear un enlace <a> para descargar el archivo
-  link.href = URL.createObjectURL(blob);
-  link.download = filename; // Establecer el nombre de archivo
-  link.style.display= 'none'; // Ocultar el enlace y agregarlo al cuerpo del documento
-  document.body.appendChild(link);
-  link.click(); // Simular un clic en el enlace para iniciar la descarga
-  document.body.removeChild(link); // Limpiar el enlace y el objeto Blob
-  URL.revokeObjectURL(link.href);
-}
 
 export default {
   name:'App',
@@ -91,62 +79,84 @@ export default {
     MyButton,
     MyCard,
     MyCategoriesList,
-    MyCheckbox,
-    MyFileReader,
     MyImageLoader,
     MyInput,
     MyProductList,
     MySelect,
     MyTab,
+    SlotConfigurationExport,
+    SlotConfigurationImport,
   },
   data(){
     return{
-      categoria:this.categoriesData[0].text,
-      id_categoria:this.categoriesData[0].id,
+      categoria:{},
+      id_categoria:'',
       id_supermercado:-1,
       inputText:'',
       nuevoProducto:'', // Inicializa nuevoProducto con el valor deseado
+      productoAEditar:'',
       supermercado:'',
       configs2Export:[],
-      defaultTabActive:1,
       alturaDisponible:0,
       productoSeleccionado:{}
     }
   },
   methods:{
     findIndex(what,where){return where.findIndex(item => item === what)},
-    findProductIndex(product){this.findIndex(product,this.productsData)},
-    findCategoryIndex(category){this.findIndex(category,this.categoriesData)},
+    findProductIndex(product){return this.findIndex(product,this.productsData)},
+    findCategoryIndex(category){return this.findIndex(category,this.categoriesData)},
     setAndSave(where,what)
     {
+      if (typeof where==='number') where=LOCAL_STORAGE_KEYS[where]
       if(where==LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS]) this.categoriesData=what
       else if(where==LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS]) this.productsData=what
       localStorageService.setItem(where, what);
     },
-    exportConfig(){
-      if (this.configs2Export.length==0)
-        return Swal.fire({
-          icon:'error',
-          title:'Error',
-          html:"Debe seleccionar al menos<br>una configuración a exportar",
-          confirmButtonText:'Aceptar'
-        })
-      downloadJSON({name:'Hungry!',categorias:this.categoriesData,productos:this.productsData})
-    },
     handleEditarProducto(){
-      const vm = createApp(MyCategoriesList, {
-        categories: this.categoriesData // Pasar las propiedades necesarias al componente
-      }).mount(document.createElement('div')); // Montar el componente Vue en un div creado dinámicamente
-      const htmlContent = vm.$el.outerHTML; 
-      console.log(htmlContent);
+      let aux=document.getElementById("divEditarProducto");
+      this.productoAEditar=this.productoSeleccionado.text
       Swal.fire({
-        title: 'Seleccionar categoría',
-        html: htmlContent,
+        title: `Editar «${this.productoSeleccionado.text}»`,
+        html: '<div id="VueSweetAlert2"></div>',
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        willOpen:()=>{
+          this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria);
+          document.getElementById('VueSweetAlert2').appendChild(aux);
+        },
+        didOpen:()=>{
+          setTimeout(this.$refs.categoriesSliderRef.centrarCategoriaActiva,10);
+        },
+        willClose:()=>{
+          document.getElementById('anchorEditarProducto').appendChild(aux);
+        }
       }).then((result) => {
         if (result.isConfirmed) {
+          const areTheSame=(categoryA, categoryB)=>{
+            const keys1 = Object.keys(categoryA);
+            const keys2 = Object.keys(categoryB);
+            if (keys1.length !== keys2.length) return false;
+            for (let key of keys1) {
+              if (!(key in categoryB)) return false;
+              if (categoryA[key] !== categoryB[key]) return false;
+            }
+            return true;
+          }
+          let newData={
+            id:this.productoSeleccionado.id,
+            text:this.productoAEditar,
+            categoria:this.$refs.categoriesSliderRef.activeCategory,
+            id_categoria:this.$refs.categoriesSliderRef.activeCategory.id_categoria
+            }
+          if (!areTheSame(this.productoSeleccionado,newData))
+          {
+            console.log("son distintos")
+            console.log(this.productoAEditar)
+            this.productsData[this.productsData.findIndex(p=>p.id==this.productoSeleccionado.id)]=newData
+            localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData)
+          }
+           
           // Acción a realizar si se confirma el SweetAlert2
           // this.handleCategorySelectedEditProduct(vm.$props.selectedCategory); // Llama a la función con la categoría seleccionada
         }
@@ -182,7 +192,10 @@ export default {
     },
     handleClickProduct(product){
       let index=this.findProductIndex(product)
-      this.productsData[index].selected=!this.productsData[index].selected
+      if ('selected' in this.productsData[index])
+        this.productsData[index].selected=!this.productsData[index].selected
+      else
+        this.productsData[index].selected=true;
       this.productsData[index].done=false
     },
     handeLongClickProduct(product){
@@ -193,15 +206,17 @@ export default {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Editar Producto',
-        cancelButtonText: 'Eliminar Producto',
+        cancelButtonText: 'Cancelar',
         customClass: {
           confirmButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
-          cancelButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
-        }
+        },
+//        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+        showDenyButton: true, // Mostrar el tercer botón
+        denyButtonText: 'Eliminar Producto', // Texto del tercer botón
       }).then((result) => {
         if (result.isConfirmed) {
           this.handleEditarProducto()
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
+        } else if (result.isDenied) {
           this.handleEliminarProducto()
         }
       });
@@ -209,33 +224,6 @@ export default {
     },
     handleTabHeightChanged(data){
       this.alturaDisponible=data;
-    },
-    handleUpdateConfigCheckedValues(data){
-      console.log(data);    },
-    handleConfigLastCheckedDeletionAttempt(){
-        Swal.fire({
-          icon:'error',
-          title:'Error',
-          html:"Debe seleccionar al menos<br>una configuración a exportar",
-          confirmButtonText:'Aceptar'
-        })
-    },
-    handleFileReaded(data){
-      if (data.name!="Hungry!")
-        return Swal.fire({
-          icon:'error',
-          title:'Error',
-          html:"El archivo de configuración<br>no parece ser válido o está dañado",
-          confirmButtonText:'Aceptar'
-        })
-      if (data.categorias)  this.setAndSave(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], data.categorias);
-      if (data.productos) this.setAndSave(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], data.productos);
-        Swal.fire({
-          icon:'success',
-          title:'Atención',
-          html:"Archivo de configuración<br>importado correctamente",
-          confirmButtonText:'Aceptar'
-        })
     },
     handeFileReadError(error){
         Swal.fire({
@@ -251,12 +239,12 @@ export default {
       this.id_categoria= index;
       this.nuevoProducto = '';
     },
-    handleCategoryLongClick() {
+    handleCategoryLongClick(categoria) {
       Swal.fire({
-        title: `Cambiar «${this.categoria?.text}»`,
+        title: `Cambiar «${categoria?.text}»`,
         text: 'Introduzca un nuevo nombre para la categoría',
         input: 'text',
-        inputValue: this.categoria.text,
+        inputValue: categoria.text,
         showCancelButton: true,
         confirmButtonText: 'Guardar cambios',
         cancelButtonText: 'Cancelar',
@@ -267,7 +255,7 @@ export default {
       }).then((result) => {
         if (result.isConfirmed) {
           const newText = result.value;
-          this.categoriesData[this.id_categoria].text = newText;
+          this.categoriesData[categoria.id].text = newText;
           localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], this.categoriesData);
         }
       });
@@ -308,18 +296,81 @@ export default {
 
       const store=useStore();
       const storeGet=store.getters;
-
-      const initialData=[storeGet.getCategorias,[]]
+      const defaultTabActive=storeGet.getDefaultTabActive()
+      const initialData=[storeGet.getCategorias(),[]]
       const CONFIG_NAMES = storeGet.getConfigNames();
       const tabsData= storeGet.getTabs();
 
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
-      const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
-   
-      function getDataFromLocalStorage(index=0) {
-          const storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
-          return (storedData)?storedData:localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
+      const categoriesData = ref([]);
+      categoriesData.value=getDataFromLocalStorage(INDEX_CATEGORIAS);
+
+      if (typeof categoriesData.value[0]==='undefined')
+        categoriesData.value=initialData[0];
+      
+      function getDataFromLocalStorage(index = INDEX_CATEGORIAS) {
+          let storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
+          if (storedData)
+          {
+            if (index == INDEX_CATEGORIAS )
+            {
+              store.dispatch('setCategorias', storedData);
+              if (storedData.some(category => !Object.prototype.hasOwnProperty.call(category, 'id')))
+                  storedData = storedData.map((category, index) => ({ ...category, id: index }));
+            }
+            else if (index== INDEX_PRODUCTOS)
+            {
+              store.dispatch('setProductos', storedData);
+            }
+          }
+          return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
+      }
+      watch(categoriesData,(newData)=>{
+        localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData);
+        store.dispatch('setCategorias',newData)
+        })
+      watch(productsData,(newData)=>{
+        localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData);
+        store.dispatch('setProductos',newData)
+        })
+      const handleImportConfigurationFileError=(error)=>
+      {
+        let html="";
+        let title="Atención"
+        switch (error) {
+          case "ERROR_APPNAME":
+            html="El archivo de configuración seleccionado<br>no es un archivo de configuración<br>de «Hungry!» válido o está dañado";
+            break;
+          default:
+            title="ERROR INESPERADO"
+            html=error
+            break;
         }
+        Swal.fire({
+          icon:'error',
+          title,
+          html,
+          confirmButtonText:'Aceptar'
+        })
+      }
+      const handleImportConfigurationFile=(data)=>{
+        let importado=[];
+        if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0) {
+          categoriesData.value=data.categorias;
+          importado.push("las categorias")
+        }
+        if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0) {
+          productsData.value=data.productos;
+          importado.push("los productos")
+        }
+        importado=importado.join(" y ")
+        Swal.fire({
+            icon:'success',
+            title:'Atención',
+            html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
+            confirmButtonText:'Aceptar'
+          })
+      }
 
       const supermercados=ref([
         {text:'Cualquier Supermercado', logo:'hungry.svg'},
@@ -329,12 +380,16 @@ export default {
       ])
       //const selectedSupermercado = ref('');
       return {
+        store,
         CONFIG_NAMES,
         tabsData, 
         productsData,
         categoriesData,
         supermercados, 
-      }
+        defaultTabActive,
+        handleImportConfigurationFile,
+        handleImportConfigurationFileError,
+    }
   },
   mounted(){
     setTimeout(this.nuevoProductoFocus,500);

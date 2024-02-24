@@ -1,30 +1,19 @@
 <template>
   <div class="my-button">
-    <button :class="['btn', `btn-${btn}`]" @click="submit">{{ text }}</button>
+    <button :class="['btn', `btn-${btnClass}`]" @click="submit">{{ text }}</button>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'MyButton',
-  props: {
-    text: {
-      type: String,
-      required: true
+  export default {
+    name: 'MyButton',
+    props: { 
+      text: { type: String, required: true },
+      btnClass:{ type:String, default: "success"}
     },
-    btn:{
-      type:String,
-      default: "success"
-    }
-  },
-  methods: {
-    submit() {
-      this.$emit('click');
-    }
-  },
-  emits: ['click']
-
-}
+    methods: { submit() { this.$emit('click'); } },
+    emits: ['click']
+  }
 </script>
 
 <style>
