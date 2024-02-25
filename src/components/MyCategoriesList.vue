@@ -54,6 +54,7 @@ export default {
       window.addEventListener('resize', updateScreenSize);
       observer.value = new IntersectionObserver((entries) => {entries.forEach(entry => { if (entry.isIntersecting) updateScreenSize() })}, {});
       observer.value.observe(containerRef.value);
+      emit('categorySelected', props.categories[0]);
     });
     onBeforeUnmount(() => {
       window.removeEventListener('resize', updateScreenSize);
@@ -65,7 +66,7 @@ export default {
       activeCategoryIndex.value = index;
       scrollIntoView(activeCategoryIndex.value,'instant')
       lastCategory=index
-      emit('categorySelected', props.categories[index], index);
+      emit('categorySelected', props.categories[index]);
     };
     const handleCategoryLongClick = (index) => {
       activeCategoryIndex.value = index;
