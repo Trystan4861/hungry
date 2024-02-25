@@ -6,7 +6,7 @@
     @mousedown="handleMouseDown" @mouseup="handleMouseUp" 
     @touchstart="handleMouseDown" @touchend="handleMouseUp"
   >
-    <span  :style="{ backgroundColor: product.categoria.bgColor }" class="productCategory" />
+    <span  :style="{ backgroundColor: product.categoria?.bgColor || '#FFF' }" class="productCategory" />
     <div class="product" :class="{selected: product.selected, done: product.done && canBeDone}">
       <p :style="{display: product.selected ? 'block' : 'none'}" class="productAmount">{{ product.amount || 1 }}&nbsp;</p>
       <p class="productText">{{ product.text }}</p>
