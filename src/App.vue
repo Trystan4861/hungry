@@ -1,23 +1,26 @@
 <template>
   <div class="container mt-5">
-    <h1 class="mb-4 text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" /></h1>
     <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" >
       <template v-slot:tabContent0> <!-- Configuration -->
-        <MyCard :min-height="alturaDisponible">
+        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+          <h1 class="text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" />
+            <div class="text-center author">by Trystan4861</div>
+          </h1>
           <SlotConfigurationExport :configNames="CONFIG_NAMES" />
-          <br>
           <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
         </MyCard>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
-        <MyCategoriesList :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
-        <MySelect :options="supermercados" v-model="supermercado" selectName="supermercado" @select="handleSelect" />
-        <MyInput v-model="nuevoProducto" :placeholder="'Añade elementos aquí'" :autofocus="true" />
-        <MyButton text="Añadir" @click="handleAddClick" />
+        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+          <MyCategoriesList class="mb-4" :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
+          <MySelect :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
+          <MyInput class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" />
+          <MyButton text="Añadir" @click="handleAddClick" />
+        </MyCard>
       </template>    
       
       <template v-slot:tabContent2> <!-- orderBy name -->
-        <MyCard :min-height="alturaDisponible" :heightModifier="-152" :borderStyle="'rounded-bottom'">
+        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
             :productList="productsData" 
             orderBy="name"
@@ -28,7 +31,7 @@
       </template>
       
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
-        <MyCard :min-height="alturaDisponible" :heightModifier="-152" :borderStyle="'rounded-bottom'">
+        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
             :productList="productsData" 
             orderBy="categoryId"
@@ -39,8 +42,8 @@
       </template>
 
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <MySelect :options="supermercados" selectName="supermercado" @select="handleSelect" :selectedValue="-1" />
-        <MyCard :min-height="alturaDisponible" :heightModifier="-202" :borderStyle="'rounded-bottom'">
+        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+          <MySelect :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :selectedValue="-1" />
           <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :canBeDone="true" @click:product="handleShoplistClick" />
         </MyCard>
       </template>
@@ -49,7 +52,7 @@
   <div id="anchorEditarProducto" class="d-none">
     <div id="divEditarProducto">
       <MyCategoriesList ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado.id_categoria" />
-      <MyInput v-model="productoAEditar" :placeholder="productoAEditar" :autofocus="true" />
+      <MyInput v-model="productoAEditar" :placeholder="productoAEditar"/>
     </div>
   </div>  
 </template>
@@ -64,7 +67,7 @@ import MyButton                 from './components/MyButton.vue';
 import MySelect                 from './components/MySelect.vue';
 import MyProductList            from './components/MyProductList.vue';
 import MyImageLoader            from './components/MyImageLoader.vue';
-import { ref, watch }                  from 'vue';
+import { ref, watch }           from 'vue';
 import { useStore }             from 'vuex';
 import Swal                     from 'sweetalert2';
 import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
@@ -90,13 +93,9 @@ export default {
   },
   data(){
     return{
-      categoria:{},
-      id_categoria:'',
-      id_supermercado:-1,
       inputText:'',
       nuevoProducto:'', // Inicializa nuevoProducto con el valor deseado
       productoAEditar:'',
-      supermercado:'',
       configs2Export:[],
       alturaDisponible:0,
       productoSeleccionado:{}
@@ -211,7 +210,7 @@ export default {
         customClass: {
           confirmButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
         },
-//        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
         showDenyButton: true, // Mostrar el tercer botón
         denyButtonText: 'Eliminar Producto', // Texto del tercer botón
       }).then((result) => {
@@ -223,9 +222,7 @@ export default {
       });
 
     },
-    handleTabHeightChanged(data){
-      this.alturaDisponible=data;
-    },
+    handleTabHeightChanged(data){this.alturaDisponible=data;},
     handeFileReadError(error){
         Swal.fire({
           icon:'error',
@@ -235,10 +232,8 @@ export default {
         })
         return false;
     },
-    handleCategorySelected(category,index) {
-      this.categoria = category;
-      this.id_categoria= index;
-      this.nuevoProducto = '';
+    handleCategorySelected(category) {
+      this.categoriaActiva.value = category;
     },
     handleCategoryLongClick(categoria) {
       Swal.fire({
@@ -272,24 +267,16 @@ export default {
         })
         return false;
       }
-      if (this.id_supermercado<0)
-      {
-        Swal.fire({
-          icon:'error',
-          title:'Error',
-          text:'Debes seleccionar qué supermercado asignarás a '+ this.nuevoProducto,
-          confirmButtonText:'Aceptar'
-        })
-        return false;
-      }
-      this.productsData.push({id:this.productsData.length,text:this.nuevoProducto,categoria:this.categoriesData[this.id_categoria],id_categoria:this.id_categoria,supermercado:this.supermercados[this.id_supermercado],id_supermercado:this.id_supermercado});
-      this.nuevoProducto="";
-      localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData);
+      console.log({id:this.productsData.length,text:this.nuevoProducto,categoria:this.categoriaActiva.value,id_categoria:this.categoriaActiva.value.id,supermercado:this.supermercadoActivo.value,id_supermercado:this.supermercadoActivo.value.id})
+      
+//      this.productsData.push({id:this.productsData.length,text:this.nuevoProducto,categoria:this.categoriaActiva.value,id_categoria:this.id_categoria.value.id,supermercado:this.supermercados[this.id_supermercado],id_supermercado:this.id_supermercado});
+      //this.nuevoProducto="";
+      //localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData);
     },
-    handleSelect(selected,index)
+    handleSelectSupermercado(selected)
     {
-      this.supermercado=selected.text;
-      this.id_supermercado=index;
+      //FIX refactorizar esto
+      this.supermercadoActivo.value=selected.text;
     }
   },
   setup() {
@@ -301,14 +288,16 @@ export default {
       const initialData=[storeGet.getCategorias(),[]]
       const CONFIG_NAMES = storeGet.getConfigNames();
       const tabsData= storeGet.getTabs();
+      const supermercados=storeGet.getSupermercados();
 
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
-      const categoriesData = ref([]);
-      categoriesData.value=getDataFromLocalStorage(INDEX_CATEGORIAS);
+      const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
 
-      if (typeof categoriesData.value[0]==='undefined')
-        categoriesData.value=initialData[0];
+      if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
       
+      const categoriaActiva = ref({})
+      const supermercadoActivo=ref({})
+
       function getDataFromLocalStorage(index = INDEX_CATEGORIAS) {
           let storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
           if (storedData)
@@ -373,12 +362,7 @@ export default {
           })
       }
 
-      const supermercados=ref([
-        {text:'Cualquier Supermercado', logo:'hungry.svg'},
-        {text:'Carrefour', logo:'carrefour.svg'},
-        {text:'Mercadona', logo:'mercadona.svg'},
-        {text:'La Carmela', logo:'super_carmela.svg'},
-      ])
+
       //const selectedSupermercado = ref('');
       return {
         store,
@@ -386,6 +370,8 @@ export default {
         tabsData, 
         productsData,
         categoriesData,
+        categoriaActiva,
+        supermercadoActivo,
         supermercados, 
         defaultTabActive,
         handleImportConfigurationFile,
@@ -410,9 +396,7 @@ html,body
   padding: 0; /* Eliminar el padding predeterminado del body */
   overflow: hidden;
 }
-#app{
-  height: 100%!important;
-}
+#app{ height: 100%!important; }
 .container {
   height: 100%;
   flex-grow: 1; /* Esto hará que .container se expanda */
@@ -427,16 +411,15 @@ html,body
   scrollbar-width: thin;
   scrollbar-color: #888 #f0f0f0;
 }
-.tabs-container::-webkit-scrollbar{
-  width: 5px;
-}
-.tabs-container::-webkit-scrollbar-track{
-  background: #f0f0f0;
-}
-.tabs-container::-webkit-scrollbar-thumb{
-  background: #888;
-}
-.logo{
-  width:60px;
+.tabs-container::-webkit-scrollbar { width: 5px; }
+.tabs-container::-webkit-scrollbar-track { background: #f0f0f0; }
+.tabs-container::-webkit-scrollbar-thumb { background: #888; }
+.logo { width:60px; }
+.author {
+  font-size: xx-small;
+  width: fit-content;
+  margin: auto;
+  position: relative;
+  top: -15px
 }
 </style>
