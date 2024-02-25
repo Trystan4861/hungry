@@ -1,8 +1,8 @@
 <template>
   <p>Selecciona qué configuración deseas exportar:</p>
-  <MyCheckbox v-for="index in [0,1]" :key="index" :value="configNames[index]" :label="configNames[index]" v-model:checkedValues="configs2Export" @lastCheckedDeletionAttempt="handleConfigLastCheckedDeletionAttempt" @update:checkedValues="handleUpdateConfigCheckedValues" />
-  <br>
-  <MyButton :text="'Exportar Configuración Seleccionada'" @click="exportConfig" />
+  <MyCheckbox  v-for="index in [0,1]" :key="index" :value="configNames[index]" :label="configNames[index]" v-model:checkedValues="configs2Export" @lastCheckedDeletionAttempt="handleConfigLastCheckedDeletionAttempt" @update:checkedValues="handleUpdateConfigCheckedValues" />
+
+  <MyButton class="mt-4 mb-4" :text="'Exportar Configuración Seleccionada'" @click="exportConfig" />
 </template>
 
 <script>

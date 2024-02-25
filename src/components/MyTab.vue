@@ -53,7 +53,7 @@ export default {
         const containerWidth = container.clientWidth;
         const widthStyle = (((containerWidth-60) / 4)-1);
         tabStyle.value = {width: `${widthStyle}px`};
-        emit('tabHeightChanged',container.clientHeight)
+        emit('tabHeightChanged',container.clientHeight-148)
       };
       onMounted(()=>{
         window.addEventListener('resize', updateTabStyle);
