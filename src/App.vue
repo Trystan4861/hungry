@@ -5,6 +5,7 @@
       <template v-slot:tabContent0> <!-- Configuration -->
         <MyCard :min-height="alturaDisponible">
           <SlotConfigurationExport :configNames="CONFIG_NAMES" />
+          <br>
           <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
         </MyCard>
       </template>

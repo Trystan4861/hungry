@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-flex align-items-center">
     <input
       type="checkbox"
       :id="id"
@@ -66,5 +66,6 @@ export default {
 <style scoped>
   label{
     padding-left: .625rem;
+    padding-top: 0rem ;
   }
 </style>
