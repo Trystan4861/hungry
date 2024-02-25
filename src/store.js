@@ -17,6 +17,12 @@ export default createStore({
         'Categorías',
         'Productos'
       ],
+      supermercados:[
+        {id:0,text:'Cualquier Supermercado', logo:'hungry.svg'},
+        {id:1,text:'Carrefour', logo:'carrefour.svg'},
+        {id:2,text:'Mercadona', logo:'mercadona.svg'},
+        {id:3,text:'La Carmela', logo:'super_carmela.svg'},
+      ]
     },
     configuracion:{
       defaultTabActive:1,
@@ -77,5 +83,6 @@ export default createStore({
     getConfigNames:     (state)=>(  )=>state.appStatic.configNames,
     getVarIDCategoria:  (state)=>(  )=>state.appStatic.varIDCategoria,
     getLocalStorageKeys:(state)=>(  )=>state.appStatic.localStorageKeys,
+    getSupermercados:   (state)=>(  )=>state.appStatic.supermercados,
   }
                     });
