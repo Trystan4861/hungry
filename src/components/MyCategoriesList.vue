@@ -41,6 +41,8 @@ export default {
     const containerRef = ref(null);
     const observer = ref(null);
 
+    let lastCategory=-1
+
     const seleccionarCategoria = (id_categoria) => {
       let index=props.categories.findIndex(categoria => categoria.id === id_categoria);
       activeCategory.value=props.categories[index]
@@ -59,8 +61,10 @@ export default {
     });
 
     const handleCategoryClick = (index) => {
+      if (lastCategory==index) return
       activeCategoryIndex.value = index;
       scrollIntoView(activeCategoryIndex.value,'instant')
+      lastCategory=index
       emit('categorySelected', props.categories[index], index);
     };
     const handleCategoryLongClick = (index) => {
@@ -99,8 +103,12 @@ export default {
         }
       });
       let index=Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
-      activeCategoryIndex.value = index
-      emit('categorySelected', props.categories[index], index);
+      if (lastCategory!=index)
+      {
+        activeCategoryIndex.value = index
+        lastCategory=index
+        emit('categorySelected', props.categories[index], index);
+      }
     };
 
     const scrollIntoView = (index,behavior='smooth') => {
