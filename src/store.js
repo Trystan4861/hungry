@@ -3,7 +3,6 @@ import { createStore } from 'vuex';
 export default createStore({
   state: {
     appStatic:{
-      alturaDisponible:0,
       varIDCategoria:-1,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
@@ -25,7 +24,8 @@ export default createStore({
       ]
     },
     configuracion:{
-      defaultTabActive:1,
+      defaultTabActive:2,
+      saveProductsState:true,
       categorias: [
         {id: 0, text:'Categoría 1',  bgColor:'#d83c3d', visible:true},
         {id: 1, text:'Categoría 2',  bgColor:'#d8993c', visible:true},
@@ -52,37 +52,40 @@ export default createStore({
     },
   },
   mutations: {
-    setCategories(state, categorias){state.configuracion.categorias = categorias},
-    setProducts(state, productos){state.configuracion.productos = productos},
     updateCategoria(state, payload){
-      const {id, text, bgColor} = payload;
+      const {id, text, bgColor, visible} = payload;
       const index = state.configuracion.categorias.findIndex(categoria => categoria.id === id);
       if(!index<0){
         state.configuracion.categorias[index].text = text;
         state.configuracion.categorias[index].bgColor = bgColor;
+        state.configuracion.categorias[index].visible = visible;
       }
     },
-    setDefaultTabActive(state,defaultTabActive){state.configuracion.defaultTabActive = defaultTabActive},
-    setConfiguracion(state, configuracion){state.configuracion = configuracion},
+    setCategories         ( state,      categorias      ) { state.configuracion.categorias        = categorias        },
+    setProducts           ( state,      productos       ) { state.configuracion.productos         = productos         },
+    setDefaultTabActive   ( state,      defaultTabActive) { state.configuracion.defaultTabActive  = defaultTabActive  },
+    setConfiguracion      ( state,      configuracion   ) { state.configuracion                   = configuracion     },
+    setSaveProductsState  ( state,     saveProductsState) { state.configuracion.saveProductsState = saveProductsState },
   },
   actions: {
-    setConfiguracion    ({ commit }, configuracion    ) {commit('setConfiguracion',     configuracion)},
-    setProductos        ({ commit }, productos        ) {commit('setProducts',          productos)},
-    setCategorias       ({ commit }, productos        ) {commit('setCategories',        productos)},
-    setDefaultTabActive ({ commit }, defaultTabActive ) {commit('setDefaultTabActive',  defaultTabActive)},
+    setConfiguracion      ({ commit }, configuracion    ) { commit('setConfiguracion',     configuracion    )         },
+    setProductos          ({ commit }, productos        ) { commit('setProducts',          productos        )         },
+    setCategorias         ({ commit }, productos        ) { commit('setCategories',        productos        )         },
+    setDefaultTabActive   ({ commit }, defaultTabActive ) { commit('setDefaultTabActive',  defaultTabActive )         },
+    setSaveProductsState  ({ commit }, saveProductsState) { commit('setSaveProductsState', saveProductsState)         },
   },
   getters: {
-    getConfiguracion:   (state)=>(  )=>state.configuracion,
-    getCategorias:      (state)=>(  )=>state.configuracion.categorias,
-    getCategoriaFromID: (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
-    getDefaultTabActive:(state)=>(  )=>state.configuracion.defaultTabActive,
-    getProductos:       (state)=>(  )=>state.configuracion.productos,
+    getConfiguracion:     (state)=>(  )=>state.configuracion,
+    getCategorias:        (state)=>(  )=>state.configuracion.categorias,
+    getCategoriaFromID:   (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
+    getDefaultTabActive:  (state)=>(  )=>state.configuracion.defaultTabActive,
+    getProductos:         (state)=>(  )=>state.configuracion.productos  ,
+    getSaveProductsState: (state)=>(  )=>state.configuracion.saveProductsState,
 
-    getAlturaDisponible:(state)=>(  )=>state.appStatic.alturaDisponible,
-    getTabs:            (state)=>(  )=>state.appStatic.tabs,
-    getConfigNames:     (state)=>(  )=>state.appStatic.configNames,
-    getVarIDCategoria:  (state)=>(  )=>state.appStatic.varIDCategoria,
-    getLocalStorageKeys:(state)=>(  )=>state.appStatic.localStorageKeys,
-    getSupermercados:   (state)=>(  )=>state.appStatic.supermercados,
+    getTabs:              (state)=>(  )=>state.appStatic.tabs,
+    getConfigNames:       (state)=>(  )=>state.appStatic.configNames,
+    getVarIDCategoria:    (state)=>(  )=>state.appStatic.varIDCategoria,
+    getLocalStorageKeys:  (state)=>(  )=>state.appStatic.localStorageKeys,
+    getSupermercados:     (state)=>(  )=>state.appStatic.supermercados,
   }
                     });

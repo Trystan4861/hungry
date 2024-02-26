@@ -18,7 +18,6 @@
           <MyButton text="Añadir" @click="handleAddClick" />
         </MyCard>
       </template>    
-      
       <template v-slot:tabContent2> <!-- orderBy name -->
         <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
@@ -29,7 +28,6 @@
           />
         </MyCard>
       </template>
-      
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
         <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
@@ -40,7 +38,6 @@
           />
         </MyCard>
       </template>
-
       <template v-slot:tabContent4> <!-- Shopping List -->
         <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MySelect :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :selectedValue="-1" />
@@ -51,10 +48,11 @@
   </div>
   <div id="anchorEditarProducto" class="d-none">
     <div id="divEditarProducto">
-      <MyCategoriesList ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado.id_categoria" />
+      <MyCategoriesList ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado?.id_categoria || 0" @categorySelected="handleCategorySelected" />
+      <MySelect ref="selectRef" :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
       <MyInput v-model="productoAEditar" :placeholder="productoAEditar"/>
     </div>
-  </div>  
+  </div> 
 </template>
 
 <script>
@@ -94,7 +92,7 @@ export default {
   data(){
     return{
       inputText:'',
-      nuevoProducto:'', // Inicializa nuevoProducto con el valor deseado
+      nuevoProducto:'',
       productoAEditar:'',
       configs2Export:[],
       alturaDisponible:0,
@@ -102,16 +100,7 @@ export default {
     }
   },
   methods:{
-    findIndex(what,where){return where.findIndex(item => item === what)},
-    findProductIndex(product){return this.findIndex(product,this.productsData)},
-    findCategoryIndex(category){return this.findIndex(category,this.categoriesData)},
-    setAndSave(where,what)
-    {
-      if (typeof where==='number') where=LOCAL_STORAGE_KEYS[where]
-      if(where==LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS]) this.categoriesData=what
-      else if(where==LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS]) this.productsData=what
-      localStorageService.setItem(where, what);
-    },
+    findById(what,where){return where.findIndex(item=>item.id===(what?.id||what))},
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
       this.productoAEditar=this.productoSeleccionado.text
@@ -123,6 +112,8 @@ export default {
         cancelButtonText: 'Cancelar',
         willOpen:()=>{
           this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria);
+          if (this.productoSeleccionado.supermercado)
+            this.$refs.selectRef.selectOption(this.productoSeleccionado?.supermercado)
           document.getElementById('VueSweetAlert2').appendChild(aux);
         },
         didOpen:()=>{
@@ -133,32 +124,35 @@ export default {
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          const areTheSame=(categoryA, categoryB)=>{
+          const areTheSame = (categoryA, categoryB) => {
+            if (categoryA === null || categoryB === null || typeof categoryA !== 'object' || typeof categoryB !== 'object') return categoryA === categoryB;
             const keys1 = Object.keys(categoryA);
             const keys2 = Object.keys(categoryB);
             if (keys1.length !== keys2.length) return false;
             for (let key of keys1) {
               if (!(key in categoryB)) return false;
-              if (categoryA[key] !== categoryB[key]) return false;
+              if (typeof categoryA[key] !== 'object') {
+                if (categoryA[key] !== categoryB[key]) return false;
+              }
+              else  if (!areTheSame(categoryA[key], categoryB[key])) return false;
             }
             return true;
-          }
+          };
           let newData={
             id:this.productoSeleccionado.id,
             text:this.productoAEditar,
-            categoria:this.$refs.categoriesSliderRef.activeCategory,
-            id_categoria:this.$refs.categoriesSliderRef.activeCategory.id_categoria
+            categoria:this.categoriaActiva.value,
+            id_categoria:this.categoriaActiva.value.id,
+            supermercado:this.supermercadoActivo.value,
+            id_supermercado:this.supermercadoActivo.value.id
             }
           if (!areTheSame(this.productoSeleccionado,newData))
           {
-            console.log("son distintos")
-            console.log(this.productoAEditar)
-            this.productsData[this.productsData.findIndex(p=>p.id==this.productoSeleccionado.id)]=newData
-            localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData)
+              console.log("son distintos")
+              console.log(this.productsData[this.findById(newData.id,this.productsData)])
+              this.productsData[this.findById(newData.id, this.productsData)] = newData;
+              this.productsData=[...this.productsData]
           }
-           
-          // Acción a realizar si se confirma el SweetAlert2
-          // this.handleCategorySelectedEditProduct(vm.$props.selectedCategory); // Llama a la función con la categoría seleccionada
         }
       });
     },
@@ -171,35 +165,32 @@ export default {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         customClass: {
-          cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
+          cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
           confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
-        }
+        },
+        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
       }).then((result) => {
         if (result.isConfirmed) {
-          let index=this.findProductIndex(this.productoSeleccionado)
-          this.productsData.splice(index, 1)
-          localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData)
+          this.productsData = this.productsData.filter(item => item.id !== this.productoSeleccionado.id)
           this.productoSeleccionado=null;
-          this.$refs.myModalSlotRef.closeModal();
-
         }
       });
     },
     handleShoplistClick(product)
     {
-      let index=this.findProductIndex(product)
+      let index=this.findById(product,this.productsData)
       this.productsData[index].done=!this.productsData[index].done
+      if (this.saveProductsState) this.productsData=[...this.productsData]
     },
     handleClickProduct(product){
-      let index=this.findProductIndex(product)
-      if ('selected' in this.productsData[index])
-        this.productsData[index].selected=!this.productsData[index].selected
-      else
-        this.productsData[index].selected=true;
+      let index=this.findById(product,this.productsData)
+      this.productsData[index].selected=('selected' in this.productsData[index])?!this.productsData[index].selected:true
       this.productsData[index].done=false
+      if (this.saveProductsState) this.productsData=[...this.productsData]
     },
     handeLongClickProduct(product){
       this.productoSeleccionado=product;
+      console.log("handeLongClickProduct",product)
       Swal.fire({
         title: product.text,
         text: '¿Qué desea hacer?',
@@ -208,17 +199,16 @@ export default {
         confirmButtonText: 'Editar Producto',
         cancelButtonText: 'Cancelar',
         customClass: {
-          confirmButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-success mb-2', // Clase CSS para el botón de confirmación (Sí)
+          denyButton: 'btn btn-danger mb-2',
+          cancelButton: 'btn btn-primary',
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
         showDenyButton: true, // Mostrar el tercer botón
         denyButtonText: 'Eliminar Producto', // Texto del tercer botón
       }).then((result) => {
-        if (result.isConfirmed) {
-          this.handleEditarProducto()
-        } else if (result.isDenied) {
-          this.handleEliminarProducto()
-        }
+        if (result.isConfirmed) this.handleEditarProducto()
+        else if (result.isDenied) this.handleEliminarProducto()
       });
 
     },
@@ -232,9 +222,7 @@ export default {
         })
         return false;
     },
-    handleCategorySelected(category) {
-      this.categoriaActiva.value = category;
-    },
+    handleCategorySelected(category) { this.categoriaActiva.value = category; },
     handleCategoryLongClick(categoria) {
       Swal.fire({
         title: `Cambiar «${categoria?.text}»`,
@@ -245,14 +233,14 @@ export default {
         confirmButtonText: 'Guardar cambios',
         cancelButtonText: 'Cancelar',
         customClass: {
-          cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
-          confirmButton: 'btn btn-info' // Clase CSS para el botón de cancelación (No)
-        }
+          cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
+        },
+        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
       }).then((result) => {
         if (result.isConfirmed) {
-          const newText = result.value;
-          this.categoriesData[categoria.id].text = newText;
-          localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], this.categoriesData);
+          this.categoriesData[categoria.id].text = result.value;
+          this.categoriesData=[...this.categoriesData]
         }
       });
     },
@@ -267,17 +255,27 @@ export default {
         })
         return false;
       }
-      console.log({id:this.productsData.length,text:this.nuevoProducto,categoria:this.categoriaActiva.value,id_categoria:this.categoriaActiva.value.id,supermercado:this.supermercadoActivo.value,id_supermercado:this.supermercadoActivo.value.id})
-      
-//      this.productsData.push({id:this.productsData.length,text:this.nuevoProducto,categoria:this.categoriaActiva.value,id_categoria:this.id_categoria.value.id,supermercado:this.supermercados[this.id_supermercado],id_supermercado:this.id_supermercado});
-      //this.nuevoProducto="";
-      //localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],this.productsData);
+      if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase()))
+      {
+        this.productsData.push({
+          id:this.productsData.length,
+          text:this.nuevoProducto,
+          categoria:this.categoriaActiva.value,
+          id_categoria:this.categoriaActiva.value.id,
+          supermercado:this.supermercadoActivo.value,
+          id_supermercado:this.supermercadoActivo.value.id
+        });
+        this.nuevoProducto="";
+        this.productsData=[...this.productsData]
+      }
+      else
+        Swal.fire({
+          icon:'warning',
+          title: 'Atención',
+          html: `Ya existe un producto llamado<br>«${this.nuevoProducto}»`
+      })
     },
-    handleSelectSupermercado(selected)
-    {
-      //FIX refactorizar esto
-      this.supermercadoActivo.value=selected.text;
-    }
+    handleSelectSupermercado(selected) { this.supermercadoActivo.value=selected },
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
@@ -285,6 +283,8 @@ export default {
       const store=useStore();
       const storeGet=store.getters;
       const defaultTabActive=storeGet.getDefaultTabActive()
+      const saveProductsState=storeGet.getSaveProductsState()
+      
       const initialData=[storeGet.getCategorias(),[]]
       const CONFIG_NAMES = storeGet.getConfigNames();
       const tabsData= storeGet.getTabs();
@@ -294,62 +294,70 @@ export default {
       const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
 
       if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
-      
+
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
+      function fixProductos(productos){
+        productos.forEach(producto=> {
+          if (!Object.prototype.hasOwnProperty.call(producto, 'supermercado')) producto.supermercado = { id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" }
+          if (!Object.prototype.hasOwnProperty.call(producto, 'id_supermercado')) producto.id_supermercado = producto.supermercado.id
 
+          if (!Object.prototype.hasOwnProperty.call(producto, 'categoria')) producto.categoria = categoriesData.value[0]
+          if (!Object.prototype.hasOwnProperty.call(producto, 'id_categoria')) producto.id_categoria = producto.categoria.id        
+        })
+        return productos;
+      }
+      function fixCategorias(categorias){
+        categorias.forEach(categoria=>{
+          if (!Object.prototype.hasOwnProperty.call(categoria, 'visible')) categoria.visible = true
+
+        })
+        return categorias
+      }
       function getDataFromLocalStorage(index = INDEX_CATEGORIAS) {
           let storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
           if (storedData)
           {
             if (index == INDEX_CATEGORIAS )
             {
+              if (storedData.some(category => !Object.prototype.hasOwnProperty.call(category, 'id'))) storedData = storedData.map((category, index) => ({ ...category, id: index }));
+              storedData=fixCategorias(storedData)
               store.dispatch('setCategorias', storedData);
-              if (storedData.some(category => !Object.prototype.hasOwnProperty.call(category, 'id')))
-                  storedData = storedData.map((category, index) => ({ ...category, id: index }));
             }
             else if (index== INDEX_PRODUCTOS)
             {
+              storedData=fixProductos(storedData)
               store.dispatch('setProductos', storedData);
             }
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
       watch(categoriesData,(newData)=>{
-        localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData);
-        store.dispatch('setCategorias',newData)
-        })
+        console.log("watch(categoriesData",newData)
+        store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData))
+      })
       watch(productsData,(newData)=>{
-        localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData);
-        store.dispatch('setProductos',newData)
-        })
+        console.log("watch(productsData",newData)
+        store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData))
+      })
       const handleImportConfigurationFileError=(error)=>
       {
-        let html="";
-        let title="Atención"
-        switch (error) {
-          case "ERROR_APPNAME":
-            html="El archivo de configuración seleccionado<br>no es un archivo de configuración<br>de «Hungry!» válido o está dañado";
-            break;
-          default:
-            title="ERROR INESPERADO"
-            html=error
-            break;
-        }
         Swal.fire({
           icon:'error',
-          title,
-          html,
+          title:(error=="ERROR_APPNAME")?"Atención":"ERROR INESPERADO",
+          html:(error!="ERROR_APPNAME")?error:"El archivo de configuración seleccionado<br>no es un archivo de configuración<br>de «Hungry!» válido o está dañado",
           confirmButtonText:'Aceptar'
         })
       }
       const handleImportConfigurationFile=(data)=>{
         let importado=[];
         if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0) {
+          data.categorias=fixCategorias(data.categorias)
           categoriesData.value=data.categorias;
           importado.push("las categorias")
         }
         if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0) {
+          data.productos=fixProductos(data.productos);
           productsData.value=data.productos;
           importado.push("los productos")
         }
@@ -374,6 +382,7 @@ export default {
         supermercadoActivo,
         supermercados, 
         defaultTabActive,
+        saveProductsState,
         handleImportConfigurationFile,
         handleImportConfigurationFileError,
     }
@@ -421,5 +430,9 @@ html,body
   margin: auto;
   position: relative;
   top: -15px
+}
+div:where(.swal2-container) .swal2-html-container {
+    z-index: 10 !important;
+    overflow: visible !important;
 }
 </style>
