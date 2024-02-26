@@ -17,10 +17,10 @@ export default createStore({
         'Productos'
       ],
       supermercados:[
-        {id:0,text:'Cualquier Supermercado', logo:'hungry.svg'},
-        {id:1,text:'Carrefour', logo:'carrefour.svg'},
-        {id:2,text:'Mercadona', logo:'mercadona.svg'},
-        {id:3,text:'La Carmela', logo:'super_carmela.svg'},
+        { id:0, text:'Cualquier Supermercado', logo:'hungry.svg'        },
+        { id:1, text:'Carrefour',              logo:'carrefour.svg'     },
+        { id:2, text:'Mercadona',              logo:'mercadona.svg'     },
+        { id:3, text:'La Carmela',             logo:'super_carmela.svg' },
       ]
     },
     configuracion:{
