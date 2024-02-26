@@ -310,6 +310,7 @@ export default {
       function fixCategorias(categorias){
         categorias.forEach(categoria=>{
           if (!Object.prototype.hasOwnProperty.call(categoria, 'visible')) categoria.visible = true
+          else categoria.visible=Boolean(categoria.visible)
 
         })
         return categorias

@@ -58,7 +58,7 @@ export default createStore({
       if(!index<0){
         state.configuracion.categorias[index].text = text;
         state.configuracion.categorias[index].bgColor = bgColor;
-        state.configuracion.categorias[index].visible = visible;
+        state.configuracion.categorias[index].visible = Boolean(visible);
       }
     },
     setCategories         ( state,      categorias      ) { state.configuracion.categorias        = categorias        },
