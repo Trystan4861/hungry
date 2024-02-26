@@ -3,7 +3,7 @@
     <div class="categories-padding">
       <div class="my-categories-list" :style="categoryListStyle">
         <MyCategory
-          v-for="(category, index) in categories"
+          v-for="(category, index) in visibleCategories"
           :key="index"
           :text="category.text"
           :bgColor="category.bgColor"
@@ -32,6 +32,9 @@ export default {
     },
   },
   emits: ['categorySelected', 'categoryLongClick'],
+  computed: {
+    visibleCategories() {return this.categories.filter(category => Boolean(category.visible) === true)}
+  },
   setup(props, { emit }) {
     const activeCategoryIndex = ref(null);
     const activeCategory = ref({})
