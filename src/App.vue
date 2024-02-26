@@ -100,7 +100,7 @@ export default {
     }
   },
   methods:{
-    findById(what,where){return where.findIndex(item=>item.id===(what?.id||what))},
+    findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
       this.productoAEditar=this.productoSeleccionado.text
@@ -149,8 +149,8 @@ export default {
           if (!areTheSame(this.productoSeleccionado,newData))
           {
               console.log("son distintos")
-              console.log(this.productsData[this.findById(newData.id,this.productsData)])
-              this.productsData[this.findById(newData.id, this.productsData)] = newData;
+              console.log(this.productsData[this.findIndexById(newData.id,this.productsData)])
+              this.productsData[this.findIndexById(newData.id, this.productsData)] = newData;
               this.productsData=[...this.productsData]
           }
         }
@@ -178,15 +178,19 @@ export default {
     },
     handleShoplistClick(product)
     {
-      let index=this.findById(product,this.productsData)
+      let index=this.findIndexById(product.id,this.productsData)
       this.productsData[index].done=!this.productsData[index].done
       if (this.saveProductsState) this.productsData=[...this.productsData]
     },
     handleClickProduct(product){
-      let index=this.findById(product,this.productsData)
-      this.productsData[index].selected=('selected' in this.productsData[index])?!this.productsData[index].selected:true
-      this.productsData[index].done=false
-      if (this.saveProductsState) this.productsData=[...this.productsData]
+      let index=this.findIndexById(product.id,this.productsData)
+      if (index!=-1)
+      {
+        this.productsData[index].selected=(Object.prototype.hasOwnProperty.call(this.productsData[index], 'selected'))?!this.productsData[index].selected:true
+        this.productsData[index].done=false
+        if (this.saveProductsState) this.productsData=[...this.productsData]
+      }
+      else console.log("error en indice",product,this.productsData)
     },
     handeLongClickProduct(product){
       this.productoSeleccionado=product;
