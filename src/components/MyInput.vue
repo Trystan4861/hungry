@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <input ref="myInput" type="text" :id="inputID" v-model="inputValue" :placeholder="placeholder">
+    <input ref="myInput" type="text" :id="inputID"  v-model="inputValue" @keyup.enter="handleEnterPressed" :placeholder="placeholder">
   </div>
 </template>
 
@@ -43,7 +43,15 @@ export default {
       this.$refs.myInput.focus();
     }
   },
-  emits: ['update:modelValue'],
+  setup(props,{emit}){
+      const handleEnterPressed =()=>{
+          emit('keyPressed:enter')
+      }
+      return {
+        handleEnterPressed
+      }
+  },
+  emits: ['update:modelValue','keyPressed:enter'],
   mounted() {
     // Llama a la función para enfocar el input después de que el componente se monte
       setTimeout(this.focusInput,500);

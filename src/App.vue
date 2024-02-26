@@ -14,7 +14,7 @@
         <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyCategoriesList class="mb-4" :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
           <MySelect :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
-          <MyInput class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" />
+          <MyInput class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
           <MyButton text="Añadir" @click="handleAddClick" />
         </MyCard>
       </template>    
@@ -145,11 +145,9 @@ export default {
             id_categoria:this.categoriaActiva.value.id,
             supermercado:this.supermercadoActivo.value,
             id_supermercado:this.supermercadoActivo.value.id
-            }
+          }
           if (!areTheSame(this.productoSeleccionado,newData))
           {
-              console.log("son distintos")
-              console.log(this.productsData[this.findIndexById(newData.id,this.productsData)])
               this.productsData[this.findIndexById(newData.id, this.productsData)] = newData;
               this.productsData=[...this.productsData]
           }
