@@ -6,6 +6,7 @@
           <h1 class="text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" />
             <div class="text-center author">by Trystan4861</div>
           </h1>
+          <SlotConfigurationCategories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
           <SlotConfigurationExport :configNames="CONFIG_NAMES" />
           <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
         </MyCard>
@@ -88,6 +89,7 @@ import { useStore }             from 'vuex';
 import Swal                     from 'sweetalert2';
 import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
 import SlotConfigurationImport  from './components/SlotConfigurationImport.vue';
+import SlotConfigurationCategories from './components/SlotConfigurationCategories.vue'
 
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData'];
 const INDEX_CATEGORIAS=0;
@@ -106,6 +108,7 @@ export default {
     MyTab,
     SlotConfigurationExport,
     SlotConfigurationImport,
+    SlotConfigurationCategories,
   },
   data(){
     return{
@@ -114,7 +117,8 @@ export default {
       productoAEditar:'',
       configs2Export:[],
       alturaDisponible:0,
-      productoSeleccionado:{}
+      productoSeleccionado:{},
+      categoriasVisibles:null
     }
   },
   methods:{
@@ -317,7 +321,21 @@ export default {
       })
     },
     handleSelectSupermercado(selected) { this.supermercadoActivo.value=selected },
-    handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected}
+    handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
+    handleCategoriesChecked(data)
+    {
+      this.categoriasVisibles=this.categoriesData.map(categoria => ({ ...categoria }));
+      this.categoriasVisibles.forEach((item,index)=>item.visible=data.includes(index))
+    },
+    handleCategoriesButtonClicked(){
+      this.categoriesData=this.categoriasVisibles
+      Swal.fire({
+          icon:'success',
+          title:'Atención',
+          html:`Cambibos guardados correctamente`,
+          confirmButtonText:'Aceptar'
+        })
+    }
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
@@ -377,7 +395,10 @@ export default {
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
-      watch(categoriesData,(newData)=>{ store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) })
+      watch(categoriesData,(newData)=>{ 
+        console.log("watch(categoriesData")
+        store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) 
+      })
       watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData)) })
       const handleImportConfigurationFileError=(error)=>
       {

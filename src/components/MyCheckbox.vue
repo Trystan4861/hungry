@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center cursor-pointer">
     <input
       type="checkbox"
       :id="id"
@@ -12,7 +12,9 @@
 </template>
 
 <script>
-export default {
+import { computed, defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'MyCheckbox',
   props: {
     value: {
@@ -33,39 +35,49 @@ export default {
       default: false
     }
   },
-  computed: {
-    id() {
-      return 'checkbox-' + this.value;
-    },
-    isChecked() {
-      return this.checkedValues.includes(this.value);
-    }
-  },
-  methods: {
-    handleChange(event) {
-      if (this.group && this.required) {
-        if (!event.target.checked && this.checkedValues.length === 1 && this.isChecked) {
-          this.$emit('lastCheckedDeletionAttempt',this.checkedValues);
+  setup(props, { emit }) {
+    const id = 'checkbox-' + props.value;
+
+    const isChecked = computed(() => {
+      return props.checkedValues.includes(props.value);
+    });
+
+    const handleChange = (event) => {
+      if (props.group && props.required) {
+        if (!event.target.checked && props.checkedValues.length === 1 && isChecked.value) {
+          emit('lastCheckedDeletionAttempt', props.checkedValues);
           event.preventDefault();
           return;
         }
       }
-      if (this.group) {
+      
+      if (props.group) {
         if (event.target.checked) {
-          this.$emit('update:checkedValues', [...this.checkedValues, this.value]);
+          emit('update:checkedValues', [...props.checkedValues, props.value]);
         } else {
-          this.$emit('update:checkedValues', this.checkedValues.filter(val => val !== this.value));
+          emit('update:checkedValues', props.checkedValues.filter(val => val !== props.value));
         }
       } else {
-        this.$emit('update:checkedValues', event.target.checked ? [...this.checkedValues, this.value] : this.checkedValues.filter(val => val !== this.value));
+        emit('update:checkedValues', event.target.checked ? [...props.checkedValues, props.value] : props.checkedValues.filter(val => val !== props.value));
       }
-    }
-  }
-};
+    };
+
+    return {
+      id,
+      isChecked,
+      handleChange
+    };
+  },
+  emits: ['update:checkedValues', 'lastCheckedDeletionAttempt']
+});
 </script>
+
 <style scoped>
-  label{
-    padding-left: .625rem;
-    padding-top: 0rem ;
-  }
+.cursor-pointer *{
+  cursor:pointer;
+}
+label {
+  padding-left: .625rem;
+  padding-top: 0rem;
+}
 </style>
