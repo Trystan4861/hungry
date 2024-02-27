@@ -53,6 +53,7 @@ export default {
 <style scoped>
 *{
   color: white;
+  user-select: none;
 }
 .my-select { position: relative; width: 100%; }
 .selected-option { padding-left: .625rem; background-color: gray; border: .0625rem solid #ccc; cursor: pointer; height: 3.125rem; flex-wrap: wrap; align-items: center; display: flex; }

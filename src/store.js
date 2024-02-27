@@ -24,7 +24,7 @@ export default createStore({
       ]
     },
     configuracion:{
-      defaultTabActive:1,
+      defaultTabActive:4,
       saveProductsState:true,
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },

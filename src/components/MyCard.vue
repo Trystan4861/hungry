@@ -10,7 +10,7 @@
 export default {
   name: 'MyCard',
   props:{
-    minHeight:{
+    height:{
       type:Number,
       default:0
     },
@@ -39,8 +39,8 @@ export default {
           break;
       }
       return {
-        'min-height': `${this.minHeight + this.heightModifier}px`,
-        'border-radius': borderRadius
+        'height': `${this.height + this.heightModifier}px`,
+        'border-radius': borderRadius,
       };
     }
   }
@@ -53,6 +53,9 @@ export default {
   border-radius: 0 0 .5rem .5rem;
   box-shadow: 0 .25rem .375rem rgba(0, 0, 0, 0.1);
   padding: .3125rem;
+  scrollbar-width: thin;
+  overflow-y: auto;
+
 }
 
 .card-body {

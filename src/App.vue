@@ -2,7 +2,7 @@
   <div class="container mt-5">
     <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" >
       <template v-slot:tabContent0> <!-- Configuration -->
-        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <h1 class="text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" />
             <div class="text-center author">by Trystan4861</div>
           </h1>
@@ -11,7 +11,7 @@
         </MyCard>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
-        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyCategoriesList class="mb-4" :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
           <MySelect :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
           <MyInput class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
@@ -19,7 +19,7 @@
         </MyCard>
       </template>    
       <template v-slot:tabContent2> <!-- orderBy name -->
-        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
             :productList="productsData" 
             orderBy="name"
@@ -29,7 +29,7 @@
         </MyCard>
       </template>
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
-        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
+        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
             :productList="productsData" 
             orderBy="categoryId"
@@ -39,9 +39,25 @@
         </MyCard>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <MyCard :min-height="alturaDisponible" :borderStyle="'rounded-bottom'">
-          <MySelect :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :selectedValue="-1" />
-          <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :canBeDone="true" @click:product="handleShoplistClick" />
+        <div class="row">
+          <div class="col-9 pr-0">
+            <MySelect :options="supermercados" :selected="supermercados[0]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
+          </div>
+          <div class="col-3 p-0 overflow-hidden">
+              <MyButton class="clearList" :text="'Limpiar Lista'" :btnClass="'danger'" @click="clearList" />
+          </div>
+        </div>
+        <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
+          <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }} </div>
+          <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          <div v-show="supermercadoSL.value?.id!=0 || 0">
+            <div class="w-100 text-center"><hr />Para comprar en otros Supermercados</div>
+            <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          </div>
+          <div v-show="productsData.some(item=>item.done)">
+            <div class="w-100 text-center"><hr />Ya comprado</div>
+            <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :canBeDone="true" :showOnlyDone="true" @click:product="handleShoplistClick" />
+          </div>
         </MyCard>
       </template>
     </MyTab>
@@ -246,6 +262,24 @@ export default {
         }
       });
     },
+    clearList(){
+      Swal.fire({
+        title: `Atención`,
+        text: 'Esto limpiará la lista de la compra',
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
+        },
+        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+      }).then((result) => {
+        if (result.isConfirmed) {
+          alert("compra limpiada")
+        }
+      });      
+    },
     handleAddClick(){
       if (this.nuevoProducto==='')
       {
@@ -278,6 +312,7 @@ export default {
       })
     },
     handleSelectSupermercado(selected) { this.supermercadoActivo.value=selected },
+    handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected}
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
@@ -299,6 +334,9 @@ export default {
 
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
+      const supermercadoSL=ref({})
+      console.log("supermercados",supermercados[0])
+      supermercadoSL.value=supermercados[0]
       function fixProductos(productos){
         productos.forEach(producto=> {
           if (!Object.prototype.hasOwnProperty.call(producto, 'supermercado')) producto.supermercado = { id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" }
@@ -383,6 +421,7 @@ export default {
         categoriesData,
         categoriaActiva,
         supermercadoActivo,
+        supermercadoSL,
         supermercados, 
         defaultTabActive,
         saveProductsState,
@@ -437,5 +476,22 @@ html,body
 div:where(.swal2-container) .swal2-html-container {
     z-index: 10 !important;
     overflow: visible !important;
+}
+hr {
+    margin: .5rem auto !important; 
+    width: 60%;
+    text-align: center;
+}
+.clearList button
+{
+  border-radius: 0px !important;
+  width: -webkit-fill-available;
+}
+.overflow-hidden
+{
+  overflow: hidden;
+}
+.pr-0{
+  padding-right: 0 !important;
 }
 </style>

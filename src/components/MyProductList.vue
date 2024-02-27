@@ -21,10 +21,14 @@ export default {
     MyProduct
   },
   props: {
-    productList:  { type: Array,    required: true  },
-    orderBy:      { type: String,   default: 'name' },
-    selected:     { type: Boolean,  default: false  },
-    canBeDone:    { type: Boolean,  default: false  }
+    productList:      { type: Array,    required: true  },
+    orderBy:          { type: String,   default: 'name' },
+    selected:         { type: Boolean,  default: false  },
+    canBeDone:        { type: Boolean,  default: false  },
+    showOnlyDone:     { type: Boolean,  default: false  },
+    hideDone:         { type: Boolean,  default: false  },
+    hideSupermercado: { type: Boolean,  default: false  },
+    supermercado:     { type: Number,   default: 0      },
   },
   methods:{
     handleClick(product){this.$emit('click:product',product)},
@@ -32,13 +36,31 @@ export default {
   },
   computed: {
     sortedProductList() {
+      let aux = this.productList;
+      if (this.showOnlyDone) {
+        aux = this.productList.filter(product => product.done);
+      }
+      else if (this.hideDone) {
+        aux = this.productList.filter(product => !product.done);
+        if (this.supermercado !== 0) {
+          aux = aux.filter(product => {
+            if (this.hideSupermercado) {
+              return product.supermercado.id !== this.supermercado && product.supermercado.id !== 0;
+            }
+            else {
+              return product.supermercado.id === this.supermercado || product.supermercado.id === 0;
+            }
+          });
+        }
+      }
+
       if (this.orderBy === 'name') {
-        return this.productList.slice()
+        return aux.slice()
           .filter(item => !this.selected || item.isSelected)
           .sort((a, b) => a.text.localeCompare(b.text));
       } else {
         // Ordenar primero por id_categoria y luego por text
-        return this.productList.slice()
+        return aux.slice()
           .filter(item => !this.selected || item.selected)
           .sort((a, b) => {
             if (a.id_categoria !== b.id_categoria) {
