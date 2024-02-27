@@ -49,16 +49,20 @@
           </div>
         </div>
         <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
-          <div v-show="productsData.some(item=>item.selected)">
-            <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }} </div>
+          <div v-show="productsData.some(item=>item.selected && item.id_supermercado==(supermercadoSL.value?.id || 0) && !item.done)">
+            <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }}<hr /></div>
             <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
-          <div v-show="supermercadoSL.value?.id!=0 || 0">
-            <div class="w-100 text-center"><hr />Para comprar en otros Supermercados</div>
-            <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          <div v-show="
+          (
+            supermercadoSL.value?.id!=0 && 
+            productsData.some(item=>item.selected && !item.done && (item.id_supermercado!=(supermercadoSL.value?.id||0) && (item.id_supermercado!=0)))
+          ) || 0">
+            <div class="w-100 text-center">Para comprar en otros Supermercados<hr /></div>
+            <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
           <div v-show="productsData.some(item=>item.done)">
-            <div class="w-100 text-center"><hr />Ya comprado</div>
+            <div class="w-100 text-center">Ya comprado<hr /></div>
             <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :canBeDone="true" :showOnlyDone="true" @click:product="handleShoplistClick" />
           </div>
         </MyCard>
