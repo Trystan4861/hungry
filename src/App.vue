@@ -48,8 +48,10 @@
           </div>
         </div>
         <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
-          <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }} </div>
-          <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          <div v-show="productsData.some(item=>item.selected)">
+            <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }} </div>
+            <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          </div>
           <div v-show="supermercadoSL.value?.id!=0 || 0">
             <div class="w-100 text-center"><hr />Para comprar en otros Supermercados</div>
             <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
@@ -406,7 +408,13 @@ export default {
             confirmButtonText:'Aceptar'
           })
       }
+      watch(categoriesData, (newData) => {
+        store.dispatch('setCategorias', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData));
+      });
 
+      watch(productsData, (newData) => {
+        store.dispatch('setProductos', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData));
+      });
 
       //const selectedSupermercado = ref('');
       return {
@@ -427,15 +435,6 @@ export default {
   },
   mounted(){
     setTimeout(this.nuevoProductoFocus,500);
-  },
-    watchers: {
-    categoriesData(newData) {
-      console.log("entra")
-      this.store.dispatch('setCategorias', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData));
-    },
-    productsData(newData) {
-      this.store.dispatch('setProductos', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData));
-    },
   },  
 };
 </script>
