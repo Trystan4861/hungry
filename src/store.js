@@ -4,6 +4,7 @@ export default createStore({
   state: {
     appStatic:{
       varIDCategoria:-1,
+      saveProductsState:true,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
         { logo:'config.svg'},
@@ -24,8 +25,8 @@ export default createStore({
       ]
     },
     configuracion:{
+      appName:'Hungry!',
       defaultTabActive:4,
-      saveProductsState:true,
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
         { id: 1, text:'Categoría  2', bgColor:'#d8993c', visible:true },
@@ -65,14 +66,12 @@ export default createStore({
     setProducts           ( state,      productos       ) { state.configuracion.productos         = productos         },
     setDefaultTabActive   ( state,      defaultTabActive) { state.configuracion.defaultTabActive  = defaultTabActive  },
     setConfiguracion      ( state,      configuracion   ) { state.configuracion                   = configuracion     },
-    setSaveProductsState  ( state,     saveProductsState) { state.configuracion.saveProductsState = saveProductsState },
   },
   actions: {
     setConfiguracion      ({ commit }, configuracion    ) { commit('setConfiguracion',     configuracion    )         },
     setProductos          ({ commit }, productos        ) { commit('setProducts',          productos        )         },
-    setCategorias         ({ commit }, productos        ) { commit('setCategories',        productos        )         },
+    setCategorias         ({ commit }, categorias       ) { commit('setCategories',        categorias       )         },
     setDefaultTabActive   ({ commit }, defaultTabActive ) { commit('setDefaultTabActive',  defaultTabActive )         },
-    setSaveProductsState  ({ commit }, saveProductsState) { commit('setSaveProductsState', saveProductsState)         },
   },
   getters: {
     getConfiguracion:     (state)=>(  )=>state.configuracion,
@@ -80,12 +79,12 @@ export default createStore({
     getCategoriaFromID:   (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
     getDefaultTabActive:  (state)=>(  )=>state.configuracion.defaultTabActive,
     getProductos:         (state)=>(  )=>state.configuracion.productos  ,
-    getSaveProductsState: (state)=>(  )=>state.configuracion.saveProductsState,
-
+    
     getTabs:              (state)=>(  )=>state.appStatic.tabs,
     getConfigNames:       (state)=>(  )=>state.appStatic.configNames,
     getVarIDCategoria:    (state)=>(  )=>state.appStatic.varIDCategoria,
     getLocalStorageKeys:  (state)=>(  )=>state.appStatic.localStorageKeys,
     getSupermercados:     (state)=>(  )=>state.appStatic.supermercados,
+    getSaveProductsState: (state)=>(  )=>state.appStatic.saveProductsState,
   }
                     });

@@ -204,11 +204,10 @@ export default {
         this.productsData[index].done=false
         if (this.saveProductsState) this.productsData=[...this.productsData]
       }
-      else console.log("error en indice",product,this.productsData)
+      else throw new Error('Error id de producto no encontrado en la lista de productos')
     },
     handeLongClickProduct(product){
       this.productoSeleccionado=product;
-      console.log("handeLongClickProduct",product)
       Swal.fire({
         title: product.text,
         text: '¿Qué desea hacer?',
@@ -339,7 +338,6 @@ export default {
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
-      console.log("supermercados",supermercados[0])
       supermercadoSL.value=supermercados[0]
       function fixProductos(productos){
         productos.forEach(producto=> {
@@ -377,14 +375,8 @@ export default {
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
-      watch(categoriesData,(newData)=>{
-        console.log("watch(categoriesData",newData)
-        store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData))
-      })
-      watch(productsData,(newData)=>{
-        console.log("watch(productsData",newData)
-        store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData))
-      })
+      watch(categoriesData,(newData)=>{ store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) })
+      watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData)) })
       const handleImportConfigurationFileError=(error)=>
       {
         Swal.fire({
@@ -435,7 +427,16 @@ export default {
   },
   mounted(){
     setTimeout(this.nuevoProductoFocus,500);
-  }
+  },
+    watchers: {
+    categoriesData(newData) {
+      console.log("entra")
+      this.store.dispatch('setCategorias', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData));
+    },
+    productsData(newData) {
+      this.store.dispatch('setProductos', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData));
+    },
+  },  
 };
 </script>
 
