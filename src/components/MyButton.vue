@@ -1,6 +1,6 @@
 <template>
   <div class="my-button">
-    <button :class="['btn', `btn-${btnClass}`]" @click="submit">{{ text }}</button>
+    <button :class="['btn', `btn-${btnClass}`]" @click="submit"><span class="btn-text">{{ text }}</span></button>
   </div>
 </template>
 
@@ -16,10 +16,14 @@
   }
 </script>
 
-<style>
-  button
-  {
+<style scoped>
+  button{
     width: 100%;
     height: 3.125rem;
+    padding: 0;
+  }
+  span{
+    position: relative;
+    left: -0.3125rem
   }
 </style>

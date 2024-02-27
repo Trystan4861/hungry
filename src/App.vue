@@ -270,13 +270,17 @@ export default {
         confirmButtonText: 'Aceptar',
         cancelButtonText: 'Cancelar',
         customClass: {
-          cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
-          confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
+          confirmButton: 'btn btn-danger', // Clase CSS para el botón de cancelación (No)
+          cancelButton: 'btn btn-success ml-3', // Clase CSS para el botón de confirmación (Sí)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
       }).then((result) => {
         if (result.isConfirmed) {
-          alert("compra limpiada")
+          this.productsData.forEach(producto=>{
+            producto.selected=false
+            producto.done=false
+          })
+          this.productsData=[...this.productsData]
         }
       });      
     },
@@ -493,5 +497,11 @@ hr {
 }
 .pr-0{
   padding-right: 0 !important;
+}
+.ml-3 {
+    margin-left: 1rem !important;
+}
+.mr-3 {
+    margin-right: 1rem !important;
 }
 </style>

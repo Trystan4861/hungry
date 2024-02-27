@@ -84,4 +84,8 @@ export default {
 .done{
   text-decoration: line-through;
 }
+span{
+  position: relative;
+  left: -0.3125rem
+}
 </style>
