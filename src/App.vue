@@ -6,6 +6,7 @@
           <h1 class="text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" />
             <div class="text-center author">by Trystan4861</div>
           </h1>
+          <SlotConfigurationCategories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
           <SlotConfigurationExport :configNames="CONFIG_NAMES" />
           <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
         </MyCard>
@@ -48,8 +49,10 @@
           </div>
         </div>
         <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
-          <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }} </div>
-          <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          <div v-show="productsData.some(item=>item.selected)">
+            <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }} </div>
+            <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+          </div>
           <div v-show="supermercadoSL.value?.id!=0 || 0">
             <div class="w-100 text-center"><hr />Para comprar en otros Supermercados</div>
             <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
@@ -86,6 +89,7 @@ import { useStore }             from 'vuex';
 import Swal                     from 'sweetalert2';
 import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
 import SlotConfigurationImport  from './components/SlotConfigurationImport.vue';
+import SlotConfigurationCategories from './components/SlotConfigurationCategories.vue'
 
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData'];
 const INDEX_CATEGORIAS=0;
@@ -104,6 +108,7 @@ export default {
     MyTab,
     SlotConfigurationExport,
     SlotConfigurationImport,
+    SlotConfigurationCategories,
   },
   data(){
     return{
@@ -112,7 +117,8 @@ export default {
       productoAEditar:'',
       configs2Export:[],
       alturaDisponible:0,
-      productoSeleccionado:{}
+      productoSeleccionado:{},
+      categoriasVisibles:null
     }
   },
   methods:{
@@ -204,11 +210,10 @@ export default {
         this.productsData[index].done=false
         if (this.saveProductsState) this.productsData=[...this.productsData]
       }
-      else console.log("error en indice",product,this.productsData)
+      else throw new Error('Error id de producto no encontrado en la lista de productos')
     },
     handeLongClickProduct(product){
       this.productoSeleccionado=product;
-      console.log("handeLongClickProduct",product)
       Swal.fire({
         title: product.text,
         text: '¿Qué desea hacer?',
@@ -316,7 +321,21 @@ export default {
       })
     },
     handleSelectSupermercado(selected) { this.supermercadoActivo.value=selected },
-    handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected}
+    handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
+    handleCategoriesChecked(data)
+    {
+      this.categoriasVisibles=this.categoriesData.map(categoria => ({ ...categoria }));
+      this.categoriasVisibles.forEach((item,index)=>item.visible=data.includes(index))
+    },
+    handleCategoriesButtonClicked(){
+      this.categoriesData=this.categoriasVisibles
+      Swal.fire({
+          icon:'success',
+          title:'Atención',
+          html:`Cambibos guardados correctamente`,
+          confirmButtonText:'Aceptar'
+        })
+    }
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
@@ -339,7 +358,6 @@ export default {
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
-      console.log("supermercados",supermercados[0])
       supermercadoSL.value=supermercados[0]
       function fixProductos(productos){
         productos.forEach(producto=> {
@@ -377,14 +395,11 @@ export default {
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
-      watch(categoriesData,(newData)=>{
-        console.log("watch(categoriesData",newData)
-        store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData))
+      watch(categoriesData,(newData)=>{ 
+        console.log("watch(categoriesData")
+        store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) 
       })
-      watch(productsData,(newData)=>{
-        console.log("watch(productsData",newData)
-        store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData))
-      })
+      watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData)) })
       const handleImportConfigurationFileError=(error)=>
       {
         Swal.fire({
@@ -414,7 +429,13 @@ export default {
             confirmButtonText:'Aceptar'
           })
       }
+      watch(categoriesData, (newData) => {
+        store.dispatch('setCategorias', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData));
+      });
 
+      watch(productsData, (newData) => {
+        store.dispatch('setProductos', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData));
+      });
 
       //const selectedSupermercado = ref('');
       return {
@@ -435,7 +456,7 @@ export default {
   },
   mounted(){
     setTimeout(this.nuevoProductoFocus,500);
-  }
+  },  
 };
 </script>
 
