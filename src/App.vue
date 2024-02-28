@@ -3,7 +3,7 @@
     <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" >
       <template v-slot:tabContent0> <!-- Configuration -->
         <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
-          <h1 class="text-center">Hungry!<MyImageLoader :image="'hungry.svg'" :className="'logo'" />
+          <h1 class="text-center"><span class="appName">Hungry!</span><MyImageLoader :image="'hungry.svg'" :className="'logo'" />
             <div class="text-center author">by Trystan4861</div>
           </h1>
           <SlotConfigurationCategories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
@@ -42,21 +42,29 @@
       <template v-slot:tabContent4> <!-- Shopping List -->
         <div class="row">
           <div class="col-9 pr-0">
-            <MySelect :options="supermercados" :selected="supermercados[0]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
+            <MySelect :options="supermercados.filter(item=>item.id!=0)" :selected="supermercados[1]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
           </div>
           <div class="col-3 p-0 overflow-hidden">
               <MyButton class="clearList" :text="'Limpiar Lista'" :btnClass="'danger'" @click="clearList" />
           </div>
         </div>
         <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
-          <div v-show="productsData.some(item=>item.selected && item.id_supermercado==(supermercadoSL.value?.id || 0) && !item.done)">
+          <div v-show="
+          productsData.some(item=>
+            item.selected 
+            && (item.id_supermercado==(supermercadoSL.value?.id) || item.id_supermercado==0) 
+            && !item.done
+          )">
             <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }}<hr /></div>
             <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
           <div v-show="
           (
-            supermercadoSL.value?.id!=0 && 
-            productsData.some(item=>item.selected && !item.done && (item.id_supermercado!=(supermercadoSL.value?.id||0) && (item.id_supermercado!=0)))
+            productsData.some(item=>
+              item.selected 
+              && !item.done 
+              && (item.id_supermercado!=(supermercadoSL.value?.id||0) && (item.id_supermercado!=0))
+            )
           ) || 0">
             <div class="w-100 text-center">Para comprar en otros Supermercados<hr /></div>
             <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
@@ -496,11 +504,12 @@ html,body
 .tabs-container::-webkit-scrollbar-thumb { background: #888; }
 .logo { width:60px; }
 .author {
-  font-size: xx-small;
-  width: fit-content;
-  margin: auto;
-  position: relative;
-  top: -15px
+    font-size: xx-small;
+    width: fit-content;
+    margin: auto;
+    position: relative;
+    top: calc(-10px + 0.15vw);
+    left: -15px;
 }
 div:where(.swal2-container) .swal2-html-container {
     z-index: 10 !important;
