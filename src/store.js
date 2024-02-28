@@ -26,6 +26,7 @@ export default createStore({
     },
     configuracion:{
       appName:'Hungry!',
+      maxLenght: 40,
       defaultTabActive:1,
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
@@ -66,6 +67,7 @@ export default createStore({
     setProducts           ( state,      productos       ) { state.configuracion.productos         = productos         },
     setDefaultTabActive   ( state,      defaultTabActive) { state.configuracion.defaultTabActive  = defaultTabActive  },
     setConfiguracion      ( state,      configuracion   ) { state.configuracion                   = configuracion     },
+    setMaxLenght          ( state,      maxLenght       ) { state.configuracion.maxLenght         = maxLenght         },
   },
   actions: {
     setConfiguracion      ({ commit }, configuracion    ) { commit('setConfiguracion',     configuracion    )         },
@@ -78,7 +80,8 @@ export default createStore({
     getCategorias:        (state)=>(  )=>state.configuracion.categorias,
     getCategoriaFromID:   (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
     getDefaultTabActive:  (state)=>(  )=>state.configuracion.defaultTabActive,
-    getProductos:         (state)=>(  )=>state.configuracion.productos  ,
+    getProductos:         (state)=>(  )=>state.configuracion.productos,
+    getMaxLenght:         (state)=>(  )=>state.configuracion.maxLenght,
     
     getTabs:              (state)=>(  )=>state.appStatic.tabs,
     getConfigNames:       (state)=>(  )=>state.appStatic.configNames,

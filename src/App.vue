@@ -15,7 +15,7 @@
         <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyCategoriesList class="mb-4" :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
           <MySelect :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
-          <MyInput class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
+          <MyInput :maxLength="maxLenght" class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
           <MyButton text="Añadir" @click="handleAddClick" />
         </MyCard>
       </template>    
@@ -81,7 +81,7 @@
     <div id="divEditarProducto">
       <MyCategoriesList ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado?.id_categoria || 0" @categorySelected="handleCategorySelected" />
       <MySelect ref="selectRef" :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
-      <MyInput v-model="productoAEditar" :placeholder="productoAEditar"/>
+      <MyInput :maxLength="maxLenght" v-model="productoAEditar" :placeholder="productoAEditar"/>
     </div>
   </div> 
 </template>
@@ -263,6 +263,9 @@ export default {
         title: `Cambiar «${categoria?.text}»`,
         text: 'Introduzca un nuevo nombre para la categoría',
         input: 'text',
+        inputAttributes: {
+          maxlenght: this.maxLenght
+        },
         inputValue: categoria.text,
         showCancelButton: true,
         confirmButtonText: 'Guardar cambios',
@@ -361,6 +364,7 @@ export default {
       const store=useStore();
       const storeGet=store.getters;
       const defaultTabActive=storeGet.getDefaultTabActive()
+      const maxLenght=storeGet.getMaxLenght()
       const saveProductsState=storeGet.getSaveProductsState()
       
       const initialData=[storeGet.getCategorias(),[]]
@@ -470,6 +474,7 @@ export default {
         supermercadoSL,
         supermercados, 
         defaultTabActive,
+        maxLenght,
         saveProductsState,
         handleImportConfigurationFile,
         handleImportConfigurationFileError,
