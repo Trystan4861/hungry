@@ -1,4 +1,5 @@
 <template>
+  <div>
     <p>Cambiar visibilidad de Categorías</p>
     <div class="categoriesContainer">
       <MyCheckbox
@@ -14,13 +15,15 @@
       />
     </div>
     <MyButton :text="'Guardar Categorías Visibles'" :btnClass="'secondary'" @click="handleClick"/>
+  </div>
 </template>
+
 <script>
 import MyCheckbox from './MyCheckbox.vue';
 import MyButton from './MyButton.vue';
 
 import { useStore } from 'vuex';
-import { ref, onMounted } from 'vue';
+import { ref, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 
 export default {
@@ -29,30 +32,45 @@ export default {
     MyCheckbox,
     MyButton,
   },
-  setup(props,{emit}) {
-    const categorias = useStore().getters.getCategorias().map(categoria => ({ ...categoria }));
+  setup(props, { emit }) {
+    const store = useStore();
     const checkedItems = ref([]);
+    const categorias = ref([]);
 
-    onMounted(() => {
-      checkedItems.value = categorias.reduce((acc, curr, index) => {
+    // Función para obtener los índices de los elementos visibles
+    function getVisibleIndices(categorias) {
+      return categorias.reduce((acc, curr, index) => {
         if (curr.visible) {
           acc.push(index);
         }
         return acc;
       }, []);
+    }
+
+    // Inicialización de categorias y checkedItems
+    categorias.value = store.getters.getCategorias();
+    checkedItems.value = getVisibleIndices(categorias.value);
+
+    // Reaccionar a cambios en categorias
+    watchEffect(() => {
+      categorias.value = store.getters.getCategorias();
+      checkedItems.value = getVisibleIndices(categorias.value);
     });
 
-    const handleClick=()=>emit('buttonClicked')
+    const handleClick = () => emit('buttonClicked');
     const handleCheckedValuesUpdate = (newCheckedItems) => {
       checkedItems.value = newCheckedItems;
-      emit('categoriesChecked',newCheckedItems)
+      emit('categoriesChecked', newCheckedItems);
     };
-    const handleLastCategoryVisible=()=>Swal.fire({
-            icon:'error',
-            title:'Error',
-            html:"Al  menos una categoría debe permanecer visible",
-            confirmButtonText:'Aceptar'
-          })
+    const handleLastCategoryVisible = () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        html: "Al menos una categoría debe permanecer visible",
+        confirmButtonText: 'Aceptar'
+      });
+    };
+
     return {
       categorias,
       checkedItems,
@@ -61,16 +79,17 @@ export default {
       handleClick
     };
   },
-  emits: ['categoriesChecked','buttonClicked']
+  emits: ['categoriesChecked', 'buttonClicked']
 };
 </script>
+
 <style scoped>
-  .categoriesContainer{
-    max-height: 250px;
-    overflow-y: auto;
-    margin-bottom: .625rem;
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f0f0f0;
-    user-select: none;
+.categoriesContainer {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: .625rem;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f0f0f0;
+  user-select: none;
 }
 </style>
