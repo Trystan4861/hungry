@@ -26,7 +26,7 @@ export default createStore({
     },
     configuracion:{
       appName:'Hungry!',
-      defaultTabActive:2,
+      defaultTabActive:1,
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
         { id: 1, text:'Categoría  2', bgColor:'#d8993c', visible:true },
