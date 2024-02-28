@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <input ref="myInput" type="text" :id="inputID"  v-model="inputValue" @keyup.enter="handleEnterPressed" :placeholder="placeholder">
+    <input ref="myInput" type="text" :id="inputID" v-model="inputValue" @keydown="handleKeyDown" :placeholder="placeholder" :maxlength="maxLength">
   </div>
 </template>
 
@@ -16,9 +16,13 @@ export default {
       type: String,
       default: 'Añade elementos aquí'
     },
-    autofocus:{
+    autofocus: {
       type: Boolean,
-      default:false
+      default: false
+    },
+    maxLength: {
+      type: Number,
+      default: Infinity
     }
   },
   data() {
@@ -37,25 +41,35 @@ export default {
       this.$emit('update:modelValue', newValue);
     }
   },
-  methods:{
+  methods: {
     focusInput() {
       if (!this.autofocus) return;
       this.$refs.myInput.focus();
+    },
+    handleKeyDown(event) {
+      if (
+        this.maxLength !== Infinity &&
+        this.inputValue.length >= this.maxLength &&
+        event.key !== 'Enter' &&
+        event.key !== 'Backspace' && // Permitir eliminar caracteres con la tecla de retroceso
+        event.key !== 'Delete' // Permitir eliminar caracteres con la tecla de suprimir
+      ) {
+        event.preventDefault(); // Evitar que se introduzcan más caracteres si se alcanza el límite
+      }
+      if (event.key === 'Enter') {
+        this.$emit('keyPressed:enter'); // Emitir evento cuando se presiona la tecla "Enter"
+      }
     }
   },
-  setup(props,{emit}){
-      const handleEnterPressed =()=>{
-          emit('keyPressed:enter')
-      }
-      return {
-        handleEnterPressed
-      }
-  },
-  emits: ['update:modelValue','keyPressed:enter'],
   mounted() {
     // Llama a la función para enfocar el input después de que el componente se monte
-      setTimeout(this.focusInput,500);
-  }
+    setTimeout(() => {
+      if (this.autofocus) {
+        this.focusInput();
+      }
+    }, 1000);
+  },
+  emits: ['update:modelValue', 'keyPressed:enter']
 };
 </script>
 
