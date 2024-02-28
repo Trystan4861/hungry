@@ -27,7 +27,6 @@
             @click:product="handleClickProduct"
             @longClick:product="handeLongClickProduct"
           />
-          <div>{{categoriasVisiblesIds}}</div>
         </MyCard>
       </template>
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
