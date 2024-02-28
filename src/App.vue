@@ -22,17 +22,18 @@
       <template v-slot:tabContent2> <!-- orderBy name -->
         <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
-            :productList="productsData" 
+            :productList="productosVisibles" 
             orderBy="name"
             @click:product="handleClickProduct"
             @longClick:product="handeLongClickProduct"
           />
+          <div>{{categoriasVisiblesIds}}</div>
         </MyCard>
       </template>
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
         <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <MyProductList 
-            :productList="productsData" 
+            :productList="productosVisibles" 
             orderBy="categoryId"
             @click:product="handleClickProduct"
             @longClick:product="handeLongClickProduct"
@@ -50,28 +51,28 @@
         </div>
         <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
           <div v-show="
-          productsData.some(item=>
+          productosVisibles.some(item=>
             item.selected 
             && (item.id_supermercado==(supermercadoSL.value?.id) || item.id_supermercado==0) 
             && !item.done
           )">
             <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }}<hr /></div>
-            <MyProductList :productList="productsData" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+            <MyProductList :productList="productosVisibles" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
           <div v-show="
           (
-            productsData.some(item=>
+            productosVisibles.some(item=>
               item.selected 
               && !item.done 
               && (item.id_supermercado!=(supermercadoSL.value?.id||0) && (item.id_supermercado!=0))
             )
           ) || 0">
             <div class="w-100 text-center">Para comprar en otros Supermercados<hr /></div>
-            <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+            <MyProductList :productList="productosVisibles" orderBy="categoryId" :selected="true" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
-          <div v-show="productsData.some(item=>item.done)">
+          <div v-show="productosVisibles.some(item=>item.done)">
             <div class="w-100 text-center">Ya comprado<hr /></div>
-            <MyProductList :productList="productsData" orderBy="categoryId" :selected="true" :canBeDone="true" :showOnlyDone="true" @click:product="handleShoplistClick" />
+            <MyProductList :productList="productosVisibles" orderBy="categoryId" :selected="true" :canBeDone="true" :showOnlyDone="true" @click:product="handleShoplistClick" />
           </div>
         </MyCard>
       </template>
@@ -130,7 +131,7 @@ export default {
       configs2Export:[],
       alturaDisponible:0,
       productoSeleccionado:{},
-      categoriasVisibles:null
+      categoriasVisibles:null,
     }
   },
   methods:{
@@ -197,8 +198,8 @@ export default {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         customClass: {
+          confirmButton: 'btn btn-danger mr-1', // Clase CSS para el botón de cancelación (No)
           cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
-          confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
       }).then((result) => {
@@ -234,9 +235,9 @@ export default {
         confirmButtonText: 'Editar Producto',
         cancelButtonText: 'Cancelar',
         customClass: {
-          confirmButton: 'btn btn-success mb-2', // Clase CSS para el botón de confirmación (Sí)
-          denyButton: 'btn btn-danger mb-2',
-          cancelButton: 'btn btn-primary',
+          confirmButton: 'btn btn-success mr-1 mb-2', // Clase CSS para el botón de confirmación (Sí)
+          denyButton: 'btn btn-danger mb-2 mr-1',
+          cancelButton: 'btn btn-primary mb-2',
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
         showDenyButton: true, // Mostrar el tercer botón
@@ -268,7 +269,7 @@ export default {
         confirmButtonText: 'Guardar cambios',
         cancelButtonText: 'Cancelar',
         customClass: {
-          cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
+          cancelButton: 'btn btn-success, mb-2 mr-1', // Clase CSS para el botón de confirmación (Sí)
           confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
@@ -287,8 +288,8 @@ export default {
         confirmButtonText: 'Aceptar',
         cancelButtonText: 'Cancelar',
         customClass: {
-          confirmButton: 'btn btn-danger', // Clase CSS para el botón de cancelación (No)
-          cancelButton: 'btn btn-success ml-3', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-danger mr-1', // Clase CSS para el botón de cancelación (No)
+          cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
       }).then((result) => {
@@ -338,16 +339,22 @@ export default {
     {
       this.categoriasVisibles=this.categoriesData.map(categoria => ({ ...categoria }));
       this.categoriasVisibles.forEach((item,index)=>item.visible=data.includes(index))
+      this.categoriasVisiblesIds=data
     },
     handleCategoriesButtonClicked(){
       this.categoriesData=this.categoriasVisibles
       Swal.fire({
           icon:'success',
           title:'Atención',
-          html:`Cambibos guardados correctamente`,
+          html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
           confirmButtonText:'Aceptar'
         })
     }
+  },
+  computed:{
+    productosVisibles: function() {
+        return this.productsData.filter(producto => this.categoriasVisiblesIds.includes(producto.categoria.id));
+    }    
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
@@ -364,8 +371,11 @@ export default {
 
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
       const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
+      const categoriasVisiblesIds=ref([])
 
       if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
+
+      categoriasVisiblesIds.value=categoriesData.value.filter(item=>item.visible).map(item=>item.id)
 
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
@@ -457,6 +467,7 @@ export default {
         productsData,
         categoriesData,
         categoriaActiva,
+        categoriasVisiblesIds,
         supermercadoActivo,
         supermercadoSL,
         supermercados, 
@@ -537,5 +548,8 @@ hr {
 }
 .mr-3 {
     margin-right: 1rem !important;
+}
+.mr-1{
+  margin-right: .25rem !important;
 }
 </style>
