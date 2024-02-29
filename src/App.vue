@@ -17,7 +17,6 @@
           <MySelect :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
           <MyInput :maxLength="maxLenght" class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
           <MyButton text="Añadir" @click="handleAddClick" />
-          <div class="touch" v-touch:tap="tapHandler" v-touch:drag="handleSwipe">TOUCH ME</div>
         </MyCard>
       </template>    
       <template v-slot:tabContent2> <!-- orderBy name -->
@@ -136,12 +135,6 @@ export default {
   },
   methods:{
     findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
-    tapHandler(){
-      console.log("was tapped")
-    },
-    handleSwipe(data){
-      console.log(`drag`,data)
-    },
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
       this.productoAEditar=this.productoSeleccionado.text
