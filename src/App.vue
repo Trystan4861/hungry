@@ -348,6 +348,9 @@ export default {
         });
         this.nuevoProducto="";
         this.productsData=[...this.productsData]
+        let input=document.querySelector("#tab1").querySelector("input")
+        input.focus()
+        input.setSelectionRange(input.value.length,input.value.length)
       }
       else
         Swal.fire({
