@@ -1,0 +1,501 @@
+{
+  "appName": "Hungry!",
+  "maxLenght": 40,
+  "defaultTabActive": 1,
+  "alturaDisponible": 619,
+  "categorias": [
+    {
+      "id": 0,
+      "text": "Carnes y Huevos",
+      "bgColor": "#d83c3d",
+      "visible": true
+    },
+    {
+      "id": 1,
+      "text": "Legumbres y Pastas",
+      "bgColor": "#d8993c",
+      "visible": true
+    },
+    {
+      "id": 2,
+      "text": "Frutería",
+      "bgColor": "#b9d83c",
+      "visible": true
+    },
+    {
+      "id": 3,
+      "text": "Conservas",
+      "bgColor": "#5bd83c",
+      "visible": true
+    },
+    {
+      "id": 4,
+      "text": "Panadería",
+      "bgColor": "#3dd87a",
+      "visible": true
+    },
+    {
+      "id": 5,
+      "text": "Congelados",
+      "bgColor": "#47ffff",
+      "visible": true
+    },
+    {
+      "id": 6,
+      "text": "Lácteos",
+      "bgColor": "#3b7ad7",
+      "visible": true
+    },
+    {
+      "id": 7,
+      "text": "Aperitivos",
+      "bgColor": "#5b3cd8",
+      "visible": true
+    },
+    {
+      "id": 8,
+      "text": "Varios",
+      "bgColor": "#b83cd8",
+      "visible": true
+    },
+    {
+      "id": 9,
+      "text": "Bebidas",
+      "bgColor": "#d83ba4",
+      "visible": true
+    },
+    {
+      "id": 10,
+      "text": "Aceites y Salsas",
+      "bgColor": "#6f1918",
+      "visible": true
+    },
+    {
+      "id": 11,
+      "text": "Pescadería",
+      "bgColor": "#704c1a",
+      "visible": true
+    },
+    {
+      "id": 12,
+      "text": "Bio",
+      "bgColor": "#5d6f19",
+      "visible": true
+    },
+    {
+      "id": 13,
+      "text": "Condimentos y Especias",
+      "bgColor": "#2b6f18",
+      "visible": true
+    },
+    {
+      "id": 14,
+      "text": "Higiene Personal",
+      "bgColor": "#1f8448",
+      "visible": true
+    },
+    {
+      "id": 15,
+      "text": "Desayunos",
+      "bgColor": "#196f70",
+      "visible": true
+    },
+    {
+      "id": 16,
+      "text": "Bazar",
+      "bgColor": "#183c6e",
+      "visible": true
+    },
+    {
+      "id": 17,
+      "text": "Limpieza",
+      "bgColor": "#2c186f",
+      "visible": true
+    },
+    {
+      "id": 18,
+      "text": "Mascotas",
+      "bgColor": "#5e186e",
+      "visible": true
+    },
+    {
+      "id": 19,
+      "text": "Otros",
+      "bgColor": "#6e1952",
+      "visible": true
+    }
+  ],
+  "productos": [
+    {
+      "id": 0,
+      "text": "Huevos 🥚",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": false
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false,
+      "amount": 1
+    },
+    {
+      "id": 1,
+      "text": "Pavo 🦃",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false,
+      "amount": 1
+    },
+    {
+      "id": 2,
+      "text": "Leche de Cabra 🐐",
+      "categoria": {
+        "id": 6,
+        "text": "Lácteos",
+        "bgColor": "#3b7ad7",
+        "visible": true
+      },
+      "id_categoria": 6,
+      "supermercado": {
+        "id": 2,
+        "text": "Mercadona",
+        "logo": "mercadona.svg"
+      },
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false,
+      "amount": 1
+    },
+    {
+      "id": 3,
+      "text": "Palomitas de maiz 🍿",
+      "categoria": {
+        "id": 7,
+        "text": "Aperitivos",
+        "bgColor": "#5b3cd8",
+        "visible": true
+      },
+      "id_categoria": 7,
+      "supermercado": {
+        "id": 2,
+        "text": "Mercadona",
+        "logo": "mercadona.svg"
+      },
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false,
+      "amount": 1
+    },
+    {
+      "id": 4,
+      "text": "Tomate frito",
+      "categoria": {
+        "id": 3,
+        "text": "Conservas",
+        "bgColor": "#5bd83c",
+        "visible": true
+      },
+      "id_categoria": 3,
+      "supermercado": {
+        "id": 3,
+        "text": "La Carmela",
+        "logo": "super_carmela.svg"
+      },
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false,
+      "amount": 1
+    },
+    {
+      "id": 5,
+      "text": "Bacon en tiras",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1
+    },
+    {
+      "id": 6,
+      "text": "Carne picada",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 7,
+      "text": "Chorizo",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 8,
+      "text": "Chuletas 🥩",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 9,
+      "text": "Conejo 🐰",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 10,
+      "text": "Costillas de cerdo 🐽",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 11,
+      "text": "Jamón",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 12,
+      "text": "Lomo adobado",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 13,
+      "text": "Manitas de cerdo 🐽",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 14,
+      "text": "Pollo 🐔",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 15,
+      "text": "Puchero",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 16,
+      "text": "Salchichas 🌭",
+      "categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_categoria": 0,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 18,
+      "text": "Arroz largo 🥘",
+      "categoria": {
+        "id": 1,
+        "text": "Legumbres y Pastas",
+        "bgColor": "#d8993c",
+        "visible": true
+      },
+      "id_categoria": 1,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 19,
+      "text": "Garbanzos",
+      "categoria": {
+        "id": 1,
+        "text": "Legumbres y Pastas",
+        "bgColor": "#d8993c",
+        "visible": true
+      },
+      "id_categoria": 1,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 20,
+      "text": "Lentejas",
+      "categoria": {
+        "id": 1,
+        "text": "Legumbres y Pastas",
+        "bgColor": "#d8993c",
+        "visible": true
+      },
+      "id_categoria": 1,
+      "supermercado": {
+        "id": 1,
+        "text": "Carrefour",
+        "logo": "carrefour.svg"
+      },
+      "id_supermercado": 1,
+      "amount": 1
+    }
+  ]
+}
