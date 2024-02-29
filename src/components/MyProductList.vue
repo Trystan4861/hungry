@@ -57,10 +57,10 @@ export default {
         if (this.supermercado !== 0) {
           aux = aux.filter(product => {
             if (this.hideSupermercado) {
-              return product.supermercado.id !== this.supermercado && product.supermercado.id !== 0;
+              return product.id_supermercado !== this.supermercado && product.id_supermercado !== 0;
             }
             else {
-              return product.supermercado.id === this.supermercado || product.supermercado.id === 0;
+              return product.id_supermercado === this.supermercado || product.id_supermercado === 0;
             }
           });
         }

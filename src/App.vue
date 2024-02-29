@@ -139,15 +139,14 @@ export default {
       let aux=document.getElementById("divEditarProducto");
       this.productoAEditar=this.productoSeleccionado.text
       Swal.fire({
-        title: `Editar «${this.productoSeleccionado.text}»`,
+        title: `Editar Producto<br>«${this.productoSeleccionado.text}»`,
         html: '<div id="VueSweetAlert2"></div>',
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
         cancelButtonText: 'Cancelar',
         willOpen:()=>{
           this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria);
-          if (this.productoSeleccionado.supermercado)
-            this.$refs.selectRef.selectOption(this.productoSeleccionado?.supermercado)
+            this.$refs.selectRef.selectOption(this.supermercados[this.findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
           document.getElementById('VueSweetAlert2').appendChild(aux);
         },
         didOpen:()=>{
@@ -341,9 +340,7 @@ export default {
           id:this.productsData.length,
           text:this.nuevoProducto,
           amount: 1,
-          categoria:this.categoriaActiva.value,
           id_categoria:this.categoriaActiva.value.id,
-          supermercado:this.supermercadoActivo.value,
           id_supermercado:this.supermercadoActivo.value.id
         });
         this.nuevoProducto="";
@@ -379,7 +376,7 @@ export default {
   },
   computed:{
     productosVisibles: function() {
-        return this.productsData.filter(producto => this.categoriasVisiblesIds.includes(producto.categoria.id));
+        return this.productsData.filter(producto => this.categoriasVisiblesIds.includes(producto.id_categoria));
     },
     configuracion: function(){
       return useStore().getters.getConfiguracion();
@@ -417,11 +414,12 @@ export default {
       supermercadoSL.value=supermercados[0]
       function fixProductos(productos){
         productos.forEach(producto=> {
-          if (!Object.prototype.hasOwnProperty.call(producto, 'supermercado')) producto.supermercado = { id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" }
+          if (Object.prototype.hasOwnProperty.call(producto, 'supermercado')) delete producto.supermercado
+
           if (!Object.prototype.hasOwnProperty.call(producto, 'id_supermercado')) producto.id_supermercado = producto.supermercado.id
           if (!Object.prototype.hasOwnProperty.call(producto, 'amount')) producto.amount = 1
 
-          if (!Object.prototype.hasOwnProperty.call(producto, 'categoria')) producto.categoria = categoriesData.value[0]
+          if (Object.prototype.hasOwnProperty.call(producto, 'categoria')) delete producto.categoria
           if (!Object.prototype.hasOwnProperty.call(producto, 'id_categoria')) producto.id_categoria = producto.categoria.id        
         })
         return productos;

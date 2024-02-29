@@ -8,7 +8,7 @@
     v-touch:release="handleRelease"
     v-touch:drag.once="handleDrag"
     >
-    <span :style="{ backgroundColor: product.categoria?.bgColor || '#FFF' }" class="productCategory" />
+    <span :style="{ backgroundColor: bgColor }" class="productCategory" />
     <div class="product" :class="{ selected: product.selected, done: product.done && canBeDone }">
       <p :style="{ display: product.selected ? 'block' : 'none' }" class="productAmount">{{ product.amount || 1 }}&nbsp;</p>
       <p class="productText">{{ product.text }}</p>
@@ -18,6 +18,7 @@
 
 <script>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'MyProduct',
@@ -39,7 +40,15 @@ export default {
       default: 500
     },
   },
+  computed: {
+    bgColor(){
+      let categoria=this.storeGet.getCategoriaFromID(this.product.id_categoria)
+      return categoria?.bgColor || "#fff"
+    }
+  },
   setup(props, { emit }) {
+    const store=useStore()
+    const storeGet=store.getters;
     const longPressTimeout = ref(null);
     const longClicked = ref(false);
     const dragInterval=ref(props.dragTime)
@@ -98,6 +107,7 @@ export default {
       handleRelease,
       handleDrag,
       handlePress,
+      storeGet
     };
   },
   emits: ['product:click', 'product:longClick', 'product:drag','product:drag.left','product:drag.right']
