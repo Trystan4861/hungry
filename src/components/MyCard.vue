@@ -53,7 +53,6 @@ export default {
   border-radius: 0 0 .5rem .5rem;
   box-shadow: 0 .25rem .375rem rgba(0, 0, 0, 0.1);
   padding: .3125rem;
-  scrollbar-width: thin;
   overflow-y: auto;
 
 }

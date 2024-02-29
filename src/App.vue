@@ -103,9 +103,10 @@ import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
 import SlotConfigurationImport  from './components/SlotConfigurationImport.vue';
 import SlotConfigurationCategories from './components/SlotConfigurationCategories.vue'
 
-const LOCAL_STORAGE_KEYS = ['categoriesData','productsData'];
+const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData'];
 const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
+const INDEX_ALTURA_DISPONIBLE=2;
 
 export default {
   name:'App',
@@ -128,7 +129,6 @@ export default {
       nuevoProducto:'',
       productoAEditar:'',
       configs2Export:[],
-      alturaDisponible:0,
       productoSeleccionado:{},
       categoriasVisibles:null,
     }
@@ -184,7 +184,20 @@ export default {
           {
               this.productsData[this.findIndexById(newData.id, this.productsData)] = newData;
               this.productsData=[...this.productsData]
+              Swal.fire({
+                title:'Atención',
+                icon: 'success',
+                text: 'Producto modificado correctamente'
+              })
           }
+          else{
+              Swal.fire({
+                title:'Atención',
+                icon: 'info',
+                text: 'No has realizado cambios al producto'
+              })
+          }
+
         }
       });
     },
@@ -197,14 +210,19 @@ export default {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         customClass: {
-          confirmButton: 'btn btn-danger mr-1', // Clase CSS para el botón de cancelación (No)
-          cancelButton: 'btn btn-success, mb-2', // Clase CSS para el botón de confirmación (Sí)
+          confirmButton: 'btn btn-danger mb-2 mr-1', // Clase CSS para el botón de cancelación (No)
+          cancelButton: 'btn btn-success mb-2', // Clase CSS para el botón de confirmación (Sí)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
       }).then((result) => {
         if (result.isConfirmed) {
           this.productsData = this.productsData.filter(item => item.id !== this.productoSeleccionado.id)
           this.productoSeleccionado=null;
+          Swal.fire({
+            title:'Atención',
+            icon: 'success',
+            text: 'Producto eliminado correctamente'
+          })
         }
       });
     },
@@ -238,7 +256,7 @@ export default {
           denyButton: 'btn btn-danger mb-2 mr-1',
           cancelButton: 'btn btn-primary mb-2',
         },
-        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+        buttonsStyling: false, // Desactivar el estilo predefinido de los botonesINDEX_CATEGORIAS
         showDenyButton: true, // Mostrar el tercer botón
         denyButtonText: 'Eliminar Producto', // Texto del tercer botón
       }).then((result) => {
@@ -260,26 +278,28 @@ export default {
     handleCategorySelected(category) { this.categoriaActiva.value = category; },
     handleCategoryLongClick(categoria) {
       Swal.fire({
-        title: `Cambiar «${categoria?.text}»`,
-        text: 'Introduzca un nuevo nombre para la categoría',
-        input: 'text',
-        inputAttributes: {
-          maxlenght: this.maxLenght
+        title: `Cambiar Nombre de Categoría<br> «${categoria?.text}»`,
+        html: ` <label for="inputModifyCategory">Introduzca un nuevo nombre para la categoría</label>
+                <input type="text" class="swal2-input" id="inputModifyCategory" maxlenght="${this.maxLenght}" value="${categoria.text}">
+        `,
+        didOpen: ()=>{
+          setTimeout(()=>{
+            let input=document.querySelector("#inputModifyCategory")
+            input.focus()
+            input.setSelectionRange(input.value.length,input.value.length)
+          },50)
         },
-        inputValue: categoria.text,
+        preConfirm: ()=>{
+          return new Promise((resolve)=>{
+              resolve({value: document.querySelector("#inputModifyCategory").value})
+          }).then((result)=>{
+            this.categoriesData[categoria.id].text = result.value;
+            this.categoriesData=[...this.categoriesData]
+          })
+        },
         showCancelButton: true,
         confirmButtonText: 'Guardar cambios',
         cancelButtonText: 'Cancelar',
-        customClass: {
-          cancelButton: 'btn btn-success, mb-2 mr-1', // Clase CSS para el botón de confirmación (Sí)
-          confirmButton: 'btn btn-danger' // Clase CSS para el botón de cancelación (No)
-        },
-        buttonsStyling: false, // Desactivar el estilo predefinido de los botones
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.categoriesData[categoria.id].text = result.value;
-          this.categoriesData=[...this.categoriesData]
-        }
       });
     },
     clearList(){
@@ -356,17 +376,24 @@ export default {
   computed:{
     productosVisibles: function() {
         return this.productsData.filter(producto => this.categoriasVisiblesIds.includes(producto.categoria.id));
-    }    
+    },
+    configuracion: function(){
+      return useStore().getters.getConfiguracion();
+    }
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
 
       const store=useStore();
       const storeGet=store.getters;
+
       const defaultTabActive=storeGet.getDefaultTabActive()
       const maxLenght=storeGet.getMaxLenght()
       const saveProductsState=storeGet.getSaveProductsState()
       
+      const alturaDisponible=ref()
+      alturaDisponible.value=storeGet.getAlturaDisponible()
+
       const initialData=[storeGet.getCategorias(),[]]
       const CONFIG_NAMES = storeGet.getConfigNames();
       const tabsData= storeGet.getTabs();
@@ -423,6 +450,9 @@ export default {
       watch(categoriesData,(newData)=>{ 
         store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) 
       })
+      watch(alturaDisponible,(newData)=>{ 
+        store.dispatch('setAlturaDisponible',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_ALTURA_DISPONIBLE], newData)) 
+      })
       watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData)) })
       const handleImportConfigurationFileError=(error)=>
       {
@@ -474,6 +504,7 @@ export default {
         supermercadoSL,
         supermercados, 
         defaultTabActive,
+        alturaDisponible,
         maxLenght,
         saveProductsState,
         handleImportConfigurationFile,
@@ -498,7 +529,20 @@ html,body
   padding: 0; /* Eliminar el padding predeterminado del body */
   overflow: hidden;
 }
+::-webkit-scrollbar {width: 5px;}
+::-webkit-scrollbar-track {background: #f1f1f1;}
+::-webkit-scrollbar-thumb {background: #888;}
+::-webkit-scrollbar-thumb:hover {background: #555;}
+
 #app{ height: 100%!important; }
+.swal2-input{
+    margin: 0;
+    width: 100%;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px;
+}
 .container {
   height: 100%;
   flex-grow: 1; /* Esto hará que .container se expanda */
@@ -510,12 +554,10 @@ html,body
   flex-direction: column;
   flex-grow: 1; /* Esto hace que el contenido se expanda */
   overflow-y: auto; /* Para permitir el desplazamiento si el contenido excede la altura disponible */
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f0f0f0;
 }
-.tabs-container::-webkit-scrollbar { width: 5px; }
-.tabs-container::-webkit-scrollbar-track { background: #f0f0f0; }
-.tabs-container::-webkit-scrollbar-thumb { background: #888; }
+::-webkit-scrollbar {height: 4px;width: 4px;}
+::-webkit-scrollbar-track { background: #f0f0f0; }
+::-webkit-scrollbar-thumb { background: #888; }
 .logo { width:60px; }
 .author {
     font-size: xx-small;
