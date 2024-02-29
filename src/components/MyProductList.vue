@@ -5,8 +5,9 @@
       :key="index" 
       :product="product"
       :canBeDone="canBeDone" 
-      @click:product="handleClick(product)" 
-      @longClick:product="handleLongClick(product)"
+      @product:click="handleClick(product)" 
+      @product:longClick="handleLongClick(product)"
+      @product:drag="handleDrag"
       />
     </div>
   </div>
@@ -31,6 +32,17 @@ export default {
     supermercado:     { type: Number,   default: 0      },
   },
   methods:{
+    handleDrag(direction,product)
+    {
+      if(direction=='left')
+      {
+        product.amount-=1
+        if (product.amount==0)
+          product.selected=false
+      }
+      else
+        product.amount+=1
+    },
     handleClick(product){this.$emit('click:product',product)},
     handleLongClick(product){ this.$emit('longClick:product',product)}
   },
