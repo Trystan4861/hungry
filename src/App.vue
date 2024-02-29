@@ -20,7 +20,7 @@
         </MyCard>
       </template>    
       <template v-slot:tabContent2> <!-- orderBy name -->
-        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
+        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'" v-touch:drag.once="handleDragCard">
           <MyProductList 
             :productList="productosVisibles" 
             orderBy="name"
@@ -30,7 +30,7 @@
         </MyCard>
       </template>
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
-        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
+        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'" v-touch:drag.once="handleDragCard">
           <MyProductList 
             :productList="productosVisibles" 
             orderBy="categoryId"
@@ -232,6 +232,7 @@ export default {
       if (this.saveProductsState) this.productsData=[...this.productsData]
     },
     handleClickProduct(product){
+      if (this.storeGet.getIgnoreDrag()) return
       let index=this.findIndexById(product.id,this.productsData)
       if (index!=-1)
       {
@@ -242,6 +243,7 @@ export default {
       else throw new Error('Error id de producto no encontrado en la lista de productos')
     },
     handeLongClickProduct(product){
+      if (this.storeGet.getIgnoreDrag()) return
       this.productoSeleccionado=product;
       Swal.fire({
         title: product.text,
@@ -387,10 +389,11 @@ export default {
 
       const store=useStore();
       const storeGet=store.getters;
-
+      const ignoreLongClickTimeout=ref(0)
       const defaultTabActive=storeGet.getDefaultTabActive()
       const maxLenght=storeGet.getMaxLenght()
       const saveProductsState=storeGet.getSaveProductsState()
+      const controlY=ref(-1)
       
       const alturaDisponible=ref()
       alturaDisponible.value=storeGet.getAlturaDisponible()
@@ -466,6 +469,23 @@ export default {
           confirmButtonText:'Aceptar'
         })
       }
+      const handleDragCard=(event)=>{
+        if (controlY.value<0) controlY.value=event.touches[0].clientY
+        if (controlY.value-event.touches[0].clientY>10)
+        {
+          if (!storeGet.getIgnoreDrag())
+          {
+            store.dispatch('setIgnoreDrag',true)
+          }
+        }
+      clearTimeout(ignoreLongClickTimeout.value)
+      ignoreLongClickTimeout.value=setTimeout(releaseIgnoreLongClick ,1000)
+    }
+    const releaseIgnoreLongClick=()=>{
+      controlY.value=-1
+      store.dispatch('setIgnoreDrag',false)
+    }
+
       const handleImportConfigurationFile=(data)=>{
         let importado=[];
         if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0) {
@@ -497,6 +517,7 @@ export default {
       //const selectedSupermercado = ref('');
       return {
         store,
+        storeGet,
         CONFIG_NAMES,
         tabsData, 
         productsData,
@@ -512,6 +533,9 @@ export default {
         saveProductsState,
         handleImportConfigurationFile,
         handleImportConfigurationFileError,
+        ignoreLongClickTimeout,
+        handleDragCard,
+        releaseIgnoreLongClick,
     }
   },
   mounted(){

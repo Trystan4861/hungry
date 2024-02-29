@@ -43,7 +43,10 @@ export default {
       else
         product.amount+=1
     },
-    handleClick(product){this.$emit('click:product',product)},
+    handleClick(product){
+      if (product.amount<0) product.amount=1
+      this.$emit('click:product',product)
+      },
     handleLongClick(product){ this.$emit('longClick:product',product)}
   },
   computed: {

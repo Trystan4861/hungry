@@ -5,6 +5,7 @@ export default createStore({
     appStatic:{
       varIDCategoria:-1,
       saveProductsState:true,
+      ignoreDrag:false,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
         { logo:'config.svg'},
@@ -70,6 +71,7 @@ export default createStore({
     setConfiguracion       ( state,      configuracion   ) { state.configuracion                   = configuracion     },
     setMaxLenght           ( state,      maxLenght       ) { state.configuracion.maxLenght         = maxLenght         },
     setAlturaDisponible    ( state,      alturaDisponible) { state.configuracion.alturaDisponible  = alturaDisponible  },
+    setIgnoreDrag          ( state,      ignoreDrag      ) { state.appStatic.ignoreDrag            = ignoreDrag        },
   },
   actions: {
     setConfiguracion       ({ commit }, configuracion    ) { commit('setConfiguracion',    configuracion   )           },
@@ -78,6 +80,7 @@ export default createStore({
     setDefaultTabActive    ({ commit }, defaultTabActive ) { commit('setDefaultTabActive', defaultTabActive)           },
     setMaxLenght           ({ commit }, maxLenght        ) { commit('setMaxLenght',        maxLenght       )           },
     setAlturaDisponible    ({ commit }, alturaDisponible ) { commit('setAlturaDisponible', alturaDisponible)           },
+    setIgnoreDrag          ({ commit }, ignoreDrag       ) { commit('setIgnoreDrag',       ignoreDrag      )           },
   },
   getters: {
     getConfiguracion:      (state)=>(  )=>state.configuracion,
@@ -95,5 +98,6 @@ export default createStore({
     getSupermercados:      (state)=>(  )=>state.appStatic.supermercados,
     getSupermercadoFromID: (state)=>(id)=>state.appStatic.supermercados.find(supermercado=>supermercado.id===id),
     getSaveProductsState:  (state)=>(  )=>state.appStatic.saveProductsState,
+    getIgnoreDrag:         (state)=>(  )=>state.appStatic.ignoreDrag,
   }
 });

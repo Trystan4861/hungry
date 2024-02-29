@@ -2,7 +2,7 @@
   "appName": "Hungry!",
   "maxLenght": 40,
   "defaultTabActive": 1,
-  "alturaDisponible": 619,
+  "alturaDisponible": 580,
   "categorias": [
     {
       "id": 0,
@@ -129,18 +129,7 @@
     {
       "id": 0,
       "text": "Huevos 🥚",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": false
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "selected": false,
       "done": false,
@@ -149,18 +138,7 @@
     {
       "id": 1,
       "text": "Pavo 🦃",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "selected": false,
       "done": false,
@@ -169,18 +147,7 @@
     {
       "id": 2,
       "text": "Leche de Cabra 🐐",
-      "categoria": {
-        "id": 6,
-        "text": "Lácteos",
-        "bgColor": "#3b7ad7",
-        "visible": true
-      },
       "id_categoria": 6,
-      "supermercado": {
-        "id": 2,
-        "text": "Mercadona",
-        "logo": "mercadona.svg"
-      },
       "id_supermercado": 2,
       "selected": false,
       "done": false,
@@ -189,18 +156,7 @@
     {
       "id": 3,
       "text": "Palomitas de maiz 🍿",
-      "categoria": {
-        "id": 7,
-        "text": "Aperitivos",
-        "bgColor": "#5b3cd8",
-        "visible": true
-      },
       "id_categoria": 7,
-      "supermercado": {
-        "id": 2,
-        "text": "Mercadona",
-        "logo": "mercadona.svg"
-      },
       "id_supermercado": 2,
       "selected": false,
       "done": false,
@@ -209,18 +165,7 @@
     {
       "id": 4,
       "text": "Tomate frito",
-      "categoria": {
-        "id": 3,
-        "text": "Conservas",
-        "bgColor": "#5bd83c",
-        "visible": true
-      },
       "id_categoria": 3,
-      "supermercado": {
-        "id": 3,
-        "text": "La Carmela",
-        "logo": "super_carmela.svg"
-      },
       "id_supermercado": 3,
       "selected": false,
       "done": false,
@@ -229,273 +174,704 @@
     {
       "id": 5,
       "text": "Bacon en tiras",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false,
+      "amount": 0
     },
     {
       "id": 6,
       "text": "Carne picada",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 7,
       "text": "Chorizo",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 8,
       "text": "Chuletas 🥩",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 9,
       "text": "Conejo 🐰",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 10,
       "text": "Costillas de cerdo 🐽",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 11,
       "text": "Jamón",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 12,
       "text": "Lomo adobado",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 13,
       "text": "Manitas de cerdo 🐽",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 14,
       "text": "Pollo 🐔",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 15,
       "text": "Puchero",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 16,
       "text": "Salchichas 🌭",
-      "categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
       "id_categoria": 0,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 17,
+      "text": "Alubias 🫘",
+      "id_categoria": 1,
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 18,
       "text": "Arroz largo 🥘",
-      "categoria": {
-        "id": 1,
-        "text": "Legumbres y Pastas",
-        "bgColor": "#d8993c",
-        "visible": true
-      },
       "id_categoria": 1,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
-      "amount": 1,
-      "selected": false,
-      "done": false
+      "amount": 1
     },
     {
       "id": 19,
       "text": "Garbanzos",
-      "categoria": {
-        "id": 1,
-        "text": "Legumbres y Pastas",
-        "bgColor": "#d8993c",
-        "visible": true
-      },
       "id_categoria": 1,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
     },
     {
       "id": 20,
       "text": "Lentejas",
-      "categoria": {
-        "id": 1,
-        "text": "Legumbres y Pastas",
-        "bgColor": "#d8993c",
-        "visible": true
-      },
       "id_categoria": 1,
-      "supermercado": {
-        "id": 1,
-        "text": "Carrefour",
-        "logo": "carrefour.svg"
-      },
       "id_supermercado": 1,
       "amount": 1
+    },
+    {
+      "id": 21,
+      "text": "Acelgas",
+      "id_categoria": 2,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 22,
+      "text": "Aguacates 🥑",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 23,
+      "text": "Ajos 🧄 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 24,
+      "text": "Albahaca 🌿 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 25,
+      "text": "Apio",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 26,
+      "text": "Berenjena 🍆",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 27,
+      "text": "Boniato 🍠",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 28,
+      "text": "Brócoli 🥦 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 29,
+      "text": "Calabacín 🥒",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 30,
+      "text": "Cebollas 🧅",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 31,
+      "text": "Cerezas 🍒 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 32,
+      "text": "Champiñones 🍄",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 33,
+      "text": "Coliflor",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 34,
+      "text": "Ensalada 🥗 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 35,
+      "text": "Espinacas 🌿",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 36,
+      "text": "Espárragos",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 37,
+      "text": "Fresas 🍓",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 38,
+      "text": "Jengibre",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 39,
+      "text": "Judías verdes",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 40,
+      "text": "Limones 🍋 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 41,
+      "text": "Mandarinas 🍊",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 42,
+      "text": "Mango 🥭",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 43,
+      "text": "Manzana verde 🍏",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 44,
+      "text": "Manzana roja🍎",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 2
+    },
+    {
+      "id": 45,
+      "text": "Melocoton 🍑 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 46,
+      "text": "Melón 🍈 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 47,
+      "text": "Naranjas 🍊",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 48,
+      "text": "Patatas frescas 🥔 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 49,
+      "text": "Pepino 🥒 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 50,
+      "text": "Peras 🍐",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 51,
+      "text": "Peregil 🌱",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 52,
+      "text": "Pimiento Rojo 🌶",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 53,
+      "text": "Pimiento verde 🫑",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 54,
+      "text": "Plátanos 🍌",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 55,
+      "text": "Puerro",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 56,
+      "text": "Remolacha",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 57,
+      "text": "Repollo",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 58,
+      "text": "Sandía 🍉 ",
+      "id_categoria": 2,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 59,
+      "text": "Tomates 🍅",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 60,
+      "text": "Uvas 🍇 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 0
+    },
+    {
+      "id": 61,
+      "text": "Zanahorias 🥕 ",
+      "amount": 1,
+      "id_categoria": 2,
+      "id_supermercado": 1
+    },
+    {
+      "id": 62,
+      "text": "Atún lata🥫",
+      "amount": 1,
+      "id_categoria": 3,
+      "id_supermercado": 1
+    },
+    {
+      "id": 63,
+      "text": "Atún🥫",
+      "amount": 1,
+      "id_categoria": 3,
+      "id_supermercado": 1
+    },
+    {
+      "id": 64,
+      "text": "Mejillones 🥫",
+      "amount": 1,
+      "id_categoria": 3,
+      "id_supermercado": 1
+    },
+    {
+      "id": 65,
+      "text": "Pimientos del piquillo 🥫",
+      "amount": 1,
+      "id_categoria": 3,
+      "id_supermercado": 1
+    },
+    {
+      "id": 66,
+      "text": "Fajitas 🌯",
+      "amount": 1,
+      "id_categoria": 4,
+      "id_supermercado": 1
+    },
+    {
+      "id": 67,
+      "text": "Harina de repostería 🥧",
+      "amount": 1,
+      "id_categoria": 4,
+      "id_supermercado": 1
+    },
+    {
+      "id": 68,
+      "text": "Harina 🌾",
+      "amount": 1,
+      "id_categoria": 4,
+      "id_supermercado": 1
+    },
+    {
+      "id": 69,
+      "text": "Maicena 🌽",
+      "amount": 1,
+      "id_categoria": 4,
+      "id_supermercado": 1
+    },
+    {
+      "id": 70,
+      "text": "Pan rallado 🥖 ",
+      "amount": 1,
+      "id_categoria": 4,
+      "id_supermercado": 0
+    },
+    {
+      "id": 71,
+      "text": "Pan 🍞",
+      "amount": 1,
+      "id_categoria": 4,
+      "id_supermercado": 0
+    },
+    {
+      "id": 72,
+      "text": "Bacalao",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 0
+    },
+    {
+      "id": 73,
+      "text": "Croquetas",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 0
+    },
+    {
+      "id": 74,
+      "text": "Edamame 🫛 🇯🇵 ",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 1
+    },
+    {
+      "id": 75,
+      "text": "Gambas 🦐",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 1
+    },
+    {
+      "id": 76,
+      "text": "Guisantes 🫛",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 1
+    },
+    {
+      "id": 77,
+      "text": "Helados 🍦 ",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 2
+    },
+    {
+      "id": 78,
+      "text": "Merluza 🐟 ",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 1
+    },
+    {
+      "id": 79,
+      "text": "Nugets 🐔",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 1
+    },
+    {
+      "id": 80,
+      "text": "Flan 🍮 ",
+      "id_categoria": 6,
+      "id_supermercado": 0,
+      "amount": 1
+    },
+    {
+      "id": 81,
+      "text": "Leche de almendra 🥛 ",
+      "id_categoria": 6,
+      "id_supermercado": 0,
+      "amount": 1
+    },
+    {
+      "id": 82,
+      "text": "Leche evaporada",
+      "id_categoria": 6,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 83,
+      "text": "Mantequilla",
+      "amount": 1,
+      "id_categoria": 5,
+      "id_supermercado": 1
+    },
+    {
+      "id": 84,
+      "text": "Queso filadelfia",
+      "id_categoria": 6,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 85,
+      "text": "Queso rallado ",
+      "id_categoria": 6,
+      "id_supermercado": 0,
+      "amount": 1
+    },
+    {
+      "id": 86,
+      "text": "Queso rulo 🍥",
+      "id_categoria": 6,
+      "id_supermercado": 0,
+      "amount": 1
+    },
+    {
+      "id": 87,
+      "text": "Queso 🧀",
+      "id_categoria": 6,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 88,
+      "text": "Yogur 0,0 bifidus",
+      "id_categoria": 6,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 89,
+      "text": "Yogur Julen",
+      "id_categoria": 6,
+      "id_supermercado": 1,
+      "amount": 1
+    },
+    {
+      "id": 90,
+      "text": "Yogur líquido ",
+      "id_categoria": 6,
+      "id_supermercado": 0,
+      "amount": 1
+    },
+    {
+      "id": 91,
+      "text": "Aceitunas 🫒",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 0
+    },
+    {
+      "id": 92,
+      "text": "Almendras",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 93,
+      "text": "Altramuces",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 94,
+      "text": "Cacahuetes 🥜",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 95,
+      "text": "Chocolate 🍫",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 96,
+      "text": "Frutos secos",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 0
+    },
+    {
+      "id": 97,
+      "text": "Palomitas 🍿",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 2
+    },
+    {
+      "id": 98,
+      "text": "Nachos",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 99,
+      "text": "Nueces",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 100,
+      "text": "Nutella",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 101,
+      "text": "Tortitas 🥞",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
+    },
+    {
+      "id": 102,
+      "text": "Pasas",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 0
+    },
+    {
+      "id": 103,
+      "text": "Pipas 🌻",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 3
+    },
+    {
+      "id": 104,
+      "text": "Pistachos",
+      "amount": 1,
+      "id_categoria": 7,
+      "id_supermercado": 1
     }
   ]
 }

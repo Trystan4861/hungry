@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
@@ -44,7 +44,7 @@ export default {
     bgColor(){
       let categoria=this.storeGet.getCategoriaFromID(this.product.id_categoria)
       return categoria?.bgColor || "#fff"
-    }
+    },
   },
   setup(props, { emit }) {
     const store=useStore()
@@ -53,6 +53,7 @@ export default {
     const longClicked = ref(false);
     const dragInterval=ref(props.dragTime)
     const dragDirection=ref(null)
+    const ignoreDrag=ref(storeGet.getIgnoreDrag)
     let dragging = false;
     let touchStartX = null;
     const tiempoDrag = 500; // Milisegundos para considerar un drag
@@ -75,6 +76,7 @@ export default {
     };
 
     const handleDrag = (event) => {
+      if (ignoreDrag.value) return
       if (!props.product.selected) return
       dragDirection.value = touchStartX !== null ? (event.touches[0].clientX > touchStartX ? 'right' : 'left') : null;
       if (props.canBeDone || dragging) return;
@@ -84,7 +86,9 @@ export default {
       dragging=true
       emitDragStart();
     };
-
+    watch(() => storeGet.getIgnoreDrag(), (nuevoValor) => {
+      ignoreDrag.value = nuevoValor;
+    });
     const emitDragEnd=()=>{
       clearInterval(dragInterval.value)
       dragging = false;
@@ -107,7 +111,8 @@ export default {
       handleRelease,
       handleDrag,
       handlePress,
-      storeGet
+      storeGet,
+      ignoreDrag
     };
   },
   emits: ['product:click', 'product:longClick', 'product:drag','product:drag.left','product:drag.right']
