@@ -86,6 +86,7 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
+    user-select: none;
   }
   .tab-content {
     flex-grow: 1; /* Esto permite que el contenido de la pestaña se expanda para ocupar el espacio restante */

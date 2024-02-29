@@ -161,7 +161,6 @@ export default {
 <style scoped>
 .my-categories-list-container {
   overflow-x: scroll;
-  scrollbar-width: thin;
   scroll-snap-type: x proximity;
   align-items: center;
   display: flex;

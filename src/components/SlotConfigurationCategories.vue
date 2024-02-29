@@ -85,11 +85,12 @@ export default {
 
 <style scoped>
 .categoriesContainer {
-  max-height: 250px;
+  max-height: 150px;
   overflow-y: auto;
   margin-bottom: .625rem;
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f0f0f0;
   user-select: none;
 }
+::-webkit-scrollbar {height: 4px;width: 4px;}
+::-webkit-scrollbar-track { background: #f0f0f0; }
+::-webkit-scrollbar-thumb { background: #888; }
 </style>

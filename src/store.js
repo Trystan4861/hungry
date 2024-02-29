@@ -28,6 +28,7 @@ export default createStore({
       appName:'Hungry!',
       maxLenght: 40,
       defaultTabActive:1,
+      alturaDisponible:0,
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
         { id: 1, text:'Categoría  2', bgColor:'#d8993c', visible:true },
@@ -68,12 +69,15 @@ export default createStore({
     setDefaultTabActive   ( state,      defaultTabActive) { state.configuracion.defaultTabActive  = defaultTabActive  },
     setConfiguracion      ( state,      configuracion   ) { state.configuracion                   = configuracion     },
     setMaxLenght          ( state,      maxLenght       ) { state.configuracion.maxLenght         = maxLenght         },
+    setAlturaDisponible   ( state,      alturaDisponible) { state.configuracion.alturaDisponible  = alturaDisponible  },
   },
   actions: {
-    setConfiguracion      ({ commit }, configuracion    ) { commit('setConfiguracion',     configuracion    )         },
-    setProductos          ({ commit }, productos        ) { commit('setProducts',          productos        )         },
-    setCategorias         ({ commit }, categorias       ) { commit('setCategories',        categorias       )         },
-    setDefaultTabActive   ({ commit }, defaultTabActive ) { commit('setDefaultTabActive',  defaultTabActive )         },
+    setConfiguracion      ({ commit }, configuracion    ) { commit('setConfiguracion',    configuracion   )           },
+    setProductos          ({ commit }, productos        ) { commit('setProducts',         productos       )           },
+    setCategorias         ({ commit }, categorias       ) { commit('setCategories',       categorias      )           },
+    setDefaultTabActive   ({ commit }, defaultTabActive ) { commit('setDefaultTabActive', defaultTabActive)           },
+    setMaxLenght          ({ commit }, maxLenght        ) { commit('setMaxLenght',        maxLenght       )           },
+    setAlturaDisponible   ({ commit }, alturaDisponible ) { commit('setAlturaDisponible', alturaDisponible)           },
   },
   getters: {
     getConfiguracion:     (state)=>(  )=>state.configuracion,
@@ -82,6 +86,7 @@ export default createStore({
     getDefaultTabActive:  (state)=>(  )=>state.configuracion.defaultTabActive,
     getProductos:         (state)=>(  )=>state.configuracion.productos,
     getMaxLenght:         (state)=>(  )=>state.configuracion.maxLenght,
+    getAlturaDisponible:  (state)=>(  )=>state.configuracion.alturaDisponible,
     
     getTabs:              (state)=>(  )=>state.appStatic.tabs,
     getConfigNames:       (state)=>(  )=>state.appStatic.configNames,
@@ -90,4 +95,4 @@ export default createStore({
     getSupermercados:     (state)=>(  )=>state.appStatic.supermercados,
     getSaveProductsState: (state)=>(  )=>state.appStatic.saveProductsState,
   }
-                    });
+});
