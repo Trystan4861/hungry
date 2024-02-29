@@ -1,21 +1,24 @@
 <template>
-  <div class="my-product" 
-    :data-supermercado="product.id_supermercado" 
-    :data-categoria="product.id_categoria" 
-    @click="handleClick"
-    @mousedown="handleMouseDown" @mouseup="handleMouseUp" 
-    @touchstart="handleMouseDown" @touchend="handleMouseUp"
-  >
-    <span  :style="{ backgroundColor: product.categoria?.bgColor || '#FFF' }" class="productCategory" />
-    <div class="product" :class="{selected: product.selected, done: product.done && canBeDone}">
-      <p :style="{display: product.selected ? 'block' : 'none'}" class="productAmount">{{ product.amount || 1 }}&nbsp;</p>
+  <div class="my-product"
+    @contextmenu.prevent
+    :data-supermercado="product.id_supermercado"
+    :data-categoria="product.id_categoria"
+    v-touch:tap="handleTap"
+    v-touch:press="handlePress"
+    v-touch:release="handleRelease"
+    v-touch:drag.once="handleDrag"
+    >
+    <span :style="{ backgroundColor: product.categoria?.bgColor || '#FFF' }" class="productCategory" />
+    <div class="product" :class="{ selected: product.selected, done: product.done && canBeDone }">
+      <p :style="{ display: product.selected ? 'block' : 'none' }" class="productAmount">{{ product.amount || 1 }}&nbsp;</p>
       <p class="productText">{{ product.text }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import {ref} from 'vue';
+import { ref } from 'vue';
+
 export default {
   name: 'MyProduct',
   props: {
@@ -23,47 +26,86 @@ export default {
       type: Object,
       required: true
     },
-    canBeDone:{
-      type:Boolean,
+    canBeDone: {
+      type: Boolean,
       default: false
-    }
+    },
+    longClickTime:{
+      type: Number,
+      default: 1000
+    },
+    dragTime:{
+      type: Number,
+      default: 500
+    },
   },
-  setup(props,{emit}){
+  setup(props, { emit }) {
     const longPressTimeout = ref(null);
     const longClicked = ref(false);
+    const dragInterval=ref(props.dragTime)
+    const dragDirection=ref(null)
+    let dragging = false;
+    let touchStartX = null;
+    const tiempoDrag = 500; // Milisegundos para considerar un drag
 
-    const handleClick = () => {
+    const handleTap = () => {
       if (!longClicked.value)
-        emit('click:product', props.product);
+        emit('product:click', props.product);
       else
         longClicked.value = false;
     };
-
-    const handleMouseDown = () => {
-      if (props.canBeDone) return;
-      longClicked.value = false; // Reinicia longClicked a falso al comenzar el clic
-      longPressTimeout.value = setTimeout(() => {
-        longClicked.value = true; // Establece longClicked a verdadero si se mantiene pulsado
-        emit('longClick:product', props.product);
-      }, 1000); 
+    const handlePress = () => {
+      if (props.canBeDone || dragging || props.product.selected) return;
+      longClicked.value = false;
+      longPressTimeout.value = setTimeout(() => {longClicked.value = true;emit('product:longClick', props.product);}, props.longClickTime);
     };
 
-    const handleMouseUp = () => {
+    const handleRelease = () => {
       clearTimeout(longPressTimeout.value);
+      emitDragEnd()
+    };
+
+    const handleDrag = (event) => {
+      if (!props.product.selected) return
+      dragDirection.value = touchStartX !== null ? (event.touches[0].clientX > touchStartX ? 'right' : 'left') : null;
+      if (props.canBeDone || dragging) return;
+      longClicked.value = false;
+      clearTimeout(longPressTimeout.value);
+      touchStartX = event.touches[0].clientX;
+      dragging=true
+      emitDragStart();
+    };
+
+    const emitDragEnd=()=>{
+      clearInterval(dragInterval.value)
+      dragging = false;
+    }
+    const emitDragStart = () => {
+      dragging=true;
+      dragInterval.value = setInterval(() => {
+        emitDragDirection();
+      }, tiempoDrag);
+    };
+
+    const emitDragDirection = () => {
+      if (!props.product.selected) emitDragEnd()
+      emit(`product:drag.${dragDirection.value}`,props.product)
+      emit('product:drag', dragDirection.value,props.product);
     };
 
     return {
-      handleClick,
-      handleMouseDown,
-      handleMouseUp
+      handleTap,
+      handleRelease,
+      handleDrag,
+      handlePress,
     };
   },
-  emits:['click:product','longClick:product']
+  emits: ['product:click', 'product:longClick', 'product:drag','product:drag.left','product:drag.right']
 };
 </script>
 
 <style scoped>
-.productCategory{
+.productCategory {
   width: 1.5625rem;
   height: 1.5625rem;
 }
@@ -74,18 +116,18 @@ export default {
   cursor: pointer;
   user-select: none;
 }
-.product{
+.product {
   display: flex;
   padding-left: .625rem;
 }
-.selected{
+.selected {
   font-weight: bold;
 }
-.done{
+.done {
   text-decoration: line-through;
 }
-span{
+span {
   position: relative;
-  left: -0.3125rem
+  left: -0.3125rem;
 }
 </style>
