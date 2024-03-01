@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="SlotConfigurationCategories">
     <p>Cambiar visibilidad de Categorías</p>
     <div class="categoriesContainer">
       <MyCheckbox
@@ -67,7 +67,8 @@ export default {
         icon: 'error',
         title: 'Error',
         html: "Al menos una categoría debe permanecer visible",
-        confirmButtonText: 'Aceptar'
+        confirmButtonText: 'Aceptar',
+        target: document.querySelector("#SlotConfigurationCategories"),
       });
     };
 

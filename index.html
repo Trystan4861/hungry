@@ -7,10 +7,24 @@
   <title>Hungry!</title>
 </head>
 <body>
+  <a id="setFullScreen" href="javascript:setFullScreen()"></a>
   <div id="app"></div>
   <script type="text/javascript">
     if (typeof DOM!=='function') function DOM(e,scope=document){return scope.querySelectorAll(e)};
     if (typeof _DOM!=='function') function _DOM(e,scope=document){return scope.querySelector(e)};
+    const setFullScreen=()=>{
+      if (document.fullscreenElement) return
+      const elemento=_DOM("#app");
+      if (elemento.requestFullscreen) {
+        elemento.requestFullscreen();
+      } else if (elemento.mozRequestFullScreen) { /* Firefox */
+        elemento.mozRequestFullScreen();
+      } else if (elemento.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        elemento.webkitRequestFullscreen();
+      } else if (elemento.msRequestFullscreen) { /* IE/Edge */
+        elemento.msRequestFullscreen();
+      }
+    }
   </script>
   <script type="module" src="/src/main.js"></script>
 </body>

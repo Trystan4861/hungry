@@ -6,6 +6,7 @@ export default createStore({
       varIDCategoria:-1,
       saveProductsState:true,
       ignoreDrag:false,
+      heightDesviation: -90,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
         { logo:'config.svg'},
@@ -99,5 +100,6 @@ export default createStore({
     getSupermercadoFromID: (state)=>(id)=>state.appStatic.supermercados.find(supermercado=>supermercado.id===id),
     getSaveProductsState:  (state)=>(  )=>state.appStatic.saveProductsState,
     getIgnoreDrag:         (state)=>(  )=>state.appStatic.ignoreDrag,
+    getHeightDesviation:   (state)=>(  )=>state.appStatic.heightDesviation,
   }
 });

@@ -33,6 +33,14 @@ export default {
     defaultActive:{
       type: Number,
       default:0
+    },
+    heightDesviation:{
+      type: Number,
+      default:0
+    },
+    heightResponsive:{
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -53,7 +61,8 @@ export default {
         const containerWidth = container.clientWidth;
         const widthStyle = (((containerWidth-60) / 4)-1);
         tabStyle.value = {width: `${widthStyle}px`};
-        emit('tabHeightChanged',container.clientHeight-148)
+        if (props.heightResponsive)
+          emit('tabHeightChanged',container.clientHeight+props.heightDesviation)
       };
       onMounted(()=>{
         window.addEventListener('resize', updateTabStyle);

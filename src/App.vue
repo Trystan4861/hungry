@@ -1,6 +1,6 @@
 <template>
-  <div class="container mt-4">
-    <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" >
+  <div id="appContainer" class="container mt-4" @click="doRequestFullScreen">
+    <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" :heightResponsive="true" :heightDesviation="heightDesviation">
       <template v-slot:tabContent0> <!-- Configuration -->
         <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
           <h1 class="text-center"><span class="appName">Hungry!</span><MyImageLoader :image="'hungry.svg'" :className="'logo'" />
@@ -96,7 +96,7 @@ import MyButton                 from './components/MyButton.vue';
 import MySelect                 from './components/MySelect.vue';
 import MyProductList            from './components/MyProductList.vue';
 import MyImageLoader            from './components/MyImageLoader.vue';
-import { ref, watch }           from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useStore }             from 'vuex';
 import Swal                     from 'sweetalert2';
 import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
@@ -134,6 +134,7 @@ export default {
     }
   },
   methods:{
+    doRequestFullScreen(){document.querySelector("#setFullScreen").click()},
     findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
@@ -144,6 +145,7 @@ export default {
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
         cancelButtonText: 'Cancelar',
+        target: document.querySelector("#appContainer"),
         willOpen:()=>{
           this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria);
             this.$refs.selectRef.selectOption(this.supermercados[this.findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
@@ -186,14 +188,16 @@ export default {
               Swal.fire({
                 title:'Atención',
                 icon: 'success',
-                text: 'Producto modificado correctamente'
+                text: 'Producto modificado correctamente',
+                target: document.querySelector("#appContainer"),
               })
           }
           else{
               Swal.fire({
                 title:'Atención',
                 icon: 'info',
-                text: 'No has realizado cambios al producto'
+                text: 'No has realizado cambios al producto',
+                target: document.querySelector("#appContainer"),
               })
           }
 
@@ -213,6 +217,7 @@ export default {
           cancelButton: 'btn btn-success mb-2', // Clase CSS para el botón de confirmación (Sí)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+        target: document.querySelector("#appContainer"),
       }).then((result) => {
         if (result.isConfirmed) {
           this.productsData = this.productsData.filter(item => item.id !== this.productoSeleccionado.id)
@@ -220,7 +225,8 @@ export default {
           Swal.fire({
             title:'Atención',
             icon: 'success',
-            text: 'Producto eliminado correctamente'
+            text: 'Producto eliminado correctamente',
+            target: document.querySelector("#appContainer"),
           })
         }
       });
@@ -260,6 +266,7 @@ export default {
         buttonsStyling: false, // Desactivar el estilo predefinido de los botonesINDEX_CATEGORIAS
         showDenyButton: true, // Mostrar el tercer botón
         denyButtonText: 'Eliminar Producto', // Texto del tercer botón
+        target: document.querySelector("#appContainer"),
       }).then((result) => {
         if (result.isConfirmed) this.handleEditarProducto()
         else if (result.isDenied) this.handleEliminarProducto()
@@ -272,7 +279,8 @@ export default {
           icon:'error',
           title:'Error',
           html:error,
-          confirmButtonText:'Aceptar'
+          confirmButtonText:'Aceptar',
+          target: document.querySelector("#appContainer"),
         })
         return false;
     },
@@ -283,6 +291,7 @@ export default {
         html: ` <label for="inputModifyCategory">Introduzca un nuevo nombre para la categoría</label>
                 <input type="text" class="swal2-input" id="inputModifyCategory" maxlenght="${this.maxLenght}" value="${categoria.text}">
         `,
+        target: document.querySelector("#appContainer"),
         didOpen: ()=>{
           setTimeout(()=>{
             let input=document.querySelector("#inputModifyCategory")
@@ -315,6 +324,7 @@ export default {
           cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
         },
         buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+        target: document.querySelector("#appContainer"),
       }).then((result) => {
         if (result.isConfirmed) {
           this.productsData.forEach(producto=>{
@@ -332,7 +342,8 @@ export default {
           icon:'error',
           title:'Error',
           text:'Debes introducir un nombre para el nuevo producto',
-          confirmButtonText:'Aceptar'
+          confirmButtonText:'Aceptar',
+          target: document.querySelector("#appContainer"),
         })
         return false;
       }
@@ -355,7 +366,8 @@ export default {
         Swal.fire({
           icon:'warning',
           title: 'Atención',
-          html: `Ya existe un producto llamado<br>«${this.nuevoProducto}»`
+          html: `Ya existe un producto llamado<br>«${this.nuevoProducto}»`,
+          target: document.querySelector("#appContainer"),
       })
     },
     handleSelectSupermercado(selected) { this.supermercadoActivo.value=selected },
@@ -372,7 +384,8 @@ export default {
           icon:'success',
           title:'Atención',
           html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
-          confirmButtonText:'Aceptar'
+          confirmButtonText:'Aceptar',
+          target: document.querySelector("#appContainer"),
         })
     }
   },
@@ -382,7 +395,7 @@ export default {
     },
     configuracion: function(){
       return useStore().getters.getConfiguracion();
-    }
+    },
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
@@ -406,6 +419,9 @@ export default {
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
       const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
       const categoriasVisiblesIds=ref([])
+
+      const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
+
 
       if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
 
@@ -457,7 +473,9 @@ export default {
         store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) 
       })
       watch(alturaDisponible,(newData)=>{ 
-        store.dispatch('setAlturaDisponible',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_ALTURA_DISPONIBLE], newData)) 
+        if(Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)){
+          store.dispatch('setAlturaDisponible',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_ALTURA_DISPONIBLE], newData)) 
+        }
       })
       watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData)) })
       const handleImportConfigurationFileError=(error)=>
@@ -466,7 +484,8 @@ export default {
           icon:'error',
           title:(error=="ERROR_APPNAME")?"Atención":"ERROR INESPERADO",
           html:(error!="ERROR_APPNAME")?error:"El archivo de configuración seleccionado<br>no es un archivo de configuración<br>de «Hungry!» válido o está dañado",
-          confirmButtonText:'Aceptar'
+          confirmButtonText:'Aceptar',
+          target: document.querySelector("#appContainer"),
         })
       }
       const handleDragCard=(event)=>{
@@ -503,7 +522,8 @@ export default {
             icon:'success',
             title:'Atención',
             html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
-            confirmButtonText:'Aceptar'
+            confirmButtonText:'Aceptar',
+            target: document.querySelector("#appContainer"),
           })
       }
       watch(categoriesData, (newData) => {
@@ -536,6 +556,7 @@ export default {
         ignoreLongClickTimeout,
         handleDragCard,
         releaseIgnoreLongClick,
+        heightDesviation
     }
   },
   mounted(){
