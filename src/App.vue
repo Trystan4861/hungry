@@ -108,6 +108,11 @@ const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
 const INDEX_ALTURA_DISPONIBLE=2;
 
+function focusInput(input)
+{
+  input.focus()
+  input.setSelectionRange(input.value.length,input.value.length)
+}
 export default {
   name:'App',
   components:{
@@ -294,9 +299,7 @@ export default {
         target: document.querySelector("#appContainer"),
         didOpen: ()=>{
           setTimeout(()=>{
-            let input=document.querySelector("#inputModifyCategory")
-            input.focus()
-            input.setSelectionRange(input.value.length,input.value.length)
+            focusInput(document.querySelector("#inputModifyCategory"))
           },50)
         },
         preConfirm: ()=>{
@@ -358,9 +361,7 @@ export default {
         });
         this.nuevoProducto="";
         this.productsData=[...this.productsData]
-        let input=document.querySelector("#tab1").querySelector("input")
-        input.focus()
-        input.setSelectionRange(input.value.length,input.value.length)
+        focusInput(document.querySelector("#tab1").querySelector("input"))
       }
       else
         Swal.fire({
@@ -370,7 +371,9 @@ export default {
           target: document.querySelector("#appContainer"),
       })
     },
-    handleSelectSupermercado(selected) { this.supermercadoActivo.value=selected },
+    handleSelectSupermercado(selected){ 
+      this.supermercadoActivo.value=selected 
+    },
     handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
     handleCategoriesChecked(data)
     {
