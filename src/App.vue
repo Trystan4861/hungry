@@ -40,7 +40,7 @@
         </MyCard>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <div class="row">
+        <div class="row mr-0">
           <div class="col-9 pr-0">
             <MySelect :options="supermercados.filter(item=>item.id!=0)" :selected="supermercados[1]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
           </div>
@@ -659,6 +659,9 @@ hr {
 }
 .mr-1{
   margin-right: .25rem !important;
+}
+.mr-0 {
+    margin-right: 0rem !important;
 }
 .touch{
     height: 150px;

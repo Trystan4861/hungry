@@ -10,8 +10,8 @@
     >
     <span :style="{ backgroundColor: bgColor }" class="productCategory" />
     <div class="product" :class="{ selected: product.selected, done: product.done && canBeDone }">
-      <p :style="{ display: product.selected ? 'block' : 'none' }" class="productAmount">{{ product.amount || 1 }}&nbsp;</p>
-      <p class="productText">{{ product.text }}</p>
+      <div :style="{ display: product.selected ? 'block' : 'none' }" class="productAmount">{{ product.amount || 1 }}&nbsp;</div>
+      <div class="productText">{{ product.text }}</div>
     </div>
   </div>
 </template>
@@ -130,6 +130,7 @@ export default {
   display: flex;
   cursor: pointer;
   user-select: none;
+  margin-bottom: 1px
 }
 .product {
   display: flex;
