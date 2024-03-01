@@ -1,5 +1,5 @@
 <template>
-  <div id="appContainer" class="container mt-4" @click="doRequestFullScreen">
+  <div id="appContainer" class="container mt-4" @click="setFullScreen">
     <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" :heightResponsive="true" :heightDesviation="heightDesviation">
       <template v-slot:tabContent0> <!-- Configuration -->
         <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
@@ -108,11 +108,12 @@ const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
 const INDEX_ALTURA_DISPONIBLE=2;
 
-function focusInput(input)
+const focusInput=(input)=>
 {
   input.focus()
   input.setSelectionRange(input.value.length,input.value.length)
 }
+
 export default {
   name:'App',
   components:{
@@ -139,7 +140,19 @@ export default {
     }
   },
   methods:{
-    doRequestFullScreen(){document.querySelector("#setFullScreen").click()},
+    setFullScreen(){
+      if (document.fullscreenElement) return
+      const elemento=document.getElementById("appContainer");
+      if (elemento.requestFullscreen) {
+        elemento.requestFullscreen();
+      } else if (elemento.mozRequestFullScreen) { /* Firefox */
+        elemento.mozRequestFullScreen();
+      } else if (elemento.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        elemento.webkitRequestFullscreen();
+      } else if (elemento.msRequestFullscreen) { /* IE/Edge */
+        elemento.msRequestFullscreen();
+      }
+    },
     findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
@@ -276,7 +289,6 @@ export default {
         if (result.isConfirmed) this.handleEditarProducto()
         else if (result.isDenied) this.handleEliminarProducto()
       });
-
     },
     handleTabHeightChanged(data){this.alturaDisponible=data;},
     handeFileReadError(error){
@@ -384,13 +396,13 @@ export default {
     handleCategoriesButtonClicked(){
       this.categoriesData=this.categoriasVisibles
       Swal.fire({
-          icon:'success',
-          title:'Atención',
-          html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
-          confirmButtonText:'Aceptar',
-          target: document.querySelector("#appContainer"),
-        })
-    }
+        icon:'success',
+        title:'Atención',
+        html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
+        confirmButtonText:'Aceptar',
+        target: document.querySelector("#appContainer"),
+      })
+    },
   },
   computed:{
     productosVisibles: function() {
