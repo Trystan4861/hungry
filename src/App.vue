@@ -42,7 +42,7 @@
       <template v-slot:tabContent4> <!-- Shopping List -->
         <div class="row mr-0">
           <div class="col-9 pr-0">
-            <MySelect :options="supermercados.filter(item=>item.id!=0)" :selected="supermercados[1]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
+            <MySelect @click="handleClickSupermercadoSL" :options="supermercados.filter(item=>item.id!=0)" :selected="supermercados[1]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
           </div>
           <div class="col-3 p-0 overflow-hidden">
               <MyButton class="clearList" :text="'Limpiar Lista'" :btnClass="'danger'" @click="clearList" />
@@ -154,6 +154,11 @@ export default {
       }
     },
     findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
+    handleClickSupermercadoSL(){
+      if (!this.allowClick) clearTimeout(this.allowClickTimeout)
+      this.allowClick=false;
+      this.allowClickTimeout=this.doAllowClick();
+    },
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
       this.productoAEditar=this.productoSeleccionado.text
@@ -249,8 +254,16 @@ export default {
         }
       });
     },
+    doAllowClick(timeOut=1000){
+      return setTimeout(() => {
+        this.allowClick=true
+      }, timeOut)
+    },
     handleShoplistClick(product)
     {
+      if(!this.allowClick) return
+      this.allowClick=false
+      this.allowClickTimeout=this.doAllowClick(250)
       let index=this.findIndexById(product.id,this.productsData)
       this.productsData[index].done=!this.productsData[index].done
       if (this.saveProductsState) this.productsData=[...this.productsData]
@@ -422,6 +435,8 @@ export default {
       const maxLenght=storeGet.getMaxLenght()
       const saveProductsState=storeGet.getSaveProductsState()
       const controlY=ref(-1)
+      const allowClick=ref(true)
+      const allowClickTimeout=ref(0)
       
       const alturaDisponible=ref()
       alturaDisponible.value=storeGet.getAlturaDisponible()
@@ -571,7 +586,9 @@ export default {
         ignoreLongClickTimeout,
         handleDragCard,
         releaseIgnoreLongClick,
-        heightDesviation
+        heightDesviation,
+        allowClick,
+        allowClickTimeout
     }
   },
   mounted(){

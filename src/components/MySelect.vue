@@ -31,7 +31,10 @@ export default {
     const showDropdown = ref(false);
     const selectedOption = ref({ id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" });
 
-    const toggleDropdown = () => { showDropdown.value = !showDropdown.value; };
+    const toggleDropdown = () => {
+      emit('click',!showDropdown.value?'hidden':'visible')
+      showDropdown.value = !showDropdown.value; 
+      };
     const selectOption = (option) => {
       selectedOption.value = option;
       showDropdown.value = false;
@@ -46,7 +49,8 @@ export default {
     });
     return { showDropdown, selectedOption, toggleDropdown, selectOption, closeDropdown };
   },
-  components: { MyImageLoader }
+  components: { MyImageLoader },
+  emits:['dropDown','select']
 };
 </script>
 
