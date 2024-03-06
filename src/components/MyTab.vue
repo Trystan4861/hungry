@@ -3,12 +3,12 @@
     <ul class="nav nav-tabs">
       <!-- Mostramos cada pestaña en la cabecera -->
       <li class="nav-item" :class="{ active: this.activeTab === index }" v-for="(tab, index) in tabs" :key="index" :style="tabStyle">
-        <a
+        <span
           class="nav-link"
           :class="{ active: this.activeTab === index }"
           @click="activateTab(index)">
           <my-image-loader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
-        </a>
+        </span>
       </li>
     </ul>
     <!-- Mostramos el contenido de la pestaña activa -->
@@ -130,7 +130,7 @@ export default {
   .nav-item:first-child .nav-link.active img{
     filter: grayscale(1) brightness(100) invert(1);
   }
-  a.nav-link
+  span.nav-link
   {
     min-width: 25%;
     cursor: pointer;
