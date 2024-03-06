@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import MyButton   from '@components/MyButton.vue'; // Importa el subcomponente MyButton
+  import MyButton   from '@/components/MyButton.vue'; // Importa el subcomponente MyButton
   import { useStore } from 'vuex';
 
   function downloadJSON(obj, filename = 'hungry.json') {

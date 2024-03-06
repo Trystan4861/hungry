@@ -15,7 +15,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import MyImageLoader      from '@components/MyImageLoader.vue';
+import MyImageLoader      from '@/components/MyImageLoader.vue';
 
 export default {
   name: 'MySelect',

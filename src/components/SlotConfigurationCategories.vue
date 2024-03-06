@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import MyCheckbox from '@components/MyCheckbox.vue';
+import MyCheckbox from '@/components/MyCheckbox.vue';
 import { ref, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import MySelect from '@components/MySelect.vue'
+  import MySelect from '@/components/MySelect.vue'
 
   import { findIndexById } from '@/utilidades';
 

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import MyRadio from '@components/MyRadio.vue';
+import MyRadio from '@/components/MyRadio.vue';
 
 export default {
   name:"MyRadioGroup",

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import MyFile from '@components/MyFile.vue'; // Importa el subcomponente MyFileReader
+import MyFile from '@/components/MyFile.vue'; // Importa el subcomponente MyFileReader
 
 export default {
   name: "SlotConfigurationImport",

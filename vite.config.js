@@ -9,7 +9,6 @@ export default defineConfig({
     alias: {
       '@assets': '/src/assets',
       '@': path.resolve(__dirname, 'src'), // Establece el alias para el directorio src
-      '@components': path.resolve(__dirname, 'src/components'), // Establece un alias para el directorio src/components
     }
   }
 })

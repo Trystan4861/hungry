@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import MyCheckbox from '@components/MyCheckbox.vue'
+  import MyCheckbox from '@/components/MyCheckbox.vue'
   export default {
     name:                  'SlotConfigurationFullScreen',
     props:                 { selected: { type: Boolean, required: true } },
