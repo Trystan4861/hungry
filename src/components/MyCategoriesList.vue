@@ -54,7 +54,7 @@ export default {
     const centrarCategoriaActiva=()=>{ scrollIntoView(activeCategoryIndex.value,'instant') }
     const updateScreenSize = () => { updateCategoryListStyle() };
     onMounted(() => {
-      window.addEventListener('resize', updateScreenSize);
+      window.addEventListener('resize', updateScreenSize,{passive: true});
       observer.value = new IntersectionObserver((entries) => {entries.forEach(entry => { if (entry.isIntersecting) updateScreenSize() })}, {});
       observer.value.observe(containerRef.value);
       emit('categorySelected', props.categories[0]);

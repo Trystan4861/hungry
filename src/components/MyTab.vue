@@ -65,7 +65,7 @@ export default {
           emit('tabHeightChanged',container.clientHeight+props.heightDesviation)
       };
       onMounted(()=>{
-        window.addEventListener('resize', updateTabStyle);
+        window.addEventListener('resize', updateTabStyle,{passive: true});
         updateTabStyle();
         })
       onBeforeUnmount(() => {

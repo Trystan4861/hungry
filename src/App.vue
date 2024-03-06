@@ -450,7 +450,7 @@ export default {
     },
   },
   setup() {
-      document.addEventListener('contextmenu', (event) => event.preventDefault())
+      document.addEventListener('contextmenu', (event) => event.preventDefault(),{passive: true})
       const store=useStore();
       const storeGet=store.getters;
       const ignoreLongClickTimeout=ref(0)
