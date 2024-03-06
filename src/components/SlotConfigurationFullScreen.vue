@@ -1,9 +1,10 @@
 <template>
   <div id="SlotFullScreen">
+    <div class="text-center">Ejecutar en Pantalla Completa</div>
     <div>
       <my-checkbox
         value="1"
-        :label="'Ejecutar en Pantalla Completa'"
+        :label="selected?'Sí':'No'"
         :selected="selected"
         :styled="true"
         :dotDiameter="'1rem'"
@@ -18,9 +19,9 @@
 </template>
 
 <script>
-  import MyCheckbox from './MyCheckbox.vue'
+  import MyCheckbox from '@components/MyCheckbox.vue'
   export default {
-    name:                  'SlotFullScreen',
+    name:                  'SlotConfigurationFullScreen',
     props:                 { selected: { type: Boolean, required: true } },
     components:            { MyCheckbox,                                 },
     setup(props, { emit }) {
