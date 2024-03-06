@@ -9,11 +9,11 @@ export default createStore({
       heightDesviation: -90,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
-        { id: 0, text:'Configuración',          logo: 'config.svg'       },
-        { id: 1, text:'Añadir Productos',       logo: 'add.svg'          },
-        { id: 2, text:'Por orden alfabético',   logo: 'a2z.svg'          },
-        { id: 3, text:'Por categoría',          logo: 'categorias.svg'   },
-        { id: 4, text:'Lista de la compra',     logo: 'cart.svg'         },
+        { id: 0, text:'Configuración',          logo: 'config.svg',     selectable:false },
+        { id: 1, text:'Añadir Productos',       logo: 'add.svg',        selectable:true  },
+        { id: 2, text:'Por orden alfabético',   logo: 'a2z.svg',        selectable:true  },
+        { id: 3, text:'Por categoría',          logo: 'categorias.svg', selectable:true  },
+        { id: 4, text:'Lista de la compra',     logo: 'cart.svg',       selectable:true  },
       ],
       configNames:[
         'Categorías',
@@ -29,7 +29,7 @@ export default createStore({
     configuration:{
       appName:'Hungry!',
       maxLenght: 40,
-      defaultTabActive:0,
+      defaultTabActive:1,
       alturaDisponible:0,
       fullScreen: false,
       categorias: [

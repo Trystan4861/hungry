@@ -2,7 +2,7 @@
   <div id="SlotFullScreen">
     <div>
       <div class="text-center mb-1">Pestaña activa por defecto</div>
-      <my-select :options="tabs" :selected="tabs[selected]" @select="handleTabSelected" />
+      <my-select :options="tabs.filter(item=>item.selectable)" :selected="tabs[selected]" @select="handleTabSelected" />
     </div>
   </div>
 </template>

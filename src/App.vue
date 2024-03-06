@@ -110,34 +110,35 @@
 </template>
 
 <script>
-import { localStorageService }      from '@/localStorageService';
-import { findIndexById }            from '@/utilidades';
+import { localStorageService }      from '@/localStorageService'
+import { findIndexById }            from '@/utilidades'
 
-import MyButton                     from '@components/MyButton.vue';
-import MyCard                       from '@components/MyCard.vue';
-import MyCategoriesList             from '@components/MyCategoriesList.vue';
-import MyImageLoader                from '@components/MyImageLoader.vue';
-import MyInput                      from '@components/MyInput.vue';
-import MyProductList                from '@components/MyProductList.vue';
-import MySelect                     from '@components/MySelect.vue';
-import MyTab                        from '@components/MyTab.vue';
+import MyButton                     from '@components/MyButton.vue'
+import MyCard                       from '@components/MyCard.vue'
+import MyCategoriesList             from '@components/MyCategoriesList.vue'
+import MyImageLoader                from '@components/MyImageLoader.vue'
+import MyInput                      from '@components/MyInput.vue'
+import MyProductList                from '@components/MyProductList.vue'
+import MySelect                     from '@components/MySelect.vue'
+import MyTab                        from '@components/MyTab.vue'
 
 import SlotConfigurationCategories  from '@components/SlotConfigurationCategories.vue'
-import SlotConfigurationExport      from '@components/SlotConfigurationExport.vue';
+import SlotConfigurationExport      from '@components/SlotConfigurationExport.vue'
 import SlotConfigurationFullScreen  from '@components/SlotConfigurationFullScreen.vue'
-import SlotConfigurationImport      from '@components/SlotConfigurationImport.vue';
-import SlotConfigurationTabsActive  from '@components/SlotConfigurationTabsActive.vue';
+import SlotConfigurationImport      from '@components/SlotConfigurationImport.vue'
+import SlotConfigurationTabsActive  from '@components/SlotConfigurationTabsActive.vue'
 
-import Swal                         from 'sweetalert2';
+import Swal                         from 'sweetalert2'
 
-import { computed, ref, watch }     from 'vue';
-import { useStore }                 from 'vuex';
+import { computed, ref, watch }     from 'vue'
+import { useStore }                 from 'vuex'
 
-const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData','fullScreenData'];
-const INDEX_CATEGORIAS=0;
-const INDEX_PRODUCTOS=1;
-const INDEX_ALTURA_DISPONIBLE=2;
-const INDEX_FULL_SCREEN=3;
+const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData','fullScreenData','defaultTabActiveData']
+const INDEX_CATEGORIAS=0
+const INDEX_PRODUCTOS=1
+const INDEX_ALTURA_DISPONIBLE=2
+const INDEX_FULL_SCREEN=3
+const INDEX_DEFAULT_TAB_ACTIVE=4
 
 const focusInput=(input)=>
 {
@@ -196,8 +197,7 @@ export default {
     },
     handleChangeTabActive(data)
     {
-      console.log(data)
-
+      this.changes2Save.defaultTabActive=data
     },
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
@@ -455,16 +455,11 @@ export default {
       const store=useStore();
       const storeGet=store.getters;
       const ignoreLongClickTimeout=ref(0)
-      const defaultTabActive=storeGet.getDefaultTabActive()
       const maxLenght=storeGet.getMaxLenght()
       const saveProductsState=storeGet.getSaveProductsState()
       const controlY=ref(-1)
       const allowClick=ref(true)
       const allowClickTimeout=ref(0)
-      const changes2Save={
-        categoriasVisibiles:false,
-        defaultTabActive:false
-      }
       const alturaDisponible=ref()
       const categoriasVisibles=ref([])
 
@@ -477,7 +472,7 @@ export default {
 
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
       const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
-
+      const defaultTabActive=ref(getDataFromLocalStorage(INDEX_DEFAULT_TAB_ACTIVE))
       const gotoFullScreen=ref(getDataFromLocalStorage(INDEX_FULL_SCREEN))
       const configFullScreen=ref(false)
       configFullScreen.value=gotoFullScreen.value
@@ -487,6 +482,10 @@ export default {
 
       const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
 
+      const changes2Save={
+        categoriasVisibiles:false,
+        defaultTabActive: defaultTabActive.value
+      }
 
       if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
 
@@ -542,6 +541,8 @@ export default {
               store.dispatch('setAlturaDisponible', storedData);
             else if (index==INDEX_FULL_SCREEN)
               store.dispatch('setFullScreen', storedData);
+            else if (index==INDEX_DEFAULT_TAB_ACTIVE)
+              store.dispatch('setDefaultTabActive',+storedData)
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
@@ -614,6 +615,22 @@ export default {
               target: document.querySelector("#appContainer"),
             })
           }
+          if (changes2Save.defaultTabActive!=defaultTabActive.value)
+          {
+            store.dispatch('setDefaultTabActive',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_DEFAULT_TAB_ACTIVE],changes2Save.defaultTabActive))
+            Swal.fire({
+              icon: 'info',
+              title: 'Atención',
+              html: `El cambio de la pestaña activa por defecto será efectivo tras recargar Hungry!`,
+              showConfirmButton: true,
+              confirmButtonText: 'Aceptar',
+              showDenyButton: true,
+              denyButtonText: 'Recargar',
+              target: document.querySelector("#appContainer"),
+              allowOutsideClick: false
+            }).then(result=>result.isDenied?window.location.reload():null);
+          }
+
           store.dispatch('setFullScreen',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_FULL_SCREEN],configFullScreen.value))
           categoriasVisiblesIds.value=[...tempCategoriasVisiblesIds]
 
@@ -659,6 +676,7 @@ export default {
         saveConfigChanges,
         handleCategoriesChecked,
         tempCategoriasVisiblesIds,
+        changes2Save,
     }
   },
   mounted(){
