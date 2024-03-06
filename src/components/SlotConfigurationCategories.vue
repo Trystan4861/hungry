@@ -3,7 +3,7 @@
     <div class="text-center mb-1">Visibilidad de Categorías</div>
     <div class="categoriesContainer">
       <my-checkbox
-        v-for="(item, index) in categorias"
+        v-for="(item, index) in visibleCategories"
         :key="index"
         :value="index"
         :label="item.text"
@@ -25,45 +25,36 @@
 
 <script>
 import MyCheckbox from '@components/MyCheckbox.vue';
-
-import { useStore } from 'vuex';
 import { ref, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 
 export default {
   name: 'SlotConfigurationCategories',
+  props: {
+    categorias: {
+      type: Array,
+      required: true
+    }
+  },
   components: {
     MyCheckbox,
   },
   setup(props, { emit }) {
-    const store = useStore();
     const checkedItems = ref([]);
-    const categorias = ref([]);
-
-    // Función para obtener los índices de los elementos visibles
-    function getVisibleIndices(categorias) {
-      return categorias.reduce((acc, curr, index) => {
-        if (curr.visible) {
-          acc.push(index);
-        }
-        return acc;
-      }, []);
-    }
-
-    // Inicialización de categorias y checkedItems
-    categorias.value = store.getters.getCategorias();
-    checkedItems.value = getVisibleIndices(categorias.value);
-
-    // Reaccionar a cambios en categorias
-    /*watchEffect(() => {
-      categorias.value = store.getters.getCategorias();
-      checkedItems.value = getVisibleIndices(categorias.value);
-    });*/
-
+    const visibleCategories = ref([]);
+    
+    const getVisibleIndices = data => data.map((item, index) => (item.visible ? index : null)).filter(index => index !== null);
+    
+    watchEffect(() => {
+      visibleCategories.value = props.categorias.filter(item => item.visible);
+      checkedItems.value = getVisibleIndices(props.categorias);
+    });
+    
     const handleCheckedValuesUpdate = (newCheckedItems) => {
-      checkedItems.value = newCheckedItems.sort((a,b)=>a-b);
+      checkedItems.value = newCheckedItems.sort((a, b) => a - b);
       emit('categoriesChecked', newCheckedItems);
     };
+    
     const handleLastCategoryVisible = () => {
       Swal.fire({
         icon: 'error',
@@ -75,8 +66,8 @@ export default {
     };
 
     return {
-      categorias,
       checkedItems,
+      visibleCategories,
       handleLastCategoryVisible,
       handleCheckedValuesUpdate,
     };
@@ -92,7 +83,7 @@ export default {
   margin-bottom: .625rem;
   user-select: none;
 }
-::-webkit-scrollbar {height: 4px;width: 4px;}
+::-webkit-scrollbar { height: 4px; width: 4px; }
 ::-webkit-scrollbar-track { background: #f0f0f0; }
 ::-webkit-scrollbar-thumb { background: #888; }
 </style>

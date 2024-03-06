@@ -42,10 +42,7 @@ export default {
     };
     const closeDropdown = () => { showDropdown.value = false; };
     onMounted(() => {
-      if (props.selected.id !== -1) {
-        selectedOption.value = props.selected;
-        emit('select',props.selected)
-      }
+      if (props.selected.id !== -1)  selectedOption.value = props.selected;
     });
     return { showDropdown, selectedOption, toggleDropdown, selectOption, closeDropdown };
   },

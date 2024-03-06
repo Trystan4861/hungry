@@ -8,12 +8,12 @@
           </h1>
           <div class="row">
             <div class="col-lg-4 col-12 col-md-6">
-              <slot-configuration-categories @categoriesChecked="handleCategoriesChecked" />
+              <slot-configuration-categories :categorias="categoriesData" @categoriesChecked="handleCategoriesChecked" />
             </div>
             <div class="col-lg-8 col-12 col-md-6">
               <div class="row">
                 <div class="col-lg-6 col-12 mt-lg-0 mt-4">
-                  <slot-configuration-tabs-active :tabs="tabsData" />
+                  <slot-configuration-tabs-active :tabs="tabsData" :selected="defaultTabActive" @change="handleChangeTabActive" />
                 </div>
                 <div class="col-lg-6 col-12 mt-lg-0 mt-4">
                   <slot-configuration-full-screen @change="handleChangeFullScreen" :selected="configFullScreen" />
@@ -193,6 +193,11 @@ export default {
       if (!this.allowClick) clearTimeout(this.allowClickTimeout)
       this.allowClick=false;
       this.allowClickTimeout=this.doAllowClick();
+    },
+    handleChangeTabActive(data)
+    {
+      console.log(data)
+
     },
     handleEditarProducto(){
       let aux=document.getElementById("divEditarProducto");
@@ -446,7 +451,7 @@ export default {
   },
   setup() {
       document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
-
+      document.addEventListener('contextmenu', (event) => event.preventDefault())
       const store=useStore();
       const storeGet=store.getters;
       const ignoreLongClickTimeout=ref(0)
@@ -456,7 +461,10 @@ export default {
       const controlY=ref(-1)
       const allowClick=ref(true)
       const allowClickTimeout=ref(0)
-      const categoriesVisibilityChanged=ref(false)
+      const changes2Save={
+        categoriasVisibiles:false,
+        defaultTabActive:false
+      }
       const alturaDisponible=ref()
       const categoriasVisibles=ref([])
 
@@ -513,7 +521,7 @@ export default {
           aux.forEach((item,index)=>item.visible=data.includes(index))
           categoriasVisibles.value=aux
           tempCategoriasVisiblesIds=[...data]
-          categoriesVisibilityChanged.value=true
+          changes2Save.categoriasVisibiles=true
       }      
       function getDataFromLocalStorage(index = INDEX_CATEGORIAS) {
           let storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
@@ -595,7 +603,7 @@ export default {
           })
       }
       function saveConfigChanges(){
-        if (categoriesVisibilityChanged.value)
+        if (changes2Save.categoriasVisibiles)
         {
             categoriesData.value=[...categoriasVisibles.value.map(item => ({ ...item }))]
             Swal.fire({
@@ -610,7 +618,7 @@ export default {
           categoriasVisiblesIds.value=[...tempCategoriasVisiblesIds]
 
 
-          categoriesVisibilityChanged.value=false;
+          changes2Save.categoriasVisibiles=false;
       }
       watch(categoriesData, (newData) => {
         store.dispatch('setCategorias', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData));
@@ -649,7 +657,6 @@ export default {
         gotoFullScreen,
         configFullScreen,
         saveConfigChanges,
-        categoriesVisibilityChanged,
         handleCategoriesChecked,
         tempCategoriasVisiblesIds,
     }
