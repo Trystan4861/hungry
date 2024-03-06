@@ -133,6 +133,7 @@ import Swal                         from 'sweetalert2'
 import { computed, ref, watch }     from 'vue'
 import { useStore }                 from 'vuex'
 
+//TODO: recordar cargar valor inicial en initialData -> setup
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData','fullScreenData','defaultTabActiveData']
 const INDEX_CATEGORIAS=0
 const INDEX_PRODUCTOS=1
@@ -464,7 +465,7 @@ export default {
 
       alturaDisponible.value=storeGet.getAlturaDisponible()
 
-      const initialData=[storeGet.getCategorias(),[],storeGet.getAlturaDisponible(),storeGet.getFullScreen()]
+      const initialData=[storeGet.getCategorias(),[],storeGet.getAlturaDisponible(),storeGet.getFullScreen(),storeGet.getDefaultTabActive()]
       const CONFIG_NAMES = storeGet.getConfigNames();
       const tabsData= storeGet.getTabs();
       const supermercados=storeGet.getSupermercados();
