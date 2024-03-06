@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import MyProduct from './MyProduct.vue';
+import MyProduct from '@components/MyProduct.vue';
 
 export default {
   name: 'MyProductList',

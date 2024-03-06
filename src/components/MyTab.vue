@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import MyImageLoader from './MyImageLoader.vue';
+import MyImageLoader from '@components/MyImageLoader.vue';
 import {ref, watch, onMounted, onBeforeUnmount} from 'vue';
 
 export default {

@@ -15,7 +15,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import MyImageLoader from './MyImageLoader.vue';
+import MyImageLoader      from '@components/MyImageLoader.vue';
 
 export default {
   name: 'MySelect',
@@ -50,7 +50,7 @@ export default {
     return { showDropdown, selectedOption, toggleDropdown, selectOption, closeDropdown };
   },
   components: { MyImageLoader },
-  emits:['dropDown','select']
+  emits:['dropDown','select','click']
 };
 </script>
 

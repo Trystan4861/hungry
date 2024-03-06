@@ -1,9 +1,9 @@
 <template>
-  <my-button class="mt-4 mb-4" :text="'Exportar Configuración'" @click="exportConfig" />
+  <my-button :text="'Exportar Configuración'" @click="exportConfig" />
 </template>
 
 <script>
-  import MyButton   from './MyButton.vue'; // Importa el subcomponente MyButton
+  import MyButton   from '@components/MyButton.vue'; // Importa el subcomponente MyButton
   import { useStore } from 'vuex';
 
   function downloadJSON(obj, filename = 'hungry.json') {

@@ -1,6 +1,6 @@
 <template>
   <div id="SlotConfigurationCategories">
-    <p>Cambiar visibilidad de Categorías</p>
+    <div class="text-center mb-1">Visibilidad de Categorías</div>
     <div class="categoriesContainer">
       <my-checkbox
         v-for="(item, index) in categorias"
@@ -20,13 +20,11 @@
         @lastCheckedDeletionAttempt="handleLastCategoryVisible"
       />
     </div>
-    <my-button :text="'Guardar Categorías Visibles'" :btnClass="'secondary'" @click="handleClick"/>
   </div>
 </template>
 
 <script>
-import MyCheckbox from './MyCheckbox.vue';
-import MyButton from './MyButton.vue';
+import MyCheckbox from '@components/MyCheckbox.vue';
 
 import { useStore } from 'vuex';
 import { ref, watchEffect } from 'vue';
@@ -36,7 +34,6 @@ export default {
   name: 'SlotConfigurationCategories',
   components: {
     MyCheckbox,
-    MyButton,
   },
   setup(props, { emit }) {
     const store = useStore();
@@ -58,14 +55,13 @@ export default {
     checkedItems.value = getVisibleIndices(categorias.value);
 
     // Reaccionar a cambios en categorias
-    watchEffect(() => {
+    /*watchEffect(() => {
       categorias.value = store.getters.getCategorias();
       checkedItems.value = getVisibleIndices(categorias.value);
-    });
+    });*/
 
-    const handleClick = () => emit('buttonClicked');
     const handleCheckedValuesUpdate = (newCheckedItems) => {
-      checkedItems.value = newCheckedItems;
+      checkedItems.value = newCheckedItems.sort((a,b)=>a-b);
       emit('categoriesChecked', newCheckedItems);
     };
     const handleLastCategoryVisible = () => {
@@ -83,7 +79,6 @@ export default {
       checkedItems,
       handleLastCategoryVisible,
       handleCheckedValuesUpdate,
-      handleClick
     };
   },
   emits: ['categoriesChecked', 'buttonClicked']
