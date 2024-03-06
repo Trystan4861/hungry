@@ -9,27 +9,27 @@ export default createStore({
       heightDesviation: -90,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
-        { logo:'config.svg'},
-        { logo:'add.svg'},
-        { logo:'a2z.svg'},
-        { logo:'categorias.svg'},
-        { logo:'cart.svg'},
+        { id: 0, text:'Configuración',          logo: 'config.svg'       },
+        { id: 1, text:'Añadir Productos',       logo: 'add.svg'          },
+        { id: 2, text:'Por orden alfabético',   logo: 'a2z.svg'          },
+        { id: 3, text:'Por categoría',          logo: 'categorias.svg'   },
+        { id: 4, text:'Lista de la compra',     logo: 'cart.svg'         },
       ],
       configNames:[
         'Categorías',
         'Productos'
       ],
       supermercados:[
-        { id:0, text:'Cualquier Supermercado', logo:'hungry.svg'        },
-        { id:1, text:'Carrefour',              logo:'carrefour.svg'     },
-        { id:2, text:'Mercadona',              logo:'mercadona.svg'     },
-        { id:3, text:'La Carmela',             logo:'super_carmela.svg' },
+        { id: 0, text:'Cualquier Supermercado', logo:'hungry.svg'        },
+        { id: 1, text:'Carrefour',              logo:'carrefour.svg'     },
+        { id: 2, text:'Mercadona',              logo:'mercadona.svg'     },
+        { id: 3, text:'La Carmela',             logo:'super_carmela.svg' },
       ]
     },
     configuration:{
       appName:'Hungry!',
       maxLenght: 40,
-      defaultTabActive:1,
+      defaultTabActive:0,
       alturaDisponible:0,
       fullScreen: false,
       categorias: [
