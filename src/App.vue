@@ -450,7 +450,6 @@ export default {
     },
   },
   setup() {
-      document.title="Hungry! by trystan4861"; //forzamos el nombre para evitar que netlify ponga el que le de la gana
       document.addEventListener('contextmenu', (event) => event.preventDefault())
       const store=useStore();
       const storeGet=store.getters;

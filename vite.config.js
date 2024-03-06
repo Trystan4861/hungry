@@ -1,14 +1,22 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
+import { readFileSync } from 'fs';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    {
+      name: 'copy-index-html',
+      transformIndexHtml(html) {
+        return readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+      },
+    },
+  ],
   resolve: {
     alias: {
       '@assets': '/src/assets',
-      '@': path.resolve(__dirname, 'src'), // Establece el alias para el directorio src
-    }
-  }
-})
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+});
