@@ -7,8 +7,23 @@
             <div class="text-center author">by Trystan4861</div>
           </h1>
           <SlotConfigurationCategories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
-          <SlotConfigurationExport :configNames="CONFIG_NAMES" />
-          <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
+          <div class="row">
+            <div class="col-lg-4 col-12 col-md-12 d-flex justify-content-center align-items-center mt-4 mt-lg-0"><div>Archivo de Configuración</div></div>
+            <div class="col-lg-4 col-12 col-md-6">
+              <SlotConfigurationExport :configNames="CONFIG_NAMES" />
+            </div>
+            <div class="col-lg-4 col-12 col-md-6 d-flex align-items-center">
+              <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6 col-md-6 col-12 mt-4 mt-md-0 mt-lg-0">
+              <SlotFullScreen @change="handleChangeFullScreen" :selected="configFullScreen" />
+            </div>
+            <div class="col-lg-6 col-md-6 col-12">
+              <MyButton :text="'Guardar'" @click="saveFullScreen" />
+            </div>
+          </div>
         </MyCard>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
@@ -87,26 +102,27 @@
 </template>
 
 <script>
-import { localStorageService }  from './localStorageService.js';
-import MyCard                   from './components/MyCard.vue';
-import MyCategoriesList         from './components/MyCategoriesList.vue';
-import MyTab                    from './components/MyTab.vue';
-import MyInput                  from './components/MyInput.vue';
-import MyButton                 from './components/MyButton.vue';
-import MySelect                 from './components/MySelect.vue';
-import MyProductList            from './components/MyProductList.vue';
-import MyImageLoader            from './components/MyImageLoader.vue';
-import { ref, watch, computed } from 'vue';
-import { useStore }             from 'vuex';
-import Swal                     from 'sweetalert2';
-import SlotConfigurationExport  from './components/SlotConfigurationExport.vue';
-import SlotConfigurationImport  from './components/SlotConfigurationImport.vue';
-import SlotConfigurationCategories from './components/SlotConfigurationCategories.vue'
-
-const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData'];
+import { localStorageService }      from './localStorageService.js';
+import MyCard                       from './components/MyCard.vue';
+import MyCategoriesList             from './components/MyCategoriesList.vue';
+import MyTab                        from './components/MyTab.vue';
+import MyInput                      from './components/MyInput.vue';
+import MyButton                     from './components/MyButton.vue';
+import MySelect                     from './components/MySelect.vue';
+import MyProductList                from './components/MyProductList.vue';
+import MyImageLoader                from './components/MyImageLoader.vue';
+import { ref, watch, computed }     from 'vue';
+import { useStore }                 from 'vuex';
+import Swal                         from 'sweetalert2';
+import SlotConfigurationExport      from './components/SlotConfigurationExport.vue';
+import SlotConfigurationImport      from './components/SlotConfigurationImport.vue';
+import SlotConfigurationCategories  from './components/SlotConfigurationCategories.vue'
+import SlotFullScreen               from './components/SlotFullScreen.vue'
+const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData','fullScreenData'];
 const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
 const INDEX_ALTURA_DISPONIBLE=2;
+const INDEX_FULL_SCREEN=3;
 
 const focusInput=(input)=>
 {
@@ -128,6 +144,7 @@ export default {
     SlotConfigurationExport,
     SlotConfigurationImport,
     SlotConfigurationCategories,
+    SlotFullScreen,
   },
   data(){
     return{
@@ -141,6 +158,7 @@ export default {
   },
   methods:{
     setFullScreen(){
+      if (!this.gotoFullScreen) return document.fullscreenElement?document.exitFullscreen():null
       if (document.fullscreenElement) return
       const elemento=document.getElementById("appContainer");
       if (elemento.requestFullscreen) {
@@ -154,6 +172,9 @@ export default {
       }
     },
     findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
+    handleChangeFullScreen(checked){
+      this.configFullScreen=checked
+    },
     handleClickSupermercadoSL(){
       if (!this.allowClick) clearTimeout(this.allowClickTimeout)
       this.allowClick=false;
@@ -422,7 +443,7 @@ export default {
         return this.productsData.filter(producto => this.categoriasVisiblesIds.includes(producto.id_categoria));
     },
     configuracion: function(){
-      return useStore().getters.getConfiguracion();
+      return useStore().getters.getConfiguration();
     },
   },
   setup() {
@@ -441,13 +462,18 @@ export default {
       const alturaDisponible=ref()
       alturaDisponible.value=storeGet.getAlturaDisponible()
 
-      const initialData=[storeGet.getCategorias(),[]]
+      const initialData=[storeGet.getCategorias(),[],storeGet.getAlturaDisponible(),storeGet.getFullScreen()]
       const CONFIG_NAMES = storeGet.getConfigNames();
       const tabsData= storeGet.getTabs();
       const supermercados=storeGet.getSupermercados();
 
       const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
       const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
+
+      const gotoFullScreen=ref(getDataFromLocalStorage(INDEX_FULL_SCREEN))
+      const configFullScreen=ref(false)
+      configFullScreen.value=gotoFullScreen.value
+
       const categoriasVisiblesIds=ref([])
 
       const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
@@ -496,6 +522,10 @@ export default {
               storedData=fixProductos(storedData)
               store.dispatch('setProductos', storedData);
             }
+            else if (index==INDEX_ALTURA_DISPONIBLE)
+              store.dispatch('setAlturaDisponible', storedData);
+            else if (index==INDEX_FULL_SCREEN)
+              store.dispatch('setFullScreen', storedData);
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
@@ -527,14 +557,22 @@ export default {
             store.dispatch('setIgnoreDrag',true)
           }
         }
-      clearTimeout(ignoreLongClickTimeout.value)
-      ignoreLongClickTimeout.value=setTimeout(releaseIgnoreLongClick ,1000)
-    }
-    const releaseIgnoreLongClick=()=>{
-      controlY.value=-1
-      store.dispatch('setIgnoreDrag',false)
-    }
+        clearTimeout(ignoreLongClickTimeout.value)
+        ignoreLongClickTimeout.value=setTimeout(releaseIgnoreLongClick ,1000)
+      }
+      const releaseIgnoreLongClick=()=>{
+        controlY.value=-1
+        store.dispatch('setIgnoreDrag',false)
+      }
+      const saveFullScreen=()=>{
+        console.log("setfullscreen",configFullScreen.value)
+        store.dispatch('setFullScreen',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_FULL_SCREEN],configFullScreen.value))
+      }
 
+      watch(() => storeGet.getFullScreen(), (nuevoValor) => {
+        console.log("newValor",nuevoValor)
+        gotoFullScreen.value = nuevoValor;
+      });
       const handleImportConfigurationFile=(data)=>{
         let importado=[];
         if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0) {
@@ -588,7 +626,10 @@ export default {
         releaseIgnoreLongClick,
         heightDesviation,
         allowClick,
-        allowClickTimeout
+        allowClickTimeout,
+        gotoFullScreen,
+        saveFullScreen,
+        configFullScreen
     }
   },
   mounted(){
@@ -609,13 +650,13 @@ html,body
   padding: 0; /* Eliminar el padding predeterminado del body */
   overflow: hidden;
 }
-::-webkit-scrollbar {width: 5px;}
-::-webkit-scrollbar-track {background: #f1f1f1;}
-::-webkit-scrollbar-thumb {background: #888;}
-::-webkit-scrollbar-thumb:hover {background: #555;}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #888; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
 
-#app{ height: 100%!important; }
-.swal2-input{
+#app { height: 100%!important; }
+.swal2-input {
     margin: 0;
     width: 100%;
     position: relative;
@@ -656,31 +697,17 @@ hr {
     width: 60%;
     text-align: center;
 }
-.clearList button
-{
+.clearList button {
   border-radius: 0px !important;
   width: -webkit-fill-available;
 }
-.overflow-hidden
-{
-  overflow: hidden;
-}
-.pr-0{
-  padding-right: 0 !important;
-}
-.ml-3 {
-    margin-left: 1rem !important;
-}
-.mr-3 {
-    margin-right: 1rem !important;
-}
-.mr-1{
-  margin-right: .25rem !important;
-}
-.mr-0 {
-    margin-right: 0rem !important;
-}
-.touch{
+.overflow-hidden { overflow: hidden; }
+.pr-0 { padding-right: 0 !important; }
+.ml-3 { margin-left: 1rem !important; }
+.mr-3 { margin-right: 1rem !important; }
+.mr-1 { margin-right: .25rem !important; }
+.mr-0 { margin-right: 0rem !important; }
+.touch {
     height: 150px;
     background: gray;
     margin-top: 10px;

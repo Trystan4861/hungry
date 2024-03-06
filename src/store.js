@@ -26,11 +26,12 @@ export default createStore({
         { id:3, text:'La Carmela',             logo:'super_carmela.svg' },
       ]
     },
-    configuracion:{
+    configuration:{
       appName:'Hungry!',
       maxLenght: 40,
       defaultTabActive:1,
       alturaDisponible:0,
+      fullScreen: false,
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
         { id: 1, text:'Categoría  2', bgColor:'#d8993c', visible:true },
@@ -59,38 +60,41 @@ export default createStore({
   mutations: {
     updateCategoria(state, payload){
       const {id, text, bgColor, visible} = payload;
-      const index = state.configuracion.categorias.findIndex(categoria => categoria.id === id);
+      const index = state.configuration.categorias.findIndex(categoria => categoria.id === id);
       if(!index<0){
-        state.configuracion.categorias[index].text = text;
-        state.configuracion.categorias[index].bgColor = bgColor;
-        state.configuracion.categorias[index].visible = Boolean(visible);
+        state.configuration.categorias[index].text = text;
+        state.configuration.categorias[index].bgColor = bgColor;
+        state.configuration.categorias[index].visible = Boolean(visible);
       }
     },
-    setCategories          ( state,      categorias      ) { state.configuracion.categorias        = categorias        },
-    setProducts            ( state,      productos       ) { state.configuracion.productos         = productos         },
-    setDefaultTabActive    ( state,      defaultTabActive) { state.configuracion.defaultTabActive  = defaultTabActive  },
-    setConfiguracion       ( state,      configuracion   ) { state.configuracion                   = configuracion     },
-    setMaxLenght           ( state,      maxLenght       ) { state.configuracion.maxLenght         = maxLenght         },
-    setAlturaDisponible    ( state,      alturaDisponible) { state.configuracion.alturaDisponible  = alturaDisponible  },
+    setCategories          ( state,      categorias      ) { state.configuration.categorias        = categorias        },
+    setProducts            ( state,      productos       ) { state.configuration.productos         = productos         },
+    setDefaultTabActive    ( state,      defaultTabActive) { state.configuration.defaultTabActive  = defaultTabActive  },
+    setConfiguration       ( state,      configuration   ) { state.configuration                   = configuration     },
+    setMaxLenght           ( state,      maxLenght       ) { state.configuration.maxLenght         = maxLenght         },
+    setAlturaDisponible    ( state,      alturaDisponible) { state.configuration.alturaDisponible  = alturaDisponible  },
     setIgnoreDrag          ( state,      ignoreDrag      ) { state.appStatic.ignoreDrag            = ignoreDrag        },
+    setFullScreen          ( state,      fullScreen      ) { state.configuration.fullScreen        = fullScreen        },
   },
   actions: {
-    setConfiguracion       ({ commit }, configuracion    ) { commit('setConfiguracion',    configuracion   )           },
+    setConfiguration       ({ commit }, configuration    ) { commit('setConfiguration',    configuration   )           },
     setProductos           ({ commit }, productos        ) { commit('setProducts',         productos       )           },
     setCategorias          ({ commit }, categorias       ) { commit('setCategories',       categorias      )           },
     setDefaultTabActive    ({ commit }, defaultTabActive ) { commit('setDefaultTabActive', defaultTabActive)           },
     setMaxLenght           ({ commit }, maxLenght        ) { commit('setMaxLenght',        maxLenght       )           },
     setAlturaDisponible    ({ commit }, alturaDisponible ) { commit('setAlturaDisponible', alturaDisponible)           },
     setIgnoreDrag          ({ commit }, ignoreDrag       ) { commit('setIgnoreDrag',       ignoreDrag      )           },
+    setFullScreen          ({ commit }, fullScreen       ) { commit('setFullScreen',       fullScreen      )           },
   },
   getters: {
-    getConfiguracion:      (state)=>(  )=>state.configuracion,
-    getCategorias:         (state)=>(  )=>state.configuracion.categorias,
-    getCategoriaFromID:    (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
-    getDefaultTabActive:   (state)=>(  )=>state.configuracion.defaultTabActive,
-    getProductos:          (state)=>(  )=>state.configuracion.productos,
-    getMaxLenght:          (state)=>(  )=>state.configuracion.maxLenght,
-    getAlturaDisponible:   (state)=>(  )=>state.configuracion.alturaDisponible,
+    getConfiguration:      (state)=>(  )=>state.configuration,
+    getCategorias:         (state)=>(  )=>state.configuration.categorias,
+    getCategoriaFromID:    (state)=>(id)=>state.configuration.categorias.find(categoria => categoria.id === id),
+    getDefaultTabActive:   (state)=>(  )=>state.configuration.defaultTabActive,
+    getProductos:          (state)=>(  )=>state.configuration.productos,
+    getMaxLenght:          (state)=>(  )=>state.configuration.maxLenght,
+    getAlturaDisponible:   (state)=>(  )=>state.configuration.alturaDisponible,
+    getFullScreen:         (state)=>(  )=>state.configuration.fullScreen,
     
     getTabs:               (state)=>(  )=>state.appStatic.tabs,
     getConfigNames:        (state)=>(  )=>state.appStatic.configNames,
