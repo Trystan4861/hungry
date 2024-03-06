@@ -10,6 +10,12 @@
         :checkedValues="checkedItems"
         :group="'configCategoriesVisibility'"
         :required="true"
+        :styled="true"
+        :dotDiameter="'1rem'"
+        :checkedColor="'#6c757d'"
+        :uncheckedColor="'#333'"
+        :checkmarkColor="'white'"
+        :crossColor="'white'"
         @update:checkedValues="handleCheckedValuesUpdate"
         @lastCheckedDeletionAttempt="handleLastCategoryVisible"
       />

@@ -54,7 +54,7 @@ export default {
   box-shadow: 0 .25rem .375rem rgba(0, 0, 0, 0.1);
   padding: .3125rem;
   overflow-y: auto;
-
+  overflow-x: hidden;
 }
 
 .card-body {

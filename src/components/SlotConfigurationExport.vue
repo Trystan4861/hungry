@@ -26,7 +26,7 @@
     },
     setup(){
         let store=useStore().getters
-        const exportConfig=()=>downloadJSON(store.getConfiguracion());
+        const exportConfig=()=>downloadJSON(store.getConfiguration());
         return {exportConfig}
     }
   };
