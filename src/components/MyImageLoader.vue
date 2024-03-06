@@ -1,5 +1,5 @@
 <template>
-  <img :class="className" :src="imageSource">
+  <img :class="className" :src="imageSource" :alt="alt">
 </template>
 
 <script>
@@ -11,6 +11,10 @@
       urlCdn:     { type: String,         default:  'https://ik.imagekit.io/trystan4861/hungry/'},
     },
     computed: {
+      alt(){
+        if (typeof this.image === 'string') return (!this.image.startsWith('data:'))?this.image:"Empty image"
+        else return "Empty Image"
+      },
       imageSource() {
         if (typeof this.image === 'string') return (!this.image.startsWith('data:'))?`${this.urlCdn}${this.urlCdn.endsWith('/')?'':'/'}${this.image}`:this.image;
         else if (this.image instanceof File) return URL.createObjectURL(this.image);
