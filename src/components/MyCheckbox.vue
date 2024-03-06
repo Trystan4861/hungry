@@ -28,9 +28,9 @@
 </template>
 
 <script>
-import { computed, defineComponent } from 'vue';
+import { computed } from 'vue'; //necesario al usar una propiedad computada dentro del setup
 
-export default defineComponent({
+export default {
   name: 'MyCheckbox',
   props: {
     value:          {                 required: true      },
@@ -72,7 +72,7 @@ export default defineComponent({
     };
   },
   emits: ['update:checkedValues', 'lastCheckedDeletionAttempt','update:checkedValue']
-});
+};
 </script>
 
 <style scoped>
