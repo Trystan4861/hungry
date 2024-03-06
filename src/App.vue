@@ -6,25 +6,30 @@
           <h1 class="text-center"><span class="appName">Hungry!</span><my-image-loader :image="'hungry.svg'" :className="'logo'" />
             <div class="text-center author">by Trystan4861</div>
           </h1>
-          <slot-configuration-categories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
           <div class="row">
-            <div class="col-lg-4 col-12 col-md-12 d-flex justify-content-center align-items-center mt-4 mt-lg-0"><div>Archivo de Configuración</div></div>
             <div class="col-lg-4 col-12 col-md-6">
-              <slot-configuration-export :configNames="CONFIG_NAMES" />
+              <slot-configuration-categories @categoriesChecked="handleCategoriesChecked" />
             </div>
-            <div class="col-lg-4 col-12 col-md-6 d-flex align-items-center">
-              <slot-configuration-import @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
+            <div class="col-lg-8 col-12 col-md-6">
+              <div class="row">
+                <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+                  <slot-configuration-tabs-active :tabs="tabsData" />
+                </div>
+                <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+                  <slot-configuration-full-screen @change="handleChangeFullScreen" :selected="configFullScreen" />
+                </div>
+              </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-lg-4 col-md-4 col-12 mt-4 mt-md-0 mt-lg-0">
-              <slot-full-screen @change="handleChangeFullScreen" :selected="configFullScreen" />
+          <div class="row align-items-end">
+            <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-4">
+              <slot-configuration-import @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
             </div>
-            <div class="col-lg-4 col-md-4 col-12">
-              <slot-tabs-active />
+            <div class="order-2 col-lg-4 col-md-4 col-12 mt-4">
+              <slot-configuration-export :configNames="CONFIG_NAMES" />
             </div>
-            <div class="col-lg-4 col-md-4 col-12">
-              <my-button :text="'Guardar Cambios'" @click="saveFullScreen" />
+            <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-4">
+              <my-button :btnClass="'danger'" :text="'Guardar Cambios'" @click="saveConfigChanges" />
             </div>
           </div>
         </my-card>
@@ -105,22 +110,29 @@
 </template>
 
 <script>
-import { localStorageService }      from './localStorageService.js';
-import MyCard                       from './components/MyCard.vue';
-import MyCategoriesList             from './components/MyCategoriesList.vue';
-import MyTab                        from './components/MyTab.vue';
-import MyInput                      from './components/MyInput.vue';
-import MyButton                     from './components/MyButton.vue';
-import MySelect                     from './components/MySelect.vue';
-import MyProductList                from './components/MyProductList.vue';
-import MyImageLoader                from './components/MyImageLoader.vue';
-import { ref, watch, computed }     from 'vue';
-import { useStore }                 from 'vuex';
+import { localStorageService }      from '@/localStorageService';
+import { findIndexById }            from '@/utilidades';
+
+import MyButton                     from '@components/MyButton.vue';
+import MyCard                       from '@components/MyCard.vue';
+import MyCategoriesList             from '@components/MyCategoriesList.vue';
+import MyImageLoader                from '@components/MyImageLoader.vue';
+import MyInput                      from '@components/MyInput.vue';
+import MyProductList                from '@components/MyProductList.vue';
+import MySelect                     from '@components/MySelect.vue';
+import MyTab                        from '@components/MyTab.vue';
+
+import SlotConfigurationCategories  from '@components/SlotConfigurationCategories.vue'
+import SlotConfigurationExport      from '@components/SlotConfigurationExport.vue';
+import SlotConfigurationFullScreen  from '@components/SlotConfigurationFullScreen.vue'
+import SlotConfigurationImport      from '@components/SlotConfigurationImport.vue';
+import SlotConfigurationTabsActive  from '@components/SlotConfigurationTabsActive.vue';
+
 import Swal                         from 'sweetalert2';
-import SlotConfigurationExport      from './components/SlotConfigurationExport.vue';
-import SlotConfigurationImport      from './components/SlotConfigurationImport.vue';
-import SlotConfigurationCategories  from './components/SlotConfigurationCategories.vue'
-import SlotFullScreen               from './components/SlotFullScreen.vue'
+
+import { computed, ref, watch }     from 'vue';
+import { useStore }                 from 'vuex';
+
 const LOCAL_STORAGE_KEYS = ['categoriesData','productsData','alturaDisponibleData','fullScreenData'];
 const INDEX_CATEGORIAS=0;
 const INDEX_PRODUCTOS=1;
@@ -144,10 +156,11 @@ export default {
     MyProductList,
     MySelect,
     MyTab,
+    SlotConfigurationCategories,
     SlotConfigurationExport,
     SlotConfigurationImport,
-    SlotConfigurationCategories,
-    SlotFullScreen,
+    SlotConfigurationTabsActive,
+    SlotConfigurationFullScreen,
   },
   data(){
     return{
@@ -156,7 +169,6 @@ export default {
       productoAEditar:'',
       configs2Export:[],
       productoSeleccionado:{},
-      categoriasVisibles:null,
     }
   },
   methods:{
@@ -174,7 +186,6 @@ export default {
         elemento.msRequestFullscreen();
       }
     },
-    findIndexById(whatID,where){return where.findIndex(item=>item.id==whatID)},
     handleChangeFullScreen(checked){
       this.configFullScreen=checked
     },
@@ -195,7 +206,7 @@ export default {
         target: document.querySelector("#appContainer"),
         willOpen:()=>{
           this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria);
-            this.$refs.selectRef.selectOption(this.supermercados[this.findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
+            this.$refs.selectRef.selectOption(this.supermercados[findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
           document.getElementById('VueSweetAlert2').appendChild(aux);
         },
         didOpen:()=>{
@@ -230,7 +241,7 @@ export default {
           }
           if (!areTheSame(this.productoSeleccionado,newData))
           {
-              this.productsData[this.findIndexById(newData.id, this.productsData)] = newData;
+              this.productsData[findIndexById(newData.id, this.productsData)] = newData;
               this.productsData=[...this.productsData]
               Swal.fire({
                 title:'Atención',
@@ -288,13 +299,13 @@ export default {
       if(!this.allowClick) return
       this.allowClick=false
       this.allowClickTimeout=this.doAllowClick(250)
-      let index=this.findIndexById(product.id,this.productsData)
+      let index=findIndexById(product.id,this.productsData)
       this.productsData[index].done=!this.productsData[index].done
       if (this.saveProductsState) this.productsData=[...this.productsData]
     },
     handleClickProduct(product){
       if (this.storeGet.getIgnoreDrag()) return
-      let index=this.findIndexById(product.id,this.productsData)
+      let index=findIndexById(product.id,this.productsData)
       if (index!=-1)
       {
         this.productsData[index].selected=(Object.prototype.hasOwnProperty.call(this.productsData[index], 'selected'))?!this.productsData[index].selected:true
@@ -424,22 +435,6 @@ export default {
       this.supermercadoActivo.value=selected 
     },
     handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
-    handleCategoriesChecked(data)
-    {
-      this.categoriasVisibles=this.categoriesData.map(categoria => ({ ...categoria }));
-      this.categoriasVisibles.forEach((item,index)=>item.visible=data.includes(index))
-      this.categoriasVisiblesIds=data
-    },
-    handleCategoriesButtonClicked(){
-      this.categoriesData=this.categoriasVisibles
-      Swal.fire({
-        icon:'success',
-        title:'Atención',
-        html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
-        confirmButtonText:'Aceptar',
-        target: document.querySelector("#appContainer"),
-      })
-    },
   },
   computed:{
     productosVisibles: function() {
@@ -461,8 +456,10 @@ export default {
       const controlY=ref(-1)
       const allowClick=ref(true)
       const allowClickTimeout=ref(0)
-      
+      const categoriesVisibilityChanged=ref(false)
       const alturaDisponible=ref()
+      const categoriasVisibles=ref([])
+
       alturaDisponible.value=storeGet.getAlturaDisponible()
 
       const initialData=[storeGet.getCategorias(),[],storeGet.getAlturaDisponible(),storeGet.getFullScreen()]
@@ -477,15 +474,15 @@ export default {
       const configFullScreen=ref(false)
       configFullScreen.value=gotoFullScreen.value
 
-      const categoriasVisiblesIds=ref([])
+      let categoriasVisiblesIds=ref([])
+      let tempCategoriasVisiblesIds=[]
 
       const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
 
 
       if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
 
-      categoriasVisiblesIds.value=categoriesData.value.filter(item=>item.visible).map(item=>item.id)
-
+      categoriasVisiblesIds.value=[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)]
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
@@ -510,6 +507,14 @@ export default {
         })
         return categorias
       }
+      function handleCategoriesChecked(data)
+      {
+      let aux=categoriesData.value.map(categoria => ({ ...categoria }))
+          aux.forEach((item,index)=>item.visible=data.includes(index))
+          categoriasVisibles.value=aux
+          tempCategoriasVisiblesIds=[...data]
+          categoriesVisibilityChanged.value=true
+      }      
       function getDataFromLocalStorage(index = INDEX_CATEGORIAS) {
           let storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
           if (storedData)
@@ -532,9 +537,6 @@ export default {
           }
           return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
       }
-      watch(categoriesData,(newData)=>{ 
-        store.dispatch('setCategorias',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)) 
-      })
       watch(alturaDisponible,(newData)=>{ 
         if(Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)){
           store.dispatch('setAlturaDisponible',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_ALTURA_DISPONIBLE], newData)) 
@@ -567,16 +569,11 @@ export default {
         controlY.value=-1
         store.dispatch('setIgnoreDrag',false)
       }
-      const saveFullScreen=()=>{
-        console.log("setfullscreen",configFullScreen.value)
-        store.dispatch('setFullScreen',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_FULL_SCREEN],configFullScreen.value))
-      }
 
       watch(() => storeGet.getFullScreen(), (nuevoValor) => {
-        console.log("newValor",nuevoValor)
         gotoFullScreen.value = nuevoValor;
       });
-      const handleImportConfigurationFile=(data)=>{
+      function handleImportConfigurationFile(data){
         let importado=[];
         if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0) {
           data.categorias=fixCategorias(data.categorias)
@@ -597,6 +594,24 @@ export default {
             target: document.querySelector("#appContainer"),
           })
       }
+      function saveConfigChanges(){
+        if (categoriesVisibilityChanged.value)
+        {
+            categoriesData.value=[...categoriasVisibles.value.map(item => ({ ...item }))]
+            Swal.fire({
+              icon:'success',
+              title:'Atención',
+              html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
+              confirmButtonText:'Aceptar',
+              target: document.querySelector("#appContainer"),
+            })
+          }
+          store.dispatch('setFullScreen',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_FULL_SCREEN],configFullScreen.value))
+          categoriasVisiblesIds.value=[...tempCategoriasVisiblesIds]
+
+
+          categoriesVisibilityChanged.value=false;
+      }
       watch(categoriesData, (newData) => {
         store.dispatch('setCategorias', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData));
       });
@@ -614,6 +629,7 @@ export default {
         productsData,
         categoriesData,
         categoriaActiva,
+        categoriasVisibles,
         categoriasVisiblesIds,
         supermercadoActivo,
         supermercadoSL,
@@ -631,8 +647,11 @@ export default {
         allowClick,
         allowClickTimeout,
         gotoFullScreen,
-        saveFullScreen,
-        configFullScreen
+        configFullScreen,
+        saveConfigChanges,
+        categoriesVisibilityChanged,
+        handleCategoriesChecked,
+        tempCategoriasVisiblesIds,
     }
   },
   mounted(){
