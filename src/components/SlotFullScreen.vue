@@ -1,7 +1,7 @@
 <template>
   <div id="SlotFullScreen">
-    <div class="categoriesContainer">
-      <MyCheckbox
+    <div>
+      <my-checkbox
         value="1"
         :label="'Ejecutar en Pantalla Completa'"
         :selected="selected"

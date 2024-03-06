@@ -7,7 +7,7 @@
           class="nav-link"
           :class="{ active: this.activeTab === index }"
           @click="activateTab(index)">
-          <MyImageLoader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
+          <my-image-loader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
         </a>
       </li>
     </ul>

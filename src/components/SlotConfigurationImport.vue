@@ -1,5 +1,5 @@
 <template>
-  <MyFile :text="'Importar Configuración'" @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :maxFileSize="100*1024" :accept="'application/json'" />
+  <my-file :text="'Importar Configuración'" @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :maxFileSize="100*1024" :accept="'application/json'" />
 </template>
 
 <script>

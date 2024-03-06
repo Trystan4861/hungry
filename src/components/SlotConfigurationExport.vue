@@ -1,5 +1,5 @@
 <template>
-  <MyButton class="mt-4 mb-4" :text="'Exportar Configuración'" @click="exportConfig" />
+  <my-button class="mt-4 mb-4" :text="'Exportar Configuración'" @click="exportConfig" />
 </template>
 
 <script>

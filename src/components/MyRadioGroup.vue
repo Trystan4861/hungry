@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MyRadio v-for="radio in radios" :key="radio.id" :id="radio.id" :image="radio.image" :selected="selectedRadio" />
+    <my-radio v-for="radio in radios" :key="radio.id" :id="radio.id" :image="radio.image" :selected="selectedRadio" />
   </div>
 </template>
 

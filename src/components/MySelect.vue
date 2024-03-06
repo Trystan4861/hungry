@@ -1,12 +1,12 @@
 <template>
   <div class="my-select" @click="toggleDropdown" @blur="closeDropdown">
     <div class="selected-option" tabindex="0">
-      <MyImageLoader :image="selectedOption.logo" />
+      <my-image-loader :image="selectedOption.logo" />
       {{ selectedOption.text ? selectedOption.text : placeholder }}
     </div>
     <div class="dropdown" :class="{ show: showDropdown }">
       <div v-for="(option, index) in options" :key="index" class="option" @mousedown="selectOption(option)">
-        <MyImageLoader :image="option.logo" :className="'option-logo'" />
+        <my-image-loader :image="option.logo" :className="'option-logo'" />
         {{ option.text }}
       </div>
     </div>

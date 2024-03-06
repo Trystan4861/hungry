@@ -1,69 +1,72 @@
 <template>
   <div id="appContainer" class="container mt-4" @click="setFullScreen">
-    <MyTab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" :heightResponsive="true" :heightDesviation="heightDesviation">
+    <my-tab :tabs="tabsData" :defaultActive="defaultTabActive" @tabHeightChanged="handleTabHeightChanged" :alturaDisponible="alturaDisponible" :heightResponsive="true" :heightDesviation="heightDesviation">
       <template v-slot:tabContent0> <!-- Configuration -->
-        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
-          <h1 class="text-center"><span class="appName">Hungry!</span><MyImageLoader :image="'hungry.svg'" :className="'logo'" />
+        <my-card :height="alturaDisponible" :borderStyle="'rounded-bottom'">
+          <h1 class="text-center"><span class="appName">Hungry!</span><my-image-loader :image="'hungry.svg'" :className="'logo'" />
             <div class="text-center author">by Trystan4861</div>
           </h1>
-          <SlotConfigurationCategories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
+          <slot-configuration-categories @categoriesChecked="handleCategoriesChecked" @buttonClicked="handleCategoriesButtonClicked" />
           <div class="row">
             <div class="col-lg-4 col-12 col-md-12 d-flex justify-content-center align-items-center mt-4 mt-lg-0"><div>Archivo de Configuración</div></div>
             <div class="col-lg-4 col-12 col-md-6">
-              <SlotConfigurationExport :configNames="CONFIG_NAMES" />
+              <slot-configuration-export :configNames="CONFIG_NAMES" />
             </div>
             <div class="col-lg-4 col-12 col-md-6 d-flex align-items-center">
-              <SlotConfigurationImport @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
+              <slot-configuration-import @configurationFileReaded="handleImportConfigurationFile" @configurationFileError="handleImportConfigurationFileError" />
             </div>
           </div>
           <div class="row">
-            <div class="col-lg-6 col-md-6 col-12 mt-4 mt-md-0 mt-lg-0">
-              <SlotFullScreen @change="handleChangeFullScreen" :selected="configFullScreen" />
+            <div class="col-lg-4 col-md-4 col-12 mt-4 mt-md-0 mt-lg-0">
+              <slot-full-screen @change="handleChangeFullScreen" :selected="configFullScreen" />
             </div>
-            <div class="col-lg-6 col-md-6 col-12">
-              <MyButton :text="'Guardar'" @click="saveFullScreen" />
+            <div class="col-lg-4 col-md-4 col-12">
+              <slot-tabs-active />
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+              <my-button :text="'Guardar Cambios'" @click="saveFullScreen" />
             </div>
           </div>
-        </MyCard>
+        </my-card>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
-        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'">
-          <MyCategoriesList class="mb-4" :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
-          <MySelect :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
-          <MyInput :maxLength="maxLenght" class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
-          <MyButton text="Añadir" @click="handleAddClick" />
-        </MyCard>
+        <my-card :height="alturaDisponible" :borderStyle="'rounded-bottom'">
+          <my-categories-list class="mb-4" :categories="categoriesData" @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick" />
+          <my-select :selected="supermercados[0]" :options="supermercados" selectName="supermercadoAdd" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
+          <my-input :maxLength="maxLenght" class="mb-4" v-model="nuevoProducto" :placeholder="'Añade nuevos productos aquí'" :autofocus="true" @keyPressed:enter="handleAddClick" />
+          <my-button text="Añadir" @click="handleAddClick" />
+        </my-card>
       </template>    
       <template v-slot:tabContent2> <!-- orderBy name -->
-        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'" v-touch:drag.once="handleDragCard">
-          <MyProductList 
+        <my-card :height="alturaDisponible" :borderStyle="'rounded-bottom'" v-touch:drag.once="handleDragCard">
+          <my-product-list 
             :productList="productosVisibles" 
             orderBy="name"
             @click:product="handleClickProduct"
             @longClick:product="handeLongClickProduct"
           />
-        </MyCard>
+        </my-card>
       </template>
       <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
-        <MyCard :height="alturaDisponible" :borderStyle="'rounded-bottom'" v-touch:drag.once="handleDragCard">
-          <MyProductList 
+        <my-card :height="alturaDisponible" :borderStyle="'rounded-bottom'" v-touch:drag.once="handleDragCard">
+          <my-product-list 
             :productList="productosVisibles" 
             orderBy="categoryId"
             @click:product="handleClickProduct"
             @longClick:product="handeLongClickProduct"
           />
-        </MyCard>
+        </my-card>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
         <div class="row mr-0">
           <div class="col-9 pr-0">
-            <MySelect @click="handleClickSupermercadoSL" :options="supermercados.filter(item=>item.id!=0)" :selected="supermercados[1]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
+            <my-select @click="handleClickSupermercadoSL" :options="supermercados.filter(item=>item.id!=0)" :selected="supermercados[1]" selectName="supermercadoEdit" @select="handleSelectSupermercadoSL" />
           </div>
           <div class="col-3 p-0 overflow-hidden">
-              <MyButton class="clearList" :text="'Limpiar Lista'" :btnClass="'danger'" @click="clearList" />
+              <my-button class="clearList" :text="'Limpiar Lista'" :btnClass="'danger'" @click="clearList" />
           </div>
         </div>
-        <MyCard :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
+        <my-card :height="alturaDisponible" :heightModifier="-50" :borderStyle="'rounded-bottom'">
           <div v-show="
           productosVisibles.some(item=>
             item.selected 
@@ -71,7 +74,7 @@
             && !item.done
           )">
             <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }}<hr /></div>
-            <MyProductList :productList="productosVisibles" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+            <my-product-list :productList="productosVisibles" orderBy="categoryId" :supermercado="supermercadoSL.value?.id || 0" :selected="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
           <div v-show="
           (
@@ -82,21 +85,21 @@
             )
           ) || 0">
             <div class="w-100 text-center">Para comprar en otros Supermercados<hr /></div>
-            <MyProductList :productList="productosVisibles" orderBy="categoryId" :selected="true" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
+            <my-product-list :productList="productosVisibles" orderBy="categoryId" :selected="true" :supermercado="supermercadoSL.value?.id || 0" :hideSupermercado="true" :canBeDone="true" :hideDone="true" @click:product="handleShoplistClick" />
           </div>
           <div v-show="productosVisibles.some(item=>item.done)">
             <div class="w-100 text-center">Ya comprado<hr /></div>
-            <MyProductList :productList="productosVisibles" orderBy="categoryId" :selected="true" :canBeDone="true" :showOnlyDone="true" @click:product="handleShoplistClick" />
+            <my-product-list :productList="productosVisibles" orderBy="categoryId" :selected="true" :canBeDone="true" :showOnlyDone="true" @click:product="handleShoplistClick" />
           </div>
-        </MyCard>
+        </my-card>
       </template>
-    </MyTab>
+    </my-tab>
   </div>
   <div id="anchorEditarProducto" class="d-none">
     <div id="divEditarProducto">
-      <MyCategoriesList ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado?.id_categoria || 0" @categorySelected="handleCategorySelected" />
-      <MySelect ref="selectRef" :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
-      <MyInput :maxLength="maxLenght" v-model="productoAEditar" :placeholder="productoAEditar"/>
+      <my-categories-list ref="categoriesSliderRef" :categories="categoriesData" :selectCategory="productoSeleccionado?.id_categoria || 0" @categorySelected="handleCategorySelected" />
+      <my-select ref="selectRef" :options="supermercados" selectName="supermercadoEdit" @select="handleSelectSupermercado" :placeholder="'Selecciona un supermercado'" />
+      <my-input :maxLength="maxLenght" v-model="productoAEditar" :placeholder="productoAEditar"/>
     </div>
   </div> 
 </template>

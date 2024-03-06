@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="my-product-list">
-      <MyProduct v-for="(product, index) in sortedProductList" 
+      <my-product v-for="(product, index) in sortedProductList" 
       :key="index" 
       :product="product"
       :canBeDone="canBeDone" 

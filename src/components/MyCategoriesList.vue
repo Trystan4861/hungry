@@ -2,7 +2,7 @@
   <div class="my-categories-list-container" ref="containerRef" @scroll="handleScroll">
     <div class="categories-padding">
       <div class="my-categories-list" :style="categoryListStyle">
-        <MyCategory
+        <my-category
           v-for="(category, index) in visibleCategories"
           :key="index"
           :text="category.text"

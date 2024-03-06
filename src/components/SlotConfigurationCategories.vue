@@ -2,7 +2,7 @@
   <div id="SlotConfigurationCategories">
     <p>Cambiar visibilidad de Categorías</p>
     <div class="categoriesContainer">
-      <MyCheckbox
+      <my-checkbox
         v-for="(item, index) in categorias"
         :key="index"
         :value="index"
@@ -20,7 +20,7 @@
         @lastCheckedDeletionAttempt="handleLastCategoryVisible"
       />
     </div>
-    <MyButton :text="'Guardar Categorías Visibles'" :btnClass="'secondary'" @click="handleClick"/>
+    <my-button :text="'Guardar Categorías Visibles'" :btnClass="'secondary'" @click="handleClick"/>
   </div>
 </template>
 
