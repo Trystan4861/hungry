@@ -2,7 +2,11 @@
   <div id="SlotFullScreen">
     <div>
       <div class="text-center mb-1">Pestaña activa por defecto</div>
-      <my-select :options="tabs.filter(item=>item.selectable)" :selected="tabs[selected]" @select="handleTabSelected" />
+      <my-select 
+          :options="tabs.filter(item=>item.selectable)" 
+          :selected="tabs[selected]" 
+          @select="handleTabSelected" 
+        />
     </div>
   </div>
 </template>
@@ -17,11 +21,9 @@
     props:                  { tabs:     { type: Array,  required: true }, 
                               selected: { type: Number, required: true },
                             },
-    components:             { 
-                              MySelect,
-                            },
+    components:             {  MySelect,                               },
     setup (props, { emit }) { 
-      const handleTabSelected   = tabSelected => emit('change',findIndexById(tabSelected.id,props.tabs))
+      const handleTabSelected = tabSelected => emit('change',findIndexById(tabSelected.id,props.tabs))
       return { handleTabSelected }
     },
     emits: ['change']
