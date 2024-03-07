@@ -597,7 +597,7 @@
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
-      supermercadoSL.value=supermercados[0]
+      supermercadoSL.value=supermercados[1]
       function fixProductos(productos){
         productos.forEach(producto=> {
           if (Object.prototype.hasOwnProperty.call(producto, 'supermercado')) delete producto.supermercado
@@ -777,7 +777,7 @@
         tempCategoriasVisiblesIds,
       }
     },
-    mounted(){ setTimeout(this.nuevoProductoFocus,500); this.supermercadoActivo.value=this.supermercados[0] },
+    mounted(){ setTimeout(this.nuevoProductoFocus,500); this.supermercadoActivo.value=this.supermercados[0]; this.supermercadoSL.value=this.supermercados[1] },
   }
 </script>
 
