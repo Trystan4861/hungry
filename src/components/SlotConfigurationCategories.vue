@@ -81,7 +81,10 @@ export default {
   max-height: 150px;
   overflow-y: auto;
   margin-bottom: .625rem;
+  border: 1px solid;
+  border-right-width: 0;
   user-select: none;
+  padding-top: 15px
 }
 ::-webkit-scrollbar { height: 4px; width: 4px; }
 ::-webkit-scrollbar-track { background: #f0f0f0; }

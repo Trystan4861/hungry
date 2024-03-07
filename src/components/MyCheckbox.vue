@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex align-items-center cursor-pointer">
     <div v-if="styled">
-      <label class="Toggle" :for="id" @click="handleChange">
+      <label class="Toggle" :class="group?'mb-1':''" :for="id" @click="handleChange">
       <input type="checkbox" :name="id" :id="id" class="Toggle__input" :value="value" :checked="isChecked">
         <span class="Toggle__display" :style="{ backgroundColor:isChecked?checkedColor:uncheckedColor, '--diameter': dotDiameter}">
           <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="Toggle__icon" :style="{color: checkmarkColor}">
@@ -89,7 +89,6 @@ label {
   flex-wrap: wrap;
   align-items: center;
   position: relative;
-  margin-bottom: 1em;
   cursor: pointer;
   gap: 1ch;
 }

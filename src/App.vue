@@ -25,14 +25,14 @@
             </div>
             <div class="col-lg-8 col-12 col-md-6">
               <div class="row">
-                <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+                <div class="col-lg-6 col-12 mt-0">
                   <slot-configuration-tabs-active 
                     :selected="defaultTabActive" 
                     :tabs="tabsData" 
                     @change="handleChangeTabActive" 
                     />
                 </div>
-                <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+                <div class="col-lg-6 col-12 mt-lg-0 mt-2">
                   <slot-configuration-full-screen 
                     :selected="configFullScreen" 
                     @change="handleChangeFullScreen" 
@@ -42,18 +42,18 @@
             </div>
           </div>
           <div class="row align-items-end">
-            <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-4">
+            <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
               <slot-configuration-import 
                 @configurationFileError="handleImportConfigurationFileError" 
                 @configurationFileReaded="handleImportConfigurationFile" 
                 />
             </div>
-            <div class="order-2 col-lg-4 col-md-4 col-12 mt-4">
+            <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
               <slot-configuration-export 
                 :configNames="CONFIG_NAMES" 
                 />
             </div>
-            <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-4">
+            <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
               <my-button 
                 btnClass="danger" 
                 text="Guardar Cambios" 
