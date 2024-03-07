@@ -443,15 +443,12 @@ export default {
     handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
   },
   computed:{
-    productosVisibles: function() {
-        return this.productsData.filter(producto => this.categoriasVisiblesIds.includes(producto.id_categoria));
-    },
     configuracion: function(){
       return useStore().getters.getConfiguration();
     },
   },
   setup() {
-      document.addEventListener('contextmenu', (event) => event.preventDefault(),{passive: true})
+      document.addEventListener('contextmenu', (event) => event.preventDefault())
       const store=useStore();
       const storeGet=store.getters;
       const ignoreLongClickTimeout=ref(0)
@@ -477,9 +474,7 @@ export default {
       const configFullScreen=ref(false)
       configFullScreen.value=gotoFullScreen.value
 
-      let categoriasVisiblesIds=ref([])
       let tempCategoriasVisiblesIds=[]
-
       const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
 
       const changes2Save={
@@ -489,7 +484,9 @@ export default {
 
       if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
 
-      categoriasVisiblesIds.value=[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)]
+      const categoriasVisiblesIds=computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
+      const productosVisibles=computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
+
       const categoriaActiva = ref({})
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
@@ -632,7 +629,6 @@ export default {
           }
 
           store.dispatch('setFullScreen',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_FULL_SCREEN],configFullScreen.value))
-          categoriasVisiblesIds.value=[...tempCategoriasVisiblesIds]
 
 
           changes2Save.categoriasVisibiles=false;
@@ -645,7 +641,6 @@ export default {
         store.dispatch('setProductos', localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData));
       });
 
-      //const selectedSupermercado = ref('');
       return {
         store,
         storeGet,
@@ -677,10 +672,12 @@ export default {
         handleCategoriesChecked,
         tempCategoriasVisiblesIds,
         changes2Save,
+        productosVisibles,
     }
   },
   mounted(){
     setTimeout(this.nuevoProductoFocus,500);
+    this.supermercadoActivo.value=this.supermercados[0]
   },  
 };
 </script>
@@ -763,4 +760,5 @@ hr {
     align-items: center;
     user-select: none;
 }
+.swal2-title{font-size: 1.5rem;}
 </style>
