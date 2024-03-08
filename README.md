@@ -1,6 +1,6 @@
 # Bienvenido a Hungry! by trystan4861
 
-<img src="https://ik.imagekit.io/trystan4861/hungry/hungry.svg" alt="Logo de Hungry" style="height:100px;"> [![Netlify Status](https://api.netlify.com/api/v1/badges/88f22b9a-dd72-4dce-8964-19e19426b546/deploy-status)](https://netlify.com)
+<img src="https://ik.imagekit.io/trystan4861/hungry/hungry.svg" alt="Logo de Hungry" style="height:100px;"> [![Netlify Status](https://api.netlify.com/api/v1/badges/88f22b9a-dd72-4dce-8964-19e19426b546/deploy-status)](https://mpc-hungry.netlify.app)
 
 ¡Gracias por elegir nuestra aplicación! «Hungry!» es una herramienta poderosa diseñada para realizar listas de la compra con diversas funcionalidades.
 Está inspirada en una aplicación (ya retirada de la appstore) llamada igualmente «Hungry!» pero con divesas mejoras.
