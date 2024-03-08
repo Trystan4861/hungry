@@ -50,7 +50,7 @@ Aquí tienes algunas instrucciones básicas sobre cómo utilizar nuestra aplicac
 ## Créditos
 
 - Desarrollado por [Trystan4861](https://github.com/Trystan4861/).
-- Logotipos e imágenes diseñados por [Trystan4861](https://github.com/Trystan4861/) usando [Boxy.svg](https://boxy-svg.com/app).
+- Logotipos e imágenes diseñados por [Trystan4861](https://github.com/Trystan4861/) usando [Boxy.svg](https://boxy-svg.com/app) basados en los logos originales propiedad de sus respectivos dueños. 
 - Agradecimientos especiales a los creadores originales de la app Hungy! para Android.
 
 ## Licencia
