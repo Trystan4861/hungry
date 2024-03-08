@@ -122,22 +122,19 @@
         </my-card>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <div class="row mr-0">
-          <div class="col-9 pr-0">
-            <my-select 
-              :options="supermercados.filter(item=>item.id!=0)" 
-              :selected="supermercados[1]" 
-              @click="handleClickSupermercadoSL" 
-              @select="handleSelectSupermercadoSL" 
-              />
-          </div>
-          <div class="col-3 p-0 overflow-hidden">
-              <my-button 
-              btnClass="danger" 
-              class="clearList" 
-              text="Limpiar Lista" 
-              @click="clearList" />
-          </div>
+        <div class="mr-0 d-flex">
+          <my-select 
+            class="flex-grow-1"
+            :options="supermercados.filter(item=>item.id!=0)" 
+            :selected="supermercados[1]" 
+            @click="handleClickSupermercadoSL" 
+            @select="handleSelectSupermercadoSL" 
+            />
+          <my-button 
+          btnClass="danger" 
+          class="clearList" 
+          text="Limpiar Lista" 
+          @click="clearList" />
         </div>
         <my-card 
           borderStyle="rounded-bottom"
@@ -242,12 +239,12 @@
   import SlotConfigurationTabsActive  from '@/components/SlotConfigurationTabsActive.vue'
 
   import Swal                         from 'sweetalert2'
-
+  import { v4 as uuidv4 }             from 'uuid'
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
 
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
-
+  const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
   export default {
     name:'App',
     components:{
@@ -416,7 +413,10 @@
           else if (result.isDenied) this.handleEliminarProducto()
         });
       },
-      handleTabHeightChanged(data){this.alturaDisponible=data;},
+      handleTabHeightChanged(data){
+        this.alturaDisponible=data;
+        refreshClearList()
+      },
       handeFileReadError(error){
           Swal.fire({
             icon:'error',
@@ -489,7 +489,7 @@
         }
         if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase())){
           this.productsData.push({
-            id:this.productsData.length,
+            id:uuidv4(),
             text:this.nuevoProducto,
             amount: 1,
             id_categoria:this.categoriaActiva.value.id,
@@ -724,7 +724,9 @@
       this.supermercadoActivo.value = this.supermercados[0]; 
       this.supermercadoSL.value     = this.supermercados[1]
       document.addEventListener('contextmenu', (event) => event.preventDefault())
+      window.addEventListener('resize', refreshClearList,{passive: true});
       setTimeout(this.nuevoProductoFocus,500); 
+      setTimeout(refreshClearList,500)
     },
   }
 </script>
@@ -760,7 +762,6 @@
                                   }
   .clearList button               { 
                                     border-radius:    0px !important; 
-                                    width:            -webkit-fill-available; 
                                   }
   .container                      { 
                                     display:          flex; 

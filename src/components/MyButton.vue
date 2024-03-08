@@ -22,8 +22,4 @@
     height: 3.125rem;
     padding: 0;
   }
-  span{
-    position: relative;
-    left: -0.3125rem
-  }
 </style>
