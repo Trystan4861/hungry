@@ -246,8 +246,6 @@
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
 
-  //TODO: recordar cargar valor inicial en initialData -> setup
-
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
 
   export default {
@@ -531,13 +529,7 @@
       const alturaDisponible        = ref(storeGet.getAlturaDisponible())
       const categoriasVisibles      = ref([])
 
-      const initialData             = {
-                                        categorias:storeGet.getCategorias(),
-                                        productos:[],
-                                        alturaDisponible:storeGet.getAlturaDisponible(),
-                                        fullScreen:storeGet.getFullScreen(),
-                                        defaultTabActive:storeGet.getDefaultTabActive()
-                                      }
+      const initialData             = storeGet.getConfiguration()
       const CONFIG_NAMES            = storeGet.getConfigNames()
       const tabsData                = storeGet.getTabs()
       const supermercados           = storeGet.getSupermercados()
