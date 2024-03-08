@@ -44,7 +44,7 @@ export default {
   methods: {
     focusInput() {
       if (!this.autofocus) return;
-      this.$refs.myInput.focus();
+      this.$refs.myInput?.focus();
     },
     handleKeyDown(event) {
       if (

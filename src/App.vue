@@ -615,7 +615,6 @@
           cancelButtonText: 'Sólo productos y categorías'
         }).then((result) => {
           if (result.isConfirmed){
-            console.log(data)
             store.dispatch('setConfiguration', localStorageService.setItem(data));
             
             categoriesData.value=storeGet.getCategorias()
