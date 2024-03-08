@@ -162,8 +162,7 @@
               @click:product="handleShoplistClick" 
               />
           </div>
-          <div v-show="
-          (
+          <div v-show="(
             productosVisibles.some(item=>
               item.selected 
               && !item.done 
@@ -182,7 +181,11 @@
               @click:product="handleShoplistClick" 
               />
           </div>
-          <div v-show="productosVisibles.some(item=>item.done)">
+          <div v-show="(
+            productosVisibles.some(item=>
+              item.done
+            )
+          )">
             <div class="w-100 text-center">Ya comprado<hr /></div>
             <my-product-list 
               orderBy="categoryId" 
@@ -223,7 +226,6 @@
 <script>
   import { localStorageService }      from '@/localStorageService'
   import { findIndexById }            from '@/utilidades'
-
   import MyButton                     from '@/components/MyButton.vue'
   import MyCard                       from '@/components/MyCard.vue'
   import MyCategoriesList             from '@/components/MyCategoriesList.vue'
@@ -245,14 +247,8 @@
   import { useStore }                 from 'vuex'
 
   //TODO: recordar cargar valor inicial en initialData -> setup
-  const LOCAL_STORAGE_KEYS        = ['categoriesData','productsData','alturaDisponibleData','fullScreenData','defaultTabActiveData']
-  const INDEX_CATEGORIAS          = 0
-  const INDEX_PRODUCTOS           = 1
-  const INDEX_ALTURA_DISPONIBLE   = 2
-  const INDEX_FULL_SCREEN         = 3
-  const INDEX_DEFAULT_TAB_ACTIVE  = 4
 
-  const focusInput=(input)=> { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
+  const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
 
   export default {
     name:'App',
@@ -273,105 +269,77 @@
     },
     data(){
       return{
-        inputText:'',
-        nuevoProducto:'',
-        productoAEditar:'',
-        configs2Export:[],
-        productoSeleccionado:{},
+        inputText:            '',
+        nuevoProducto:        '',
+        productoAEditar:      '',
+        configs2Export:       [],
+        productoSeleccionado: {},
       }
     },
     methods:{
       setFullScreen(){
-        if (!this.gotoFullScreen) return document.fullscreenElement?document.exitFullscreen():null
+        if (!this.fullScreen) return document.fullscreenElement?document.exitFullscreen():null
         if (document.fullscreenElement) return
-        const elemento=document.getElementById("appContainer");
-        if (elemento.requestFullscreen) {
-          elemento.requestFullscreen();
-        } else if (elemento.mozRequestFullScreen) { /* Firefox */
-          elemento.mozRequestFullScreen();
-        } else if (elemento.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-          elemento.webkitRequestFullscreen();
-        } else if (elemento.msRequestFullscreen) { /* IE/Edge */
-          elemento.msRequestFullscreen();
-        }
+        const    elemento=document.getElementById("appContainer");
+        if      (elemento.requestFullscreen       ) elemento.requestFullscreen()
+        else if (elemento.mozRequestFullScreen    ) elemento.mozRequestFullScreen()
+        else if (elemento.webkitRequestFullscreen ) elemento.webkitRequestFullscreen()
+        else if (elemento.msRequestFullscreen     ) elemento.msRequestFullscreen()
       },
-      handleChangeFullScreen(checked){
-        this.configFullScreen=checked
-      },
+      handleChangeFullScreen(checked){ this.configFullScreen=checked },
       handleClickSupermercadoSL(){
         if (!this.allowClick) clearTimeout(this.allowClickTimeout)
         this.allowClick=false;
         this.allowClickTimeout=this.doAllowClick();
       },
-      handleChangeTabActive(data)
-      {
-        this.changes2Save.defaultTabActive=data
-      },
+      handleChangeTabActive(data){ this.changes2Save.defaultTabActive=data },
       handleEditarProducto(){
         let aux=document.getElementById("divEditarProducto");
         this.productoAEditar=this.productoSeleccionado.text
         Swal.fire({
-          title: `Editar Producto<br>«${this.productoSeleccionado.text}»`,
-          html: '<div id="VueSweetAlert2"></div>',
-          showCancelButton: true,
-          confirmButtonText: 'Confirmar',
-          cancelButtonText: 'Cancelar',
-          target: document.querySelector("#appContainer"),
-          willOpen:()=>{
-            this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria);
-              this.$refs.selectRef.selectOption(this.supermercados[findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
+          title:              `Editar Producto<br>«${this.productoSeleccionado.text}»`,
+          html:               '<div id="VueSweetAlert2"></div>',
+          showCancelButton:   true,
+          confirmButtonText:  'Confirmar',
+          cancelButtonText:   'Cancelar',
+          target:             document.querySelector("#appContainer"),
+          willOpen: ()=>{
+            this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria)
+            this.$refs.selectRef.selectOption(this.supermercados[findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
             document.getElementById('VueSweetAlert2').appendChild(aux);
           },
-          didOpen:()=>{
-            setTimeout(this.$refs.categoriesSliderRef.centrarCategoriaActiva,10);
-          },
-          willClose:()=>{
-            document.getElementById('anchorEditarProducto').appendChild(aux);
-          }
+          didOpen:  ()=>{setTimeout(this.$refs.categoriesSliderRef.centrarCategoriaActiva,10)},
+          willClose:()=>{document.getElementById('anchorEditarProducto').appendChild(aux)}
         }).then((result) => {
-          if (result.isConfirmed) {
-            const areTheSame = (categoryA, categoryB) => {
-              if (categoryA === null || categoryB === null || typeof categoryA !== 'object' || typeof categoryB !== 'object') return categoryA === categoryB;
-              const keys1 = Object.keys(categoryA);
-              const keys2 = Object.keys(categoryB);
-              if (keys1.length !== keys2.length) return false;
-              for (let key of keys1) {
-                if (!(key in categoryB)) return false;
-                if (typeof categoryA[key] !== 'object') {
-                  if (categoryA[key] !== categoryB[key]) return false;
-                }
-                else  if (!areTheSame(categoryA[key], categoryB[key])) return false;
-              }
-              return true;
-            };
+          if (result.isConfirmed){
+            const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
             let newData={
               id:this.productoSeleccionado.id,
               text:this.productoAEditar,
-              categoria:this.categoriaActiva.value,
               id_categoria:this.categoriaActiva.value.id,
-              supermercado:this.supermercadoActivo.value,
-              id_supermercado:this.supermercadoActivo.value.id
+              id_supermercado:this.supermercadoActivo.value.id,
+              amount: 1,              
+              selected: false,
+              done: false,
             }
-            if (!areTheSame(this.productoSeleccionado,newData))
-            {
-                this.productsData[findIndexById(newData.id, this.productsData)] = newData;
-                this.productsData=[...this.productsData]
-                Swal.fire({
-                  title:'Atención',
-                  icon: 'success',
-                  text: 'Producto modificado correctamente',
-                  target: document.querySelector("#appContainer"),
-                })
+            if (!areTheSame(this.productoSeleccionado,newData)){
+              this.productsData[findIndexById(newData.id, this.productsData)] = newData;
+              this.productsData=[...this.productsData]
+              Swal.fire({
+                title:'Atención',
+                icon: 'success',
+                text: 'Producto modificado correctamente',
+                target: document.querySelector("#appContainer"),
+              })
             }
-            else{
-                Swal.fire({
-                  title:'Atención',
-                  icon: 'info',
-                  text: 'No has realizado cambios al producto',
-                  target: document.querySelector("#appContainer"),
-                })
+            else {
+              Swal.fire({
+                title:'Atención',
+                icon: 'info',
+                text: 'No has realizado cambios al producto',
+                target: document.querySelector("#appContainer"),
+              })
             }
-
           }
         });
       },
@@ -384,13 +352,13 @@
           confirmButtonText: 'Sí',
           cancelButtonText: 'No',
           customClass: {
-            confirmButton: 'btn btn-danger mb-2 mr-1', // Clase CSS para el botón de cancelación (No)
-            cancelButton: 'btn btn-success mb-2', // Clase CSS para el botón de confirmación (Sí)
+            confirmButton: 'btn btn-danger mb-2 mr-1', 
+            cancelButton: 'btn btn-success mb-2', 
           },
-          buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+          buttonsStyling: false, 
           target: document.querySelector("#appContainer"),
         }).then((result) => {
-          if (result.isConfirmed) {
+          if (result.isConfirmed){
             this.productsData = this.productsData.filter(item => item.id !== this.productoSeleccionado.id)
             this.productoSeleccionado=null;
             Swal.fire({
@@ -407,8 +375,7 @@
           this.allowClick=true
         }, timeOut)
       },
-      handleShoplistClick(product)
-      {
+      handleShoplistClick(product){
         if(!this.allowClick) return
         this.allowClick=false
         this.allowClickTimeout=this.doAllowClick(250)
@@ -438,13 +405,13 @@
           confirmButtonText: 'Editar Producto',
           cancelButtonText: 'Cancelar',
           customClass: {
-            confirmButton: 'btn btn-success mr-1 mb-2', // Clase CSS para el botón de confirmación (Sí)
+            confirmButton: 'btn btn-success mr-1 mb-2', 
             denyButton: 'btn btn-danger mb-2 mr-1',
             cancelButton: 'btn btn-primary mb-2',
           },
-          buttonsStyling: false, // Desactivar el estilo predefinido de los botonesINDEX_CATEGORIAS
-          showDenyButton: true, // Mostrar el tercer botón
-          denyButtonText: 'Eliminar Producto', // Texto del tercer botón
+          buttonsStyling: false, 
+          showDenyButton: true, 
+          denyButtonText: 'Eliminar Producto', 
           target: document.querySelector("#appContainer"),
         }).then((result) => {
           if (result.isConfirmed) this.handleEditarProducto()
@@ -462,8 +429,8 @@
           })
           return false;
       },
-      handleCategorySelected(category) { this.categoriaActiva.value = category; },
-      handleCategoryLongClick(categoria) {
+      handleCategorySelected(category){ this.categoriaActiva.value = category; },
+      handleCategoryLongClick(categoria){
         Swal.fire({
           title: `Cambiar Nombre de Categoría<br> «${categoria?.text}»`,
           html: ` <label for="inputModifyCategory">Introduzca un nuevo nombre para la categoría</label>
@@ -496,13 +463,13 @@
           confirmButtonText: 'Aceptar',
           cancelButtonText: 'Cancelar',
           customClass: {
-            confirmButton: 'btn btn-danger mr-1', // Clase CSS para el botón de cancelación (No)
-            cancelButton: 'btn btn-success', // Clase CSS para el botón de confirmación (Sí)
+            confirmButton: 'btn btn-danger mr-1', 
+            cancelButton: 'btn btn-success', 
           },
-          buttonsStyling: false, // Desactivar el estilo predefinido de los botones
+          buttonsStyling: false, 
           target: document.querySelector("#appContainer"),
         }).then((result) => {
-          if (result.isConfirmed) {
+          if (result.isConfirmed){
             this.productsData.forEach(producto=>{
               producto.selected=false
               producto.done=false
@@ -512,8 +479,7 @@
         });      
       },
       handleAddClick(){
-        if (this.nuevoProducto==='')
-        {
+        if (this.nuevoProducto===''){
           Swal.fire({
             icon:'error',
             title:'Error',
@@ -523,8 +489,7 @@
           })
           return false;
         }
-        if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase()))
-        {
+        if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase())){
           this.productsData.push({
             id:this.productsData.length,
             text:this.nuevoProducto,
@@ -551,35 +516,37 @@
     },
     computed:{
       configuracion: function(){
-        return useStore().getters.getConfiguration();
+        return useStore().getters.getConfiguration()
       },
     },
-    setup() {
-      document.addEventListener('contextmenu', (event) => event.preventDefault())
-      const store=useStore();
-      const storeGet=store.getters;
-      const ignoreLongClickTimeout=ref(0)
-      const maxLenght=storeGet.getMaxLenght()
-      const saveProductsState   =storeGet.getSaveProductsState()
-      const controlY            =ref(-1)
-      const allowClick          =ref(true)
-      const allowClickTimeout   =ref(0)
-      const alturaDisponible    =ref()
-      const categoriasVisibles  =ref([])
+    setup(){
+      const store                   = useStore()
+      const storeGet                = store.getters
+      const ignoreLongClickTimeout  = ref(0)
+      const maxLenght               = storeGet.getMaxLenght()
+      const saveProductsState       = storeGet.getSaveProductsState()
+      const controlY                = ref(-1)
+      const allowClick              = ref(true)
+      const allowClickTimeout       = ref(0)
+      const alturaDisponible        = ref(storeGet.getAlturaDisponible())
+      const categoriasVisibles      = ref([])
 
-      alturaDisponible.value=storeGet.getAlturaDisponible()
+      const initialData             = {
+                                        categorias:storeGet.getCategorias(),
+                                        productos:[],
+                                        alturaDisponible:storeGet.getAlturaDisponible(),
+                                        fullScreen:storeGet.getFullScreen(),
+                                        defaultTabActive:storeGet.getDefaultTabActive()
+                                      }
+      const CONFIG_NAMES            = storeGet.getConfigNames()
+      const tabsData                = storeGet.getTabs()
+      const supermercados           = storeGet.getSupermercados()
 
-      const initialData=[storeGet.getCategorias(),[],storeGet.getAlturaDisponible(),storeGet.getFullScreen(),storeGet.getDefaultTabActive()]
-      const CONFIG_NAMES = storeGet.getConfigNames();
-      const tabsData= storeGet.getTabs();
-      const supermercados=storeGet.getSupermercados();
-
-      const productsData=ref(getDataFromLocalStorage(INDEX_PRODUCTOS));
-      const categoriesData = ref(getDataFromLocalStorage(INDEX_CATEGORIAS));
-      const defaultTabActive=ref(getDataFromLocalStorage(INDEX_DEFAULT_TAB_ACTIVE))
-      const gotoFullScreen=ref(getDataFromLocalStorage(INDEX_FULL_SCREEN))
-      const configFullScreen=ref(false)
-      configFullScreen.value=gotoFullScreen.value
+      const productsData            = ref(getDataFromLocalStorage('productos'       ))
+      const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
+      const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
+      const fullScreen          = ref(getDataFromLocalStorage('fullScreen'      ))
+      const configFullScreen        = ref(fullScreen.value)
 
       let tempCategoriasVisiblesIds=[]
 
@@ -588,7 +555,7 @@
         defaultTabActive: defaultTabActive.value
       }
 
-      if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData[0];
+      if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData.categorias;
 
       const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
       const categoriasVisiblesIds=computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
@@ -598,26 +565,6 @@
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
       supermercadoSL.value=supermercados[1]
-      function fixProductos(productos){
-        productos.forEach(producto=> {
-          if (Object.prototype.hasOwnProperty.call(producto, 'supermercado')) delete producto.supermercado
-
-          if (!Object.prototype.hasOwnProperty.call(producto, 'id_supermercado')) producto.id_supermercado = producto.supermercado.id
-          if (!Object.prototype.hasOwnProperty.call(producto, 'amount')) producto.amount = 1
-
-          if (Object.prototype.hasOwnProperty.call(producto, 'categoria')) delete producto.categoria
-          if (!Object.prototype.hasOwnProperty.call(producto, 'id_categoria')) producto.id_categoria = producto.categoria.id        
-        })
-        return productos;
-      }
-      function fixCategorias(categorias){
-        categorias.forEach(categoria=>{
-          if (!Object.prototype.hasOwnProperty.call(categoria, 'visible')) categoria.visible = true
-          else categoria.visible=Boolean(categoria.visible)
-
-        })
-        return categorias
-      }
       function handleCategoriesChecked(data)
       {
       let aux=categoriesData.value.map(categoria => ({ ...categoria }))
@@ -626,38 +573,20 @@
           tempCategoriasVisiblesIds=[...data]
           changes2Save.categoriasVisibiles=true
       }      
-      function getDataFromLocalStorage(index = INDEX_CATEGORIAS) {
-          let storedData = localStorageService.getItem(LOCAL_STORAGE_KEYS[index]);
-          if (storedData)
-          {
-            if (index == INDEX_CATEGORIAS )
-            {
-              if (storedData.some(category => !Object.prototype.hasOwnProperty.call(category, 'id'))) storedData = storedData.map((category, index) => ({ ...category, id: index }));
-              storedData=fixCategorias(storedData)
-              store.dispatch('setCategorias', storedData);
-            }
-            else if (index== INDEX_PRODUCTOS)
-            {
-              storedData=fixProductos(storedData)
-              store.dispatch('setProductos', storedData);
-            }
-            else if (index==INDEX_ALTURA_DISPONIBLE)
-              store.dispatch('setAlturaDisponible', storedData);
-            else if (index==INDEX_FULL_SCREEN)
-              store.dispatch('setFullScreen', storedData);
-            else if (index==INDEX_DEFAULT_TAB_ACTIVE)
-              store.dispatch('setDefaultTabActive',+storedData)
-          }
-          return storedData ? storedData : localStorageService.setItem(LOCAL_STORAGE_KEYS[index], initialData[index]);
+      function getDataFromLocalStorage(index){
+          let storedData = localStorageService.getSubItem(index);
+          if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
+
+          return storedData ? storedData : localStorageService.setSubItem(index, initialData[index]);
       }
+
       watch(alturaDisponible,(newData)=>{ 
         if(Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)){
-          store.dispatch('setAlturaDisponible',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_ALTURA_DISPONIBLE], newData)) 
+          store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible', newData)) 
         }
       })
-      watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS], newData)) })
-      const handleImportConfigurationFileError=(error)=>
-      {
+      watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setSubItem('productos', newData)) })
+      const handleImportConfigurationFileError=(error)=>{
         Swal.fire({
           icon:'error',
           title:(error=="ERROR_APPNAME")?"Atención":"ERROR INESPERADO",
@@ -667,9 +596,10 @@
         })
       }
       const handleDragCard=(event)=>{
+        if (typeof event.touches==='undefined') return
+        if (event.touches.length==0) return
         if (controlY.value<0) controlY.value=event.touches[0].clientY
-        if (controlY.value-event.touches[0].clientY>10)
-        {
+        if (controlY.value-event.touches[0].clientY>10){
           if (!storeGet.getIgnoreDrag())
           {
             store.dispatch('setIgnoreDrag',true)
@@ -683,65 +613,87 @@
         store.dispatch('setIgnoreDrag',false)
       }
 
-      watch(() => storeGet.getFullScreen(), (nuevoValor) => {
-        gotoFullScreen.value = nuevoValor;
-      });
       function handleImportConfigurationFile(data){
-        let importado=[];
-        if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0) {
-          data.categorias=fixCategorias(data.categorias)
-          categoriesData.value=data.categorias;
-          importado.push("las categorias")
-        }
-        if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0) {
-          data.productos=fixProductos(data.productos);
-          productsData.value=data.productos;
-          importado.push("los productos")
-        }
-        importado=importado.join(" y ")
         Swal.fire({
-            icon:'success',
-            title:'Atención',
-            html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
-            confirmButtonText:'Aceptar',
-            target: document.querySelector("#appContainer"),
-          })
-      }
-      function saveConfigChanges(){
-        if (changes2Save.categoriasVisibiles)
-        {
-            categoriesData.value=[...categoriasVisibles.value.map(item => ({ ...item }))]
+          title: '¿Qué deseas importar?',
+          text: '¿Deseas importar el archivo de configuración completo o sólo los productos y las categorías?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Completo',
+          cancelButtonText: 'Sólo productos y categorías'
+        }).then((result) => {
+          if (result.isConfirmed){
+            console.log(data)
+            store.dispatch('setConfiguration', localStorageService.setItem(data));
+            
+            categoriesData.value=storeGet.getCategorias()
+            productsData.value=storeGet.getProductos()
+            defaultTabActive.value=storeGet.getDefaultTabActive()
+            fullScreen.value=storeGet.getFullScreen()
+
             Swal.fire({
               icon:'success',
               title:'Atención',
-              html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
+              html:`Configuración importada correctamente`,
               confirmButtonText:'Aceptar',
               target: document.querySelector("#appContainer"),
             })
           }
-          if (changes2Save.defaultTabActive!=defaultTabActive.value)
-          {
-            store.dispatch('setDefaultTabActive',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_DEFAULT_TAB_ACTIVE],changes2Save.defaultTabActive))
+          else if (result.dismiss === Swal.DismissReason.cancel){
+            let importado=[];
+            if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0){
+              categoriesData.value=data.categorias;
+              importado.push("las categorias")
+            }
+            if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0){
+              productsData.value=data.productos;
+              importado.push("los productos")
+            }
+            importado=importado.join(" y ")
             Swal.fire({
-              icon: 'info',
-              title: 'Atención',
-              html: `El cambio de la pestaña activa por defecto será efectivo tras recargar Hungry!`,
-              showConfirmButton: true,
-              confirmButtonText: 'Aceptar',
-              showDenyButton: true,
-              denyButtonText: 'Recargar',
+              icon:'success',
+              title:'Atención',
+              html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
+              confirmButtonText:'Aceptar',
               target: document.querySelector("#appContainer"),
-              allowOutsideClick: false
-            }).then(result=>result.isDenied?window.location.reload():null);
+            })
           }
-
-          store.dispatch('setFullScreen',localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_FULL_SCREEN],configFullScreen.value))
-
-
-          changes2Save.categoriasVisibiles=false;
+        });
       }
-      watch(categoriesData, (newData) => store.dispatch('setCategorias',  localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_CATEGORIAS], newData)))
-      watch(productsData  , (newData) => store.dispatch('setProductos',   localStorageService.setItem(LOCAL_STORAGE_KEYS[INDEX_PRODUCTOS],  newData)));
+      function saveConfigChanges(){
+        if (changes2Save.categoriasVisibiles)
+        {
+          categoriesData.value=[...categoriasVisibles.value.map(item => ({ ...item }))]
+          Swal.fire({
+            icon:'success',
+            title:'Atención',
+            html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
+            confirmButtonText:'Aceptar',
+            target: document.querySelector("#appContainer"),
+          })
+        }
+        if (changes2Save.defaultTabActive!=defaultTabActive.value)
+        {
+          defaultTabActive.value=changes2Save.defaultTabActive
+          Swal.fire({
+            icon: 'info',
+            title: 'Atención',
+            html: `El cambio de la pestaña activa por defecto será efectivo tras recargar Hungry!`,
+            showConfirmButton: true,
+            confirmButtonText: 'Aceptar',
+            showDenyButton: true,
+            denyButtonText: 'Recargar',
+            target: document.querySelector("#appContainer"),
+            allowOutsideClick: false
+          }).then(result=>result.isDenied?window.location.reload():null);
+        }
+        fullScreen.value=configFullScreen.value
+        changes2Save.categoriasVisibiles=false;
+      }
+      watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)))
+      watch(productsData  ,   newData => store.dispatch('setProductos',        localStorageService.setSubItem('productos',        newData)));
+      watch(fullScreen,   newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
+      watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive', localStorageService.setSubItem('defaultTabActive', newData)));
 
       return {
         allowClick,
@@ -755,7 +707,7 @@
         CONFIG_NAMES,
         configFullScreen,
         defaultTabActive,
-        gotoFullScreen,
+        fullScreen,
         handleCategoriesChecked,
         handleDragCard,
         handleImportConfigurationFile,
@@ -777,7 +729,12 @@
         tempCategoriasVisiblesIds,
       }
     },
-    mounted(){ setTimeout(this.nuevoProductoFocus,500); this.supermercadoActivo.value=this.supermercados[0]; this.supermercadoSL.value=this.supermercados[1] },
+    mounted(){
+      this.supermercadoActivo.value = this.supermercados[0]; 
+      this.supermercadoSL.value     = this.supermercados[1]
+      document.addEventListener('contextmenu', (event) => event.preventDefault())
+      setTimeout(this.nuevoProductoFocus,500); 
+    },
   }
 </script>
 
