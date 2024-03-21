@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
           if (result.value) {
             window.location.reload()
           }
-        }
+        })
     },
     updated () {
       console.log('New content is available; please refresh.')
