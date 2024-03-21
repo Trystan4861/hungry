@@ -8,7 +8,7 @@ export default defineConfig({
     vue(),
     {
       name: 'copy-index-html',
-      transformIndexHtml(html) {
+      transformIndexHtml() {
         return readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
       },
     },
