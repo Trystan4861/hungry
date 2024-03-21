@@ -683,7 +683,7 @@
       }
       watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)))
       watch(productsData  ,   newData => store.dispatch('setProductos',        localStorageService.setSubItem('productos',        newData)));
-      watch(fullScreen,   newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
+      watch(fullScreen,       newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
       watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive', localStorageService.setSubItem('defaultTabActive', newData)));
 
       return {
