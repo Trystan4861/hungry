@@ -379,7 +379,7 @@
       async getAPIData() {
         let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.IjIxMjU2ZDcxY2NkNDY1MzIyNGNjNjZjMDIxMjU0ZWFiIg.phW3GjYIY_SIUjDTQtyYymzjud2MJ3pmUoh8ARrZRUo';
         try {
-          const response = await axios.post('http://trystan4861.infoinnova.es/hungry/getAll', {
+          const response = await axios.post('https://www.infoinnova.es/lolo/hungry/login', {
             email: 'trystan4861@gmail.com',
             pass: '21256d71ccd4653224cc66c021254eab',
             token
