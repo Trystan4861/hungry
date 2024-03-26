@@ -378,8 +378,9 @@
       //funcion para hacer llamada mediante axios
       async getAPIData() {
         let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.IjIxMjU2ZDcxY2NkNDY1MzIyNGNjNjZjMDIxMjU0ZWFiIg.phW3GjYIY_SIUjDTQtyYymzjud2MJ3pmUoh8ARrZRUo';
+        let urlbase='https://www.infoinnova.es/lolo/api';
         try {
-          const response = await axios.post('https://www.infoinnova.es/lolo/hungry/login', {
+          const response = await axios.post(urlbase+'/login', {
             email: 'trystan4861@gmail.com',
             pass: '21256d71ccd4653224cc66c021254eab',
             token
