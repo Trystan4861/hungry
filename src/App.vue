@@ -242,6 +242,7 @@
   import { v4 as uuidv4 }             from 'uuid'
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
+  import axios                        from 'axios'
   
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
   const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
@@ -571,6 +572,22 @@
 
           return storedData ? storedData : localStorageService.setSubItem(index, initialData[index]);
       }
+      //funcion para hacer llamada mediante axios
+      async function doLogin() {
+        let email="";
+        let pass="";
+        let urlbase = 'https://www.infoinnova.es/lolo/api';
+        let data = { email,  pass };
+
+        const response = await axios.post(urlbase + '/login', data, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+        });
+        console.log('Success:', response.data);
+        return response.data;
+      }
+
 
       watch(alturaDisponible,(newData)=>{ 
         if(Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)){
@@ -718,6 +735,7 @@
         supermercadoSL,
         tabsData, 
         tempCategoriasVisiblesIds,
+        doLogin
       }
     },
     mounted(){
