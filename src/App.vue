@@ -61,15 +61,6 @@
                 />
             </div>
           </div>
-          <div class="row align-items-end">
-            <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-              <my-button 
-                btnClass="info" 
-                text="axios" 
-                @click="getAPIData" 
-                />
-            </div>
-          </div>
         </my-card>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
@@ -251,8 +242,7 @@
   import { v4 as uuidv4 }             from 'uuid'
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
-  import axios                      from 'axios'
-
+  
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
   const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
   export default {
@@ -374,29 +364,6 @@
             })
           }
         });
-      },
-      //funcion para hacer llamada mediante axios
-      async getAPIData() {
-        let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.IjIxMjU2ZDcxY2NkNDY1MzIyNGNjNjZjMDIxMjU0ZWFiIg.phW3GjYIY_SIUjDTQtyYymzjud2MJ3pmUoh8ARrZRUo';
-        let urlbase='https://www.infoinnova.es/lolo/api';
-        try {
-          const response = await axios.post(urlbase+'/login', {
-            email: 'trystan4861@gmail.com',
-            pass: '21256d71ccd4653224cc66c021254eab',
-            token
-          }, {
-            headers: {
-              'Accept': 'application/json',
-              'Authorization': 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            }
-          });
-          console.log(response.data);
-          return response.data;
-        } catch (error) {
-          console.error('Error:', error);
-          throw error;
-        }
       },
       doAllowClick(timeOut=1000){
         return setTimeout(() => {
