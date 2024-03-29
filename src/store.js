@@ -32,6 +32,11 @@ export default createStore({
       defaultTabActive:1,
       alturaDisponible:0,
       fullScreen: false,
+      loginData:{
+        email:"",
+        token:"",
+        logged:false,
+      },
       categorias: [
         { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
         { id: 1, text:'Categoría  2', bgColor:'#d8993c', visible:true },
@@ -67,20 +72,27 @@ export default createStore({
         state.configuration.categorias[index].visible = Boolean(visible);
       }
     },
-    setAlturaDisponible    ( state,      alturaDisponible) { state.configuration.alturaDisponible   = alturaDisponible  },
-    setCategorias          ( state,      categorias      ) { state.configuration.categorias         = categorias        },
-    setConfiguration       ( state,      configuration   ) { state.configuration                    = configuration     },
-    setDefaultTabActive    ( state,      defaultTabActive) { state.configuration.defaultTabActive   = defaultTabActive  },
-    setFullScreen          ( state,      fullScreen      ) { state.configuration.fullScreen         = fullScreen        },
-    setProducts            ( state,      productos       ) { state.configuration.productos          = productos         },
+    setAlturaDisponible    ( state,     alturaDisponible) { state.configuration.alturaDisponible   = alturaDisponible  },
+    setCategorias          ( state,     categorias      ) { state.configuration.categorias         = categorias        },
+    setConfiguration       ( state,     configuration   ) { state.configuration                    = configuration     },
+    setDefaultTabActive    ( state,     defaultTabActive) { state.configuration.defaultTabActive   = defaultTabActive  },
+    setFullScreen          ( state,     fullScreen      ) { state.configuration.fullScreen         = fullScreen        },
+    setProducts            ( state,     productos       ) { state.configuration.productos          = productos         },
+    setEmail               ( state,     email           ) { state.configuration.loginData.email    = email             },
+    setLogged              ( state,     logged          ) { state.configuration.loginData.logged   = logged            },
+    setToken               ( state,     token           ) { state.configuration.loginData.token    = token             },
   },
   actions: {
-    setAlturaDisponible    ({ commit }, alturaDisponible ) { commit('setAlturaDisponible', alturaDisponible)            },
-    setCategorias          ({ commit }, categorias       ) { commit('setCategorias',       categorias      )            },
-    setConfiguration       ({ commit }, configuration    ) { commit('setConfiguration',    configuration   )            },
-    setDefaultTabActive    ({ commit }, defaultTabActive ) { commit('setDefaultTabActive', defaultTabActive)            },
-    setFullScreen          ({ commit }, fullScreen       ) { commit('setFullScreen',       fullScreen      )            },
-    setProductos           ({ commit }, productos        ) { commit('setProducts',         productos       )            },
+    setAlturaDisponible    ({ commit }, alturaDisponible) { commit('setAlturaDisponible', alturaDisponible)            },
+    setCategorias          ({ commit }, categorias      ) { commit('setCategorias',       categorias      )            },
+    setConfiguration       ({ commit }, configuration   ) { commit('setConfiguration',    configuration   )            },
+    setDefaultTabActive    ({ commit }, defaultTabActive) { commit('setDefaultTabActive', defaultTabActive)            },
+    setFullScreen          ({ commit }, fullScreen      ) { commit('setFullScreen',       fullScreen      )            },
+    setProductos           ({ commit }, productos       ) { commit('setProducts',         productos       )            },
+    setEmail               ({ commit }, email           ) { commit('setEmail',            email           )            },
+    setLogged              ({ commit }, logged          ) { commit('setLogged',           logged          )            },
+    setToken               ({ commit }, token           ) { commit('setToken',            token           )            },
+
   },
   getters: {
     getAlturaDisponible:   (state)=>(  )=>state.configuration.alturaDisponible,
@@ -90,7 +102,11 @@ export default createStore({
     getDefaultTabActive:   (state)=>(  )=>state.configuration.defaultTabActive,
     getFullScreen:         (state)=>(  )=>state.configuration.fullScreen,
     getProductos:          (state)=>(  )=>state.configuration.productos,
-    
+
+    getEmail:              (state)=>(  )=>state.configuration.loginData.email,
+    getLogged:             (state)=>(  )=>state.configuration.loginData.logged,
+    getToken:              (state)=>(  )=>state.configuration.loginData.token,
+
     getConfigNames:        (state)=>(  )=>state.appStatic.configNames,
     getHeightDesviation:   (state)=>(  )=>state.appStatic.heightDesviation,
     getIgnoreDrag:         (state)=>(  )=>state.appStatic.ignoreDrag,
