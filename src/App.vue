@@ -242,7 +242,7 @@
   import { v4 as uuidv4 }             from 'uuid'
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
-
+  
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
   const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
   export default {
@@ -683,7 +683,7 @@
       }
       watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)))
       watch(productsData  ,   newData => store.dispatch('setProductos',        localStorageService.setSubItem('productos',        newData)));
-      watch(fullScreen,   newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
+      watch(fullScreen,       newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
       watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive', localStorageService.setSubItem('defaultTabActive', newData)));
 
       return {
