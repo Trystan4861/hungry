@@ -7,6 +7,7 @@
       :heightResponsive ="true" 
       :tabs             ="tabsData" 
       @tabHeightChanged ="handleTabHeightChanged" 
+      @tabChanged="refreshClearList"
       >
       <template v-slot:tabContent0> <!-- Configuration -->
         <my-card 
@@ -131,25 +132,30 @@
         </my-card>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <div class="mr-0 d-flex">
-          <my-select 
+        <div  v-show="productosVisibles.some(i=>i.selected)">
+          <div class="mr-0 d-flex">
+            <my-select 
             class="flex-grow-1"
             :options="supermercados.filter(item=>item.id!=0)" 
             :selected="supermercados[1]" 
             @click="handleClickSupermercadoSL" 
             @select="handleSelectSupermercadoSL" 
             />
-          <my-button 
-          btnClass="danger" 
-          class="clearList" 
-          text="Limpiar Lista" 
-          @click="clearList" />
+            <my-button
+            btnClass="danger" 
+            class="clearList" 
+            text="Limpiar Lista" 
+            @click="clearList" />
+          </div>
         </div>
         <my-card 
           borderStyle="rounded-bottom"
           :height="alturaDisponible" 
-          :heightModifier="-50" 
+          :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
           >
+          <div class="h-100" v-show="productosVisibles.every(i=>i.selected==false)">
+            <div class="d-flex justify-content-center align-items-center h-100">Lista de la compra vacía.</div>
+          </div> 
           <div v-show="
               productosVisibles.some(item=>
               item.selected 
@@ -259,7 +265,6 @@ import { notify } from '@kyvg/vue3-notification'
 
   
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
-  const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
   export default {
     name:'App',
     components:{
@@ -275,7 +280,7 @@ import { notify } from '@kyvg/vue3-notification'
       SlotConfigurationExport,
       SlotConfigurationImport,
       SlotConfigurationTabsActive,
-      SlotConfigurationFullScreen,
+      SlotConfigurationFullScreen
     },
     data(){
       return{
@@ -292,6 +297,7 @@ import { notify } from '@kyvg/vue3-notification'
       test(){
         this.$notify("Hola")
       },
+
       setFullScreen(){
         if (!this.fullScreen) return document.fullscreenElement?document.exitFullscreen():null
         if (document.fullscreenElement) return
@@ -434,7 +440,7 @@ import { notify } from '@kyvg/vue3-notification'
       },
       handleTabHeightChanged(data){
         this.alturaDisponible=data;
-        refreshClearList()
+        this.refreshClearList()
       },
       handeFileReadError(error){
           Swal.fire({
@@ -585,6 +591,8 @@ import { notify } from '@kyvg/vue3-notification'
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
       supermercadoSL.value=supermercados[1]
+      function refreshClearList(){document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`}
+
       function handleCategoriesChecked(data)
       {
       let aux=categoriesData.value.map(categoria => ({ ...categoria }))
@@ -762,15 +770,16 @@ import { notify } from '@kyvg/vue3-notification'
         supermercadoSL,
         tabsData, 
         tempCategoriasVisiblesIds,
-        doLogin
+        doLogin,
+        refreshClearList
       }
     },
     mounted(){
       this.supermercadoActivo.value = this.supermercados[0]; 
       this.supermercadoSL.value     = this.supermercados[1]
       document.addEventListener('contextmenu', (event) => event.preventDefault())
-      window.addEventListener('resize', refreshClearList,{passive: true});
-      setTimeout(refreshClearList,500)
+      window.addEventListener('resize', this.refreshClearList,{passive: true});
+      setTimeout(this.refreshClearList,500)
     },
   }
 </script>
