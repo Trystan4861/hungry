@@ -61,6 +61,15 @@
                 />
             </div>
           </div>
+          <div class="row align-items-end">
+            <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+              <my-button 
+                btnClass="danger" 
+                text="TEST" 
+                @click="test" 
+                />
+            </div>
+          </div>
         </my-card>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
@@ -152,7 +161,7 @@
             <my-product-list 
               orderBy="categoryId" 
               :canBeDone="true" 
-              :hideDone="true" 
+              filter="undone"
               :productList="productosVisibles" 
               :selected="true" 
               :supermercado="supermercadoSL.value?.id || 0" 
@@ -170,7 +179,7 @@
             <my-product-list 
               orderBy="categoryId" 
               :canBeDone="true" 
-              :hideDone="true" 
+              filter="undone"
               :hideSupermercado="true" 
               :productList="productosVisibles" 
               :selected="true" 
@@ -189,7 +198,7 @@
               :canBeDone="true" 
               :productList="productosVisibles" 
               :selected="true" 
-              :showOnlyDone="true" 
+              filter="done"
               @click:product="handleShoplistClick" 
               />
           </div>
@@ -200,15 +209,17 @@
   <div id="anchorEditarProducto" class="d-none">
     <div id="divEditarProducto">
       <my-categories-list 
-        ref="categoriesSliderRef" 
+        ref="categoriesRef" 
         :categories="categoriesData" 
         :selectCategory="productoSeleccionado?.id_categoria || 0" 
         @categorySelected="handleCategorySelected" 
+        :selected="itemCategorySelected"
         />
       <my-select 
         placeholder="Selecciona un supermercado" 
         ref="selectRef" 
         :options="supermercados" 
+        :selected="supermercadoProducto || supermercados[0]"
         @select="handleSelectSupermercado" 
         />
       <my-input 
@@ -218,6 +229,8 @@
       />
     </div>
   </div> 
+  <notifications group="pwa" position="top center" width="50%"  />
+  <notifications group="app" position="bottom center" width="50%"  />
 </template>
 
 <script>
@@ -243,6 +256,7 @@
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
   import axios                        from 'axios'
+
   
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
   const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
@@ -270,9 +284,14 @@
         productoAEditar:      '',
         configs2Export:       [],
         productoSeleccionado: {},
+        itemCategorySelected: 0,
+        supermercadoProducto: null,
       }
     },
     methods:{
+      test(){
+        this.$notify("Hola")
+      },
       setFullScreen(){
         if (!this.fullScreen) return document.fullscreenElement?document.exitFullscreen():null
         if (document.fullscreenElement) return
@@ -300,11 +319,10 @@
           cancelButtonText:   'Cancelar',
           target:             document.querySelector("#appContainer"),
           willOpen: ()=>{
-            this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria)
-            this.$refs.selectRef.selectOption(this.supermercados[findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
+            this.itemCategorySelected=this.productoSeleccionado.id_categoria;
+            this.supermercadoProducto=this.supermercados[this.productoSeleccionado.id_supermercado]
             document.getElementById('VueSweetAlert2').appendChild(aux);
           },
-          didOpen:  ()=>{setTimeout(this.$refs.categoriesSliderRef.centrarCategoriaActiva,10)},
           willClose:()=>{document.getElementById('anchorEditarProducto').appendChild(aux)}
         }).then((result) => {
           if (result.isConfirmed){
@@ -513,11 +531,6 @@
       },
       handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
     },
-    computed:{
-      configuracion: function(){
-        return useStore().getters.getConfiguration()
-      },
-    },
     setup(){
       const store                   = useStore()
       const storeGet                = store.getters
@@ -529,7 +542,6 @@
       const allowClickTimeout       = ref(0)
       const alturaDisponible        = ref(storeGet.getAlturaDisponible())
       const categoriasVisibles      = ref([])
-
       const initialData             = storeGet.getConfiguration()
       const CONFIG_NAMES            = storeGet.getConfigNames()
       const tabsData                = storeGet.getTabs()
@@ -538,7 +550,7 @@
       const productsData            = ref(getDataFromLocalStorage('productos'       ))
       const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
       const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
-      const fullScreen          = ref(getDataFromLocalStorage('fullScreen'      ))
+      const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
       const configFullScreen        = ref(fullScreen.value)
 
       let tempCategoriasVisiblesIds=[]
@@ -743,7 +755,6 @@
       this.supermercadoSL.value     = this.supermercados[1]
       document.addEventListener('contextmenu', (event) => event.preventDefault())
       window.addEventListener('resize', refreshClearList,{passive: true});
-      setTimeout(this.nuevoProductoFocus,500); 
       setTimeout(refreshClearList,500)
     },
   }

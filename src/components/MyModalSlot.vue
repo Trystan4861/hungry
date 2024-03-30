@@ -9,71 +9,61 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'MyModalSlot',
-  data() {
-    return {
-      visible: false
-    };
-  },
-  methods: {
-    openModal() {
-      this.visible = true;
-    },
-    closeModal() {
-      this.visible = false;
-    },
-  },
-};
+<script setup>
+import { ref } from 'vue';
+
+const visible     = ref(false);
+/* eslint-disable-next-line */
+const openModal   = () => {visible.value = true };
+const closeModal  = () => {visible.value = false};
 </script>
+
 
 <style scoped>
 /* Estilos para la ventana modal */
 .modal {
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+  align-items:        center;
   background-color: rgba(0, 0, 0, 0.5);
-  display:flex;
-  justify-content: center;
-  align-items: center;
+  display:            flex;
+  height:             100%;
+  justify-content:    center;
+  left:               0;
+  overflow:           auto;
+  position:           fixed;
+  top:                0;
+  width:              100%;
+  z-index:            1000;
 }
-.cabecera-modal{
-  justify-content: end;
+.cabecera-modal {
+  justify-content:    end;
 }
 .modal-content {
   background-color: #7e7d7d;
-  margin: 15% auto;
-  padding: 1.25rem;
-  border: .0625rem solid #888;
-  width: 80%;
-  max-width: 600px;
+  border:             .0625rem solid #888;
+  margin:             15% auto;
+  max-width:          600px;
+  padding:            1.25rem;
+  width:              80%;
 }
 
 .close {
-  position: relative;
-  top: -1.25rem;
-  right:-0.3125rem;
-  color: #aaa;
-  float: right;
-  font-size: 1.75rem;
-  font-weight: bold;
+  color:            #aaa;
+  float:              right;
+  font-size:          1.75rem;
+  font-weight:        bold;
+  position:           relative;
+  right:              -0.3125rem;
+  top:                -1.25rem;
 }
 
 .close:hover,
 .close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+  color:            black;
+  cursor:             pointer;
+  text-decoration:    none;
 }
-input
-{
-  color: black;
+input {
   background-color: lightgray;
+  color:            black;
 }
 </style>

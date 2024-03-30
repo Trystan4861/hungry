@@ -3,31 +3,24 @@
     <div>
       <div class="text-center mb-1">Pestaña activa por defecto</div>
       <my-select 
-          :options="tabs.filter(item=>item.selectable)" 
-          :selected="tabs[selected]" 
+          :options="props.tabs.filter(item=>item.selectable)" 
+          :selected="props.tabs[selected]" 
           @select="handleTabSelected" 
         />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
   import MySelect from '@/components/MySelect.vue'
+  import { defineProps,defineEmits } from 'vue';
 
-  import { findIndexById } from '@/utilidades';
-
-  export default {
-    name:                   'SlotConfigurationTabsActive',
-    props:                  { tabs:     { type: Array,  required: true }, 
-                              selected: { type: Number, required: true },
-                            },
-    components:             {  MySelect,                               },
-    setup (props, { emit }) { 
-      const handleTabSelected = tabSelected => emit('change',findIndexById(tabSelected.id,props.tabs))
-      return { handleTabSelected }
-    },
-    emits: ['change']
-  }
+    const props=defineProps({ 
+      tabs:     { type: Array,  required: true }, 
+      selected: { type: Number, required: true },
+    })
+    const handleTabSelected = tabSelected => emit('change',tabSelected.id)
+    const emit=defineEmits(['change'])
 </script>
 <style scoped>
 

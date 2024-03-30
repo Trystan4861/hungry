@@ -9,168 +9,135 @@
           :bgColor="category.bgColor"
           @categoryClick="handleCategoryClick(index)"
           @categoryLongClick="handleCategoryLongClick(index)"
-          :isActive="categoriesState[index]"
-        />
+          :isActive="index === selectedCategoryIndex" />
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import MyCategory from './MyCategory.vue';
+<script setup>
+import { ref, defineProps, defineEmits, watch, onMounted, onBeforeUnmount, computed } from 'vue';
+import MyCategory from '@/components/MyCategory.vue'
 
-export default {
-  name: 'MyCategoryList',
-  components: {
-    MyCategory
-  },
-  props: {
-    categories: {
-      type: Array,
-      required: true
-    },
-  },
-  emits: ['categorySelected', 'categoryLongClick'],
-  computed: {
-    visibleCategories() {return this.categories.filter(category => Boolean(category.visible) === true)}
-  },
-  setup(props, { emit }) {
-    const activeCategoryIndex = ref(null);
-    const activeCategory = ref({})
-    const categoriesState = ref({});
-    categoriesState.value[0] = true;
-    activeCategoryIndex.value = 0;
-    const containerRef = ref(null);
-    const observer = ref(null);
+const props = defineProps({
+  categories: { type: Array, required: true },
+  selected: { type: Number, default: 0 }
+});
 
-    let lastCategory=-1
+const emit = defineEmits(['categorySelected', 'categoryLongClick']);
 
-    const seleccionarCategoria = (id_categoria) => {
-      let index=props.categories.findIndex(categoria => categoria.id === id_categoria);
-      activeCategory.value=props.categories[index]
-      activeCategoryIndex.value = index;
-    };
-    const centrarCategoriaActiva=()=>{ scrollIntoView(activeCategoryIndex.value,'instant') }
-    const updateScreenSize = () => { updateCategoryListStyle() };
-    onMounted(() => {
-      window.addEventListener('resize', updateScreenSize,{passive: true});
-      observer.value = new IntersectionObserver((entries) => {entries.forEach(entry => { if (entry.isIntersecting) updateScreenSize() })}, {});
-      observer.value.observe(containerRef.value);
-      emit('categorySelected', props.categories[0]);
-    });
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', updateScreenSize);
-      if (observer.value) observer.value.disconnect();
-    });
+const selectedCategoryIndex = ref(null);
+const activeCategory = ref({});
+const categoriesState = ref({});
+const containerRef = ref(null);
+const observer = ref(null);
+let lastCategory = null;
+const categoryListStyle = ref({});
 
-    const handleCategoryClick = (index) => {
-      if (lastCategory==index) return
-      activeCategoryIndex.value = index;
-      scrollIntoView(activeCategoryIndex.value,'instant')
-      lastCategory=index
-      emit('categorySelected', props.categories[index]);
-    };
-    const handleCategoryLongClick = (index) => {
-      activeCategoryIndex.value = index;
-      scrollIntoView(activeCategoryIndex.value,'instant')
-      emit('categoryLongClick', props.categories[index]);
-    };
+categoriesState.value[0] = true;
 
-    watch(activeCategoryIndex, (newValue, oldValue) => {
-      if (oldValue !== null) categoriesState.value[oldValue] = false;
-      if (newValue !== null) {
-        categoriesState.value[newValue] = true;
-        activeCategory.value = props.categories[newValue]
-      }
-    });
+const seleccionarCategoria = (id_categoria) => {
+  const index = props.categories.findIndex(categoria => categoria.id === id_categoria);
+  activeCategory.value = props.categories[index];
+  selectedCategoryIndex.value = index;
+};
 
-    const handleScroll = () => {
-      const container = containerRef.value;
-      if (!container) return;
+const centrarCategoriaActiva = () => {
+  scrollIntoView(selectedCategoryIndex.value, 'instant');
+};
 
-      const containerRect = container.getBoundingClientRect();
-      const containerCenter = containerRect.left + containerRect.width / 2;
+const updateScreenSize = () => {
+  updateCategoryListStyle();
+};
 
-      const categories = container.querySelectorAll('.my-category');
-      let closestCategory = null;
-      let minDistance = Infinity;
+const handleCategoryClick = (index) => {
+  if (lastCategory == index) return;
+  selectedCategoryIndex.value = lastCategory = index;
+  scrollIntoView(index, 'instant');
+  emit('categorySelected', props.categories[index]);
+};
 
-      categories.forEach((category) => {
-        const categoryRect = category.getBoundingClientRect();
-        const categoryCenter = categoryRect.left + categoryRect.width / 2;
-        const distance = Math.abs(containerCenter - categoryCenter);
+const handleCategoryLongClick = (index) => {
+  selectedCategoryIndex.value = index;
+  scrollIntoView(index, 'instant');
+  emit('categoryLongClick', props.categories[index]);
+};
 
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestCategory = category;
-        }
-      });
-      let index=Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
-      if (lastCategory!=index)
-      {
-        activeCategoryIndex.value = index
-        lastCategory=index
-        emit('categorySelected', props.categories[index], index);
-      }
-    };
+watch(selectedCategoryIndex, (newValue, oldValue) => {
+  oldValue !== null && (categoriesState.value[oldValue] = false);
+  newValue !== null && (categoriesState.value[newValue] = true, activeCategory.value = props.categories[newValue]);
+});
+watch(()=>props.selected,newValue=>seleccionarCategoria(newValue))
 
-    const scrollIntoView = (index,behavior='smooth') => {
-      const container = containerRef.value;
-      if (!container) return false;
-      const categoryElement = container.querySelectorAll('.my-category')[index];
-      categoryElement.scrollIntoView({
-        behavior,
-        block: 'center',
-        inline: 'center'
-      })
-    };
-    const categoryListStyle = ref({});
-    const updateCategoryListStyle = () => {
-      const container = containerRef.value;
-      if (!container) return;
-      let index = activeCategoryIndex.value;
-      const category = container.querySelector('.my-category');
-      const categorieWidth = category.clientWidth;
-      const containerWidth = container.clientWidth;
-      const paddingLeftRight = (containerWidth-categorieWidth) / 2;
-      categoryListStyle.value = {
-        left: `${paddingLeftRight}px`,
-        paddingRight: `${paddingLeftRight}px`
-      };
-      if (!index<0)
-        setTimeout(centrarCategoriaActiva,1); //para que cuando se cambia de tamaño la pantalla no se autoseleccione una categoría nueva
-    };
+const visibleCategories = computed(() => props.categories.filter(category => Boolean(category.visible) === true));
 
-    return {
-      activeCategoryIndex,
-      activeCategory,
-      categoriesState,
-      handleCategoryClick,
-      handleCategoryLongClick,
-      containerRef,
-      handleScroll,
-      categoryListStyle,
-      seleccionarCategoria,
-      centrarCategoriaActiva
-    };
+const handleScroll = () => {
+  const container = containerRef.value;
+  if (!container) return;
+
+  const containerRect = container.getBoundingClientRect();
+  const containerCenter = containerRect.left + containerRect.width / 2;
+  const categories = container.querySelectorAll('.my-category');
+
+  let closestCategory = null;
+  let minDistance = Infinity;
+
+  categories.forEach((category) => {
+    const categoryRect = category.getBoundingClientRect();
+    const categoryCenter = categoryRect.left + categoryRect.width / 2;
+    const distance = Math.abs(containerCenter - categoryCenter);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestCategory = category;
+    }
+  });
+  const index = Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
+  if (lastCategory != index) {
+    selectedCategoryIndex.value = lastCategory = index;
+    emit('categorySelected', props.categories[index]);
   }
 };
+
+const scrollIntoView = (index, behavior = 'smooth') => {
+  containerRef.value?.querySelectorAll('.my-category')[index]?.scrollIntoView({ behavior, block: 'center', inline: 'center' });
+};
+
+const updateCategoryListStyle = () => {
+  const container = containerRef.value;
+  if (!container) return;
+  const plr = (container?.clientWidth - container.querySelector('.my-category')?.clientWidth) / 2;
+  categoryListStyle.value = { left: `${plr}px`, paddingRight: `${plr}px` };
+  if (selectedCategoryIndex.value >= 0) setTimeout(centrarCategoriaActiva, 1);
+};
+
+onMounted(() => {
+  selectedCategoryIndex.value = props.selected;
+  seleccionarCategoria(selectedCategoryIndex.value);
+  window.addEventListener('resize', updateScreenSize, { passive: true });
+  observer.value = new IntersectionObserver(entries => entries.forEach(entry => entry.isIntersecting && updateScreenSize()));
+  observer.value.observe(containerRef.value);
+  emit('categorySelected', props.categories[0]);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateScreenSize);
+  observer.value && observer.value.disconnect();
+});
+
 </script>
 
 <style scoped>
 .my-categories-list-container {
-  overflow-x: scroll;
-  scroll-snap-type: x proximity;
   align-items: center;
+  background-color: #585858;
   display: flex;
   height: 6.875rem;
-  background-color: #585858;
+  overflow-x: scroll;
+  scroll-snap-type: x proximity;
 }
 
 .my-categories-list {
   display: flex;
   position: relative;
 }
-
 </style>
