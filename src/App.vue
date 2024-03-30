@@ -682,7 +682,7 @@
         }
         if (changes2Save.defaultTabActive!=defaultTabActive.value)
         {
-          defaultTabActive.value=changes2Save.defaultTabActive
+          localStorageService.setSubItem('defaultTabActive', changes2Save.defaultTabActive)
           Swal.fire({
             icon: 'info',
             title: 'Atención',
