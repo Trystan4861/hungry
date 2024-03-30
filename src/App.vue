@@ -252,7 +252,6 @@
   import SlotConfigurationTabsActive  from '@/components/SlotConfigurationTabsActive.vue'
 
   import Swal                         from 'sweetalert2'
-  import { v4 as uuidv4 }             from 'uuid'
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
   import axios                        from 'axios'
@@ -473,20 +472,34 @@
         });
       },
       clearList(){
+        const hayComprados=this.productsData.some(item=>item.done)
         Swal.fire({
           title: `Atención`,
-          text: 'Esto limpiará la lista de la compra',
+          text: hayComprados?'¿Qué elementos desea eliminar?':'Esto limpiará la lista de la compra',
           showCancelButton: true,
-          confirmButtonText: 'Aceptar',
+          confirmButtonText: hayComprados?'Todos':'Aceptar',
+          denyButtonText: 'Ya Comprados',
           cancelButtonText: 'Cancelar',
           customClass: {
             confirmButton: 'btn btn-danger mr-1', 
+            denyButton: 'btn btn-warning mr-1', 
             cancelButton: 'btn btn-success', 
           },
+          showDenyButton: hayComprados,
           buttonsStyling: false, 
           target: document.querySelector("#appContainer"),
         }).then((result) => {
-          if (result.isConfirmed){
+          if (result.isDenied){
+            this.productsData.forEach(producto=>{
+              if(producto.done)
+              {
+                producto.selected=false
+                producto.done=false;
+              }
+            })
+            this.productsData=[...this.productsData]
+          }
+          else if (result.isConfirmed) {
             this.productsData.forEach(producto=>{
               producto.selected=false
               producto.done=false
@@ -508,7 +521,7 @@
         }
         if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase())){
           this.productsData.push({
-            id:uuidv4(),
+            id: this.productsData[this.productsData.length - 1].id+1,
             text:this.nuevoProducto,
             amount: 1,
             id_categoria:this.categoriaActiva.value.id,
@@ -694,7 +707,7 @@
         }
         if (changes2Save.defaultTabActive!=defaultTabActive.value)
         {
-          defaultTabActive.value=changes2Save.defaultTabActive
+          localStorageService.setSubItem('defaultTabActive', changes2Save.defaultTabActive)
           Swal.fire({
             icon: 'info',
             title: 'Atención',
