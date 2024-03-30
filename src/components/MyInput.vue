@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <input ref="inputRef" v-focus type="text" :id="inputID" v-model="inputValue" @keydown="handleKeyDown" :placeholder="placeholder" :maxlength="maxLength">
+    <input ref="inputRef" v-focus type="text" :id="inputID" v-model="inputValue" @keydown="handleKeyDown" @keyup="hadleKeyUp" :placeholder="placeholder" :maxlength="maxLength">
   </div>
 </template>
 
@@ -24,7 +24,8 @@ const inputRef    = ref(null);
 const ignoreKeys  = ['Enter','Backspace','Delete']
 
 const focusInput    = () => (props.autofocus)?inputRef.value.focus():null;
-const handleKeyDown = event => props.maxLength !== Infinity && inputValue.value.length >= props.maxLength && !ignoreKeys.includes(event.key) ? event.preventDefault() : event.key === 'Enter' && emit('keyPressed:enter');
+const handleKeyDown = event => props.maxLength !== Infinity && inputValue.value.length >= props.maxLength && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
+const hadleKeyUp=event=> event.key === 'Enter' && emit('keyPressed:enter')
 
 watch     (() => props.modelValue, newValue => inputValue.value = newValue);
 watch     (inputValue, newValue => emit('update:modelValue', newValue));
