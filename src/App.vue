@@ -255,6 +255,7 @@
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
   import axios                        from 'axios'
+import { notify } from '@kyvg/vue3-notification'
 
   
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
@@ -527,6 +528,7 @@
             id_categoria:this.categoriaActiva.value.id,
             id_supermercado:this.supermercadoActivo.value.id
           });
+          notify({group:"app", text:`Producto «${this.nuevoProducto}» añadido correctamente`,type:"success", duration:3000})
           this.nuevoProducto="";
           this.productsData=[...this.productsData]
           focusInput(document.querySelector("#tab1").querySelector("input"))
