@@ -27,122 +27,154 @@
   </div>
 </template>
 
-<script>
-import { computed } from 'vue'; //necesario al usar una propiedad computada dentro del setup
+<script setup>
+import { computed, defineProps, defineEmits } from 'vue';
 
-export default {
-  name: 'MyCheckbox',
-  props: {
-    value:          {                 required: true      },
-    label:          { type: String,   default:  ''        },
-    group:          { type: String                        },
-    checkedValues:  { type: Array                         },
-    required:       { type: Boolean,  default:  false     },
-    selected:       { type: Boolean                       },
-    styled:         { type: Boolean,  default:  false     },
-    checkmarkColor: { type: String,   default:  "#1fb978" },
-    crossColor:     { type: String,   default:  "#e74c3c" },
-    checkedColor:   { type: String,   default:  "#e3f5eb" },
-    uncheckedColor: { type: String,   default:  "#fbe4e2" },
-    dotDiameter:    { type: String,   default:  "1.25rem" },
-  },
-  setup(props, { emit }) {
-    const id = `'checkbox-${Math.random().toString(36).slice(2)}`;
-    const isChecked = computed(() => (props.group)?props.checkedValues.includes(props.value):props.selected);
+const props=defineProps({
+  value:          { required: true                      },
+  label:          { type: String,   default: ''         },
+  group:          { type: String                        },
+  checkedValues:  { type: Array                         },
+  required:       { type: Boolean,  default: false      },
+  selected:       { type: Boolean,  default: false      },
+  styled:         { type: Boolean,  default: false      },
+  checkmarkColor: { type: String,   default: 'white'    }, //'#1fb978'
+  crossColor:     { type: String,   default: 'white'    }, //'#e74c3c'
+  checkedColor:   { type: String,   default: "#6c757d"  }, //'#e3f5eb'
+  uncheckedColor: { type: String,   default: '#333'     }, //'#fbe4e2'
+  dotDiameter:    { type: String,   default: '1rem'     }, //'1.25rem'
+});
 
-    const handleChange = (event) => {
-      if (typeof event.target.checked ==='undefined') return
-      if (props.group) {
-        if (props.required && !event.target.checked && props.checkedValues.length === 1 && isChecked.value) {
-          emit('lastCheckedDeletionAttempt', props.checkedValues);
-          return event.preventDefault();
-        }
-        if (event.target.checked) emit('update:checkedValues', [...props.checkedValues, props.value]);
-        else emit('update:checkedValues', props.checkedValues.filter(val=>val!==props.value));
-      }
-      else{
-        emit('update:checkedValue',props.value,event.target.checked)
-      }
-    };
-
-    return {
-      id,
-      isChecked,
-      handleChange,
-    };
-  },
-  emits: ['update:checkedValues', 'lastCheckedDeletionAttempt','update:checkedValue']
+const id            = `'checkbox-${Math.random().toString(36).slice(2)}`;
+const isChecked     = computed(() => (props.group ? props.checkedValues.includes(props.value) : props.selected));
+const emit          = defineEmits(['lastCheckedDeletionAttempt','update:checkedValues','update:checkedValue'])
+const handleChange  = event => {
+  if (typeof event.target.checked === 'undefined') return;
+  if (props.group) {
+    if (props.required && !event.target.checked && props.checkedValues.length === 1 && isChecked.value) {
+      emit('lastCheckedDeletionAttempt', props.checkedValues);
+      return event.preventDefault();
+    }
+    emit('update:checkedValues', (event.target.checked)?[...props.checkedValues, props.value]:props.checkedValues.filter(val => val !== props.value));
+  } else {
+    emit('update:checkedValue', props.value, event.target.checked);
+  }
 };
 </script>
 
+
 <style scoped>
 .cursor-pointer *{
-  cursor:pointer;
+  cursor:             pointer;
 }
 label {
-  padding-left: .625rem;
-  padding-top: 0rem;
+  padding-left:       .625rem;
+  padding-top:        0rem;
 }
-
+input[type=checkbox]
+{
+  margin-left:        .625rem;
+}
 .Toggle {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  position: relative;
-  cursor: pointer;
-  gap: 1ch;
+  align-items:        center;
+  cursor:             pointer;
+  display:            flex;
+  flex-wrap:          wrap;
+  gap:                1ch;
+  position:           relative;
 }
 
 .Toggle__input {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
+  height:             100%;
+  position:           absolute;
+  opacity:            0;
+  width:              100%;
 }
 
 .Toggle__display {
-  --offset: 0.25em;
-  --diameter: 1.8em;
+  --diameter:         1.8em;
+  --offset:           0.25em;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-around;
-  box-sizing: content-box;
-  width: calc(var(--diameter) * 2 + var(--offset) * 2);
-  height: calc(var(--diameter) + var(--offset) * 2);
-  border: 0.1em solid rgb(0 0 0 / 0.2);
-  position: relative;
-  border-radius: 100vw;
-  transition: 250ms;
+  align-items:        center;
+  box-sizing:         content-box;
+  border:             0.1em solid rgb(0 0 0 / 0.2);
+  border-radius:      100vw;
+  display:            inline-flex;
+  height:             calc(var(--diameter) + var(--offset) * 2);
+  justify-content:    space-around;
+  position:           relative;
+  transition:         250ms;
+  width:              calc(var(--diameter) * 2 + var(--offset) * 2);
 }
 
 .Toggle__display::before {
-  content: "";
-  z-index: 2;
-  position: absolute;
-  top: 50%;
-  left: var(--offset);
-  box-sizing: border-box;
-  width: var(--diameter);
-  height: var(--diameter);
-  border: 0.1em solid rgb(0 0 0 / 0.2);
-  border-radius: 50%;
   background-color: white;
-  transform: translate(0, -50%);
-  will-change: transform;
-  transition: inherit;
+  border:             0.1em solid rgb(0 0 0 / 0.2);
+  border-radius:      50%;
+  box-sizing:         border-box;
+  content:            "";
+  height:             var(--diameter);
+  left:               var(--offset);
+  position:           absolute;
+  top:                50%;
+  transform:          translate(0, -50%);
+  transition:         inherit;
+  width:              var(--diameter);
+  will-change:        transform;
+  z-index:            2;
 }
 
 
-.Toggle:focus .Toggle__display, .Toggle__input:focus + .Toggle__display { outline: 1px dotted #212121; outline: 1px auto -webkit-focus-ring-color; outline-offset: 2px; }
-.Toggle:focus, .Toggle:focus:not(:focus-visible) .Toggle__display, .Toggle__input:focus:not(:focus-visible) + .Toggle__display { outline: 0; }
-.Toggle__input:checked + .Toggle__display::before { transform: translate(100%, -50%); }
+.Toggle:focus                               .Toggle__display,
+.Toggle:focus:not(:focus-visible)           .Toggle__display,
+.Toggle__input:focus +                      .Toggle__display,
+.Toggle__input:focus:not(:focus-visible) +  .Toggle__display {
+  outline:            1px dotted #212121;
+  outline:            1px auto -webkit-focus-ring-color;
+  outline-offset:     2px;
+}
 
-.Toggle[disabled] .Toggle__display, .Toggle__input:disabled + .Toggle__display { opacity: 0.6; filter: grayscale(40%); cursor: not-allowed; }
+.Toggle:focus,
+.Toggle:focus:not(:focus-visible)           .Toggle__display,
+.Toggle__input:focus,
+.Toggle__input:focus:not(:focus-visible) +  .Toggle__display {
+  outline: 0;
+}
 
-[dir="rtl"] .Toggle__display::before { left: auto; right: var(--offset); }
-[dir="rtl"] .Toggle__input:checked + .Toggle__display::before { transform: translate(-100%, -50%); }
+            .Toggle__input:checked  +       .Toggle__display::before,
+[dir="rtl"] .Toggle__input:checked  +       .Toggle__display::before {
+  transform:          translateX(100%) translateY(-50%);
+}
 
-.Toggle__icon { font-size: calc(var(--diameter) / 2); display: inline-block; width: 1em; height: 1em; color: inherit; fill: currentcolor; vertical-align: middle; overflow: hidden; }
-*, ::before, ::after { box-sizing: border-box; }
+.Toggle[disabled]                           .Toggle__display,
+.Toggle__input:disabled +                   .Toggle__display {
+  cursor:             not-allowed;
+  filter:             grayscale(40%);
+  opacity:            0.6;
+}
+
+[dir="rtl"]                                 .Toggle__display::before {
+  left:               auto;
+  right:              var(--offset);
+}
+
+[dir="rtl"] .Toggle__input:checked +        .Toggle__display::before {
+  transform:          translateX(-100%) translateY(-50%);
+}
+
+.Toggle__icon {
+  color:              inherit;
+  display:            inline-block;
+  fill:               currentcolor;
+  font-size:          calc(var(--diameter) / 2);
+  height:             1em;
+  overflow:           hidden;
+  vertical-align:     middle;
+  width:              1em;
+}
+
+*,*::before,*::after {
+  box-sizing:         border-box;
+}
+
 </style>

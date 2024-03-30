@@ -5,47 +5,50 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { defineEmits, defineProps, computed } from 'vue';
 
-export default {
-  name: 'MyFileReader',
-  props:{
-    text:{ type: String, default: 'Seleccionar archivo' },
-    maxFileSize: { type: Number, default: null },
-    fileName: { validator: (value)=>value instanceof RegExp || typeof value === 'string', default: () => /^.*hungry.*\.json$/i },
-    accept:{ type: String, default: "*.*" },
-    forceFileName:{ type: Boolean, default: false }
-  },
-  data(){
-    return {
-      inputID: `input-${Math.random().toString(36).slice(2)}`,
-    }
-  },
-  setup(props, {emit}) {
-    const readFile  = (inputFile) => new Promise((resolve, reject) => {
-      const reader  = new FileReader();
-      reader.onload = (event) => {
-        try       { resolve(JSON.parse(event.target.result)) }
-        catch (e) { reject("El archivo a importar debe ser un archivo de configuración de «Hungry!» válido") }
-      }
-      reader.onerror = (event) => reject(event.target.error);
-      reader.readAsText(inputFile);
-    });
+const props = defineProps({
+  fileName:       { validator: value => value instanceof RegExp || typeof value === 'string', default: () => /^.*hungry.*\.json$/i },
+  accept:         { type: String,   default: "*.*" },
+  forceFileName:  { type: Boolean,  default: false },
+  maxFileSize:    { type: Number,   default: null },
+  text:           { type: String,   default: 'Seleccionar archivo' },
+});
 
-    const handleFileChange = async (event) => {
-      const regex = typeof props.fileName === 'string' ? new RegExp(props.fileName, 'i') : props.fileName;
-      if (props.forceFileName && props.fileName !== '' && !regex.test(event.target.files[0].name)) return emit('fileReadError',`Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`)
-      if (props.maxFileSize!=null) if (event.target.files[0].size>props.maxFileSize)  return emit('fileReadError',`Archivo demasiado grande,<br>tamaño máximo ${props.maxFileSize/1024}KB`)
-      try { emit('fileReaded', await readFile(event.target.files[0]))}
-      catch (err) { emit('fileReadError',err.message) }
-      event.target.value='';
-    };
+const readFile = (inputFile) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = event => {
+    try         { resolve(JSON.parse(event.target.result))}
+    catch (e)   { reject(new Error("El archivo a importar debe ser un archivo de configuración de «Hungry!» válido"))}
+  };
+  reader.onerror = (event) => reject(event.target.error);
+  reader.readAsText(inputFile);
+});
 
-    return { handleFileChange, };
-  },
-  emits: ['fileReaded','fileReadError']
+const fileName_error = computed(() => `Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`);
+const fileSize_error = computed(() => `Archivo demasiado grande,<br>tamaño máximo ${props.maxFileSize / 1024}KB`);
+const emit=defineEmits(['fileReadError','fileReaded','fileReadError'])
+
+const handleFileChange = async (event) => {
+  const regex = typeof props.fileName === 'string' ? new RegExp(props.fileName, 'i') : props.fileName;
+  const file=event.target.files[0];
+  const errorCondition =  (props.forceFileName && props.fileName !== '' && !regex.test(file.name)) ? fileName_error :
+                          (props.maxFileSize != null && file.size > props.maxFileSize) ? fileSize_error :
+                          null;
+  if (errorCondition) {
+                  emit('fileReadError', errorCondition      );
+  }
+  else{
+    try         { emit('fileReaded',  await readFile(file))} 
+    catch (e)   { emit('fileReadError', e.message         )}
+  }
+  event.target.value = '';
 };
+
+const inputID = `input-${Math.random().toString(36).slice(2)}`;
 </script>
+
 
 <style scoped>
   div   { position: relative; display: inline-flex; cursor: pointer; width: 100%; height: 3.125rem; justify-content: center; }

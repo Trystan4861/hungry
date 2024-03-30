@@ -3,19 +3,14 @@
     <div class="text-center mb-1">Visibilidad de Categorías</div>
     <div class="categoriesContainer">
       <my-checkbox
-        v-for="(item, index) in visibleCategories"
+        v-for="(item, index) in categorias"
         :key="index"
         :value="index"
         :label="item.text"
         :checkedValues="checkedItems"
-        :group="'configCategoriesVisibility'"
+        group="configCategoriesVisibility"
         :required="true"
         :styled="true"
-        :dotDiameter="'1rem'"
-        :checkedColor="'#6c757d'"
-        :uncheckedColor="'#333'"
-        :checkmarkColor="'white'"
-        :crossColor="'white'"
         @update:checkedValues="handleCheckedValuesUpdate"
         @lastCheckedDeletionAttempt="handleLastCategoryVisible"
       />
@@ -23,58 +18,44 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import MyCheckbox from '@/components/MyCheckbox.vue';
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, defineEmits,defineProps } from 'vue';
 import Swal from 'sweetalert2';
 
-export default {
-  name: 'SlotConfigurationCategories',
-  props: {
-    categorias: {
-      type: Array,
-      required: true
-    }
-  },
-  components: {
-    MyCheckbox,
-  },
-  setup(props, { emit }) {
-    const checkedItems = ref([]);
-    const visibleCategories = ref([]);
-    
-    const getVisibleIndices = data => data.map((item, index) => (item.visible ? index : null)).filter(index => index !== null);
-    
-    watchEffect(() => {
-      visibleCategories.value = props.categorias.filter(item => item.visible);
-      checkedItems.value = getVisibleIndices(props.categorias);
-    });
-    
-    const handleCheckedValuesUpdate = (newCheckedItems) => {
-      checkedItems.value = newCheckedItems.sort((a, b) => a - b);
-      emit('categoriesChecked', newCheckedItems);
-    };
-    
-    const handleLastCategoryVisible = () => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        html: "Al menos una categoría debe permanecer visible",
-        confirmButtonText: 'Aceptar',
-        target: document.querySelector("#SlotConfigurationCategories"),
-      });
-    };
+const props = defineProps({
+  categorias: { type: Array, required: true }
+});
 
-    return {
-      checkedItems,
-      visibleCategories,
-      handleLastCategoryVisible,
-      handleCheckedValuesUpdate,
-    };
-  },
-  emits: ['categoriesChecked', 'buttonClicked']
+const checkedItems      = ref([]);
+const visibleCategories = ref([]);
+
+const getVisibleIndices = data => data.map((item, index) => (item.visible ? index : null)).filter(index => index !== null);
+
+watchEffect(() => {
+  visibleCategories.value = props.categorias.filter(item => item.visible);
+  checkedItems.value = getVisibleIndices(props.categorias);
+});
+
+const handleCheckedValuesUpdate = (newCheckedItems) => {
+  checkedItems.value = newCheckedItems.sort((a, b) => a - b);
+  emit('categoriesChecked', newCheckedItems);
 };
+
+const handleLastCategoryVisible = () => {
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    html: "Al menos una categoría debe permanecer visible",
+    confirmButtonText: 'Aceptar',
+    target: document.querySelector("#SlotConfigurationCategories"),
+  });
+};
+
+const emit = defineEmits(['categoriesChecked', 'buttonClicked']);
+
 </script>
+
 
 <style scoped>
 .categoriesContainer {

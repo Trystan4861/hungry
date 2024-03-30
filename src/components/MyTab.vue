@@ -2,10 +2,10 @@
   <div class="my-tab" ref="tabsContainerRef">
     <ul class="nav nav-tabs">
       <!-- Mostramos cada pestaña en la cabecera -->
-      <li class="nav-item" :class="{ active: this.activeTab === index }" v-for="(tab, index) in tabs" :key="index" :style="tabStyle">
+      <li class="nav-item" :class="{ active: activeTab === index }" v-for="(tab, index) in tabs" :key="index" :style="tabStyle">
         <span
           class="nav-link"
-          :class="{ active: this.activeTab === index }"
+          :class="{ active: activeTab === index }"
           @click="activateTab(index)">
           <my-image-loader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
         </span>
@@ -13,82 +13,72 @@
     </ul>
     <!-- Mostramos el contenido de la pestaña activa -->
     <div class="tab-content">
-      <div class="tab-pane fade show" :class="{ active: this.activeTab === index }" :id="'tab' + index" v-for="(tab, index) in tabs" :key="index">
+      <div class="tab-pane fade show" :class="{ active: activeTab === index }" :id="'tab' + index" v-for="(tab, index) in tabs" :key="index">
           <slot :name="'tabContent' + index"></slot>
       </div>
     </div>
   </div>
 </template>
-<script>
+<script setup>
 import MyImageLoader from '@/components/MyImageLoader.vue';
-import {ref, watch, onMounted, onBeforeUnmount} from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, defineEmits, defineProps } from 'vue';
 
-export default {
-  name: 'MyTab',
-  props: {
-    tabs: {
-      type: Array,
-      required: true,
-    },
-    defaultActive:{
-      type: Number,
-      default:0
-    },
-    heightDesviation:{
-      type: Number,
-      default:0
-    },
-    heightResponsive:{
-      type: Boolean,
-      default: false
-    }
+const props = defineProps({
+  tabs: {
+    type: Array,
+    required: true,
   },
-  data() {
-    return {
-      emptyIMG:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII="
-    };
+  defaultActive: {
+    type: Number,
+    default: 0
   },
-  setup(props,{emit}){
-      const tabsContainerRef = ref(null);
-      const activeTab = ref(props.defaultActive)
-      watch(() => props.defaultActive, (newValue) => {
-        activeTab.value = newValue;
-      });
-      const tabStyle = ref({});
-      const updateTabStyle = () => {
-        const container = tabsContainerRef.value;
-        if (!container) return;
-        const containerWidth = container.clientWidth;
-        const widthStyle = (((containerWidth-60) / 4)-1);
-        tabStyle.value = {width: `${widthStyle}px`};
-        if (props.heightResponsive)
-          emit('tabHeightChanged',container.clientHeight+props.heightDesviation)
-      };
-      onMounted(()=>{
-        window.addEventListener('resize', updateTabStyle,{passive: true});
-        updateTabStyle();
-        })
-      onBeforeUnmount(() => {
-        window.removeEventListener('resize', updateTabStyle);
-      });
-      return {
-        tabStyle,
-        tabsContainerRef,
-        activeTab
-      }
+  heightDesviation: {
+    type: Number,
+    default: 0
   },
-  methods: {
-    activateTab(index) {
-      this.activeTab = index;
-      this.$emit('tabChanged', index);
-    },
-  },
-  emits: ['tabChanged','tabHeightChanged'], // Declarar el evento tabChanged para evitar la advertencia
-  components:{
-    MyImageLoader
+  heightResponsive: {
+    type: Boolean,
+    default: false
   }
+});
+
+const emptyIMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=";
+const tabsContainerRef = ref(null);
+const activeTab = ref(props.defaultActive);
+const tabStyle = ref({});
+
+watch(() => props.defaultActive, (newValue) => {
+  activeTab.value = newValue;
+});
+
+const updateTabStyle = () => {
+  const container = tabsContainerRef.value;
+  if (!container) return;
+  const containerWidth = container.clientWidth;
+  const widthStyle = (((containerWidth - 60) / 4) - 1);
+  tabStyle.value = { width: `${widthStyle}px` };
+  if (props.heightResponsive)
+    emit('tabHeightChanged', container.clientHeight + props.heightDesviation);
 };
+
+onMounted(() => {
+  window.addEventListener('resize', updateTabStyle, { passive: true });
+  updateTabStyle();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateTabStyle);
+});
+
+const activateTab = (index) => {
+  activeTab.value = index;
+  emit('tabChanged', index);
+};
+
+const emit = defineEmits(['tabChanged', 'tabHeightChanged']);
+
 </script>
+
   
 <style scoped>
   .my-tab {

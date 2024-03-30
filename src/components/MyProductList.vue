@@ -5,91 +5,64 @@
       :key="index" 
       :product="product"
       :canBeDone="canBeDone" 
+      :amount="product.amount"
       @product:click="handleClick(product)" 
       @product:longClick="handleLongClick(product)"
       @product:drag="handleDrag"
+      :index="product.id"
       />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { defineProps, defineEmits, computed } from 'vue';
 import MyProduct from '@/components/MyProduct.vue';
 
-export default {
-  name: 'MyProductList',
-  components: {
-    MyProduct
-  },
-  props: {
-    productList:      { type: Array,    required: true  },
-    orderBy:          { type: String,   default: 'name' },
-    selected:         { type: Boolean,  default: false  },
-    canBeDone:        { type: Boolean,  default: false  },
-    showOnlyDone:     { type: Boolean,  default: false  },
-    hideDone:         { type: Boolean,  default: false  },
-    hideSupermercado: { type: Boolean,  default: false  },
-    supermercado:     { type: Number,   default: 0      },
-  },
-  methods:{
-    handleDrag(direction,product)
-    {
-      if(direction=='left')
-      {
-        product.amount-=1
-        if (product.amount==0)
-          product.selected=false
-      }
-      else
-        product.amount+=1
-    },
-    handleClick(product){
-      if (product.amount<0) product.amount=1
-      this.$emit('click:product',product)
-      },
-    handleLongClick(product){ this.$emit('longClick:product',product)}
-  },
-  computed: {
-    sortedProductList() {
-      let aux = this.productList;
-      if (this.showOnlyDone) {
-        aux = this.productList.filter(product => product.done);
-      }
-      else if (this.hideDone) {
-        aux = this.productList.filter(product => !product.done);
-        if (this.supermercado !== 0) {
-          aux = aux.filter(product => {
-            if (this.hideSupermercado) {
-              return product.id_supermercado !== this.supermercado && product.id_supermercado !== 0;
-            }
-            else {
-              return product.id_supermercado === this.supermercado || product.id_supermercado === 0;
-            }
-          });
-        }
-      }
+const props = defineProps({
+  canBeDone:        { type: Boolean,  default:  false },
+  hideSupermercado: { type: Boolean,  default:  false },
+  orderBy:          { type: String,   default:  'name'},
+  productList:      { type: Array,    required: true  },
+  selected:         { type: Boolean,  default:  false },
+  supermercado:     { type: Number,   default:  0     },
+  filter:           { type: String,   default:  ''    }
+});
 
-      if (this.orderBy === 'name') {
-        return aux.slice()
-          .filter(item => !this.selected || item.isSelected)
-          .sort((a, b) => a.text.localeCompare(b.text));
-      } else {
-        // Ordenar primero por id_categoria y luego por text
-        return aux.slice()
-          .filter(item => !this.selected || item.selected)
-          .sort((a, b) => {
-            if (a.id_categoria !== b.id_categoria) {
-              return a.id_categoria - b.id_categoria;
-            } else {
-              return a.text.localeCompare(b.text);
-            }
-          });
-      }
+const emit = defineEmits(['click:product', 'longClick:product']);
+
+const handleDrag        = (dir, product) => dir === 'left' ? product.amount = (product.amount > 0) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1;
+const handleClick       = product => (product.amount==0?product.amount=1:null,emit('click:product', product))
+const handleLongClick   = product => emit('longClick:product', product)
+
+const sortedProductList = computed(() => {
+  let aux = props.productList;
+  //si es una lista especial done||undone filtramos el listado de productos
+  if (props.filter.toLowerCase()=="done") {
+    aux = props.productList.filter(product => product.done);
+  } else if (props.filter.toLowerCase()=="undone") {
+    aux = props.productList.filter(product => !product.done);
+    //para el caso del filtro "undone" si el supermercado actual no es cualquier supermercado, quitamos los productos que son de otros supermercados
+    if (props.supermercado !== 0) {
+      aux = aux.filter(product =>  props.hideSupermercado ? 
+        (product.id_supermercado !== props.supermercado && product.id_supermercado !== 0) :
+        (product.id_supermercado === props.supermercado || product.id_supermercado === 0)
+      );
     }
-  },
-  emits:['click:product','longClick:product']
-};
+  }
+
+  if (props.orderBy === 'name') {
+    return aux.slice()
+      .filter(item => !props.selected || item.isSelected)
+      .sort((a, b) => a.text.localeCompare(b.text));
+  } else {
+    return aux.slice()
+      .filter(item => !props.selected || item.selected)
+      .sort((a, b) => a.id_categoria !== b.id_categoria ?a.id_categoria - b.id_categoria :a.text.localeCompare(b.text));
+  }
+});
 </script>
+
 
 <style scoped>
 .my-product-list {

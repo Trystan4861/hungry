@@ -7,6 +7,7 @@
       :heightResponsive ="true" 
       :tabs             ="tabsData" 
       @tabHeightChanged ="handleTabHeightChanged" 
+      @tabChanged="refreshClearList"
       >
       <template v-slot:tabContent0> <!-- Configuration -->
         <my-card 
@@ -58,6 +59,15 @@
                 btnClass="danger" 
                 text="Guardar Cambios" 
                 @click="saveConfigChanges" 
+                />
+            </div>
+          </div>
+          <div class="row align-items-end">
+            <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+              <my-button 
+                btnClass="danger" 
+                text="TEST" 
+                @click="test" 
                 />
             </div>
           </div>
@@ -122,25 +132,30 @@
         </my-card>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <div class="mr-0 d-flex">
-          <my-select 
+        <div  v-show="productosVisibles.some(i=>i.selected)">
+          <div class="mr-0 d-flex">
+            <my-select 
             class="flex-grow-1"
             :options="supermercados.filter(item=>item.id!=0)" 
             :selected="supermercados[1]" 
             @click="handleClickSupermercadoSL" 
             @select="handleSelectSupermercadoSL" 
             />
-          <my-button 
-          btnClass="danger" 
-          class="clearList" 
-          text="Limpiar Lista" 
-          @click="clearList" />
+            <my-button
+            btnClass="danger" 
+            class="clearList" 
+            text="Limpiar Lista" 
+            @click="clearList" />
+          </div>
         </div>
         <my-card 
           borderStyle="rounded-bottom"
           :height="alturaDisponible" 
-          :heightModifier="-50" 
+          :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
           >
+          <div class="h-100" v-show="productosVisibles.every(i=>i.selected==false)">
+            <div class="d-flex justify-content-center align-items-center h-100">Lista de la compra vacía.</div>
+          </div> 
           <div v-show="
               productosVisibles.some(item=>
               item.selected 
@@ -152,7 +167,7 @@
             <my-product-list 
               orderBy="categoryId" 
               :canBeDone="true" 
-              :hideDone="true" 
+              filter="undone"
               :productList="productosVisibles" 
               :selected="true" 
               :supermercado="supermercadoSL.value?.id || 0" 
@@ -170,7 +185,7 @@
             <my-product-list 
               orderBy="categoryId" 
               :canBeDone="true" 
-              :hideDone="true" 
+              filter="undone"
               :hideSupermercado="true" 
               :productList="productosVisibles" 
               :selected="true" 
@@ -189,7 +204,7 @@
               :canBeDone="true" 
               :productList="productosVisibles" 
               :selected="true" 
-              :showOnlyDone="true" 
+              filter="done"
               @click:product="handleShoplistClick" 
               />
           </div>
@@ -200,15 +215,17 @@
   <div id="anchorEditarProducto" class="d-none">
     <div id="divEditarProducto">
       <my-categories-list 
-        ref="categoriesSliderRef" 
+        ref="categoriesRef" 
         :categories="categoriesData" 
         :selectCategory="productoSeleccionado?.id_categoria || 0" 
         @categorySelected="handleCategorySelected" 
+        :selected="itemCategorySelected"
         />
       <my-select 
         placeholder="Selecciona un supermercado" 
         ref="selectRef" 
         :options="supermercados" 
+        :selected="supermercadoProducto || supermercados[0]"
         @select="handleSelectSupermercado" 
         />
       <my-input 
@@ -218,6 +235,8 @@
       />
     </div>
   </div> 
+  <notifications group="pwa" position="top center" width="50%"  />
+  <notifications group="app" position="bottom center" width="50%"  />
 </template>
 
 <script>
@@ -239,13 +258,13 @@
   import SlotConfigurationTabsActive  from '@/components/SlotConfigurationTabsActive.vue'
 
   import Swal                         from 'sweetalert2'
-  import { v4 as uuidv4 }             from 'uuid'
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
   import axios                        from 'axios'
+import { notify } from '@kyvg/vue3-notification'
+
   
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
-  const refreshClearList=()=>document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`
   export default {
     name:'App',
     components:{
@@ -261,7 +280,7 @@
       SlotConfigurationExport,
       SlotConfigurationImport,
       SlotConfigurationTabsActive,
-      SlotConfigurationFullScreen,
+      SlotConfigurationFullScreen
     },
     data(){
       return{
@@ -270,9 +289,15 @@
         productoAEditar:      '',
         configs2Export:       [],
         productoSeleccionado: {},
+        itemCategorySelected: 0,
+        supermercadoProducto: null,
       }
     },
     methods:{
+      test(){
+        this.$notify("Hola")
+      },
+
       setFullScreen(){
         if (!this.fullScreen) return document.fullscreenElement?document.exitFullscreen():null
         if (document.fullscreenElement) return
@@ -300,11 +325,10 @@
           cancelButtonText:   'Cancelar',
           target:             document.querySelector("#appContainer"),
           willOpen: ()=>{
-            this.$refs.categoriesSliderRef.seleccionarCategoria(this.productoSeleccionado.id_categoria)
-            this.$refs.selectRef.selectOption(this.supermercados[findIndexById(this.productoSeleccionado.id_supermercado,this.supermercados)])
+            this.itemCategorySelected=this.productoSeleccionado.id_categoria;
+            this.supermercadoProducto=this.supermercados[this.productoSeleccionado.id_supermercado]
             document.getElementById('VueSweetAlert2').appendChild(aux);
           },
-          didOpen:  ()=>{setTimeout(this.$refs.categoriesSliderRef.centrarCategoriaActiva,10)},
           willClose:()=>{document.getElementById('anchorEditarProducto').appendChild(aux)}
         }).then((result) => {
           if (result.isConfirmed){
@@ -416,7 +440,7 @@
       },
       handleTabHeightChanged(data){
         this.alturaDisponible=data;
-        refreshClearList()
+        this.refreshClearList()
       },
       handeFileReadError(error){
           Swal.fire({
@@ -455,20 +479,34 @@
         });
       },
       clearList(){
+        const hayComprados=this.productsData.some(item=>item.done)
         Swal.fire({
           title: `Atención`,
-          text: 'Esto limpiará la lista de la compra',
+          text: hayComprados?'¿Qué elementos desea eliminar?':'Esto limpiará la lista de la compra',
           showCancelButton: true,
-          confirmButtonText: 'Aceptar',
+          confirmButtonText: hayComprados?'Todos':'Aceptar',
+          denyButtonText: 'Ya Comprados',
           cancelButtonText: 'Cancelar',
           customClass: {
             confirmButton: 'btn btn-danger mr-1', 
+            denyButton: 'btn btn-warning mr-1', 
             cancelButton: 'btn btn-success', 
           },
+          showDenyButton: hayComprados,
           buttonsStyling: false, 
           target: document.querySelector("#appContainer"),
         }).then((result) => {
-          if (result.isConfirmed){
+          if (result.isDenied){
+            this.productsData.forEach(producto=>{
+              if(producto.done)
+              {
+                producto.selected=false
+                producto.done=false;
+              }
+            })
+            this.productsData=[...this.productsData]
+          }
+          else if (result.isConfirmed) {
             this.productsData.forEach(producto=>{
               producto.selected=false
               producto.done=false
@@ -490,12 +528,13 @@
         }
         if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase())){
           this.productsData.push({
-            id:uuidv4(),
+            id: this.productsData[this.productsData.length - 1].id+1,
             text:this.nuevoProducto,
             amount: 1,
             id_categoria:this.categoriaActiva.value.id,
             id_supermercado:this.supermercadoActivo.value.id
           });
+          notify({group:"app", text:`Producto «${this.nuevoProducto}» añadido correctamente`,type:"success", duration:3000})
           this.nuevoProducto="";
           this.productsData=[...this.productsData]
           focusInput(document.querySelector("#tab1").querySelector("input"))
@@ -513,11 +552,6 @@
       },
       handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
     },
-    computed:{
-      configuracion: function(){
-        return useStore().getters.getConfiguration()
-      },
-    },
     setup(){
       const store                   = useStore()
       const storeGet                = store.getters
@@ -529,7 +563,6 @@
       const allowClickTimeout       = ref(0)
       const alturaDisponible        = ref(storeGet.getAlturaDisponible())
       const categoriasVisibles      = ref([])
-
       const initialData             = storeGet.getConfiguration()
       const CONFIG_NAMES            = storeGet.getConfigNames()
       const tabsData                = storeGet.getTabs()
@@ -538,7 +571,7 @@
       const productsData            = ref(getDataFromLocalStorage('productos'       ))
       const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
       const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
-      const fullScreen          = ref(getDataFromLocalStorage('fullScreen'      ))
+      const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
       const configFullScreen        = ref(fullScreen.value)
 
       let tempCategoriasVisiblesIds=[]
@@ -558,6 +591,8 @@
       const supermercadoActivo=ref({})
       const supermercadoSL=ref({})
       supermercadoSL.value=supermercados[1]
+      function refreshClearList(){document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`}
+
       function handleCategoriesChecked(data)
       {
       let aux=categoriesData.value.map(categoria => ({ ...categoria }))
@@ -735,16 +770,16 @@
         supermercadoSL,
         tabsData, 
         tempCategoriasVisiblesIds,
-        doLogin
+        doLogin,
+        refreshClearList
       }
     },
     mounted(){
       this.supermercadoActivo.value = this.supermercados[0]; 
       this.supermercadoSL.value     = this.supermercados[1]
       document.addEventListener('contextmenu', (event) => event.preventDefault())
-      window.addEventListener('resize', refreshClearList,{passive: true});
-      setTimeout(this.nuevoProductoFocus,500); 
-      setTimeout(refreshClearList,500)
+      window.addEventListener('resize', this.refreshClearList,{passive: true});
+      setTimeout(this.refreshClearList,500)
     },
   }
 </script>

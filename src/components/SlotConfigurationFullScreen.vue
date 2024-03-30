@@ -4,32 +4,24 @@
     <div>
       <my-checkbox
         value="1"
-        :label="selected?'Sí':'No'"
-        :selected="selected"
+        :label="props.selected?'Sí':'No'"
+        :selected="props.selected"
         :styled="true"
-        :dotDiameter="'1rem'"
-        :checkedColor="'#6c757d'"
-        :uncheckedColor="'#333'"
-        :checkmarkColor="'white'"
-        :crossColor="'white'"
         @update:checkedValue="handleCheckedValue"
       />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
   import MyCheckbox from '@/components/MyCheckbox.vue'
-  export default {
-    name:                  'SlotConfigurationFullScreen',
-    props:                 { selected: { type: Boolean, required: true } },
-    components:            { MyCheckbox,                                 },
-    setup(props, { emit }) {
-      const    handleCheckedValue   = (_,checked) => emit('change', checked)
-      return { handleCheckedValue }
-    },
-    emits: ['change']
-  }
+  import { defineProps,defineEmits } from 'vue';
+
+  const props               = defineProps(
+    { selected: { type: Boolean, required: true } },
+  );
+  const handleCheckedValue  = (_,checked) => emit('change', checked)
+  const emit                = defineEmits(['change'])
 </script>
 <style scoped>
 </style>

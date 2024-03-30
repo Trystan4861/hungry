@@ -13,44 +13,38 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
-import MyImageLoader      from '@/components/MyImageLoader.vue';
+<script setup>
+import { ref, watch, defineProps, defineEmits } from 'vue';
+import MyImageLoader from '@/components/MyImageLoader.vue';
 
-export default {
-  name: 'MySelect',
-  props: {
-    options: { type: Array, required: true },
-    placeholder: { type: String, default: 'Seleccione una opción' },
-    selected: {
-      type: Object,
-      default: () => ({ id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" }),
-    }
-  },
-  setup(props,{emit}) {
-    const id = `'image-${Math.random().toString(36).slice(2)}`;
-    const showDropdown = ref(false);
-    const selectedOption = ref({ id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" });
-    const toFilter=['add.svg','cart.svg']
-    const toggleDropdown = () => {
-      emit('click',!showDropdown.value?'hidden':'visible')
-      showDropdown.value = !showDropdown.value; 
-      };
-    const selectOption = (option) => {
-      selectedOption.value = option;
-      showDropdown.value = false;
-      emit('select', option);
-    };
-    const closeDropdown = () => { showDropdown.value = false; };
-    onMounted(() => {
-      if (props.selected.id !== -1)  selectedOption.value = props.selected;
-    });
-    return { toFilter, id, showDropdown, selectedOption, toggleDropdown, selectOption, closeDropdown };
-  },
-  components: { MyImageLoader },
-  emits:['dropDown','select','click']
+const props = defineProps({
+  options:      { type: Array,  required: true },
+  placeholder:  { type: String, default:  'Seleccione una opción' },
+  selected:     { type: Object, default:  () => ({ id: -1, text: null, logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==" }),
+  }
+});
+
+const id = `'image-${Math.random().toString(36).slice(2)}`;
+const showDropdown = ref(false);
+const selectedOption = ref(props.selected);
+const toFilter = ['add.svg', 'cart.svg'];
+
+const toggleDropdown = () => {
+  emit('click', !showDropdown.value ? 'hidden' : 'visible');
+  showDropdown.value = !showDropdown.value;
 };
+
+const selectOption = (option) => {
+  selectedOption.value = option;
+  showDropdown.value = false;
+  emit('select', option);
+};
+
+watch(()=>props.selected,newValue=>selectedOption.value=newValue)
+const closeDropdown = () => { showDropdown.value = false; };
+const emit = defineEmits(['dropDown', 'select', 'click']);
 </script>
+
 
 <style scoped>
 *{
