@@ -154,7 +154,7 @@
           :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
           >
           <div class="h-100" v-show="productosVisibles.every(i=>i.selected==false)">
-            <div class="d-flex justify-content-center align-items-center h-100">Lista de la compra vacía.</div>
+            <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
           </div> 
           <div v-show="
               productosVisibles.some(item=>
