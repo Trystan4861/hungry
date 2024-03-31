@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-import Swal from 'sweetalert2'
+//import Swal from 'sweetalert2'
 import { Notifications } from '@kyvg/vue3-notification'
 
 if (process.env.NODE_ENV === 'production') {
@@ -21,9 +21,9 @@ if (process.env.NODE_ENV === 'production') {
     updatefound () {
       console.log('New update has been found')
     },
-    updated (registration) {
+    updated () {
       console.log('New content is available; please refresh.')
-      Swal.fire({
+  /*    Swal.fire({
         title: 'Actualización disponible',
         html: 'Existe una nueva versión de la aplicación.<br /><br />¿Desea actualizarla?',
         icon: 'info',
@@ -32,10 +32,9 @@ if (process.env.NODE_ENV === 'production') {
         cancelButtonText: 'No'
         }).then((result) => {
           if (result.value) {
-            registration.update();
             window.location.reload()
           }
-        })
+        })*/
     },
     offline () {
       Notifications.notify({
