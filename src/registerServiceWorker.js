@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === 'production') {
     updatefound () {
       console.log('New update has been found')
     },
-    updated () {
+    updated (registration) {
       console.log('New content is available; please refresh.')
       Swal.fire({
         title: 'Actualización disponible',
@@ -32,6 +32,7 @@ if (process.env.NODE_ENV === 'production') {
         cancelButtonText: 'No'
         }).then((result) => {
           if (result.value) {
+            registration.update();
             window.location.reload()
           }
         })
