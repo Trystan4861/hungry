@@ -25,3 +25,4 @@ pnpm-debug.log*
 #local backup files
 *.bak
 *.ignore
+*.new

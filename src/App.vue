@@ -215,7 +215,6 @@
   <div id="anchorEditarProducto" class="d-none">
     <div id="divEditarProducto">
       <my-categories-list 
-        ref="categoriesRef" 
         :categories="categoriesData" 
         :selectCategory="productoSeleccionado?.id_categoria || 0" 
         @categorySelected="handleCategorySelected" 
@@ -261,7 +260,7 @@
   import { computed, ref, watch }     from 'vue'
   import { useStore }                 from 'vuex'
   import axios                        from 'axios'
-import { notify } from '@kyvg/vue3-notification'
+  import { notify } from '@kyvg/vue3-notification'
 
   
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
@@ -573,7 +572,6 @@ import { notify } from '@kyvg/vue3-notification'
       const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
       const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
       const configFullScreen        = ref(fullScreen.value)
-
       let tempCategoriasVisiblesIds=[]
 
       const changes2Save={
@@ -771,7 +769,7 @@ import { notify } from '@kyvg/vue3-notification'
         tabsData, 
         tempCategoriasVisiblesIds,
         doLogin,
-        refreshClearList
+        refreshClearList,
       }
     },
     mounted(){

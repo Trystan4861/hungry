@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-import Swal from 'sweetalert2'
+//import Swal from 'sweetalert2'
 import { Notifications } from '@kyvg/vue3-notification'
 
 if (process.env.NODE_ENV === 'production') {
@@ -32,6 +32,14 @@ if (process.env.NODE_ENV === 'production') {
         cancelButtonText: 'No'
         }).then((result) => {
           if (result.value) {
+            if(window.navigator && navigator.serviceWorker) {
+              navigator.serviceWorker.getRegistrations()
+              .then(function(registrations) {
+                for(let registration of registrations) {
+                  registration.unregister();
+                }
+              });
+            }
             window.location.reload(true)
           }
         })

@@ -63,7 +63,7 @@ const updateTabStyle = () => {
 
 onMounted(() => {
   window.addEventListener('resize', updateTabStyle, { passive: true });
-  updateTabStyle();
+  setTimeout(updateTabStyle,500);
 });
 
 onBeforeUnmount(() => {

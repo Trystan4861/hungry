@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits } from 'vue';
+import { ref, watch, defineProps, defineEmits, defineExpose } from 'vue';
 import MyImageLoader from '@/components/MyImageLoader.vue';
 
 const props = defineProps({
@@ -42,7 +42,11 @@ const selectOption = (option) => {
 
 watch(()=>props.selected,newValue=>selectedOption.value=newValue)
 const closeDropdown = () => { showDropdown.value = false; };
+const openDropdown = () => { showDropdown.value = true; };
 const emit = defineEmits(['dropDown', 'select', 'click']);
+
+defineExpose({selectOption,toggleDropdown,closeDropdown,openDropdown})
+
 </script>
 
 

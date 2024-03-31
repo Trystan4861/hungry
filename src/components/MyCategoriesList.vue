@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, watch, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, defineExpose, defineProps, defineEmits, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import MyCategory from '@/components/MyCategory.vue'
 
 const props = defineProps({
@@ -124,6 +124,7 @@ onBeforeUnmount(() => {
   observer.value && observer.value.disconnect();
 });
 
+defineExpose({seleccionarCategoria})
 </script>
 
 <style scoped>
