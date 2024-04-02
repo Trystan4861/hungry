@@ -24,22 +24,10 @@ import MyImageLoader from '@/components/MyImageLoader.vue';
 import { ref, watch, onMounted, onBeforeUnmount, defineEmits, defineProps } from 'vue';
 
 const props = defineProps({
-  tabs: {
-    type: Array,
-    required: true,
-  },
-  defaultActive: {
-    type: Number,
-    default: 0
-  },
-  heightDesviation: {
-    type: Number,
-    default: 0
-  },
-  heightResponsive: {
-    type: Boolean,
-    default: false
-  }
+  tabs:             { type: Array,    required: true, },
+  defaultActive:    { type: Number,   default:  0     },
+  heightDesviation: { type: Number,   default:  0     },
+  heightResponsive: { type: Boolean,  default:  false },
 });
 
 const emptyIMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=";
@@ -47,28 +35,22 @@ const tabsContainerRef = ref(null);
 const activeTab = ref(props.defaultActive);
 const tabStyle = ref({});
 
-watch(() => props.defaultActive, (newValue) => {
-  activeTab.value = newValue;
-});
+watch(() => props.defaultActive, (newValue) => activeTab.value = newValue);
 
 const updateTabStyle = () => {
   const container = tabsContainerRef.value;
   if (!container) return;
-  const containerWidth = container.clientWidth;
-  const widthStyle = (((containerWidth - 60) / 4) - 1);
-  tabStyle.value = { width: `${widthStyle}px` };
-  if (props.heightResponsive)
-    emit('tabHeightChanged', container.clientHeight + props.heightDesviation);
+  tabStyle.value = { width: `${(((container.clientWidth - 60) / 4) - 1)}px` };
+  (props.heightResponsive)?emit('tabHeightChanged', container.clientHeight + props.heightDesviation):null;
 };
 
 onMounted(() => {
   window.addEventListener('resize', updateTabStyle, { passive: true });
-  setTimeout(updateTabStyle,500);
+  setTimeout(updateTabStyle,50);
+  emit('tabChanged', props.defaultActive);
 });
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateTabStyle);
-});
+onBeforeUnmount(() => window.removeEventListener('resize', updateTabStyle));
 
 const activateTab = (index) => {
   activeTab.value = index;
@@ -123,11 +105,11 @@ const emit = defineEmits(['tabChanged', 'tabHeightChanged']);
   span.nav-link
   {
     min-width: 25%;
+    width: 100%;
     cursor: pointer;
     padding: 0;
   }
   .logo{
     width: 3.125rem;
   }
-
 </style>

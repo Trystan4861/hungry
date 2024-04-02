@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted,defineProps,defineEmits } from 'vue';
+import { ref, watch, onMounted,defineProps,defineEmits,defineExpose } from 'vue';
 
 const vFocus = {
   mounted: (el) => el.focus()
@@ -22,16 +22,16 @@ const inputID     = `input-${Math.random().toString(36).slice(2)}`;
 const inputRef    = ref(null);
 
 const ignoreKeys  = ['Enter','Backspace','Delete']
-
 const focusInput    = () => (props.autofocus)?inputRef.value.focus():null;
 const handleKeyDown = event => props.maxLength !== Infinity && inputValue.value.length >= props.maxLength && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
 const hadleKeyUp=event=> event.key === 'Enter' && emit('keyPressed:enter')
 
 watch     (() => props.modelValue, newValue => inputValue.value = newValue);
 watch     (inputValue, newValue => emit('update:modelValue', newValue));
-onMounted (() => setTimeout(() => (props.autofocus)?focusInput():null, 1000));
+onMounted (() => setTimeout(() =>(props.autofocus)?focusInput():null, 1000));
 
 const emit = defineEmits(['update:modelValue','keyPressed:enter']);
+defineExpose({inputValue})
 </script>
 
 <style scoped>
