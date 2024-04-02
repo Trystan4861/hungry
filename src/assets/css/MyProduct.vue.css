@@ -1,0 +1,26 @@
+.productCategory {
+  height:           1.5625rem;
+  width:            1.5625rem;
+}
+.my-product {
+  cursor:           pointer;
+  display:          flex;
+  height:           1.875rem;
+  margin-bottom:    1px;
+  user-select:      none;
+  width:            100%;
+}
+.product {
+  display:          flex;
+  padding-left:     .625rem;
+}
+.selected {
+  font-weight:      bold;
+}
+.done {
+  text-decoration:  line-through;
+}
+span {
+  left:             -0.3125rem;
+  position:         relative;
+}

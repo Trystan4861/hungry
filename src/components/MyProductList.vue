@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="my-product-list">
-      <my-product v-for="(product, index) in sortedProductList" 
+      <MyProduct v-for="(product, index) in sortedProductList" 
       :key="index" 
       :product="product"
       :canBeDone="canBeDone" 
@@ -18,7 +18,7 @@
 
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue';
-import MyProduct from '@/components/MyProduct.vue';
+import MyProduct from '@components/MyProduct.vue';
 
 const props = defineProps({
   canBeDone:        { type: Boolean,  default:  false },
@@ -66,10 +66,5 @@ const sortedProductList = computed(() => {
 
 
 <style scoped>
-.my-product-list {
-  margin-top: 1.25rem;
-  margin-left: .625rem;
-  display: flex;
-  flex-wrap: wrap;
-}
+  @import url('@css/MyProductList.vue.css');
 </style>

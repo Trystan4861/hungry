@@ -7,7 +7,7 @@
           class="nav-link"
           :class="{ active: activeTab === index }"
           @click="activateTab(index)">
-          <my-image-loader :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
+          <MyImage :image="tab.logo?tab.logo:emptyIMG" :className="'logo'" /> {{ tab.title }}
         </span>
       </li>
     </ul>
@@ -20,7 +20,7 @@
   </div>
 </template>
 <script setup>
-import MyImageLoader from '@/components/MyImageLoader.vue';
+import MyImage from '@components/MyImage.vue';
 import { ref, watch, onMounted, onBeforeUnmount, defineEmits, defineProps } from 'vue';
 
 const props = defineProps({

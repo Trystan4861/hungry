@@ -19,10 +19,6 @@ const click = () => emit('click');
 </script>
 
 <style scoped>
-button {
-  height: 3.125rem;
-  padding: 0;
-  width: 100%;
-}
+  @import url('@css/MyButton.vue.css');
 </style>
 

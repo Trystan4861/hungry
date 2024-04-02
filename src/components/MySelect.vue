@@ -1,12 +1,12 @@
 <template>
   <div class="my-select"  @blur="closeDropdown">
     <div @click="toggleDropdown" class="selected-option" tabindex="0" :class="[(toFilter.includes(selectedOption.logo) ? 'white' : ''), showDropdown ? 'show' : '']">
-      <my-image-loader :image="selectedOption.logo" />
+      <MyImage :image="selectedOption.logo" />
       {{ selectedOption.text ? selectedOption.text : placeholder }}
     </div>
     <div class="dropdown" :class="{ show: showDropdown }">
       <div v-for="(option, index) in options" :key="index" class="option" :class="toFilter.includes(option.logo)?'filter':''" @mouseup="selectOption(option)">
-        <my-image-loader :id="id" :image="option.logo" :className="'option-logo'" />
+        <MyImage :id="id" :image="option.logo" :className="'option-logo'" />
         <div class="label">{{ option.text }}</div>
       </div>
     </div>
@@ -15,7 +15,7 @@
 
 <script setup>
 import { ref, watch, defineProps, defineEmits, defineExpose } from 'vue';
-import MyImageLoader from '@/components/MyImageLoader.vue';
+import MyImage from '@components/MyImage.vue';
 
 const props = defineProps({
   modelValue:   { type: Object, },

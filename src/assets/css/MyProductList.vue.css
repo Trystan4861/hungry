@@ -1,0 +1,6 @@
+.my-product-list {
+  margin-top:   1.25rem;
+  margin-left:  .625rem;
+  display:      flex;
+  flex-wrap:    wrap;
+}

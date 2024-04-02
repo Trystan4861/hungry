@@ -4,7 +4,7 @@
     <img class="rightShadow shadow" src="@/public/images/box-shadow-right.png" draggable="false" />
     <div class="categories-padding">
       <div class="my-categories-list" :style="categoryListStyle">
-        <my-category
+        <MyCategory
           v-for="(category, index) in visibleCategories"
           :key="index"
           :text="category.text"
@@ -19,7 +19,7 @@
 
 <script setup>
 import { ref, defineExpose, defineProps, defineEmits, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import MyCategory from '@/components/MyCategory.vue'
+import MyCategory from '@components/MyCategory.vue'
 
 const props = defineProps({
   categories: { type: Array, required: true },
@@ -131,47 +131,5 @@ defineExpose({seleccionarCategoria,selected})
 </script>
 
 <style scoped>
-.shadow{
-  top:10px;
-  position: absolute;
-  user-select: none; 
-  z-index: 100;
-  width: 100px;
-  clip-path: border-box;
-  height: 107px;
-}
-.leftShadow{
-  top:10px;
-}
-.rightShadow{
-  right:0px;
-  margin-right: 10px
-}
-.swal .shadow{
-  top:0px;
-  z-index: 1;
-}
-.swal .leftShadow{
-    left: 29px;
-    top: 95px;
-}
-.swal .rightShadow{
-  right: 19px;
-  top: 95px;
-}
-
-.my-categories-list-container {
-  align-items: center;
-  background-color: #585858;
-  display: flex;
-  height: 6.875rem;
-  overflow-x: scroll;
-  scroll-snap-type: x proximity;
-}
-
-.my-categories-list {
-  display: flex;
-  position: relative;
-}
-
+  @import url('@css/MyCategoriesList.vue.css');
 </style>

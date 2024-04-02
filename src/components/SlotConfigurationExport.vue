@@ -3,10 +3,10 @@
 </template>
 
 <script setup>
-import MyButton from '@/components/MyButton.vue'; // Importa el subcomponente MyButton
+import MyButton from '@components/MyButton.vue'; // Importa el subcomponente MyButton
 import { useStore } from 'vuex';
 
-function downloadJSON(obj, filename = 'hungry.json') {
+const downloadJSON=(obj, filename = 'hungry.json')=>{
   const json = JSON.stringify(obj); // Convertir el objeto a formato JSON
   const blob = new Blob([json], { type: 'application/json' }); // Crear un objeto Blob con el contenido JSON
   const link = document.createElement('a'); // Crear un enlace <a> para descargar el archivo
@@ -23,4 +23,6 @@ const store = useStore().getters;
 const exportConfig = () => downloadJSON(store.getConfiguration());
 
 </script>
-
+<style scoped>
+  @import url('@css/SlotConfigurationExport.vue.css');
+</style>

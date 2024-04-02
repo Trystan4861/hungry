@@ -1,16 +1,16 @@
 <template> <!-- Add new product -->
-    <my-categories-list class="mb-4" 
+    <MyCategoriesList class="mb-4" 
       :categories="props.categoriesData" 
       @categoryLongClick="handleCategoryLongClick" 
       @categorySelected="handleCategorySelected" 
       />
-    <my-select 
+    <MySelect 
       placeholder="Selecciona un supermercado" 
       :options="props.supermercados" 
       :selected="props.supermercados[0]" 
       @select="handleSelectSupermercado" 
       />
-    <my-input 
+    <MyInput 
       class="mb-4" 
       placeholder="Introducir nombre de producto" 
       v-model="nuevoProducto" 
@@ -19,18 +19,18 @@
       @keyPressed:enter="handleAddClick" 
       :id="id"
       />
-    <my-button 
+    <MyButton 
       text="Añadir" 
       @click="handleAddClick" 
       />
 </template>  
 
 <script setup>
-  import MySelect                           from '@/components/MySelect.vue'
-  import MyCategoriesList                   from '@/components/MyCategoriesList.vue'
+  import MySelect                           from '@components/MySelect.vue'
+  import MyCategoriesList                   from '@components/MyCategoriesList.vue'
   import Swal                               from 'sweetalert2'
-  import MyInput                            from '@/components/MyInput.vue'
-  import MyButton                           from '@/components/MyButton.vue'
+  import MyInput                            from '@components/MyInput.vue'
+  import MyButton                           from '@components/MyButton.vue'
   import { ref, defineProps, defineEmits, defineExpose }  from 'vue';
 
   const id = `'inputAddNewProduct-${Math.random().toString(36).slice(2)}`;
@@ -88,5 +88,5 @@
   defineExpose({clearInput})
 </script>
 <style scoped>
-
+  @import url('@css/SlotAddNewProduct.vue.css');
 </style>

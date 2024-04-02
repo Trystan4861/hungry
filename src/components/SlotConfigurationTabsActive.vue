@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-  import MySelect from '@/components/MySelect.vue'
+  import MySelect from '@components/MySelect.vue'
   import { defineProps,defineEmits } from 'vue';
 
     const props=defineProps({ 
@@ -23,5 +23,5 @@
     const emit=defineEmits(['change'])
 </script>
 <style scoped>
-
+  @import url('@css/SlotConfigurationTabsActive.vue.css');
 </style>

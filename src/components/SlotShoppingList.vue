@@ -74,10 +74,10 @@
   </MyCard>
 </template>
 <script setup>
-  import MySelect from '@/components/MySelect.vue';
-  import MyButton from '@/components/MyButton.vue';
-  import MyCard from '@/components/MyCard.vue';
-  import MyProductList from '@/components/MyProductList.vue';
+  import MySelect from '@components/MySelect.vue';
+  import MyButton from '@components/MyButton.vue';
+  import MyCard from '@components/MyCard.vue';
+  import MyProductList from '@components/MyProductList.vue';
   import Swal from 'sweetalert2';
   import { ref, defineProps, computed, watch,onMounted } from 'vue';
   import { findIndexById }            from '@/utilidades'
@@ -141,3 +141,6 @@
         });      
       }
 </script>
+<style scoped>
+  @import url('@css/SlotShoppingList.vue.css');
+</style>

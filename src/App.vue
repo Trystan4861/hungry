@@ -14,7 +14,7 @@
           :height="alturaDisponible" 
           borderStyle="rounded-bottom"
           >
-          <h1 class="text-center"><span class="appName">Hungry!</span><my-image-loader :image="'hungry.svg'" :className="'logo'" />
+          <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" :className="'logo'" />
             <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
           </h1>
           <div class="row">
@@ -45,7 +45,6 @@
           <div class="row align-items-end">
             <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
               <slot-configuration-import 
-                @configurationFileError="handleImportConfigurationFileError" 
                 @configurationFileReaded="handleImportConfigurationFile" 
                 />
             </div>
@@ -139,31 +138,32 @@
 </template>
 
 <script setup>
-  import { localStorageService }      from '@/localStorageService'
-  import { findIndexById }            from '@/utilidades'
-  import MyButton                     from '@/components/MyButton.vue'
-  import MyCard                       from '@/components/MyCard.vue'
-  import MyCategoriesList             from '@/components/MyCategoriesList.vue'
-  import MyImageLoader                from '@/components/MyImageLoader.vue'
-  import MyInput                      from '@/components/MyInput.vue'
-  import MyProductList                from '@/components/MyProductList.vue'
-  import MySelect                     from '@/components/MySelect.vue'
-  import MyTab                        from '@/components/MyTab.vue'
+  import { localStorageService }              from '@/localStorageService'
+  import { findIndexById }                    from '@/utilidades'
+  import MyButton                             from '@components/MyButton.vue'
+  import MyCard                               from '@components/MyCard.vue'
+  import MyCategoriesList                     from '@components/MyCategoriesList.vue'
+  import MyImage                              from '@components/MyImage.vue'
+  import MyInput                              from '@components/MyInput.vue'
+  import MyProductList                        from '@components/MyProductList.vue'
+  import MySelect                             from '@components/MySelect.vue'
+  import MyTab                                from '@components/MyTab.vue'
 
-  import SlotConfigurationCategories  from '@/components/SlotConfigurationCategories.vue'
-  import SlotConfigurationExport      from '@/components/SlotConfigurationExport.vue'
-  import SlotConfigurationFullScreen  from '@/components/SlotConfigurationFullScreen.vue'
-  import SlotConfigurationImport      from '@/components/SlotConfigurationImport.vue'
-  import SlotConfigurationTabsActive  from '@/components/SlotConfigurationTabsActive.vue'
-  import SlotAddNewProduct            from '@/components/SlotAddNewProduct.vue'
-  import slotShoppingList             from '@/components/SlotShoppingList.vue'
+  import SlotConfigurationCategories          from '@components/SlotConfigurationCategories.vue'
+  import SlotConfigurationExport              from '@components/SlotConfigurationExport.vue'
+  import SlotConfigurationFullScreen          from '@components/SlotConfigurationFullScreen.vue'
+  import SlotConfigurationImport              from '@components/SlotConfigurationImport.vue'
+  import SlotConfigurationTabsActive          from '@components/SlotConfigurationTabsActive.vue'
+  import SlotAddNewProduct                    from '@components/SlotAddNewProduct.vue'
+  import slotShoppingList                     from '@components/SlotShoppingList.vue'
 
-  import Swal                         from 'sweetalert2'
-  import { computed, ref, watch,onMounted }     from 'vue'
-  import { useStore }                 from 'vuex'
+  import Swal                                 from 'sweetalert2'
+  import { computed, ref, watch, onMounted }  from 'vue'
+  import { useStore }                         from 'vuex'
   //import axios                        from 'axios'
-  import { notify,Notifications } from '@kyvg/vue3-notification'
-  import packageJson              from '../package.json'
+  import { notify,Notifications }             from '@kyvg/vue3-notification'
+
+  import packageJson                          from '../package.json'
   
   
 
@@ -212,8 +212,6 @@
       const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
       const filtrarProductos        = productos=>productos.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria))
       const productosVisibles       = computed(()=>filtrarProductos(productsData.value))
-      watch(productsData,newValue=>productosVisibles.value=filtrarProductos(newValue))
-      const supermarketActive       = ref({})
       const handleTabHeightChanged  = data=>alturaDisponible.value=data
       const tabActive               = tab=>tabActiva.value=tab
       const handleEliminarProducto  = ()=>{
@@ -384,22 +382,6 @@
         return response.data;
       }*/
 
-
-      watch(alturaDisponible,(newData)=>{ 
-        if(Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)){
-          store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible', newData)) 
-        }
-      })
-      watch(productsData,newData => store.dispatch('setProductos',localStorageService.setSubItem('productos', newData)))
-      const handleImportConfigurationFileError=(error)=>{
-        Swal.fire({
-          icon:'error',
-          title:(error=="ERROR_APPNAME")?"Atención":"ERROR INESPERADO",
-          html:(error!="ERROR_APPNAME")?error:"El archivo de configuración seleccionado<br>no es un archivo de configuración<br>de «Hungry!» válido o está dañado",
-          confirmButtonText:'Aceptar',
-          target: document.querySelector("#appContainer"),
-        })
-      }
       const handleDragCard=(event)=>{
         if (typeof event.touches==='undefined') return
         if (event.touches.length==0) return
@@ -497,17 +479,18 @@
         changes2Save.categoriasVisibiles=false;
         return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
       }
-      watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)))
+      watch(alturaDisponible, newData => (Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)?store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible', newData)):null));
+      watch(productsData,     newData => { productosVisibles.value=filtrarProductos(newData), store.dispatch('setProductos',localStorageService.setSubItem('productos', newData))});
+      watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)));
       watch(productsData  ,   newData => store.dispatch('setProductos',        localStorageService.setSubItem('productos',        newData)));
       watch(fullScreen,       newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
       watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive', localStorageService.setSubItem('defaultTabActive', newData)));
 
-      onMounted(()=>{
-        supermarketActive.value = supermarketsData[0]; 
-        document.addEventListener('contextmenu', event => event.preventDefault())
-      })
+      const contextMenu=event => event.preventDefault()
+      onMounted(()=>document.addEventListener('contextmenu', contextMenu))
+
 </script>
 
 <style>
-  @import '@/assets/css/app.vue.css';
+  @import url('@css/App.vue.css');
 </style>

@@ -21,8 +21,5 @@ const emit          = defineEmits(['update:selected']);
 
 
 <style scoped>
-.my-radio { 
-  display:      inline-block; 
-  margin-right: 10px; 
-}
+  @import url('@css/MyRadio.vue.css');
 </style>

@@ -18,4 +18,6 @@ const imageSource = computed(() => typeof props.image === 'string' ?
 );
 onBeforeUnmount(() => props.image instanceof File)?URL.revokeObjectURL(imageSource.value):null;
 </script>
-
+<style scoped>
+  @import url('@css/MyImage.vue.css');
+</style>

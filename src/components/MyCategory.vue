@@ -28,40 +28,5 @@ const handleMouseUp = () => props.isActive ? clearTimeout(longPressTimeout) : un
 
 
 <style scoped>
-.my-category-container{
-    background-color: #bcb9b9;
-    margin-inline-end:  .125rem;
-    padding:            .625rem;
-}
-.my-category{
-    border:             .0625rem solid black;
-    cursor:             pointer;
-    height:             5rem;
-    overflow:           visible; 
-    padding:            1.25rem;
-    position:           relative;
-    width:              5rem;
-}
-.category-title{
-    background-color: rgba(0, 0, 0, 0.5); 
-    color:            #fff; 
-    display:            none; 
-    left:               50%;
-    max-width:          18.75rem; 
-    overflow:           visible ; 
-    padding:            .625rem; 
-    position:           absolute;
-    top:                50%;
-    transform:          translate(-50%, -50%);
-    user-select:        none;
-    white-space:        nowrap; 
-    z-index:            1000; 
-}
-.category-title.active{
-    display:            block;
-}
-.selected {
-    background-color: #fff;
-    box-shadow:         0 0 .3125rem #000;
-}
+    @import url('@css/MyCategory.vue.css');
 </style>
