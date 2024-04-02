@@ -210,8 +210,9 @@
 
       const heightDesviation        = computed(()=>useStore().getters.getHeightDesviation())
       const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
-      const productosVisibles       = computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
-
+      const filtrarProductos        = productos=>productos.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria))
+      const productosVisibles       = computed(()=>filtrarProductos(productsData.value))
+      watch(productsData,newValue=>productosVisibles.value=filtrarProductos(newValue))
       const supermarketActive       = ref({})
       const handleTabHeightChanged  = data=>alturaDisponible.value=data
       const tabActive               = tab=>tabActiva.value=tab
