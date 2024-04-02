@@ -8,6 +8,7 @@ module.exports = defineConfig({
     config.resolve.alias.set('@assets',     path.resolve(__dirname, 'src/assets'));
     config.resolve.alias.set('@css',        path.resolve(__dirname, 'src/assets/css'));
     config.resolve.alias.set('@components', path.resolve(__dirname, 'src/components'));
+    config.resolve.alias.set('@slots',      path.resolve(__dirname, 'src/slots'));
   },
   pwa: {
     workboxOptions: {
