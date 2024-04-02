@@ -199,7 +199,10 @@
       const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
       const configFullScreen        = ref(fullScreen.value)
       const selectRef               = ref(null)
-      const tabActiva               = ref(defaultTabActive)
+      const tabActiva               = ref(null)
+      
+      tabActiva.value=defaultTabActive.value
+
 
       const changes2Save={
         categoriasVisibiles:false,
@@ -285,7 +288,7 @@
         else if (elemento.msRequestFullscreen     ) elemento.msRequestFullscreen()
       }
       const handleChangeFullScreen  = checked => { configFullScreen.value=checked }
-      const handleChangeTabActive   = data => { changes2Save.value.defaultTabActive=data }
+      const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
       const haddleAddNewProductClick= (nuevoProducto,id_categoria,id_supermercado)=>{
         if (!productsData.value.some(producto => producto.text.toLowerCase() === nuevoProducto.toLowerCase())){
           productsData.value.push({

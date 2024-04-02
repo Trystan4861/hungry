@@ -5,7 +5,8 @@
       <my-select 
           :options="props.tabs.filter(item=>item.selectable)" 
           :selected="props.tabs[selected]" 
-          @select="handleTabSelected" 
+          :emitOnMount="false"
+          @select="handleSelect" 
         />
     </div>
   </div>
@@ -19,7 +20,7 @@
       tabs:     { type: Array,  required: true }, 
       selected: { type: Number, required: true },
     })
-    const handleTabSelected = tabSelected => emit('change',tabSelected.id)
+    const handleSelect = selected => emit('change',selected.id)
     const emit=defineEmits(['change'])
 </script>
 <style scoped>
