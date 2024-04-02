@@ -8,4 +8,10 @@ module.exports = defineConfig({
     config.resolve.alias.set('@', path.resolve(__dirname, 'src'));
     config.resolve.alias.set('@components', path.resolve(__dirname, 'src/components'));
   },
+  pwa: {
+    workboxOptions: {
+      skipWaiting: true,
+      clientsClaim: true,
+    }
+  }
 });
