@@ -15,7 +15,7 @@
           borderStyle="rounded-bottom"
           >
           <h1 class="text-center"><span class="appName">Hungry!</span><my-image-loader :image="'hungry.svg'" :className="'logo'" />
-            <div class="text-center author">by Trystan4861</div>
+            <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
           </h1>
           <div class="row">
             <div class="col-lg-4 col-12 col-md-6">
@@ -163,7 +163,7 @@
   import { useStore }                 from 'vuex'
   //import axios                        from 'axios'
   import { notify,Notifications } from '@kyvg/vue3-notification'
-
+  import packageJson              from '../package.json'
   
   
 

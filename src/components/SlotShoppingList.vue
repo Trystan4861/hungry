@@ -95,7 +95,7 @@
   watch(() => props.active, newValue => {
   if (newValue) recalculateAnchoBoton()
 });
-  onMounted(()=>setTimeout(recalculateAnchoBoton,50))
+  onMounted(()=>setTimeout(recalculateAnchoBoton,500))
   const id_supermercado=computed(()=>supermarketAtShoppingList.value?.selectedOption.id)
   const supermercado=computed(()=>supermarketAtShoppingList.value?.selectedOption.text)
   const supermarketAtShoppingList=ref(null)
