@@ -10,21 +10,21 @@ export default createStore({
       heightDesviation: -90,
       localStorageKeys:['categoriesData','productsData'],
       tabs: [
-        { id: 0, text:'Configuración',          logo: 'config.svg',     selectable:false },
-        { id: 1, text:'Añadir Productos',       logo: 'add.svg',        selectable:true  },
-        { id: 2, text:'Por orden alfabético',   logo: 'a2z.svg',        selectable:true  },
-        { id: 3, text:'Por categoría',          logo: 'categorias.svg', selectable:true  },
-        { id: 4, text:'Lista de la compra',     logo: 'cart.svg',       selectable:true  },
+        { id: 0, text:'Configuración',          logo: 'config.svg',     selectable:false, class:''},
+        { id: 1, text:'Añadir Productos',       logo: 'add.svg',        selectable:true,  class:''},
+        { id: 2, text:'Por orden alfabético',   logo: 'a2z.svg',        selectable:true,  class:''},
+        { id: 3, text:'Por categoría',          logo: 'categorias.svg', selectable:true,  class:''},
+        { id: 4, text:'Lista de la compra',     logo: 'cart.svg',       selectable:true,  class:''},
       ],
       configNames:[
         'Categorías',
         'Productos'
       ],
       supermercados:[
-        { id: 0, text:'Cualquier Supermercado', logo:'hungry.svg'        },
-        { id: 1, text:'Carrefour',              logo:'carrefour.svg'     },
-        { id: 2, text:'Mercadona',              logo:'mercadona.svg'     },
-        { id: 3, text:'La Carmela',             logo:'super_carmela.svg' },
+        { id: 0, text:'Cualquier Supermercado', logo:'hungry.svg',        class:''},
+        { id: 1, text:'Carrefour',              logo:'carrefour.svg',     class:''},
+        { id: 2, text:'Mercadona',              logo:'mercadona.svg',     class:''},
+        { id: 3, text:'La Carmela',             logo:'super_carmela.svg', class:''},
       ]
     },
     configuration:{

@@ -27,6 +27,4 @@ const handleMouseUp = () => props.isActive ? clearTimeout(longPressTimeout) : un
 </script>
 
 
-<style scoped>
-    @import url('@css/MyCategory.vue.css');
-</style>
+<style scoped src="@css/MyCategory.vue.css" />

@@ -94,6 +94,4 @@
   });
 </script>
 
-<style scoped>
-  @import url('@css/MyProduct.vue.css');
-</style>
+<style scoped src="@css/MyProduct.vue.css" />

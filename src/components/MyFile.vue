@@ -47,6 +47,4 @@
 </script>
 
 
-<style scoped>
-  @import url('@css/MyFile.vue.css');
-</style>
+<style scoped src="@css/MyFile.vue.css" />

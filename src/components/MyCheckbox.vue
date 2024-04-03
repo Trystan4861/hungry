@@ -63,6 +63,4 @@ const handleChange  = event => {
 </script>
 
 
-<style scoped>
-  @import url('@css/MyCheckbox.vue.css');
-</style>
+<style scoped src="@css/MyCheckbox.vue.css" />

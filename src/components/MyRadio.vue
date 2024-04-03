@@ -20,6 +20,4 @@ const emit          = defineEmits(['update:selected']);
 </script>
 
 
-<style scoped>
-  @import url('@css/MyRadio.vue.css');
-</style>
+<style scoped src="@css/MyRadio.vue.css" />

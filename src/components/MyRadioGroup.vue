@@ -13,6 +13,4 @@ const props = defineProps({
   selectedRadio:  { type: String, required: true  },
 });
 </script>
-<style scoped>
-  @import url('@css/MyRadioGroup.vue.css');
-</style>
+<style scoped src="@css/MyRadioGroup.vue.css" />

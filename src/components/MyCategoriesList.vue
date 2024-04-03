@@ -55,7 +55,6 @@ const updateScreenSize = () => {
 };
 
 const handleCategoryClick = (index) => {
-  console.log("click")
   if (lastCategory == index) return;
   selected.value = lastCategory = index;
   scrollIntoView(index, 'instant');
@@ -130,8 +129,7 @@ onBeforeUnmount(() => {
 });
 
 defineExpose({seleccionarCategoria,selected})
+
 </script>
 
-<style scoped>
-  @import url('@css/MyCategoriesList.vue.css');
-</style>
+<style scoped src="@css/MyCategoriesList.vue.css" />

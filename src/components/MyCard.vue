@@ -33,6 +33,4 @@ const cardStyle     = computed(() => {
 });
 </script>
 
-<style scoped>
-  @import url('@css/MyCard.vue.css');
-</style>
+<style scoped src="@css/MyCard.vue.css" />

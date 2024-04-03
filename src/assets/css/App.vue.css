@@ -23,18 +23,19 @@ div:where(.swal2-container) hr  {
                                   left:             -15px; 
                                   margin:           auto;
                                   position:         relative;
-                                  top:              calc(-10px + 0.15vw);
+                                  top:              0.15vw;
                                   width:            fit-content;
-                                  .my-categories-list-container::after {
-  content: ' ';
-  display: block;
-  width: 98.2%;
-  height: 106px;
-  background: rgba(0,0,0,0.07);
-  position: absolute;
-  box-shadow: inset 0em 0px 2em 1px rgba(0, 0, 0, 1);
-  z-index: 1;
-}                   }
+}
+.my-categories-list-container::after {
+                                  content: ' ';
+                                  display: block;
+                                  width: 98.2%;
+                                  height: 106px;
+                                  background: rgba(0,0,0,0.07);
+                                  position: absolute;
+                                  box-shadow: inset 0em 0px 2em 1px rgba(0, 0, 0, 1);
+                                  z-index: 1;
+                                }
 
 .container                      { 
                                   display:          flex; 
@@ -42,7 +43,11 @@ div:where(.swal2-container) hr  {
                                   flex-direction:   column; 
                                   flex-grow:        1;  
                                 }
-.logo                           { width:            60px;             }
+.appBrand                       { width:            60px;             
+                                  position:         absolute;
+                                  top:              10px;
+                                  left:             calc(50%  + 3.7rem);
+                                }
 .ml-3                           { margin-left:      1rem !important;  }
 .mr-3                           { margin-right:     1rem !important;  }
 .mr-1                           { margin-right:     .25rem !important;}
@@ -53,7 +58,7 @@ div:where(.swal2-container) hr  {
                                   z-index:          10 !important; 
                                   overflow:         visible !important; 
                                 }
-.swal2-popup{
+.swal2-popup                    {
                                   box-shadow:       5px 5px 5px 5px rgba(0,0,0,0.2);
                                 }
 .swal2-input                    { 

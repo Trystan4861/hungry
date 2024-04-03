@@ -14,7 +14,7 @@
           :height="alturaDisponible" 
           borderStyle="rounded-bottom"
           >
-          <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" :className="'logo'" />
+          <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
             <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
           </h1>
           <div class="row">

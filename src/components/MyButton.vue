@@ -6,7 +6,6 @@
 
 <script setup>
 import { defineProps, defineEmits, ref, watch } from 'vue';
-
 const props = defineProps({
   text: { type: String, required: true },
   btnClass: { type: String, default: "success" },
@@ -18,7 +17,6 @@ const emit = defineEmits(['click']);
 const click = () => emit('click');
 </script>
 
-<style scoped>
-  @import url('@css/MyButton.vue.css');
+<style scoped src="@css/MyButton.vue.css">
 </style>
 

@@ -32,6 +32,4 @@
   defineExpose({inputValue})
 </script>
 
-<style scoped>
-  @import url('@css/MyInput.vue.css');
-</style>
+<style scoped src="@css/MyInput.vue.css" />

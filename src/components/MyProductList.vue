@@ -65,6 +65,4 @@ const sortedProductList = computed(() => {
 </script>
 
 
-<style scoped>
-  @import url('@css/MyProductList.vue.css');
-</style>
+<style scoped src="@css/MyProductList.vue.css" />
