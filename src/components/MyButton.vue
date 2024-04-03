@@ -17,6 +17,11 @@ const emit = defineEmits(['click']);
 const click = () => emit('click');
 </script>
 
-<style scoped src="@css/MyButton.vue.css">
+<style scoped>
+  button {
+    height:   3.125rem;
+    padding:  0;
+    width:    100%;
+  }
 </style>
 

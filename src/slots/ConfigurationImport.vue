@@ -32,5 +32,4 @@
   }
 </script>
 <style scoped>
-  @import url('@css/SlotConfigurationImport.vue.css');
 </style>

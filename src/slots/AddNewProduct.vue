@@ -88,5 +88,4 @@
   defineExpose({clearInput})
 </script>
 <style scoped>
-  @import url('@css/SlotAddNewProduct.vue.css');
 </style>

@@ -142,5 +142,4 @@
       }
 </script>
 <style scoped>
-  @import url('@css/SlotShoppingList.vue.css');
 </style>

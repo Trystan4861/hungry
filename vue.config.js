@@ -9,18 +9,6 @@ module.exports = defineConfig({
     config.resolve.alias.set('@css',        path.resolve(__dirname, 'src/assets/css'));
     config.resolve.alias.set('@components', path.resolve(__dirname, 'src/components'));
     config.resolve.alias.set('@slots',      path.resolve(__dirname, 'src/slots'));
-    config.module
-      .rule('vue-css')
-      .test(/\.vue$/)
-      .include
-        .add(path.resolve(__dirname, 'src/components'))
-        .end()
-      .use('vue-style-loader')
-      .loader('vue-style-loader')
-      .end()
-      .use('css-loader')
-      .loader('css-loader')
-      .end();
   },
   pwa: {
     workboxOptions: {

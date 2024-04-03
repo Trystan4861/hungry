@@ -32,4 +32,17 @@
   defineExpose({inputValue})
 </script>
 
-<style scoped src="@css/MyInput.vue.css" />
+<style scoped>
+.input-container {
+  display:        flex;
+  flex-direction: column;
+}
+input {
+  width:          100%;
+  height:         3.125rem;
+  border:         .125rem solid sandybrown;
+}
+input:focus-visible { 
+  outline:        0; 
+}
+</style>

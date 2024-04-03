@@ -24,5 +24,4 @@
     const emit=defineEmits(['change'])
 </script>
 <style scoped>
-  @import url('@css/SlotConfigurationTabsActive.vue.css');
 </style>

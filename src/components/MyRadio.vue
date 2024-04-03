@@ -20,4 +20,9 @@ const emit          = defineEmits(['update:selected']);
 </script>
 
 
-<style scoped src="@css/MyRadio.vue.css" />
+<style scoped>
+.my-radio { 
+  display:      inline-block; 
+  margin-right: 10px; 
+}
+</style>

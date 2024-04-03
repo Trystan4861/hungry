@@ -65,4 +65,11 @@ const sortedProductList = computed(() => {
 </script>
 
 
-<style scoped src="@css/MyProductList.vue.css" />
+<style scoped>
+.my-product-list {
+  margin-top:   1.25rem;
+  margin-left:  .625rem;
+  display:      flex;
+  flex-wrap:    wrap;
+}
+</style>

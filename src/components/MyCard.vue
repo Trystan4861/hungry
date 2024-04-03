@@ -33,4 +33,17 @@ const cardStyle     = computed(() => {
 });
 </script>
 
-<style scoped src="@css/MyCard.vue.css" />
+<style scoped>
+.card {
+  background-color: #333;
+  border-radius:      0 0 .5rem .5rem;
+  box-shadow:         0 .25rem .375rem rgba(0, 0, 0, 0.1);
+  overflow-x:         hidden;
+  overflow-y:         auto;
+  padding:            .3125rem;
+}
+.card-body {
+  padding:            .3125rem;
+}
+
+</style>

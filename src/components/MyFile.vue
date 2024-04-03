@@ -47,4 +47,23 @@
 </script>
 
 
-<style scoped src="@css/MyFile.vue.css" />
+<style scoped>
+div   {
+  position:         relative;
+  display:          inline-flex;
+  cursor:           pointer;
+  width:            100%;
+  height:           3.125rem;
+  justify-content:  center;
+}
+input {
+  display:          none;
+}
+label {
+  width:            100%;
+  height:           100%;
+  display:          flex;
+  justify-content:  center;
+  align-items:      center;
+}
+</style>

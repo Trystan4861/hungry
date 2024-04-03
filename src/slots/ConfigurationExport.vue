@@ -24,5 +24,4 @@ const exportConfig = () => downloadJSON(store.getConfiguration());
 
 </script>
 <style scoped>
-  @import url('@css/SlotConfigurationExport.vue.css');
 </style>
