@@ -1,7 +1,9 @@
 <template>
   <div class="my-categories-list-container" ref="containerRef" @scroll="handleScroll">
-    <img class="leftShadow shadow" src="@/public/images/box-shadow-left.png" draggable="false" />
-    <img class="rightShadow shadow" src="@/public/images/box-shadow-right.png" draggable="false" />
+    <!--img alt="imagen de sombreado" class="leftShadow shadow" src="@/public/images/box-shadow-left.png" draggable="false" />
+    <img alt="imagen de sombreado" class="rightShadow shadow" src="@/public/images/box-shadow-right.png" draggable="false" /-->
+    <div class="leftShadow shadow" />
+    <div class="rightShadow shadow" />
     <div class="categories-padding">
       <div class="my-categories-list" :style="categoryListStyle">
         <MyCategory
