@@ -112,12 +112,15 @@ img {
   max-height:         2.8125rem; 
   margin-right:       .625rem;
 }
-.filter { 
+.filter .MyImage{ 
   filter:             grayscale(1) brightness(100) invert(1);
 }
-.white {
-  filter:             grayscale(1) brightness(0) invert(1);
-  background-color:   inherit;
+.white .MyImage{
+  filter:             grayscale(1) brightness(0) invert(0);
+}
+.selected-option.white .MyImage
+{
+  filter: unset !important;
 }
 .label {
   color:            white

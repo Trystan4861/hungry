@@ -97,9 +97,9 @@ li.nav-item:first-child {
   color:black;
   border: 0;
 }
-.nav-item:nth-child(2) .nav-link.active img,
-.nav-item:nth-child(5) .nav-link.active img,
-.nav-item:first-child .nav-link.active img{
+.nav-item:nth-child(2) .nav-link.active .MyImage,
+.nav-item:nth-child(5) .nav-link.active .MyImage,
+.nav-item:first-child .nav-link.active .MyImage{
   filter: grayscale(1) brightness(100) invert(1);
 }
 span.nav-link
