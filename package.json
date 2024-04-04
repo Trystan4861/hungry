@@ -1,6 +1,7 @@
 {
   "name": "hungry",
-  "version": "0.1.12",
+  "version": "0.1.0",
+  "lastVersion": "202404040851",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -62,6 +63,5 @@
   ],
   "vite": {
     "configFile": "vite.config.mjs"
-  },
-  "lastVersion": "0.1.12"
+  }
 }
