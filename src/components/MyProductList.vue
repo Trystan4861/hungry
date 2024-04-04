@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="my-product-list">
-      <my-product v-for="(product, index) in sortedProductList" 
+      <MyProduct v-for="(product, index) in sortedProductList" 
       :key="index" 
       :product="product"
       :canBeDone="canBeDone" 
@@ -10,6 +10,7 @@
       @product:longClick="handleLongClick(product)"
       @product:drag="handleDrag"
       :index="product.id"
+
       />
     </div>
   </div>
@@ -17,7 +18,7 @@
 
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue';
-import MyProduct from '@/components/MyProduct.vue';
+import MyProduct from '@components/MyProduct.vue';
 
 const props = defineProps({
   canBeDone:        { type: Boolean,  default:  false },
@@ -29,11 +30,11 @@ const props = defineProps({
   filter:           { type: String,   default:  ''    }
 });
 
-const emit = defineEmits(['click:product', 'longClick:product']);
+const emit = defineEmits(['click', 'longClick']);
 
 const handleDrag        = (dir, product) => dir === 'left' ? product.amount = (product.amount > 0) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1;
-const handleClick       = product => (product.amount==0?product.amount=1:null,emit('click:product', product))
-const handleLongClick   = product => emit('longClick:product', product)
+const handleClick       = product => (product.amount==0?product.amount=1:null,emit('click', product))
+const handleLongClick   = product => emit('longClick', product)
 
 const sortedProductList = computed(() => {
   let aux = props.productList;
@@ -66,9 +67,9 @@ const sortedProductList = computed(() => {
 
 <style scoped>
 .my-product-list {
-  margin-top: 1.25rem;
-  margin-left: .625rem;
-  display: flex;
-  flex-wrap: wrap;
+  margin-top:   1.25rem;
+  margin-left:  .625rem;
+  display:      flex;
+  flex-wrap:    wrap;
 }
 </style>

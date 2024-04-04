@@ -1,11 +1,11 @@
 <template>
   <div>
-    <my-radio v-for="radio in props.radios" :key="radio.id" :id="radio.id" :image="radio.image" :selected="props.selectedRadio" />
+    <MyRadio v-for="radio in props.radios" :key="radio.id" :id="radio.id" :image="radio.image" :selected="props.selectedRadio" />
   </div>
 </template>
 
 <script setup>
-import MyRadio from '@/components/MyRadio.vue';
+import MyRadio from '@components/MyRadio.vue';
 import { defineProps } from 'vue';
 
 const props = defineProps({
@@ -13,3 +13,5 @@ const props = defineProps({
   selectedRadio:  { type: String, required: true  },
 });
 </script>
+<style scoped>
+</style>

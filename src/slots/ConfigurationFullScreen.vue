@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-  import MyCheckbox from '@/components/MyCheckbox.vue'
+  import MyCheckbox from '@components/MyCheckbox.vue'
   import { defineProps,defineEmits } from 'vue';
 
   const props               = defineProps(

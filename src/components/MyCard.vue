@@ -9,13 +9,13 @@
 <script setup>
 import { defineProps, computed } from 'vue';
 
-const props = defineProps({
-  height: { type: Number, default: 0 },
-  heightModifier: { type: Number, default: 0 },
-  borderStyle: { type: String, default: 'squared' }
+const props         = defineProps({
+  height:         { type: Number, default: 0          },
+  heightModifier: { type: Number, default: 0          },
+  borderStyle:    { type: String, default: 'squared'  },
 });
 
-const borderStyles = {
+const borderStyles  = {
   'rounded':              '.5rem                    ',
   'rounded-top':          '.5rem  .5rem 0     0     ',
   'rounded-bottom':       '0      0     .5rem .5rem ',
@@ -25,7 +25,7 @@ const borderStyles = {
   'rounded-bottom-right': '0      0     0     .5rem ',
 };
 
-const cardStyle = computed(() => {
+const cardStyle     = computed(() => {
   return {
     'height':         `${props.height + props.heightModifier}px`,
     'border-radius':  borderStyles[props.borderStyle.toLowerCase()] || '0',
@@ -45,4 +45,5 @@ const cardStyle = computed(() => {
 .card-body {
   padding:            .3125rem;
 }
+
 </style>

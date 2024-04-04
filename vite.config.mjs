@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { readFileSync } from 'fs';
-import {VitePWA} from 'vite-plugin-pwa';
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
@@ -14,18 +14,20 @@ export default defineConfig({
       },
     },
     VitePWA({
-      /* other options */
-      /* enable sw on development */
-      devOptions: {
-        enabled: true
-        /* other options */
-      }
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}']
+     },
     })
   ],
   resolve: {
     alias: {
-      '@assets': '/src/assets',
-      '@': path.resolve(__dirname, 'src'),
+      '@':            path.resolve(__dirname, 'src'),
+      '@assets':      path.resolve(__dirname, 'src/assets'),
+      '@css':         path.resolve(__dirname, 'src/assets/css'),
+      '@components':  path.resolve(__dirname, 'src/components'),
+      '@slots':       path.resolve(__dirname, 'src/slots'), 
     },
   },
 });

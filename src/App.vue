@@ -6,16 +6,16 @@
       :heightDesviation ="heightDesviation"
       :heightResponsive ="true" 
       :tabs             ="tabsData" 
-      @tabHeightChanged ="handleTabHeightChanged" 
-      @tabChanged="refreshClearList"
+      @tabHeightChanged ="handleTabHeightChanged"
+      @tabChanged="tabActive" 
       >
       <template v-slot:tabContent0> <!-- Configuration -->
         <my-card 
           :height="alturaDisponible" 
           borderStyle="rounded-bottom"
           >
-          <h1 class="text-center"><span class="appName">Hungry!</span><my-image-loader :image="'hungry.svg'" :className="'logo'" />
-            <div class="text-center author">by Trystan4861</div>
+          <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
+            <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
           </h1>
           <div class="row">
             <div class="col-lg-4 col-12 col-md-6">
@@ -45,7 +45,6 @@
           <div class="row align-items-end">
             <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
               <slot-configuration-import 
-                @configurationFileError="handleImportConfigurationFileError" 
                 @configurationFileReaded="handleImportConfigurationFile" 
                 />
             </div>
@@ -62,15 +61,7 @@
                 />
             </div>
           </div>
-          <div class="row align-items-end">
-            <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-              <my-button 
-                btnClass="danger" 
-                text="TEST" 
-                @click="test" 
-                />
-            </div>
-          </div>
+          <div class="revision">rev. {{ packageJson.revision }}</div>
         </my-card>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
@@ -78,29 +69,13 @@
           borderStyle="rounded-bottom"
           :height="alturaDisponible" 
           >
-          <my-categories-list class="mb-4" 
-            :categories="categoriesData" 
-            @categoryLongClick="handleCategoryLongClick" 
-            @categorySelected="handleCategorySelected" 
-            />
-          <my-select 
-            placeholder="Selecciona un supermercado" 
-            :options="supermercados" 
-            :selected="supermercados[0]" 
-            @select="handleSelectSupermercado" 
-            />
-          <my-input 
-            class="mb-4" 
-            placeholder="Introducir nombre de producto" 
-            v-model="nuevoProducto" 
-            :autofocus="true" 
-            :maxLength="maxLenght" 
-            @keyPressed:enter="handleAddClick" 
-            />
-          <my-button 
-            text="Añadir" 
-            @click="handleAddClick" 
-            />
+            <slot-add-new-product ref="slotAddNewProductRef"
+              :categoriesData="categoriesData" 
+              :supermercados="supermarketsData" 
+              :maxLenght="maxLenght" 
+              @categoryChanged="handleCategoryChanged" 
+              @addClick="haddleAddNewProductClick"
+              />
         </my-card>
       </template>    
       <template v-slot:tabContent2> <!-- orderBy name -->
@@ -112,8 +87,8 @@
           <my-product-list 
             orderBy="name"
             :productList="productosVisibles" 
-            @click:product="handleClickProduct"
-            @longClick:product="handeLongClickProduct"
+            @click="handleClickProduct"
+            @longClick="handeLongClickProduct"
           />
         </my-card>
       </template>
@@ -126,89 +101,13 @@
           <my-product-list 
             orderBy="categoryId"
             :productList="productosVisibles" 
-            @click:product="handleClickProduct"
-            @longClick:product="handeLongClickProduct"
+            @click="handleClickProduct"
+            @longClick="handeLongClickProduct"
           />
         </my-card>
       </template>
       <template v-slot:tabContent4> <!-- Shopping List -->
-        <div  v-show="productosVisibles.some(i=>i.selected)">
-          <div class="mr-0 d-flex">
-            <my-select 
-            class="flex-grow-1"
-            :options="supermercados.filter(item=>item.id!=0)" 
-            :selected="supermercados[1]" 
-            @click="handleClickSupermercadoSL" 
-            @select="handleSelectSupermercadoSL" 
-            />
-            <my-button
-            btnClass="danger" 
-            class="clearList" 
-            text="Limpiar Lista" 
-            @click="clearList" />
-          </div>
-        </div>
-        <my-card 
-          borderStyle="rounded-bottom"
-          :height="alturaDisponible" 
-          :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
-          >
-          <div class="h-100" v-show="productosVisibles.every(i=>i.selected==false)">
-            <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
-          </div> 
-          <div v-show="
-              productosVisibles.some(item=>
-              item.selected 
-              && (item.id_supermercado==(supermercadoSL.value?.id) || item.id_supermercado==0) 
-              && !item.done
-              )"
-            >
-            <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercadoSL.value?.text }}<hr /></div>
-            <my-product-list 
-              orderBy="categoryId" 
-              :canBeDone="true" 
-              filter="undone"
-              :productList="productosVisibles" 
-              :selected="true" 
-              :supermercado="supermercadoSL.value?.id || 0" 
-              @click:product="handleShoplistClick" 
-              />
-          </div>
-          <div v-show="(
-            productosVisibles.some(item=>
-              item.selected 
-              && !item.done 
-              && (item.id_supermercado!=(supermercadoSL.value?.id||0) && (item.id_supermercado!=0))
-            )
-          ) || 0">
-            <div class="w-100 text-center">Para comprar en otros Supermercados<hr /></div>
-            <my-product-list 
-              orderBy="categoryId" 
-              :canBeDone="true" 
-              filter="undone"
-              :hideSupermercado="true" 
-              :productList="productosVisibles" 
-              :selected="true" 
-              :supermercado="supermercadoSL.value?.id || 0" 
-              @click:product="handleShoplistClick" 
-              />
-          </div>
-          <div v-show="(
-            productosVisibles.some(item=>
-              item.done
-            )
-          )">
-            <div class="w-100 text-center">Ya comprado<hr /></div>
-            <my-product-list 
-              orderBy="categoryId" 
-              :canBeDone="true" 
-              :productList="productosVisibles" 
-              :selected="true" 
-              filter="done"
-              @click:product="handleShoplistClick" 
-              />
-          </div>
-        </my-card>
+        <slotShoppingList :active="tabActiva==4" v-model="productsData" :alturaDisponible="alturaDisponible" :supermercados="supermarketsData" />
       </template>
     </my-tab>
   </div>
@@ -217,17 +116,18 @@
       <my-categories-list 
         :categories="categoriesData" 
         :selectCategory="productoSeleccionado?.id_categoria || 0" 
-        @categorySelected="handleCategorySelected" 
+        v-model="categoryAtEdit"
         :selected="itemCategorySelected"
+        class="swal"
         />
       <my-select 
         placeholder="Selecciona un supermercado" 
         ref="selectRef" 
-        :options="supermercados" 
-        :selected="supermercadoProducto || supermercados[0]"
-        @select="handleSelectSupermercado" 
+        :options="supermarketsData" 
+        :selected="supermercadoProducto || supermarketsData[0]"
+        v-model="supermarketAtEdit"
         />
-      <my-input 
+      <my-input ref="productoAEditarRef"
         v-model="productoAEditar" 
         :maxLength="maxLenght" 
         :placeholder="productoAEditar"
@@ -238,131 +138,87 @@
   <notifications group="app" position="bottom center" width="50%"  />
 </template>
 
-<script>
-  import { localStorageService }      from '@/localStorageService'
-  import { findIndexById }            from '@/utilidades'
-  import MyButton                     from '@/components/MyButton.vue'
-  import MyCard                       from '@/components/MyCard.vue'
-  import MyCategoriesList             from '@/components/MyCategoriesList.vue'
-  import MyImageLoader                from '@/components/MyImageLoader.vue'
-  import MyInput                      from '@/components/MyInput.vue'
-  import MyProductList                from '@/components/MyProductList.vue'
-  import MySelect                     from '@/components/MySelect.vue'
-  import MyTab                        from '@/components/MyTab.vue'
+<script setup>
+  import { localStorageService }              from '@/localStorageService'
+  import { findIndexById }                    from '@/utilidades'
+  import MyButton                             from '@components/MyButton.vue'
+  import MyCard                               from '@components/MyCard.vue'
+  import MyCategoriesList                     from '@components/MyCategoriesList.vue'
+  import MyImage                              from '@components/MyImage.vue'
+  import MyInput                              from '@components/MyInput.vue'
+  import MyProductList                        from '@components/MyProductList.vue'
+  import MySelect                             from '@components/MySelect.vue'
+  import MyTab                                from '@components/MyTab.vue'
 
-  import SlotConfigurationCategories  from '@/components/SlotConfigurationCategories.vue'
-  import SlotConfigurationExport      from '@/components/SlotConfigurationExport.vue'
-  import SlotConfigurationFullScreen  from '@/components/SlotConfigurationFullScreen.vue'
-  import SlotConfigurationImport      from '@/components/SlotConfigurationImport.vue'
-  import SlotConfigurationTabsActive  from '@/components/SlotConfigurationTabsActive.vue'
+  import SlotConfigurationCategories          from '@slots/ConfigurationCategories.vue'
+  import SlotConfigurationExport              from '@slots/ConfigurationExport.vue'
+  import SlotConfigurationFullScreen          from '@slots/ConfigurationFullScreen.vue'
+  import SlotConfigurationImport              from '@slots/ConfigurationImport.vue'
+  import SlotConfigurationTabsActive          from '@slots/ConfigurationTabsActive.vue'
+  import SlotAddNewProduct                    from '@slots/AddNewProduct.vue'
+  import slotShoppingList                     from '@slots/ShoppingList.vue'
 
-  import Swal                         from 'sweetalert2'
-  import { computed, ref, watch }     from 'vue'
-  import { useStore }                 from 'vuex'
-  import axios                        from 'axios'
-  import { notify } from '@kyvg/vue3-notification'
+  import Swal                                 from 'sweetalert2'
+  import { computed, ref, watch, onMounted }  from 'vue'
+  import { useStore }                         from 'vuex'
+  //import axios                        from 'axios'
+  import { notify,Notifications }             from '@kyvg/vue3-notification'
 
+  import packageJson                          from '../package.json'
   
-  const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
-  export default {
-    name:'App',
-    components:{
-      MyButton,
-      MyCard,
-      MyCategoriesList,
-      MyImageLoader,
-      MyInput,
-      MyProductList,
-      MySelect,
-      MyTab,
-      SlotConfigurationCategories,
-      SlotConfigurationExport,
-      SlotConfigurationImport,
-      SlotConfigurationTabsActive,
-      SlotConfigurationFullScreen
-    },
-    data(){
-      return{
-        inputText:            '',
-        nuevoProducto:        '',
-        productoAEditar:      '',
-        configs2Export:       [],
-        productoSeleccionado: {},
-        itemCategorySelected: 0,
-        supermercadoProducto: null,
-      }
-    },
-    methods:{
-      test(){
-        this.$notify("Hola")
-      },
+  
 
-      setFullScreen(){
-        if (!this.fullScreen) return document.fullscreenElement?document.exitFullscreen():null
-        if (document.fullscreenElement) return
-        const    elemento=document.getElementById("appContainer");
-        if      (elemento.requestFullscreen       ) elemento.requestFullscreen()
-        else if (elemento.mozRequestFullScreen    ) elemento.mozRequestFullScreen()
-        else if (elemento.webkitRequestFullscreen ) elemento.webkitRequestFullscreen()
-        else if (elemento.msRequestFullscreen     ) elemento.msRequestFullscreen()
-      },
-      handleChangeFullScreen(checked){ this.configFullScreen=checked },
-      handleClickSupermercadoSL(){
-        if (!this.allowClick) clearTimeout(this.allowClickTimeout)
-        this.allowClick=false;
-        this.allowClickTimeout=this.doAllowClick();
-      },
-      handleChangeTabActive(data){ this.changes2Save.defaultTabActive=data },
-      handleEditarProducto(){
-        let aux=document.getElementById("divEditarProducto");
-        this.productoAEditar=this.productoSeleccionado.text
-        Swal.fire({
-          title:              `Editar Producto<br>«${this.productoSeleccionado.text}»`,
-          html:               '<div id="VueSweetAlert2"></div>',
-          showCancelButton:   true,
-          confirmButtonText:  'Confirmar',
-          cancelButtonText:   'Cancelar',
-          target:             document.querySelector("#appContainer"),
-          willOpen: ()=>{
-            this.itemCategorySelected=this.productoSeleccionado.id_categoria;
-            this.supermercadoProducto=this.supermercados[this.productoSeleccionado.id_supermercado]
-            document.getElementById('VueSweetAlert2').appendChild(aux);
-          },
-          willClose:()=>{document.getElementById('anchorEditarProducto').appendChild(aux)}
-        }).then((result) => {
-          if (result.isConfirmed){
-            const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
-            let newData={
-              id:this.productoSeleccionado.id,
-              text:this.productoAEditar,
-              id_categoria:this.categoriaActiva.value.id,
-              id_supermercado:this.supermercadoActivo.value.id,
-              amount: 1,              
-              selected: false,
-              done: false,
-            }
-            if (!areTheSame(this.productoSeleccionado,newData)){
-              this.productsData[findIndexById(newData.id, this.productsData)] = newData;
-              this.productsData=[...this.productsData]
-              Swal.fire({
-                title:'Atención',
-                icon: 'success',
-                text: 'Producto modificado correctamente',
-                target: document.querySelector("#appContainer"),
-              })
-            }
-            else {
-              Swal.fire({
-                title:'Atención',
-                icon: 'info',
-                text: 'No has realizado cambios al producto',
-                target: document.querySelector("#appContainer"),
-              })
-            }
-          }
-        });
-      },
-      handleEliminarProducto(){
+      const store                   = useStore()
+      const storeGet                = store.getters
+
+      const getDataFromLocalStorage = index=> {
+          let storedData = localStorageService.getSubItem(index);
+          if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
+          return storedData ?? localStorageService.setSubItem(index, initialData[index]);
+      }
+      const slotAddNewProductRef    = ref(null)
+      const productoAEditar         = ref('')
+      const productoSeleccionado    = ref({})
+      const itemCategorySelected    = ref(0)
+      const supermercadoProducto    = ref(null)
+      const categoryAtEdit          = ref(0)
+      const supermarketAtEdit       = ref(null)
+      const ignoreLongClickTimeout  = ref(0)
+      const maxLenght               = storeGet.getMaxLenght()
+      const saveProductsState       = storeGet.getSaveProductsState()
+      const controlY                = ref(-1)
+      const alturaDisponible        = ref(storeGet.getAlturaDisponible())
+      const categoriasVisibles      = ref([])
+      const initialData             = storeGet.getConfiguration()
+      const CONFIG_NAMES            = storeGet.getConfigNames()
+      const tabsData                = storeGet.getTabs()
+      const supermarketsData        = storeGet.getSupermercados()
+      const productoAEditarRef      = ref(null)
+      const productsData            = ref(getDataFromLocalStorage('productos'       ))
+      const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
+      const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
+      const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
+      const configFullScreen        = ref(fullScreen.value)
+      const selectRef               = ref(null)
+      const tabActiva               = ref(null)
+      
+      tabActiva.value=defaultTabActive.value
+
+
+      const changes2Save={
+        categoriasVisibiles:false,
+        defaultTabActive: defaultTabActive.value
+      }
+
+      if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData.categorias;
+
+      const heightDesviation        = computed(()=>useStore().getters.getHeightDesviation())
+      const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
+      const filtrarProductos        = productos=>productos.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria))
+      const productosVisibles       = computed(()=>filtrarProductos(productsData.value))
+      const handleTabHeightChanged  = data=>alturaDisponible.value=data
+      const tabActive               = tab=>tabActiva.value=tab
+      const handleEliminarProducto  = ()=>{
         Swal.fire({
           title: '¿Estás seguro de que quieres eliminar el producto?',
           text: 'Esta acción no se puede deshacer',
@@ -378,44 +234,26 @@
           target: document.querySelector("#appContainer"),
         }).then((result) => {
           if (result.isConfirmed){
-            this.productsData = this.productsData.filter(item => item.id !== this.productoSeleccionado.id)
-            this.productoSeleccionado=null;
-            Swal.fire({
-              title:'Atención',
-              icon: 'success',
-              text: 'Producto eliminado correctamente',
-              target: document.querySelector("#appContainer"),
-            })
+            productsData.value = productsData.value.filter(item => item.id !== productoSeleccionado.value.id)
+            productoSeleccionado.value=null;
+            notify({group:"app", text:'Producto eliminado correctamente',type:"success", duration:3000})
           }
         });
-      },
-      doAllowClick(timeOut=1000){
-        return setTimeout(() => {
-          this.allowClick=true
-        }, timeOut)
-      },
-      handleShoplistClick(product){
-        if(!this.allowClick) return
-        this.allowClick=false
-        this.allowClickTimeout=this.doAllowClick(250)
-        let index=findIndexById(product.id,this.productsData)
-        this.productsData[index].done=!this.productsData[index].done
-        if (this.saveProductsState) this.productsData=[...this.productsData]
-      },
-      handleClickProduct(product){
-        if (this.storeGet.getIgnoreDrag()) return
-        let index=findIndexById(product.id,this.productsData)
+      }
+      const handleClickProduct      = product =>{
+        if (storeGet.getIgnoreDrag()) return
+        let index=findIndexById(product.id,productsData.value)
         if (index!=-1)
         {
-          this.productsData[index].selected=(Object.prototype.hasOwnProperty.call(this.productsData[index], 'selected'))?!this.productsData[index].selected:true
-          this.productsData[index].done=false
-          if (this.saveProductsState) this.productsData=[...this.productsData]
+          productsData.value[index].selected=(Object.prototype.hasOwnProperty.call(productsData.value[index], 'selected'))?!productsData.value[index].selected:true
+          productsData.value[index].done=false
+          if (saveProductsState) productsData.value = [...productsData.value]
         }
         else throw new Error('Error id de producto no encontrado en la lista de productos')
-      },
-      handeLongClickProduct(product){
-        if (this.storeGet.getIgnoreDrag()) return
-        this.productoSeleccionado=product;
+      }
+      const handeLongClickProduct   = product =>{
+        if (storeGet.getIgnoreDrag()) return
+        productoSeleccionado.value=product;
         Swal.fire({
           title: product.text,
           text: '¿Qué desea hacer?',
@@ -433,180 +271,107 @@
           denyButtonText: 'Eliminar Producto', 
           target: document.querySelector("#appContainer"),
         }).then((result) => {
-          if (result.isConfirmed) this.handleEditarProducto()
-          else if (result.isDenied) this.handleEliminarProducto()
+          if (result.isConfirmed) handleEditarProducto()
+          else if (result.isDenied) handleEliminarProducto()
         });
-      },
-      handleTabHeightChanged(data){
-        this.alturaDisponible=data;
-        this.refreshClearList()
-      },
-      handeFileReadError(error){
-          Swal.fire({
-            icon:'error',
-            title:'Error',
-            html:error,
-            confirmButtonText:'Aceptar',
-            target: document.querySelector("#appContainer"),
-          })
-          return false;
-      },
-      handleCategorySelected(category){ this.categoriaActiva.value = category; },
-      handleCategoryLongClick(categoria){
-        Swal.fire({
-          title: `Cambiar Nombre de Categoría<br> «${categoria?.text}»`,
-          html: ` <label for="inputModifyCategory">Introduzca un nuevo nombre para la categoría</label>
-                  <input type="text" class="swal2-input" id="inputModifyCategory" maxlenght="${this.maxLenght}" value="${categoria.text}">
-          `,
-          target: document.querySelector("#appContainer"),
-          didOpen: ()=>{
-            setTimeout(()=>{
-              focusInput(document.querySelector("#inputModifyCategory"))
-            },50)
-          },
-          preConfirm: ()=>{
-            return new Promise((resolve)=>{
-                resolve({value: document.querySelector("#inputModifyCategory").value})
-            }).then((result)=>{
-              this.categoriesData[categoria.id].text = result.value;
-              this.categoriesData=[...this.categoriesData]
-            })
-          },
-          showCancelButton: true,
-          confirmButtonText: 'Guardar cambios',
-          cancelButtonText: 'Cancelar',
-        });
-      },
-      clearList(){
-        const hayComprados=this.productsData.some(item=>item.done)
-        Swal.fire({
-          title: `Atención`,
-          text: hayComprados?'¿Qué elementos desea eliminar?':'Esto limpiará la lista de la compra',
-          showCancelButton: true,
-          confirmButtonText: hayComprados?'Todos':'Aceptar',
-          denyButtonText: 'Ya Comprados',
-          cancelButtonText: 'Cancelar',
-          customClass: {
-            confirmButton: 'btn btn-danger mr-1', 
-            denyButton: 'btn btn-warning mr-1', 
-            cancelButton: 'btn btn-success', 
-          },
-          showDenyButton: hayComprados,
-          buttonsStyling: false, 
-          target: document.querySelector("#appContainer"),
-        }).then((result) => {
-          if (result.isDenied){
-            this.productsData.forEach(producto=>{
-              if(producto.done)
-              {
-                producto.selected=false
-                producto.done=false;
-              }
-            })
-            this.productsData=[...this.productsData]
-          }
-          else if (result.isConfirmed) {
-            this.productsData.forEach(producto=>{
-              producto.selected=false
-              producto.done=false
-            })
-            this.productsData=[...this.productsData]
-          }
-        });      
-      },
-      handleAddClick(){
-        if (this.nuevoProducto===''){
-          Swal.fire({
-            icon:'error',
-            title:'Error',
-            text:'Debes introducir un nombre para el nuevo producto',
-            confirmButtonText:'Aceptar',
-            target: document.querySelector("#appContainer"),
-          })
-          return false;
-        }
-        if (!this.productsData.some(producto => producto.text.toLowerCase() === this.nuevoProducto.toLowerCase())){
-          this.productsData.push({
-            id: this.productsData[this.productsData.length - 1].id+1,
-            text:this.nuevoProducto,
+      }
+      const handleCategoryChanged   = (id_categoria,text) =>{
+        categoriesData.value[id_categoria].text=text
+        categoriesData.value=[...categoriesData.value]
+      }
+      const setFullScreen           = () => {
+        if (!fullScreen.value) return document.fullscreenElement?document.exitFullscreen():null
+        if (document.fullscreenElement) return
+        const    elemento=document.getElementById("appContainer");
+        if      (elemento.requestFullscreen       ) elemento.requestFullscreen()
+        else if (elemento.mozRequestFullScreen    ) elemento.mozRequestFullScreen()
+        else if (elemento.webkitRequestFullscreen ) elemento.webkitRequestFullscreen()
+        else if (elemento.msRequestFullscreen     ) elemento.msRequestFullscreen()
+      }
+      const handleChangeFullScreen  = checked => { configFullScreen.value=checked }
+      const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
+      const haddleAddNewProductClick= (nuevoProducto,id_categoria,id_supermercado)=>{
+        if (!productsData.value.some(producto => producto.text.toLowerCase() === nuevoProducto.toLowerCase())){
+          productsData.value.push({
+            id: productsData.value[productsData.value.length - 1].id+1,
+            text:nuevoProducto,
             amount: 1,
-            id_categoria:this.categoriaActiva.value.id,
-            id_supermercado:this.supermercadoActivo.value.id
+            id_categoria:id_categoria,
+            id_supermercado:id_supermercado
           });
-          notify({group:"app", text:`Producto «${this.nuevoProducto}» añadido correctamente`,type:"success", duration:3000})
-          this.nuevoProducto="";
-          this.productsData=[...this.productsData]
-          focusInput(document.querySelector("#tab1").querySelector("input"))
+          notify({group:"app", text:`Producto «${nuevoProducto}» añadido correctamente en ${categoriesData.value[id_categoria].text} para poder comprarlo en ${supermarketsData[id_supermercado].text}`,type:"success", duration:3000})
+          productsData.value=[...productsData.value]
+          slotAddNewProductRef.value.clearInput()
         }
         else
           Swal.fire({
             icon:'warning',
             title: 'Atención',
-            html: `Ya existe un producto llamado<br>«${this.nuevoProducto}»`,
+            html: `Ya existe un producto llamado<br>«${nuevoProducto}»`,
             target: document.querySelector("#appContainer"),
         })
-      },
-      handleSelectSupermercado(selected){ 
-        this.supermercadoActivo.value=selected 
-      },
-      handleSelectSupermercadoSL(selected){this.supermercadoSL.value=selected},
-    },
-    setup(){
-      const store                   = useStore()
-      const storeGet                = store.getters
-      const ignoreLongClickTimeout  = ref(0)
-      const maxLenght               = storeGet.getMaxLenght()
-      const saveProductsState       = storeGet.getSaveProductsState()
-      const controlY                = ref(-1)
-      const allowClick              = ref(true)
-      const allowClickTimeout       = ref(0)
-      const alturaDisponible        = ref(storeGet.getAlturaDisponible())
-      const categoriasVisibles      = ref([])
-      const initialData             = storeGet.getConfiguration()
-      const CONFIG_NAMES            = storeGet.getConfigNames()
-      const tabsData                = storeGet.getTabs()
-      const supermercados           = storeGet.getSupermercados()
-
-      const productsData            = ref(getDataFromLocalStorage('productos'       ))
-      const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
-      const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
-      const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
-      const configFullScreen        = ref(fullScreen.value)
-      let tempCategoriasVisiblesIds=[]
-
-      const changes2Save={
-        categoriasVisibiles:false,
-        defaultTabActive: defaultTabActive.value
       }
-
-      if (typeof categoriesData.value[0]==='undefined') categoriesData.value=initialData.categorias;
-
-      const heightDesviation= computed(()=>useStore().getters.getHeightDesviation())
-      const categoriasVisiblesIds=computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
-      const productosVisibles=computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
-
-      const categoriaActiva = ref({})
-      const supermercadoActivo=ref({})
-      const supermercadoSL=ref({})
-      supermercadoSL.value=supermercados[1]
-      function refreshClearList(){document.querySelector(".clearList button").style.width=`${document.querySelector(".nav-item:last-child").getClientRects()[0].width}px`}
-
-      function handleCategoriesChecked(data)
-      {
+      const handleEditarProducto    = () =>{
+        let aux=document.getElementById("divEditarProducto");
+        let producto=productoSeleccionado.value;
+        productoAEditar.value=producto.text
+        categoryAtEdit.value=categoriesData.value[producto.id_categoria]
+        supermarketAtEdit.value=supermarketsData[producto.id_supermercado]
+        Swal.fire({
+          title:              `Editar Producto<br>«${producto.text}»`,
+          html:               '<div id="VueSweetAlert2"></div>',
+          showCancelButton:   true,
+          confirmButtonText:  'Confirmar',
+          cancelButtonText:   'Cancelar',
+          target:             document.querySelector("#appContainer"),
+          willOpen: ()=>{
+            itemCategorySelected.value=producto.id_categoria;
+            supermercadoProducto.value=supermarketsData[producto.id_supermercado]
+            document.getElementById('VueSweetAlert2').appendChild(aux);
+          },
+          willClose:()=>{document.getElementById('anchorEditarProducto').appendChild(aux)}
+        }).then((result) => {
+          if (result.isConfirmed){
+            const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
+            let newData={
+              id:producto.id,
+              text:productoAEditar.value,
+              id_categoria:itemCategorySelected.value,
+              id_supermercado:selectRef.value.selectedOption.id,
+              amount: 1,              
+              selected: false,
+              done: false,
+            }
+            if (!areTheSame(producto,newData)){
+              productsData.value[findIndexById(newData.id, productsData.value)] = newData;
+              productsData.value=[...productsData.value]
+              Swal.fire({
+                title:'Atención',
+                icon: 'success',
+                text: 'Producto modificado correctamente',
+                target: document.querySelector("#appContainer"),
+              })
+            }
+            else {
+              Swal.fire({
+                title:'Atención',
+                icon: 'info',
+                text: 'No has realizado cambios al producto',
+                target: document.querySelector("#appContainer"),
+              })
+            }
+          }
+        });
+      }
+      const handleCategoriesChecked = data =>{
       let aux=categoriesData.value.map(categoria => ({ ...categoria }))
           aux.forEach((item,index)=>item.visible=data.includes(index))
           categoriasVisibles.value=aux
-          tempCategoriasVisiblesIds=[...data]
           changes2Save.categoriasVisibiles=true
       }      
-      function getDataFromLocalStorage(index){
-          let storedData = localStorageService.getSubItem(index);
-          if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
-
-          return storedData ? storedData : localStorageService.setSubItem(index, initialData[index]);
-      }
+      //TODO hacer el login
       //funcion para hacer llamada mediante axios
-      async function doLogin() {
+      /*async function doLogin() {
         let email="";
         let pass="";
         let urlbase = 'https://www.infoinnova.es/lolo/api';
@@ -619,24 +384,8 @@
         });
         console.log('Success:', response.data);
         return response.data;
-      }
+      }*/
 
-
-      watch(alturaDisponible,(newData)=>{ 
-        if(Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)){
-          store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible', newData)) 
-        }
-      })
-      watch(productsData,(newData)=>{ store.dispatch('setProductos',localStorageService.setSubItem('productos', newData)) })
-      const handleImportConfigurationFileError=(error)=>{
-        Swal.fire({
-          icon:'error',
-          title:(error=="ERROR_APPNAME")?"Atención":"ERROR INESPERADO",
-          html:(error!="ERROR_APPNAME")?error:"El archivo de configuración seleccionado<br>no es un archivo de configuración<br>de «Hungry!» válido o está dañado",
-          confirmButtonText:'Aceptar',
-          target: document.querySelector("#appContainer"),
-        })
-      }
       const handleDragCard=(event)=>{
         if (typeof event.touches==='undefined') return
         if (event.touches.length==0) return
@@ -655,7 +404,7 @@
         store.dispatch('setIgnoreDrag',false)
       }
 
-      function handleImportConfigurationFile(data){
+      const handleImportConfigurationFile=data=>{
         Swal.fire({
           title: '¿Qué deseas importar?',
           text: '¿Deseas importar el archivo de configuración completo o sólo los productos y las categorías?',
@@ -701,7 +450,9 @@
           }
         });
       }
-      function saveConfigChanges(){
+      const saveConfigChanges=()=>{
+        let toSave=changes2Save.defaultTabActive!=defaultTabActive.value || changes2Save.categoriasVisibiles || fullScreen.value!=configFullScreen.value;
+        if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
         if (changes2Save.categoriasVisibiles)
         {
           categoriesData.value=[...categoriasVisibles.value.map(item => ({ ...item }))]
@@ -730,128 +481,20 @@
         }
         fullScreen.value=configFullScreen.value
         changes2Save.categoriasVisibiles=false;
+        return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
       }
-      watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)))
+      watch(alturaDisponible, newData => (Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)?store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible', newData)):null));
+      watch(productsData,     newData => { productosVisibles.value=filtrarProductos(newData), store.dispatch('setProductos',localStorageService.setSubItem('productos', newData))});
+      watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)));
       watch(productsData  ,   newData => store.dispatch('setProductos',        localStorageService.setSubItem('productos',        newData)));
       watch(fullScreen,       newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
       watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive', localStorageService.setSubItem('defaultTabActive', newData)));
 
-      return {
-        allowClick,
-        allowClickTimeout,
-        alturaDisponible,
-        categoriaActiva,
-        categoriasVisibles,
-        categoriasVisiblesIds,
-        categoriesData,
-        changes2Save,
-        CONFIG_NAMES,
-        configFullScreen,
-        defaultTabActive,
-        fullScreen,
-        handleCategoriesChecked,
-        handleDragCard,
-        handleImportConfigurationFile,
-        handleImportConfigurationFileError,
-        heightDesviation,
-        ignoreLongClickTimeout,
-        maxLenght,
-        productosVisibles,
-        productsData,
-        releaseIgnoreLongClick,
-        saveConfigChanges,
-        saveProductsState,
-        store,
-        storeGet,
-        supermercadoActivo,
-        supermercados, 
-        supermercadoSL,
-        tabsData, 
-        tempCategoriasVisiblesIds,
-        doLogin,
-        refreshClearList,
-      }
-    },
-    mounted(){
-      this.supermercadoActivo.value = this.supermercados[0]; 
-      this.supermercadoSL.value     = this.supermercados[1]
-      document.addEventListener('contextmenu', (event) => event.preventDefault())
-      window.addEventListener('resize', this.refreshClearList,{passive: true});
-      setTimeout(this.refreshClearList,500)
-    },
-  }
+      const contextMenu=event => event.preventDefault()
+      onMounted(()=>document.addEventListener('contextmenu', contextMenu))
+
 </script>
 
 <style>
-  #app                            { height:           100%  !important; }
-  html,body                       { 
-                                    --bs-body-bg:     black; 
-                                    --bs-body-color:  white; 
-                                    display:          flex; 
-                                    flex-direction:   column; 
-                                    height:           100vh; 
-                                    margin:           0; 
-                                    overflow:         hidden; 
-                                    padding:          0; 
-                                  }
-  div:where(.swal2-container) hr  { 
-                                    margin:           .5rem auto !important;  
-                                    text-align:       center; 
-                                    width:            60%; 
-                                  }
-  ::-webkit-scrollbar             { height:           4px; width: 4px;  }
-  ::-webkit-scrollbar-track       { background:     #f0f0f0;          }
-  ::-webkit-scrollbar-thumb       { background:     #888;             }
-  ::-webkit-scrollbar-thumb:hover { background:     #555;             }
-  .author                         { 
-                                    font-size:        xx-small;
-                                    left:             -15px; 
-                                    margin:           auto;
-                                    position:         relative;
-                                    top:              calc(-10px + 0.15vw);
-                                    width:            fit-content;
-                                  }
-  .clearList button               { 
-                                    border-radius:    0px !important; 
-                                  }
-  .container                      { 
-                                    display:          flex; 
-                                    height:           100%; 
-                                    flex-direction:   column; 
-                                    flex-grow:        1;  
-                                  }
-  .logo                           { width:            60px;             }
-  .ml-3                           { margin-left:      1rem !important;  }
-  .mr-3                           { margin-right:     1rem !important;  }
-  .mr-1                           { margin-right:     .25rem !important;}
-  .mr-0                           { margin-right:     0rem !important;  }
-  .overflow-hidden                { overflow:         hidden;           }
-  .pr-0                           { padding-right:    0 !important;     }
-  .swal2-html-container           { 
-                                    z-index:          10 !important; 
-                                    overflow:         visible !important; 
-                                  }
-  .swal2-input                    { 
-                                    left:             50%; 
-                                    margin:           20px 0 0; 
-                                    position:         relative; 
-                                    transform:        translateX(-50%); 
-                                    width:            100%; 
-                                  }
-  .swal2-title                    { font-size:        1.5rem;           }
-  .tabs-container                 { 
-                                    display:          flex; 
-                                    flex-direction:   column; 
-                                    flex-grow:        1;  
-                                    overflow-y:       auto; 
-                                  }
-  .touch                          { 
-                                    height:           150px; 
-                                    background:       gray; 
-                                    margin-top:       10px; 
-                                    justify-content:  center; 
-                                    display:          flex; 
-                                    align-items:      center; 
-                                    user-select:      none; 
-                                  }
+  @import url('@css/App.vue.css');
 </style>

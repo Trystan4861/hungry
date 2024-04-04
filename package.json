@@ -1,12 +1,16 @@
 {
   "name": "hungry",
-  "version": "0.1.0",
+  "version": "0.1.13",
+  "revision": "20240404.1510",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "dev": "vite --host"
+    "dev": "vite --host",
+    "version": "node scripts/updateVersion.js",
+    "minorVersion": "node scripts/updateVersion.js minor",
+    "revision": "node scripts/updateVersion.js revision"
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.2.1",
@@ -34,6 +38,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "vite": "^5.1.2",
+    "vite-plugin-vue-devtools": "^7.0.25",
     "vue-style-loader": "^4.1.3"
   },
   "eslintConfig": {
@@ -56,7 +61,7 @@
     "not dead",
     "not ie 11"
   ],
-  "vite":{
+  "vite": {
     "configFile": "vite.config.mjs"
   }
 }

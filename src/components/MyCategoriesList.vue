@@ -1,15 +1,19 @@
 <template>
   <div class="my-categories-list-container" ref="containerRef" @scroll="handleScroll">
+    <!--img alt="imagen de sombreado" class="leftShadow shadow" src="@/public/images/box-shadow-left.png" draggable="false" />
+    <img alt="imagen de sombreado" class="rightShadow shadow" src="@/public/images/box-shadow-right.png" draggable="false" /-->
+    <div class="leftShadow shadow" />
+    <div class="rightShadow shadow" />
     <div class="categories-padding">
       <div class="my-categories-list" :style="categoryListStyle">
-        <my-category
+        <MyCategory
           v-for="(category, index) in visibleCategories"
           :key="index"
           :text="category.text"
           :bgColor="category.bgColor"
           @categoryClick="handleCategoryClick(index)"
           @categoryLongClick="handleCategoryLongClick(index)"
-          :isActive="index === selectedCategoryIndex" />
+          :isActive="index === selected" />
       </div>
     </div>
   </div>
@@ -17,7 +21,7 @@
 
 <script setup>
 import { ref, defineExpose, defineProps, defineEmits, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import MyCategory from '@/components/MyCategory.vue'
+import MyCategory from '@components/MyCategory.vue'
 
 const props = defineProps({
   categories: { type: Array, required: true },
@@ -26,7 +30,7 @@ const props = defineProps({
 
 const emit = defineEmits(['categorySelected', 'categoryLongClick']);
 
-const selectedCategoryIndex = ref(null);
+const selected = ref(props.selected);
 const activeCategory = ref({});
 const categoriesState = ref({});
 const containerRef = ref(null);
@@ -39,11 +43,11 @@ categoriesState.value[0] = true;
 const seleccionarCategoria = (id_categoria) => {
   const index = props.categories.findIndex(categoria => categoria.id === id_categoria);
   activeCategory.value = props.categories[index];
-  selectedCategoryIndex.value = index;
+  selected.value = index;
 };
 
 const centrarCategoriaActiva = () => {
-  scrollIntoView(selectedCategoryIndex.value, 'instant');
+  scrollIntoView(selected.value, 'instant');
 };
 
 const updateScreenSize = () => {
@@ -52,18 +56,18 @@ const updateScreenSize = () => {
 
 const handleCategoryClick = (index) => {
   if (lastCategory == index) return;
-  selectedCategoryIndex.value = lastCategory = index;
+  selected.value = lastCategory = index;
   scrollIntoView(index, 'instant');
   emit('categorySelected', props.categories[index]);
 };
 
 const handleCategoryLongClick = (index) => {
-  selectedCategoryIndex.value = index;
+  selected.value = index;
   scrollIntoView(index, 'instant');
   emit('categoryLongClick', props.categories[index]);
 };
 
-watch(selectedCategoryIndex, (newValue, oldValue) => {
+watch(selected, (newValue, oldValue) => {
   oldValue !== null && (categoriesState.value[oldValue] = false);
   newValue !== null && (categoriesState.value[newValue] = true, activeCategory.value = props.categories[newValue]);
 });
@@ -93,7 +97,7 @@ const handleScroll = () => {
   });
   const index = Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
   if (lastCategory != index) {
-    selectedCategoryIndex.value = lastCategory = index;
+    selected.value = lastCategory = index;
     emit('categorySelected', props.categories[index]);
   }
 };
@@ -107,12 +111,12 @@ const updateCategoryListStyle = () => {
   if (!container) return;
   const plr = (container?.clientWidth - container.querySelector('.my-category')?.clientWidth) / 2;
   categoryListStyle.value = { left: `${plr}px`, paddingRight: `${plr}px` };
-  if (selectedCategoryIndex.value >= 0) setTimeout(centrarCategoriaActiva, 1);
+  if (selected.value >= 0) setTimeout(centrarCategoriaActiva, 1);
 };
 
 onMounted(() => {
-  selectedCategoryIndex.value = props.selected;
-  seleccionarCategoria(selectedCategoryIndex.value);
+  //selected.value = props.selected;
+  seleccionarCategoria(selected.value);
   window.addEventListener('resize', updateScreenSize, { passive: true });
   observer.value = new IntersectionObserver(entries => entries.forEach(entry => entry.isIntersecting && updateScreenSize()));
   observer.value.observe(containerRef.value);
@@ -124,21 +128,57 @@ onBeforeUnmount(() => {
   observer.value && observer.value.disconnect();
 });
 
-defineExpose({seleccionarCategoria})
+defineExpose({seleccionarCategoria,selected})
+
 </script>
 
 <style scoped>
-.my-categories-list-container {
-  align-items: center;
-  background-color: #585858;
-  display: flex;
-  height: 6.875rem;
-  overflow-x: scroll;
-  scroll-snap-type: x proximity;
+.shadow {
+  top:                10px;
+  position:           absolute;
+  user-select:        none; 
+  z-index:            100;
+  width:              100px;
+  clip-path:          border-box;
+  height:             107px;
+}
+.leftShadow {
+  background-image: url('@/public/images/box-shadow-left.png');
+  top:                10px;
+}
+.rightShadow {
+  background-image: url('@/public/images/box-shadow-right.png');
+  right:              0px;
+  margin-right:       10px
+}
+.swal .shadow {
+  top:                0px;
+  z-index:            1;
+}
+.swal .leftShadow {
+    left:             29px;
+    top:              95px;
+}
+.swal .rightShadow {
+  right:              19px;
+  top:                95px;
 }
 
+.my-categories-list-container {
+  align-items:        center;
+  background-color: #585858;
+  display:            flex;
+  height:             6.875rem;
+  overflow-x:         scroll;
+  scroll-snap-type:   x proximity;
+}
+.my-categories-list-container:hover {
+  height:             7.28rem;
+}
+.my-categories-list-container:hover::-webkit-scrollbar             { height:           10px;}
+
 .my-categories-list {
-  display: flex;
-  position: relative;
+  display:            flex;
+  position:           relative;
 }
 </style>

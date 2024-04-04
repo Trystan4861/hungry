@@ -176,5 +176,4 @@ input[type=checkbox]
 *,*::before,*::after {
   box-sizing:         border-box;
 }
-
 </style>

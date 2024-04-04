@@ -2,7 +2,7 @@
   <div id="SlotConfigurationCategories">
     <div class="text-center mb-1">Visibilidad de Categorías</div>
     <div class="categoriesContainer">
-      <my-checkbox
+      <MyCheckbox
         v-for="(item, index) in categorias"
         :key="index"
         :value="index"
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import MyCheckbox from '@/components/MyCheckbox.vue';
+import MyCheckbox from '@components/MyCheckbox.vue';
 import { ref, watchEffect, defineEmits,defineProps } from 'vue';
 import Swal from 'sweetalert2';
 
@@ -59,15 +59,22 @@ const emit = defineEmits(['categoriesChecked', 'buttonClicked']);
 
 <style scoped>
 .categoriesContainer {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-bottom: .625rem;
-  border: 1px solid;
+  max-height:         150px;
+  overflow-y:         auto;
+  margin-bottom:      .625rem;
+  border:             1px solid;
   border-right-width: 0;
-  user-select: none;
-  padding-top: 15px
+  user-select:        none;
+  padding-top:        15px;
 }
-::-webkit-scrollbar { height: 4px; width: 4px; }
-::-webkit-scrollbar-track { background: #f0f0f0; }
-::-webkit-scrollbar-thumb { background: #888; }
+::-webkit-scrollbar       { 
+  height:             4px; 
+  width:              4px; 
+}
+::-webkit-scrollbar-track { 
+  background:       #f0f0f0; 
+}
+::-webkit-scrollbar-thumb { 
+  background:       #888; 
+}
 </style>

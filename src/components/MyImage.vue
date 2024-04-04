@@ -1,5 +1,5 @@
 <template>
-  <img width="50" height="50" :class="className" :src="imageSource" :alt="alt">
+  <div class="MyImage" :class="className" :style="{backgroundImage: 'url('+imageSource+')'}"/>
 </template>
 
 <script setup>
@@ -11,11 +11,16 @@ const props       = defineProps({
   urlCdn:     { type: String,         default:  'https://ik.imagekit.io/trystan4861/hungry/'  },
 });
 
-const alt         = computed(() => typeof props.image === 'string' ? (!props.image.startsWith('data:') ? props.image : "Empty image") : "Empty Image");
 const imageSource = computed(() => typeof props.image === 'string' ?
   (!props.image.startsWith('data:') ? `${props.urlCdn}${props.urlCdn.endsWith('/') ? '' : '/'}${props.image}` : props.image) :
   (props.image instanceof File ? URL.createObjectURL(props.image) : "")
 );
 onBeforeUnmount(() => props.image instanceof File)?URL.revokeObjectURL(imageSource.value):null;
 </script>
-
+<style scoped>
+.MyImage{
+  width: 50px;
+  height: 50px;
+  background-size: 50px;
+  margin-right: 10px;
+}</style>
