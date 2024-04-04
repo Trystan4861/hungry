@@ -172,6 +172,10 @@ defineExpose({seleccionarCategoria,selected})
   overflow-x:         scroll;
   scroll-snap-type:   x proximity;
 }
+.my-categories-list-container:hover {
+  height:             7.28rem;
+}
+.my-categories-list-container:hover::-webkit-scrollbar             { height:           10px;}
 
 .my-categories-list {
   display:            flex;

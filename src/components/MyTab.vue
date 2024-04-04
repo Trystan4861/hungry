@@ -102,6 +102,9 @@ li.nav-item:first-child {
 .nav-item:first-child .nav-link.active .MyImage{
   filter: grayscale(1) brightness(100) invert(1);
 }
+.nav-item .nav-link .MyImage{
+  margin:0! important;
+}
 span.nav-link
 {
   min-width: 25%;
