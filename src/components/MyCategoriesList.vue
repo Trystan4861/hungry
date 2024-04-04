@@ -138,16 +138,18 @@ defineExpose({seleccionarCategoria,selected})
   position:           absolute;
   user-select:        none; 
   z-index:            100;
-  width:              100px;
+  width:              50px;
   clip-path:          border-box;
   height:             107px;
 }
 .leftShadow {
   background-image: url('@/public/images/box-shadow-left.png');
   top:                10px;
+  background-position: right;
 }
 .rightShadow {
   background-image: url('@/public/images/box-shadow-right.png');
+  background-position: left;
   right:              0px;
   margin-right:       10px
 }
