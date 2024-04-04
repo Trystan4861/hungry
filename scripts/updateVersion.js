@@ -10,7 +10,7 @@ const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const [,, strategy] = process.argv;
 let [ major, minor, patch ] = packageJson.version.split('.').map(Number)
 
-patch += (strategy.toLowerCase() === 'minor') ? (100 - patch) : ((strategy.toLowerCase() === 'revision') ? 0 : 1);
+patch += (strategy?.toLowerCase() === 'minor') ? (100 - patch) : ((strategy?.toLowerCase() === 'revision') ? 0 : 1);
 // Ajustar las partes de la versión si es necesario
 minor += Math.floor(patch / 100);
 major += Math.floor(minor / 100);
