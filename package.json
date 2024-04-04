@@ -1,6 +1,6 @@
 {
   "name": "hungry",
-  "version": "0.1.202404040847",
+  "version": "0.1.12",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint",
     "dev": "vite --host",
     "version": "node scripts/updateVersion.js",
+    "minorVersion": "node scripts/updateVersion.js minor",
     "partialVersion": "node scripts/updateVersion.js partial"
   },
   "dependencies": {
@@ -61,5 +62,6 @@
   ],
   "vite": {
     "configFile": "vite.config.mjs"
-  }
+  },
+  "lastVersion": "0.1.12"
 }
