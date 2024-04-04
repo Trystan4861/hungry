@@ -1,13 +1,14 @@
 {
   "name": "hungry",
-  "version": "0.1.11",
+  "version": "0.1.20240404.0846",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "vite --host",
-    "version": "node scripts/updateVersion.js"
+    "version": "node scripts/updateVersion.js",
+    "partialVersion": "node scripts/updateVersion.js partial"
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.2.1",
