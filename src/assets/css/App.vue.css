@@ -84,3 +84,8 @@ div:where(.swal2-container) hr  {
                                   align-items:      center; 
                                   user-select:      none; 
                                 }
+.revision                       {
+                                  right:            10px;
+                                  position:         absolute;
+                                  top:              95%;
+                                }

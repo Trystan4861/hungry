@@ -61,6 +61,7 @@
                 />
             </div>
           </div>
+          <div class="revision">rev. {{ packageJson.revision }}</div>
         </my-card>
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
