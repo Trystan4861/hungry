@@ -13,16 +13,17 @@
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
-  text:     { type: String,  default: ""          },
-  bgColor:  { type: String,  default: 'lightgray' },
-  isActive: { type: Boolean, default: false       }
+  text:             { type: String,   default: ""           },
+  bgColor:          { type: String,   default: 'lightgray'  },
+  isActive:         { type: Boolean,  default: false        },
+  longClickTimeout: { type: Number,   default:4000          },
 });
 
 let longPressTimeout  = null;
 const emit = defineEmits(['categoryClick','categoryLongClick']);
 
 const handleClick = () => emit('categoryClick');
-const handleMouseDown = () => props.isActive ? longPressTimeout = setTimeout(() => emit('categoryLongClick'), 1000) : undefined;
+const handleMouseDown = () => props.isActive ? longPressTimeout = setTimeout(() => emit('categoryLongClick'), props.longClickTimeout) : undefined;
 const handleMouseUp = () => props.isActive ? clearTimeout(longPressTimeout) : undefined;
 </script>
 
