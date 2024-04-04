@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-//import Swal from 'sweetalert2'
+import Swal from 'sweetalert2'
 import { Notifications } from '@kyvg/vue3-notification'
 
 if (process.env.NODE_ENV === 'production') {
