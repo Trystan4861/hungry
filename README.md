@@ -4,7 +4,7 @@
 
 | Main Branch | FrontEnd | BackEnd|
 |-------------|----------|--------|
-| [![Netlify Status](https://api.netlify.com/api/v1/badges/88f22b9a-dd72-4dce-8964-19e19426b546/deploy-status)](https://mpc-hungry.netlify.app) | <a href="#"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018da359-3bd2-4948-a5cf-5a8b59500694.svg" /></a> | <a href="https://github.com/Trystan4861/hungry-api"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018ea986-4ed8-4e8f-9f81-a0efdc31528c.svg" /></a> |
+| [![Netlify Status](https://api.netlify.com/api/v1/badges/88f22b9a-dd72-4dce-8964-19e19426b546/deploy-status)](https://mpc-hungry.netlify.app) | <a href="#"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018da359-3bd2-4948-a5cf-5a8b59500694.svg" /></a> | <a href="https://github.com/Trystan4861/hungry-api"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018ea986-4ed8-4e8f-9f81-a0efdc31528c.svg?style=default" /></a> |
 
 
 ¡Gracias por elegir nuestra aplicación! «Hungry!» es una herramienta poderosa diseñada para realizar listas de la compra con diversas funcionalidades.
@@ -60,7 +60,8 @@ Aquí tienes algunas instrucciones básicas sobre cómo utilizar nuestra aplicac
 
 ## Licencia
 
-«Hungry!» está bajo la Licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0). Para más detalles, consulta el archivo LICENSE.md.
+«Hungry!» está bajo la Licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0). Para más detalles, consulta el archivo [LICENSE.md](https://github.com/trystan4861/hungry/blob/master/LICENSE.md)
+.
 
 ## Contacto
 
