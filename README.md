@@ -60,7 +60,7 @@ Aquí tienes algunas instrucciones básicas sobre cómo utilizar nuestra aplicac
 
 ## Licencia
 
-«Hungry!» está bajo la Licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0). Para más detalles, consulta el archivo LICENSE.md.
+«Hungry!» está bajo la Licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0). Para más detalles, consulta el archivo <a href="?tab=License-1-ov-file">LICENSE.md</a>.
 
 ## Contacto
 
