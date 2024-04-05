@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineProps, defineEmits, watch, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed, defineEmits,defineProps,defineExpose } from 'vue';
 import MyCategory from '@components/MyCategory.vue'
 
 const props = defineProps({

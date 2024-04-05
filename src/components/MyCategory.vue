@@ -1,32 +1,32 @@
 <template>
-    <div class="my-category-container" :class="{ 'selected': isActive }">
-        <div class="my-category" :style="{ backgroundColor: bgColor }" 
-        @click="handleClick"  
-        @mousedown ="handleMouseDown" @mouseup ="handleMouseUp" 
-        @touchstart="handleMouseDown" @touchend="handleMouseUp">
-            <p class="category-title" :class="{active: isActive}">{{ text }}</p>
-        </div>
+  <div class="my-category-container" :class="{ 'selected': isActive }">
+    <div class="my-category" :style="{ backgroundColor: bgColor }" 
+    @click="handleClick"  
+    @mousedown ="handleMouseDown" @mouseup ="handleMouseUp" 
+    @touchstart="handleMouseDown" @touchend="handleMouseUp">
+        <p class="category-title" :class="{active: isActive}">{{ text }}</p>
     </div>
+  </div>
 </template>
   
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+  import { ref, watch,defineProps,defineEmits } from 'vue';
 
-const props = defineProps({
-  text:             { type: String,   default: ""           },
-  bgColor:          { type: String,   default: 'lightgray'  },
-  isActive:         { type: Boolean,  default: false        },
-  longClickTimeout: { type: Number,   default:4000          },
-});
+  const props = defineProps({
+    text:             { type: String,   default: ""           },
+    bgColor:          { type: String,   default: 'lightgray'  },
+    isActive:         { type: Boolean,  default: false        },
+    longClickTimeout: { type: Number,   default:4000          },
+  });
 
-let longPressTimeout  = null;
-const emit = defineEmits(['categoryClick','categoryLongClick']);
-
-const handleClick = () => emit('categoryClick');
-const handleMouseDown = () => props.isActive ? longPressTimeout = setTimeout(() => emit('categoryLongClick'), props.longClickTimeout) : undefined;
-const handleMouseUp = () => props.isActive ? clearTimeout(longPressTimeout) : undefined;
+  let longPressTimeout  = null;
+  const esActivo        = ref(props.isActive)
+  const emit            = defineEmits(['categoryClick','categoryLongClick']);
+  const handleClick     = () => emit('categoryClick');
+  const handleMouseDown = () => esActivo.value ? longPressTimeout = setTimeout(() => emit('categoryLongClick'), props.longClickTimeout) : undefined;
+  const handleMouseUp   = () => esActivo.value ? clearTimeout(longPressTimeout) : undefined;
+  watch(()=>props.isActive,newValue=>{esActivo.value=newValue; (!newValue && clearTimeout(longPressTimeout))})
 </script>
-
 
 <style scoped>
 .my-category-container {

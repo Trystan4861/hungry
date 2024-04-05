@@ -8,6 +8,7 @@
       :tabs             ="tabsData" 
       @tabHeightChanged ="handleTabHeightChanged"
       @tabChanged="tabActive" 
+      ref="myTabRef"
       >
       <template v-slot:tabContent0> <!-- Configuration -->
         <my-card 
@@ -75,6 +76,7 @@
               :maxLenght="maxLenght" 
               @categoryChanged="handleCategoryChanged" 
               @addClick="haddleAddNewProductClick"
+              @blur="handleBlur"
               />
         </my-card>
       </template>    
@@ -201,7 +203,8 @@
       const configFullScreen        = ref(fullScreen.value)
       const selectRef               = ref(null)
       const tabActiva               = ref(null)
-      
+      const myTabRef                = ref(null)
+
       tabActiva.value=defaultTabActive.value
 
 
@@ -483,16 +486,19 @@
         changes2Save.categoriasVisibiles=false;
         return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
       }
+      const handleBlur=()=>myTabRef.value.getAvailHeight()
       watch(alturaDisponible, newData => (Math.abs(newData-screen.availHeight)==Math.abs(heightDesviation.value)?store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible', newData)):null));
-      watch(productsData,     newData => { productosVisibles.value=filtrarProductos(newData), store.dispatch('setProductos',localStorageService.setSubItem('productos', newData))});
-      watch(categoriesData,   newData => store.dispatch('setCategorias',       localStorageService.setSubItem('categorias',       newData)));
-      watch(productsData  ,   newData => store.dispatch('setProductos',        localStorageService.setSubItem('productos',        newData)));
-      watch(fullScreen,       newData => store.dispatch('setFullScreen',       localStorageService.setSubItem('fullScreen',       newData)));
-      watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive', localStorageService.setSubItem('defaultTabActive', newData)));
+      watch(productsData,     newData => store.dispatch('setProductos',         localStorageService.setSubItem('productos', newData)));
+      watch(categoriesData,   newData => store.dispatch('setCategorias',        localStorageService.setSubItem('categorias',       newData)));
+      watch(productsData  ,   newData => store.dispatch('setProductos',         localStorageService.setSubItem('productos',        newData)));
+      watch(fullScreen,       newData => store.dispatch('setFullScreen',        localStorageService.setSubItem('fullScreen',       newData)));
+      watch(defaultTabActive, newData => store.dispatch('setDefaultTabActive',  localStorageService.setSubItem('defaultTabActive', newData)));
 
       const contextMenu=event => event.preventDefault()
-      onMounted(()=>document.addEventListener('contextmenu', contextMenu))
-
+      onMounted(()=>{
+        document.addEventListener('contextmenu', contextMenu)
+        //setInterval(myTabRef.value.getAvailHeight(), 1000)
+      })
 </script>
 
 <style>

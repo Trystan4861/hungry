@@ -18,6 +18,7 @@
       :maxLength="props.maxLenght" 
       @keyPressed:enter="handleAddClick" 
       :id="id"
+      @blur="handleBlur"
       />
     <MyButton 
       text="Añadir" 
@@ -31,7 +32,7 @@
   import Swal                               from 'sweetalert2'
   import MyInput                            from '@components/MyInput.vue'
   import MyButton                           from '@components/MyButton.vue'
-  import { ref, defineProps, defineEmits, defineExpose }  from 'vue';
+  import { ref,defineEmits,defineProps,defineExpose }  from 'vue';
 
   const id = `'inputAddNewProduct-${Math.random().toString(36).slice(2)}`;
 
@@ -40,6 +41,8 @@
     supermercados:  { type: Array,  required: true    },
     maxLenght:      { type: Number, default:  Infinity}
   })
+  const handleBlur=(event)=>emit('blur',event)
+
   const nuevoProducto=ref("")
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
   const categoriaActiva= ref(props.categoriesData[0])
@@ -66,6 +69,8 @@
       showCancelButton: true,
       confirmButtonText: 'Guardar cambios',
       cancelButtonText: 'Cancelar',
+    }).then(() => {
+      emit('blur')
     });
   }
   const handleCategorySelected=category=>categoriaActiva.value = category;
@@ -84,7 +89,7 @@
     else
       emit('addClick',nuevoProducto.value,categoriaActiva.value.id,supermercadoActivo.value.id)
   }
-  const emit =defineEmits(['categoryChanged','addClick','update:modelValue'])
+  const emit =defineEmits(['categoryChanged','addClick','update:modelValue','blur'])
   defineExpose({clearInput})
 </script>
 <style scoped>

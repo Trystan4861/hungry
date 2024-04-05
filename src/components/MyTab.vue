@@ -21,7 +21,7 @@
 </template>
 <script setup>
 import MyImage from '@components/MyImage.vue';
-import { ref, watch, onMounted, onBeforeUnmount, defineEmits, defineProps } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, defineEmits, defineProps, defineExpose } from 'vue';
 
 const props = defineProps({
   tabs:             { type: Array,    required: true, },
@@ -34,16 +34,22 @@ const emptyIMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1
 const tabsContainerRef = ref(null);
 const activeTab = ref(props.defaultActive);
 const tabStyle = ref({});
+const alturaDisponible=ref(0)
 
 watch(() => props.defaultActive, (newValue) => activeTab.value = newValue);
 
 const updateTabStyle = () => {
   const container = tabsContainerRef.value;
-  if (!container) return;
+  if (!container) return null;
   tabStyle.value = { width: `${(((container.clientWidth - 60) / 4) - 1)}px` };
-  (props.heightResponsive)?emit('tabHeightChanged', container.clientHeight + props.heightDesviation):null;
+  (props.heightResponsive)?getAvailHeight():null;
 };
 
+const calcAvailHeight=()=>tabsContainerRef.value?tabsContainerRef.value.clientHeight + props.heightDesviation:null;
+const getAvailHeight =()=>{
+  alturaDisponible.value!=calcAvailHeight()?emit('tabHeightChanged', calcAvailHeight()):null
+  alturaDisponible.value==calcAvailHeight()??0
+}
 onMounted(() => {
   window.addEventListener('resize', updateTabStyle, { passive: true });
   setTimeout(updateTabStyle,50);
@@ -59,6 +65,7 @@ const activateTab = (index) => {
 
 const emit = defineEmits(['tabChanged', 'tabHeightChanged']);
 
+defineExpose({getAvailHeight})
 </script>
 
   

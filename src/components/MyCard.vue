@@ -16,13 +16,14 @@ const props         = defineProps({
 });
 
 const borderStyles  = {
-  'rounded':              '.5rem                    ',
-  'rounded-top':          '.5rem  .5rem 0     0     ',
-  'rounded-bottom':       '0      0     .5rem .5rem ',
+  'rounded':              '.5rem  .5rem .5rem .5rem ',
+  'squared':              '0      0     0     0     ',
   'rounded-top-left':     '.5rem  0     0     0     ',
   'rounded-top-right':    '0      .5rem 0     0     ',
   'rounded-bottom-left':  '0      0     .5rem 0     ',
   'rounded-bottom-right': '0      0     0     .5rem ',
+  'rounded-bottom':       '0      0     .5rem .5rem ',
+  'rounded-top':          '.5rem  .5rem 0     0     ',
 };
 
 const cardStyle     = computed(() => {
