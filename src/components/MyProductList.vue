@@ -17,7 +17,8 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { defineProps, defineEmits, computed,ref, watch } from 'vue';
+import { useStore } from 'vuex';
 import MyProduct from '@components/MyProduct.vue';
 
 const props = defineProps({
@@ -30,11 +31,24 @@ const props = defineProps({
   filter:           { type: String,   default:  ''    }
 });
 
+const store=useStore()
+const storeGet=store.getters
+const canClickProducts=ref(storeGet.getCanClickProducts())
 const emit = defineEmits(['click', 'longClick']);
 
 const handleDrag        = (dir, product) => dir === 'left' ? product.amount = (product.amount > 0) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1;
-const handleClick       = product => (product.amount==0?product.amount=1:null,emit('click', product))
+const handleClick       = product => (product.amount==0?product.amount=1:null,doEmit(product))
 const handleLongClick   = product => emit('longClick', product)
+
+const doEmit=product=>{
+  if (canClickProducts.value)
+  {
+    store.dispatch('setCanClickProducts',false)
+    setTimeout(()=>store.dispatch('setCanClickProducts',true),250)
+    emit('click', product)
+  }
+}
+watch(()=>storeGet.getCanClickProducts(),newValue=>canClickProducts.value=newValue)
 
 const sortedProductList = computed(() => {
   let aux = props.productList;
