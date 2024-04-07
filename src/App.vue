@@ -86,6 +86,7 @@
           v-touch:drag.once="handleDragCard"
           :height="alturaDisponible" 
           >
+          <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
           <my-product-list 
             orderBy="name"
             :productList="productosVisibles" 
@@ -100,6 +101,7 @@
           v-touch:drag.once="handleDragCard"
           :height="alturaDisponible" 
           >
+          <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
           <my-product-list 
             orderBy="categoryId"
             :productList="productosVisibles" 
@@ -207,6 +209,7 @@
 
       tabActiva.value=defaultTabActive.value
 
+      const amount2Buy=computed(()=>productsData.value.filter(i=>i.selected).length)
 
       const changes2Save={
         categoriasVisibiles:false,

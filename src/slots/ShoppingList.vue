@@ -16,10 +16,11 @@
       </div>
     </div>
     <MyCard
-      borderStyle="rounded-bottom"
-      :height="props.alturaDisponible" 
-      :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
-      >
+    borderStyle="rounded-bottom"
+    :height="props.alturaDisponible" 
+    :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
+    >
+      <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
       <div class="h-100" v-show="productosVisibles.every(i=>i.selected==false)">
         <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
       </div> 
@@ -88,6 +89,7 @@
     alturaDisponible:{type:Number,required:true},
     active:{type:Boolean,required:true}
   })
+  const amount2Buy=computed(()=>productosVisibles.value.filter(i=>!i.done).length)
   const anchoBoton=ref('100px')
   const recalculateAnchoBoton=()=>anchoBoton.value=(document.querySelector(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
 
