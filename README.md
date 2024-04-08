@@ -21,9 +21,16 @@ Está inspirada en una aplicación (ya retirada de la appstore) llamada igualmen
 Aquí tienes algunas imágenes que muestran la interfaz de usuario de nuestra aplicación:
 
 - Screenshot 1
+![2024-04-08_21-02](https://github.com/Trystan4861/hungry/assets/29180676/4add8fe6-0782-44d3-b9f6-e10c8c3212a9)
+
 - Screenshot 2
+![2024-04-08_20-56](https://github.com/Trystan4861/hungry/assets/29180676/00dfedbb-8241-4028-91b6-4c1ed4e59215)
+
 - Screenshot 3
+![2024-04-08_20-56_1](https://github.com/Trystan4861/hungry/assets/29180676/2bd0760c-06d3-40b8-a549-3a4a720b51ae)
+
 - Screenshot 4
+![2024-04-08_20-57](https://github.com/Trystan4861/hungry/assets/29180676/24fb88b3-d6a8-40ef-8d8f-43c6c677056a)
 
 ## Instalación
 
