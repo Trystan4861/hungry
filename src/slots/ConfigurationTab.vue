@@ -67,12 +67,10 @@
   import SlotConfigurationTabsActive  from '@slots/ConfigurationTabsActive.vue';
   import { useStore }                 from "vuex";
   import { notify }                   from '@kyvg/vue3-notification';
-  import { ref }                      from 'vue';
+  import { ref,computed }                      from 'vue';
   import { localStorageService }      from '@/localStorageService'
   import Swal                         from 'sweetalert2'
 
-  const emits=defineEmits (['categoriasVisibilesChanged'])
-  
   const store=useStore()
   const storeGet=store.getters
 
@@ -94,23 +92,21 @@
       
       
   const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
-  const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
-  const productsData            = ref(getDataFromLocalStorage('productos'       ))
-
+  const categoriesData          = computed(()=>storeGet.getCategorias())
   
   const configFullScreen        = ref(fullScreen.value)
-  const categoriasVisibles      = ref([])
 
   const handleChangeFullScreen  = checked => { configFullScreen.value=checked }
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
   const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
 
+  const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
 
   const handleCategoriesChecked = data =>{
     let aux=categoriesData.value.map(categoria => ({ ...categoria }))
     aux.forEach((item,index)=>item.visible=data.includes(index))
-    categoriasVisibles.value=aux
+    categoriasVisibles.value= aux
     changes2Save.categoriasVisibiles=true
   }      
   const handleImportConfigurationFile=data=>{
@@ -125,8 +121,6 @@
       if (result.isConfirmed){
         store.dispatch('setConfiguration', localStorageService.setItem(data));
         
-        categoriesData.value=storeGet.getCategorias()
-        productsData.value=storeGet.getProductos()
         defaultTabActive.value=storeGet.getDefaultTabActive()
         fullScreen.value=storeGet.getFullScreen()
 
@@ -141,18 +135,18 @@
       else if (result.dismiss === Swal.DismissReason.cancel){
         let importado=[];
         if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0){
-          categoriesData.value=data.categorias;
+          dispatch('categorias',data.categorias)
           importado.push("las categorias")
         }
         if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0){
-          productsData.value=data.productos;
+          dispatch('productos',data.productos)
           importado.push("los productos")
         }
         importado=importado.join(" y ")
         Swal.fire({
           icon:'success',
           title:'Atención',
-          html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
+          html:`Se han importado ${importado}<br>desde el archivo de configuración<br>correctamente`,
           confirmButtonText:'Aceptar',
           target: document.querySelector("#appContainer"),
         })
@@ -164,7 +158,7 @@
     if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
     if (changes2Save.categoriasVisibiles)
     {
-      emits('categoriasVisibilesChanged',categoriasVisibles)
+      dispatch('categorias',categoriasVisibles.value)
       Swal.fire({
         icon:'success',
         title:'Atención',

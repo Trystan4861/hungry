@@ -3,7 +3,7 @@
   borderStyle="rounded-bottom"
   >
     <MyCategoriesList class="mb-4" 
-    :categories="props.categoriesData" 
+    :categories="categoriesData" 
     @categoryLongClick="handleCategoryLongClick" 
     @categorySelected="handleCategorySelected" 
     />
@@ -37,7 +37,7 @@
   import Swal                               from 'sweetalert2'
   import MyInput                            from '@components/MyInput.vue'
   import MyButton                           from '@components/MyButton.vue'
-  import { ref }  from 'vue';
+  import { ref, computed }  from 'vue';
   import { useStore } from 'vuex'
   import { generateID } from '@/utilidades'
 
@@ -46,7 +46,6 @@
   const storeGet=store.getters
 
   const props=defineProps({ 
-    categoriesData:   { type: Array,    required: true      }, 
     supermercados:    { type: Array,    required: true      },
     maxLenght:        { type: Number,   default:  Infinity  },
     defaultMaxLength: { type: Boolean,  defaul:   false     },
@@ -55,9 +54,11 @@
   if (props.defaultMaxLength) realMaxLength.value=storeGet.getMaxLenght();
   const handleBlur=(event)=>emit('blur',event)
 
+  const categoriesData=computed(()=>storeGet.getCategorias())
+
   const nuevoProducto=ref("")
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
-  const categoriaActiva= ref(props.categoriesData[0])
+  const categoriaActiva= ref(categoriesData.value[0])
   const supermercadoActivo=ref(props.supermercados[0])
   const handleCategoryLongClick=categoria=>{
     Swal.fire({

@@ -12,9 +12,8 @@
         />
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
-        <slot-add-new-product 
+        <SlotAddNewProduct 
           ref               = "slotAddNewProductRef"
-          :categoriesData   = "categoriesData" 
           :supermercados    = "supermarketsData" 
           :defaultMaxLength = "true"
           @categoryChanged  = "handleCategoryChanged" 
@@ -22,20 +21,14 @@
           @blur             = "handleBlur"
           />
       </template>    
-      <template v-slot:tabContent2> <!-- orderBy name -->
-        <slotProductsList 
-          orderBy           = "name" 
-        />
+      <template v-slot:tabContent2> 
+        <SlotProductsList orderBy = "name" />
       </template>
-      <template v-slot:tabContent3> <!-- orderBy categoryId,name -->
-        <slotProductsList 
-          orderBy           = "categoryId" 
-        />
+      <template v-slot:tabContent3> 
+        <SlotProductsList orderBy = "categoryId" />
       </template>
-      <template v-slot:tabContent4> <!-- Shopping List -->
-        <slotShoppingList 
-          :active           = "tabActiva==4" 
-        />
+      <template v-slot:tabContent4>
+        <SlotShoppingList :active = "tabActiva==4" />
       </template>
     </my-tab>
   </div>
@@ -50,7 +43,7 @@
   import SlotProductsList                   from '@slots/ProductsList.vue'
   import SlotConfigurationTab                 from '@slots/ConfigurationTab.vue'
   import SlotAddNewProduct                    from '@slots/AddNewProduct.vue'
-  import slotShoppingList                     from '@slots/ShoppingList.vue'
+  import SlotShoppingList                     from '@slots/ShoppingList.vue'
 
   import Swal                                 from 'sweetalert2'
   import { ref, watch, onMounted }  from 'vue'
@@ -75,7 +68,7 @@
   const handleUpdateTabActive               = tab=>tabActiva.value=tab
   
   const handlecategoriasVisibilesChanged=(newCategoriesData)=>{
-    categoriesData.value=newCategoriesData.value
+    console.log(newCategoriesData)//categoriesData.value=newCategoriesData.value
   }
 
   const handleCategoryChanged   = (id_categoria,text) =>{
@@ -134,11 +127,10 @@
   watch(productsData,   newData => store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
   watch(categoriesData, newData => store.dispatch('setCategorias',  localStorageService.setSubItem('categorias',  newData)));
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)
+  watch(()=>storeGet.getCategorias(),newData=>categoriesData.value=newData)
 
   onMounted(()=>{
     document.addEventListener('contextmenu', event => event.preventDefault())
-    typeof window.DOM  != 'function' && (window.DOM = (e,scope=document)=>scope.querySelector(e))
-    typeof window._DOM != 'function' && (window._DOM= (e,scope=document)=>scope.querySelectorAll(e))
   })
 </script>
 
