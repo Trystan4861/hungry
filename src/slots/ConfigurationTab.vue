@@ -77,27 +77,26 @@
   const storeGet=store.getters
 
   const tabsData                = storeGet.getTabs()
+  const initialData             = storeGet.getConfiguration()
+  const CONFIG_NAMES            = storeGet.getConfigNames()
 
   const getDataFromLocalStorage = index=> {
-          let storedData = localStorageService.getSubItem(index);
-          if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
-          return storedData ?? localStorageService.setSubItem(index, initialData[index]);
-        }
-        
-        const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
-        
-        const changes2Save={
-          categoriasVisibiles:false,
-        defaultTabActive: defaultTabActive.value
-      }
+    let storedData = localStorageService.getSubItem(index);
+    if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
+    return storedData ?? localStorageService.setSubItem(index, initialData[index]);
+  }
+  const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
+  
+  const changes2Save={
+    categoriasVisibiles:false,
+    defaultTabActive: defaultTabActive.value
+  }
       
       
-      const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
-      const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
-      const productsData            = ref(getDataFromLocalStorage('productos'       ))
+  const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
+  const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
+  const productsData            = ref(getDataFromLocalStorage('productos'       ))
 
-  const CONFIG_NAMES            = storeGet.getConfigNames()
-  const initialData             = storeGet.getConfiguration()
   
   const configFullScreen        = ref(fullScreen.value)
   const categoriasVisibles      = ref([])
@@ -105,94 +104,97 @@
   const handleChangeFullScreen  = checked => { configFullScreen.value=checked }
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
+  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
+
+
   const handleCategoriesChecked = data =>{
     let aux=categoriesData.value.map(categoria => ({ ...categoria }))
-      aux.forEach((item,index)=>item.visible=data.includes(index))
-      categoriasVisibles.value=aux
-      changes2Save.categoriasVisibiles=true
+    aux.forEach((item,index)=>item.visible=data.includes(index))
+    categoriasVisibles.value=aux
+    changes2Save.categoriasVisibiles=true
   }      
   const handleImportConfigurationFile=data=>{
+    Swal.fire({
+      title: '¿Qué deseas importar?',
+      text: '¿Deseas importar el archivo de configuración completo o sólo los productos y las categorías?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Completo',
+      cancelButtonText: 'Sólo productos y categorías'
+    }).then((result) => {
+      if (result.isConfirmed){
+        store.dispatch('setConfiguration', localStorageService.setItem(data));
+        
+        categoriesData.value=storeGet.getCategorias()
+        productsData.value=storeGet.getProductos()
+        defaultTabActive.value=storeGet.getDefaultTabActive()
+        fullScreen.value=storeGet.getFullScreen()
+
         Swal.fire({
-          title: '¿Qué deseas importar?',
-          text: '¿Deseas importar el archivo de configuración completo o sólo los productos y las categorías?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Completo',
-          cancelButtonText: 'Sólo productos y categorías'
-        }).then((result) => {
-          if (result.isConfirmed){
-            store.dispatch('setConfiguration', localStorageService.setItem(data));
-            
-            categoriesData.value=storeGet.getCategorias()
-            productsData.value=storeGet.getProductos()
-            defaultTabActive.value=storeGet.getDefaultTabActive()
-            fullScreen.value=storeGet.getFullScreen()
-
-            Swal.fire({
-              icon:'success',
-              title:'Atención',
-              html:`Configuración importada correctamente`,
-              confirmButtonText:'Aceptar',
-              target: document.querySelector("#appContainer"),
-            })
-          }
-          else if (result.dismiss === Swal.DismissReason.cancel){
-            let importado=[];
-            if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0){
-              categoriesData.value=data.categorias;
-              importado.push("las categorias")
-            }
-            if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0){
-              productsData.value=data.productos;
-              importado.push("los productos")
-            }
-            importado=importado.join(" y ")
-            Swal.fire({
-              icon:'success',
-              title:'Atención',
-              html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
-              confirmButtonText:'Aceptar',
-              target: document.querySelector("#appContainer"),
-            })
-          }
-        });
+          icon:'success',
+          title:'Atención',
+          html:`Configuración importada correctamente`,
+          confirmButtonText:'Aceptar',
+          target: document.querySelector("#appContainer"),
+        })
       }
-      const saveConfigChanges=()=>{
-        let toSave=changes2Save.defaultTabActive!=defaultTabActive.value || changes2Save.categoriasVisibiles || fullScreen.value!=configFullScreen.value;
-        if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
-        if (changes2Save.categoriasVisibiles)
-        {
-          emits('categoriasVisibilesChanged',categoriasVisibles)
-          Swal.fire({
-            icon:'success',
-            title:'Atención',
-            html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
-            confirmButtonText:'Aceptar',
-            target: document.querySelector("#appContainer"),
-          })
+      else if (result.dismiss === Swal.DismissReason.cancel){
+        let importado=[];
+        if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0){
+          categoriesData.value=data.categorias;
+          importado.push("las categorias")
         }
-        if (changes2Save.defaultTabActive!=defaultTabActive.value)
-        {
-          store.dispatch('setDefaultTabActive',  localStorageService.setSubItem('defaultTabActive', changes2Save.defaultTabActive));
-          Swal.fire({
-            icon: 'info',
-            title: 'Atención',
-            html: `El cambio de la pestaña activa por defecto será efectivo tras recargar Hungry!`,
-            showConfirmButton: true,
-            confirmButtonText: 'Aceptar',
-            showDenyButton: true,
-            denyButtonText: 'Recargar',
-            target: document.querySelector("#appContainer"),
-            allowOutsideClick: false
-          }).then(result=>result.isDenied?window.location.reload():null);
+        if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0){
+          productsData.value=data.productos;
+          importado.push("los productos")
         }
-        if(fullScreen.value!=configFullScreen.value)
-        {
-          fullScreen.value=configFullScreen.value
-          store.dispatch('setFullScreen',        localStorageService.setSubItem('fullScreen',       configFullScreen.value));
-        }
-
-        changes2Save.categoriasVisibiles=false;
-        return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
+        importado=importado.join(" y ")
+        Swal.fire({
+          icon:'success',
+          title:'Atención',
+          html:`Se han importado ${importado}<br>desde el archivo de configuración<br>importado correctamente`,
+          confirmButtonText:'Aceptar',
+          target: document.querySelector("#appContainer"),
+        })
       }
+    });
+  }
+  const saveConfigChanges=()=>{
+    let toSave=changes2Save.defaultTabActive!=defaultTabActive.value || changes2Save.categoriasVisibiles || fullScreen.value!=configFullScreen.value;
+    if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
+    if (changes2Save.categoriasVisibiles)
+    {
+      emits('categoriasVisibilesChanged',categoriasVisibles)
+      Swal.fire({
+        icon:'success',
+        title:'Atención',
+        html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
+        confirmButtonText:'Aceptar',
+        target: document.querySelector("#appContainer"),
+      })
+    }
+    if (changes2Save.defaultTabActive!=defaultTabActive.value)
+    {
+      dispatch('defaultTabActive',changes2Save.defaultTabActive);
+      Swal.fire({
+        icon: 'info',
+        title: 'Atención',
+        html: `El cambio de la pestaña activa por defecto será efectivo tras recargar Hungry!`,
+        showConfirmButton: true,
+        confirmButtonText: 'Aceptar',
+        showDenyButton: true,
+        denyButtonText: 'Recargar',
+        target: document.querySelector("#appContainer"),
+        allowOutsideClick: false
+      }).then(result=>result.isDenied?window.location.reload():null);
+    }
+    if(fullScreen.value!=configFullScreen.value)
+    {
+      fullScreen.value=configFullScreen.value
+      dispatch('fullScreen',configFullScreen.value);
+    }
+
+    changes2Save.categoriasVisibiles=false;
+    return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
+  }
 </script>
