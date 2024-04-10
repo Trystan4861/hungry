@@ -4,7 +4,6 @@ export default createStore({
   state: {
     appStatic:{
       maxLenght: 40,
-      saveProductsState:true,
       ignoreDrag:false,
       heightDesviation: -90,
       localStorageKeys:['categoriesData','productsData'],
@@ -116,7 +115,6 @@ export default createStore({
     getIgnoreDrag:        (state)=>(  )=>state.appStatic.ignoreDrag,
     getLocalStorageKeys:  (state)=>(  )=>state.appStatic.localStorageKeys,
     getMaxLenght:         (state)=>(  )=>state.appStatic.maxLenght,
-    getSaveProductsState: (state)=>(  )=>state.appStatic.saveProductsState,
     getSupermercadoFromID:(state)=>(id)=>state.appStatic.supermercados.find(supermercado=>supermercado.id===id),
     getSupermercados:     (state)=>(  )=>state.appStatic.supermercados,
     getTabs:              (state)=>(  )=>state.appStatic.tabs,

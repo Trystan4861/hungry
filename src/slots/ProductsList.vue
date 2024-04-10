@@ -11,6 +11,7 @@
       :productList="productosVisibles" 
       @click="handleClickProduct"
       @longClick="handeLongClickProduct"
+      @drag="handleDrag"
       ref="productListRef"
       />
     </div>
@@ -55,9 +56,10 @@
   import { notify } from '@kyvg/vue3-notification';
   import { localStorageService } from '@/localStorageService';
 
-  const props=defineProps({
-    orderBy:            { type: String, default: 'name' },
-  })
+  const props=defineProps({ orderBy:            { type: String, default: 'name' }, })
+  
+  const setProductsData =newData=>store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
+  const handleDrag=()=>setProductsData(productsData.value)
 
   const store                   = useStore()
   const storeGet                = store.getters
@@ -72,7 +74,6 @@
   const productoAEditar         = ref('')
   const productoAEditarRef      = ref(null)
   const productoSeleccionado    = ref(null)
-  const saveProductsState       = storeGet.getSaveProductsState()
   const selectRef               = ref(null)
   const supermarketAtEdit       = ref(null)
   const supermarketsData        = storeGet.getSupermercados()
@@ -106,10 +107,11 @@
   }
   const handleClickProduct      = product => {
     if (storeGet.getIgnoreDrag()) return
-    let index=findIndexById(product.id,productsData.value)
-    productsData.value[index].selected=(Object.prototype.hasOwnProperty.call(productsData.value[index], 'selected'))?!productsData.value[index].selected:true
-    productsData.value[index].done=false
-    if (saveProductsState) productsData.value = [...productsData.value]
+    let aux=[...productsData.value]
+    let index=findIndexById(product.id,aux)
+    aux[index].selected=(Object.prototype.hasOwnProperty.call(aux[index], 'selected'))?!aux[index].selected:true
+    aux[index].done=false
+    setProductsData(aux)
   }
   const handeLongClickProduct   = product => {
     if (storeGet.getIgnoreDrag()) return
@@ -203,7 +205,7 @@
       target: document.querySelector("#appContainer"),
     }).then((result) => {
       if (result.isConfirmed){
-        productsData.value = productsData.value.filter(item => item.id !== productoSeleccionado.value.id)
+        setProductsData(productsData.value.filter(item => item.id !== productoSeleccionado.value.id))
         notify({group:"app", text:`Producto «${productoSeleccionado.value.text}» eliminado correctamente`,type:"warn", duration:3000})
         productoSeleccionado.value=null;
       }

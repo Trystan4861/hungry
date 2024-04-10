@@ -34,9 +34,12 @@ const props = defineProps({
 const store=useStore()
 const storeGet=store.getters
 const canClickProducts=ref(storeGet.getCanClickProducts())
-const emit = defineEmits(['click', 'longClick']);
+const emit = defineEmits(['click', 'longClick','drag']);
 
-const handleDrag        = (dir, product) => dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1;
+const handleDrag        = (dir, product) => {
+  dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1 
+  emit('drag')
+}
 const handleClick       = product => (product.amount==0?product.amount=1:null,doEmit(product))
 const handleLongClick   = product => emit('longClick', product)
 
