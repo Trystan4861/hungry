@@ -6,7 +6,6 @@
 
 <script setup>
 import MyRadio from '@components/MyRadio.vue';
-import { defineProps } from 'vue';
 
 const props = defineProps({
   radios:         { type: Array,  required: true  },

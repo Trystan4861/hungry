@@ -5,22 +5,32 @@
 </template>
 
 <script setup>
-  import { ref, watch, onMounted, defineProps,defineEmits, defineExpose } from 'vue';
+  import { ref, watch, onMounted } from 'vue';
+  import { useStore } from 'vuex';
   const props         = defineProps({
-    modelValue:   { type: String,   default: ''                     },
-    placeholder:  { type: String,   default: 'Añade elementos aquí' },
-    autofocus:    { type: Boolean,  default: false                  },
-    maxLength:    { type: Number,   default: Infinity               },
+    modelValue:       { type: String,   default: ''                     },
+    placeholder:      { type: String,   default: 'Añade elementos aquí' },
+    autofocus:        { type: Boolean,  default: false                  },
+    maxLength:        { type: Number,   default: Infinity               },
+    defaultMaxLenght: { type: Boolean,  default: false                  },
   });
 
-  
+  const store         = useStore();
+  const storeGet      = store.getters;
   const inputValue    = ref(props.modelValue);
   const inputID       = `input-${Math.random().toString(36).slice(2)}`;
   const inputRef      = ref(null);
   
+  const realMaxLenght = ref(props.maxLength)
+
+  if (props.defaultMaxLenght) realMaxLenght.value= storeGet.getMaxLenght()
+
+
+
+
   const ignoreKeys    = ['Enter','Backspace','Delete']
   const focusInput    = () => (props.autofocus)?inputRef.value.focus():null;
-  const handleKeyDown = event => props.maxLength !== Infinity && inputValue.value.length >= props.maxLength && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
+  const handleKeyDown = event => realMaxLenght.value !== Infinity && inputValue.value.length >= realMaxLenght.value && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
   const hadleKeyUp    = event => event.key === 'Enter' && emit('keyPressed:enter')
   const handleBlur    = event => emit('blur',event)
   

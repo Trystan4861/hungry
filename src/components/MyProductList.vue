@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed,ref, watch } from 'vue';
+import { computed,ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import MyProduct from '@components/MyProduct.vue';
 
@@ -36,7 +36,7 @@ const storeGet=store.getters
 const canClickProducts=ref(storeGet.getCanClickProducts())
 const emit = defineEmits(['click', 'longClick']);
 
-const handleDrag        = (dir, product) => dir === 'left' ? product.amount = (product.amount > 0) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1;
+const handleDrag        = (dir, product) => dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1;
 const handleClick       = product => (product.amount==0?product.amount=1:null,doEmit(product))
 const handleLongClick   = product => emit('longClick', product)
 

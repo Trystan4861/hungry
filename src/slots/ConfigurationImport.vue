@@ -5,7 +5,6 @@
 <script setup>
   import MyFile                       from '@components/MyFile.vue';
   import Swal                         from 'sweetalert2';
-  import { defineEmits,defineProps }  from 'vue';
 
   const props=defineProps({ 
     showInternalSwalError:  { type:Boolean, default:true      },

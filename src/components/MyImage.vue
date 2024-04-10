@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount } from 'vue';
 
 const props       = defineProps({
   image:      { type: [String, File], required: true                                          },

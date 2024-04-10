@@ -14,8 +14,9 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, defineExpose } from 'vue';
+import { ref, watch } from 'vue';
 import MyImage from '@components/MyImage.vue';
+import { generateID } from '@/utilidades'
 
 const props = defineProps({
   modelValue:   { type: Object, },
@@ -25,7 +26,7 @@ const props = defineProps({
   }
 });
 
-const id = `'image-${Math.random().toString(36).slice(2)}`;
+const id = `'image-${generateID()}`;
 const showDropdown = ref(false);
 const selectedOption = ref(props.selected);
 const modelOption= ref(props.modelValue)

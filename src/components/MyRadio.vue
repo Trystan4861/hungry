@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits } from 'vue';
+import { computed } from 'vue';
 
 const props         = defineProps({
   id:       { type: String, required: true },

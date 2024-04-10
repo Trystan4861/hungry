@@ -1,11 +1,11 @@
 <template>
-  <div  v-show="productosVisibles.some(i=>i.selected)">
+  <div  v-show="productosSeleccionadosVisibles.some(i=>i.selected)">
       <div class="mr-0 d-flex">
         <MySelect
         class="flex-grow-1"
         ref="supermarketAtShoppingList"
-        :options="props.supermercados.filter(item=>item.id!=0)" 
-        :selected="props.supermercados[1]" 
+        :options="supermercados.filter(item=>item.id!=0)" 
+        :selected="supermercados[1]" 
         />
         <MyButton
         btnClass="danger" 
@@ -17,15 +17,14 @@
     </div>
     <MyCard
     borderStyle="rounded-bottom"
-    :height="props.alturaDisponible" 
-    :heightModifier="productosVisibles.some(i=>i.selected==true)?-50:0" 
+    :heightModifier="productosSeleccionadosVisibles.some(i=>i.selected==true)?-50:0" 
     >
       <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
-      <div class="h-100" v-show="productosVisibles.every(i=>i.selected==false)">
+      <div class="h-100" v-show="productosSeleccionadosVisibles.every(i=>i.selected==false)">
         <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
       </div> 
       <div v-show="
-          productosVisibles.some(item=>
+          productosSeleccionadosVisibles.some(item=>
           item.selected 
           && (item.id_supermercado==(id_supermercado) || item.id_supermercado==0) 
           && !item.done
@@ -36,14 +35,14 @@
           orderBy="categoryId" 
           :canBeDone="true" 
           filter="undone"
-          :productList="productosVisibles" 
+          :productList="productosSeleccionadosVisibles" 
           :selected="true" 
           :supermercado="id_supermercado || 0" 
           @click="handleShoplistClick" 
           />
       </div>
       <div v-show="(
-        productosVisibles.some(item=>
+        productosSeleccionadosVisibles.some(item=>
           item.selected 
           && !item.done 
           && (item.id_supermercado!=(id_supermercado || 0) && (item.id_supermercado!=0))
@@ -55,18 +54,18 @@
           :canBeDone="true" 
           filter="undone"
           :hideSupermercado="true" 
-          :productList="productosVisibles" 
+          :productList="productosSeleccionadosVisibles" 
           :selected="true" 
           :supermercado="id_supermercado || 0" 
           @click="handleShoplistClick" 
           />
       </div>
-      <div v-show="(productosVisibles.some(item=>item.done))">
+      <div v-show="(productosSeleccionadosVisibles.some(item=>item.done))">
         <div class="w-100 text-center">Ya comprado<hr /></div>
         <MyProductList 
           orderBy="categoryId" 
           :canBeDone="true" 
-          :productList="productosVisibles" 
+          :productList="productosSeleccionadosVisibles" 
           :selected="true" 
           filter="done"
           @click="handleShoplistClick" 
@@ -80,16 +79,21 @@
   import MyCard from '@components/MyCard.vue';
   import MyProductList from '@components/MyProductList.vue';
   import Swal from 'sweetalert2';
-  import { ref, defineProps, computed, watch,onMounted } from 'vue';
+  import { ref, computed, watch,onMounted } from 'vue';
   import { findIndexById }            from '@/utilidades'
+  import { useStore } from 'vuex';
+  import { localStorageService } from '@/localStorageService';
 
+  const store=useStore()
+  const storeGet=store.getters
   const props=defineProps({
-    modelValue: {type:Object, required:true},
-    supermercados:{type:Object,required:true},
-    alturaDisponible:{type:Number,required:true},
-    active:{type:Boolean,required:true}
+    active:       {type:Boolean,required:true}
   })
-  const amount2Buy=computed(()=>productosVisibles.value.filter(i=>!i.done).length)
+  const supermercados=computed(()=>storeGet.getSupermercados())
+  const productsData=computed(()=>storeGet.getProductos())
+  const categoriesData=computed(()=>storeGet.getCategorias())
+
+  const amount2Buy=computed(()=>productosSeleccionadosVisibles.value.filter(i=>!i.done).length)
   const anchoBoton=ref('100px')
   const recalculateAnchoBoton=()=>anchoBoton.value=(document.querySelector(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
 
@@ -101,8 +105,15 @@
   const id_supermercado=computed(()=>supermarketAtShoppingList.value?.selectedOption.id)
   const supermercado=computed(()=>supermarketAtShoppingList.value?.selectedOption.text)
   const supermarketAtShoppingList=ref(null)
-  const productsData=ref(props.modelValue)
-  const productosVisibles=computed(()=>productsData.value.filter(item=>item.selected))
+  
+  
+  const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
+
+  const productosVisibles       = computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
+  const productosSelecionados=computed(()=>productosVisibles.value.filter(item=>item.selected))
+
+  const productosSeleccionadosVisibles=computed(()=>productosSelecionados.value.filter(item=>item.selected))
+  
   const handleShoplistClick=item=>{
     productsData.value[findIndexById(item.id,productsData.value)].done=!productsData.value[findIndexById(item.id,productsData.value)].done
   }
@@ -142,6 +153,8 @@
           }
         });      
       }
+  watch(productsData,   newData => storeGet.getProductos()!=newData && store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
+  watch(()=>storeGet.getProductos(),newData=>productsData.value!=newData && (productsData.value=newData))
 </script>
 <style scoped>
 </style>

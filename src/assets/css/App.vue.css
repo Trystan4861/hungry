@@ -26,22 +26,13 @@ div:where(.swal2-container) hr  {
                                   top:              0.15vw;
                                   width:            fit-content;
 }
-.my-categories-list-container::after {
-                                  content: ' ';
-                                  display: block;
-                                  width: 98.4%;
-                                  height: 106px;
-                                  background: rgba(0,0,0,0.07);
-                                  position: absolute;
-                                  box-shadow: inset 0em 0px 2em 1px rgba(0, 0, 0, 1);
-                                  z-index: 1;
-                                }
 
 .container                      { 
                                   display:          flex; 
                                   height:           100%; 
                                   flex-direction:   column; 
                                   flex-grow:        1;  
+                                  min-width:        18.125rem;
                                 }
 .appBrand                       { width:            60px;             
                                   position:         absolute;

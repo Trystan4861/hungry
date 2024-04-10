@@ -6,7 +6,8 @@
 </template>
 
 <script setup>
-  import { defineEmits, defineProps, computed } from 'vue';
+  import { computed } from 'vue';
+  import { generateID } from '@/utilidades'
 
   const props             = defineProps({
     fileName:       { validator: value => value instanceof RegExp || typeof value === 'string', default: () => /^.*hungry.*\.json$/i },
@@ -43,7 +44,7 @@
     event.target.value    = '';
   };
 
-  const id                = `inputFile-${Math.random().toString(36).slice(2)}`;
+  const id                = `inputFile-${generateID()}`;
 </script>
 
 
