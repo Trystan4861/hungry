@@ -230,7 +230,7 @@
   watch(productsData,   newData => storeGet.getProductos()!=newData && store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
   watch(()=>storeGet.getProductos(),newData=>productsData.value!=newData && (productsData.value=newData))
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value!=newData && (categoriesData.value=newData))
-  const setMaxHeight=maxHeight=>withScrollRef.value.style.setProperty('--max-height',`${maxHeight}px`)
+  const setMaxHeight=maxHeight=>withScrollRef.value.style.setProperty('--height',`${maxHeight}px`)
   watch(productoAEditarRef,nv=>nv?console.log(nv.value):null)
   onMounted(()=>{
       watch(()=>myCardRef.value?.height, newValue=>setMaxHeight(newValue))
@@ -242,9 +242,9 @@
 <style scoped>
 .withScroll
 {
-  --max-height: 120px;
-  overflow-y: scroll;
-  max-height: calc(var(--max-height,60px) - 50px );
+  --height: auto;
+  overflow-y: auto;
+  height: calc(var(--height,60px) - 50px );
 }
 .letraActual{
   display: flex;

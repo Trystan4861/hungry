@@ -19,8 +19,8 @@
     borderStyle="rounded-bottom"
     :heightModifier="productosSeleccionadosVisibles.some(i=>i.selected==true)?-50:0" 
     >
-      <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
-      <div class="h-100" v-show="productosSeleccionadosVisibles.every(i=>i.selected==false)">
+      <div class="text-end" v-show="productosSeleccionadosVisibles.some(i=>i.selected)">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
+      <div class="h-100" v-show="productosSeleccionadosVisibles.every(i=>!i.selected)">
         <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
       </div> 
       <div v-show="
@@ -116,6 +116,7 @@
   
   const handleShoplistClick=item=>{
     productsData.value[findIndexById(item.id,productsData.value)].done=!productsData.value[findIndexById(item.id,productsData.value)].done
+    setProductsData(productsData.value)
   }
   const clearList=()=>{
         const productosSeleccionados=productsData.value.filter(item=>item.selected)
@@ -151,9 +152,11 @@
               producto.done=false
             })
           }
+          setProductsData(productsData.value)
         });      
       }
-  watch(productsData,   newData => storeGet.getProductos()!=newData && store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
+  const setProductsData =newData=>store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
+  watch(productsData,   newData => setProductsData(newData));
   watch(()=>storeGet.getProductos(),newData=>productsData.value!=newData && (productsData.value=newData))
 </script>
 <style scoped>
