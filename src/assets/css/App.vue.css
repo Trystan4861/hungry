@@ -80,3 +80,6 @@ div:where(.swal2-container) hr  {
                                   position:         absolute;
                                   top:              95%;
                                 }
+.bold                           {
+                                  --bs-btn-font-weight: bold !important;
+                                }

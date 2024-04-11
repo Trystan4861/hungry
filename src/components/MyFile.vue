@@ -1,7 +1,7 @@
 <template>
   <div>
     <input :id="id"  type="file" :accept="accept" @change="handleFileChange">
-    <label :for="id" class="btn btn-primary">{{ text }}</label>
+    <label :for="id" :class="['btn', `btn-${props.btnClass}`]">{{ text }}</label>
   </div>
 </template>
 
@@ -15,6 +15,7 @@
     forceFileName:  { type: Boolean,  default: false },
     maxFileSize:    { type: Number,   default: null },
     text:           { type: String,   default: 'Seleccionar archivo' },
+    btnClass:       { type: String,   default: 'primary'}
   });
 
   const readFile          = (inputFile) => new Promise((resolve, reject) => {

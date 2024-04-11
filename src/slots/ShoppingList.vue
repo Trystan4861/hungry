@@ -8,7 +8,7 @@
         :selected="supermercados[1]" 
         />
         <MyButton
-        btnClass="danger" 
+        btnClass="danger bold" 
         class="clearList"
         text="Limpiar Lista" 
         :styleButton="{width: anchoBoton,borderRadius:'0px'}"
