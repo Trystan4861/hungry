@@ -70,6 +70,7 @@
   import { ref,computed }                      from 'vue';
   import { localStorageService }      from '@/localStorageService'
   import Swal                         from 'sweetalert2'
+  import { dispatch } from '@/utilidades';
 
   const store=useStore()
   const storeGet=store.getters
@@ -95,7 +96,7 @@
   const handleChangeFullScreen  = checked => configFullScreen.value=checked
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
-  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
+//  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
 
   const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
 
@@ -130,11 +131,11 @@
       else if (result.dismiss === Swal.DismissReason.cancel){
         let importado=[];
         if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0){
-          dispatch('categorias',data.categorias)
+          dispatch(store,'categorias',data.categorias)
           importado.push("las categorias")
         }
         if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0){
-          dispatch('productos',data.productos)
+          dispatch(store,'productos',data.productos)
           importado.push("los productos")
         }
         importado=importado.join(" y ")
@@ -153,7 +154,7 @@
     if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
     if (changes2Save.categoriasVisibiles)
     {
-      dispatch('categorias',categoriasVisibles.value)
+      dispatch(store,'categorias',categoriasVisibles.value)
       Swal.fire({
         icon:'success',
         title:'Atención',
@@ -164,7 +165,7 @@
     }
     if (changes2Save.defaultTabActive!=defaultTabActive.value)
     {
-      dispatch('defaultTabActive',changes2Save.defaultTabActive);
+      dispatch(store,'defaultTabActive',changes2Save.defaultTabActive);
       Swal.fire({
         icon: 'info',
         title: 'Atención',
@@ -179,7 +180,7 @@
     }
     if(fullScreen.value!=configFullScreen.value)
     {
-      dispatch('fullScreen',configFullScreen.value);
+      dispatch(store,'fullScreen',configFullScreen.value);
     }
 
     changes2Save.categoriasVisibiles=false;

@@ -3,7 +3,6 @@
   borderStyle="rounded-bottom"
   >
     <MyCategoriesList class="mb-4" 
-    :categories="categoriesData" 
     @categoryLongClick="handleCategoryLongClick" 
     @categorySelected="handleCategorySelected" 
     />
@@ -31,15 +30,15 @@
 </template>  
 
 <script setup>
-  import MyCard from '@/components/MyCard.vue'
-  import MySelect                           from '@components/MySelect.vue'
-  import MyCategoriesList                   from '@components/MyCategoriesList.vue'
-  import Swal                               from 'sweetalert2'
-  import MyInput                            from '@components/MyInput.vue'
-  import MyButton                           from '@components/MyButton.vue'
+  import MyCard             from '@/components/MyCard.vue'
+  import MySelect           from '@components/MySelect.vue'
+  import MyCategoriesList   from '@components/MyCategoriesList.vue'
+  import Swal               from 'sweetalert2'
+  import MyInput            from '@components/MyInput.vue'
+  import MyButton           from '@components/MyButton.vue'
   import { ref, computed }  from 'vue';
-  import { useStore } from 'vuex'
-  import { generateID } from '@/utilidades'
+  import { useStore }       from 'vuex'
+  import { generateID,dispatch, createCopy }     from '@/utilidades'
 
   const id = `'inputAddNewProduct-${generateID()}`;
   const store=useStore()
@@ -76,6 +75,9 @@
         return new Promise((resolve)=>{
             resolve({value: document.querySelector("#inputModifyCategory").value})
         }).then((result)=>{
+          let aux=createCopy(categoriesData.value)
+          aux[categoria.id].text=result.value
+          dispatch(store,'categorias',aux)
           emit ('categoryChanged', categoria.id,result.value)
         })
       },

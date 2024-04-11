@@ -1,5 +1,5 @@
 <template>
-  <div  v-show="productosSeleccionadosVisibles.some(i=>i.selected)">
+  <div  v-show="amount2Buy>0">
       <div class="mr-0 d-flex">
         <MySelect
         class="flex-grow-1"
@@ -17,55 +17,44 @@
     </div>
     <MyCard
     borderStyle="rounded-bottom"
-    :heightModifier="productosSeleccionadosVisibles.some(i=>i.selected==true)?-50:0" 
+    :heightModifier="productosSeleccionados.length>0?-50:0" 
     >
-      <div class="text-end" v-show="productosSeleccionadosVisibles.some(i=>i.selected)">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
-      <div class="h-100" v-show="productosSeleccionadosVisibles.every(i=>!i.selected)">
+      <div class="text-end" v-show="productosSeleccionados.length>0">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
+      <div class="h-100" v-show="amount2Buy==0">
         <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
       </div> 
-      <div v-show="
-          productosSeleccionadosVisibles.some(item=>
-          item.selected 
-          && (item.id_supermercado==(id_supermercado) || item.id_supermercado==0) 
-          && !item.done
-          )"
+      <div v-show="AmountInThisSupermarket>0"
         >
-        <div class="w-100 text-center mt-2">Se puede comprar en {{ supermercado }}<hr /></div>
+        <div class="w-100 text-center mt-2">Puedes comprar en {{ supermercado }} {{ AmountInThisSupermarket }} producto{{ AmountInThisSupermarket>1?'s':'' }}<hr /></div>
         <MyProductList 
           orderBy="categoryId" 
           :canBeDone="true" 
           filter="undone"
-          :productList="productosSeleccionadosVisibles" 
+          :productList="productosSeleccionados" 
           :selected="true" 
           :supermercado="id_supermercado || 0" 
           @click="handleShoplistClick" 
           />
       </div>
-      <div v-show="(
-        productosSeleccionadosVisibles.some(item=>
-          item.selected 
-          && !item.done 
-          && (item.id_supermercado!=(id_supermercado || 0) && (item.id_supermercado!=0))
-        )
-      ) || 0">
-        <div class="w-100 text-center">Para comprar en otros Supermercados<hr /></div>
+      <div v-show="AmountInOtherSupermarkets>0">
+        <div class="w-100 text-center">Puedes comprar en otros Supermercados {{ AmountInOtherSupermarkets }} producto{{ AmountInOtherSupermarkets>1?'s':'' }}<hr /></div>
         <MyProductList 
           orderBy="categoryId" 
           :canBeDone="true" 
           filter="undone"
           :hideSupermercado="true" 
-          :productList="productosSeleccionadosVisibles" 
+          :productList="productosSeleccionados" 
           :selected="true" 
           :supermercado="id_supermercado || 0" 
           @click="handleShoplistClick" 
           />
       </div>
-      <div v-show="(productosSeleccionadosVisibles.some(item=>item.done))">
-        <div class="w-100 text-center">Ya comprado<hr /></div>
+      <div v-show="amountBuyed>0">
+        <div class="w-100 text-center">Ya has comprado {{ amountBuyed }} producto{{ amountBuyed!=1?'s':'' }}<hr /></div>
         <MyProductList 
           orderBy="categoryId" 
           :canBeDone="true" 
-          :productList="productosSeleccionadosVisibles" 
+          :productList="productosSeleccionados" 
           :selected="true" 
           filter="done"
           @click="handleShoplistClick" 
@@ -80,7 +69,7 @@
   import MyProductList from '@components/MyProductList.vue';
   import Swal from 'sweetalert2';
   import { ref, computed, watch,onMounted } from 'vue';
-  import { findIndexById }            from '@/utilidades'
+  import { createCopy, findIndexById }            from '@/utilidades'
   import { useStore } from 'vuex';
   import { localStorageService } from '@/localStorageService';
 
@@ -89,11 +78,25 @@
   const props=defineProps({
     active:       {type:Boolean,required:true}
   })
-  const supermercados=computed(()=>storeGet.getSupermercados())
-  const productsData=computed(()=>storeGet.getProductos())
-  const categoriesData=computed(()=>storeGet.getCategorias())
+  const supermercados                   = computed(()=>storeGet.getSupermercados())
+  const productsData                    = computed(()=>storeGet.getProductos())
+  const categoriesData                  = computed(()=>storeGet.getCategorias())
+  const idsCategoriasVisibles           = computed(()=>createCopy(categoriesData.value).filter(item=>item.visible).map(item=>item.id))
+  const productosDeCategoriasVisibles   = computed(()=>productsData.value.filter(producto => idsCategoriasVisibles.value.includes(producto.id_categoria)))
+  const productosSeleccionados          = computed(()=>productosDeCategoriasVisibles.value.filter(item=>item.selected))
+  const amount2Buy                      = computed(()=>productosSeleccionados.value.filter(i=>!i.done).length)
+  const amountBuyed                     = computed(()=>productosSeleccionados.value.filter(i=>i.done).length)
+  
+  //
+  
+  const AmountInThisSupermarket=computed(()=>
+    productosSeleccionados.value.filter(item=>
+      item.selected 
+      && (item.id_supermercado==(id_supermercado.value) || item.id_supermercado==0) 
+      && !item.done
+    ).length)
+  const AmountInOtherSupermarkets=computed(()=>amount2Buy.value-AmountInThisSupermarket.value)
 
-  const amount2Buy=computed(()=>productosSeleccionadosVisibles.value.filter(i=>!i.done).length)
   const anchoBoton=ref('100px')
   const recalculateAnchoBoton=()=>anchoBoton.value=(document.querySelector(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
 
@@ -107,12 +110,7 @@
   const supermarketAtShoppingList=ref(null)
   
   
-  const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
-
-  const productosVisibles       = computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
-  const productosSelecionados=computed(()=>productosVisibles.value.filter(item=>item.selected))
-
-  const productosSeleccionadosVisibles=computed(()=>productosSelecionados.value.filter(item=>item.selected))
+  
   
   const handleShoplistClick=item=>{
     productsData.value[findIndexById(item.id,productsData.value)].done=!productsData.value[findIndexById(item.id,productsData.value)].done

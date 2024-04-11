@@ -58,9 +58,9 @@
   const slotAddNewProductRef    = ref(null)
   const tabsData                = storeGet.getTabs()
   const supermarketsData        = storeGet.getSupermercados()
-  const productsData            = ref(getDataFromLocalStorage('productos'       ))
-  const categoriesData          = ref(getDataFromLocalStorage('categorias'      ))
-  const tabActiva               = ref(getDataFromLocalStorage('defaultTabActive'))
+  const productsData            = ref(getDataFromLocalStorage(store,'productos'       ))
+  const categoriesData          = ref(getDataFromLocalStorage(store,'categorias'      ))
+  const tabActiva               = ref(getDataFromLocalStorage(store,'defaultTabActive'))
   const myTabRef                = ref(null)
 
   typeof categoriesData.value==='undefined'  && (categoriesData.value=storeGet.getConfiguration().categorias)
@@ -129,7 +129,7 @@
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value=newData)
 
-  onBeforeMount(()=>getDataFromLocalStorage('configuracion'))
+  onBeforeMount(()=>getDataFromLocalStorage(store,'configuracion'))
   onMounted(()=>{
     document.addEventListener('contextmenu', event => event.preventDefault())
   })

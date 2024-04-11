@@ -20,14 +20,18 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import MyCategory from '@components/MyCategory.vue'
+import { useStore } from 'vuex';
 
 const props = defineProps({
-  categories: { type: Array, required: true },
+//  categories: { type: Array, required: true },
   selected: { type: Number, default: 0 }
 });
 
 const emit = defineEmits(['categorySelected', 'categoryLongClick']);
 
+const store=useStore()
+const storeGet=store.getters
+const categories=computed(()=>storeGet.getCategorias())
 const selected = ref(props.selected);
 const activeCategory = ref({});
 const categoriesState = ref({});
@@ -39,8 +43,8 @@ const categoryListStyle = ref({});
 categoriesState.value[0] = true;
 
 const seleccionarCategoria = (id_categoria) => {
-  const index = props.categories.findIndex(categoria => categoria.id === id_categoria);
-  activeCategory.value = props.categories[index];
+  const index = categories.value.findIndex(categoria => categoria.id === id_categoria);
+  activeCategory.value = categories.value[index];
   selected.value = index;
 };
 
@@ -49,26 +53,25 @@ const centrarCategoriaActiva = () => {
 };
 
 const handleCategoryClick = (index) => {
-  console.log(lastCategory,index)
   if (lastCategory == index) return;
   selected.value = lastCategory = index;
   scrollIntoView(index, 'instant');
-  emit('categorySelected', props.categories[index]);
+  emit('categorySelected', categories.value[index]);
 };
 
 const handleCategoryLongClick = (index) => {
   selected.value = index;
   scrollIntoView(index, 'instant');
-  emit('categoryLongClick', props.categories[index]);
+  emit('categoryLongClick', categories.value[index]);
 };
 
 watch(selected, (newValue, oldValue) => {
   oldValue !== null && (categoriesState.value[oldValue] = false);
-  newValue !== null && (categoriesState.value[newValue] = true, activeCategory.value = props.categories[newValue]);
+  newValue !== null && (categoriesState.value[newValue] = true, activeCategory.value = categories.value[newValue]);
 });
 watch(()=>props.selected,newValue=>seleccionarCategoria(newValue))
 
-const visibleCategories = computed(() => props.categories.filter(category => Boolean(category.visible) === true));
+const visibleCategories = computed(() => categories.value.filter(category => Boolean(category.visible) === true));
 
 const handleScroll = () => {
   const container = containerRef.value;
@@ -76,12 +79,12 @@ const handleScroll = () => {
 
   const containerRect = container.getBoundingClientRect();
   const containerCenter = containerRect.left + containerRect.width / 2;
-  const categories = container.querySelectorAll('.my-category');
+  const categoriesContainer = container.querySelectorAll('.my-category');
 
   let closestCategory = null;
   let minDistance = Infinity;
 
-  categories.forEach((category) => {
+  categoriesContainer.forEach((category) => {
     const categoryRect = category.getBoundingClientRect();
     const categoryCenter = categoryRect.left + categoryRect.width / 2;
     const distance = Math.abs(containerCenter - categoryCenter);
@@ -93,7 +96,7 @@ const handleScroll = () => {
   const index = Array.from(container.querySelectorAll('.my-category')).indexOf(closestCategory);
   if (lastCategory != index) {
     selected.value = lastCategory = index;
-    emit('categorySelected', props.categories[index]);
+    emit('categorySelected', categories.value[index]);
   }
 };
 
@@ -121,7 +124,7 @@ onMounted(() => {
   window.addEventListener('resize', doResize, { passive: true });
   observer.value = new IntersectionObserver(entries => entries.forEach(entry => entry.isIntersecting && doResize()));
   observer.value.observe(containerRef.value);
-  emit('categorySelected', props.categories[0]);
+  emit('categorySelected', categories.value[0]);
 });
 
 onBeforeUnmount(() => {

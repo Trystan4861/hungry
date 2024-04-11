@@ -16,13 +16,12 @@
       />
     </div>
   </my-card>
-  <div id="anchorEditarProducto" class="d-none">
-    <div id="divEditarProducto">
+  <div :id="id1" class="d-none">
+    <div :id="id2">
       <my-categories-list 
-        :categories="categoriesData" 
         :selectCategory="productoSeleccionado?.id_categoria || 0" 
-        v-model="categoryAtEdit"
         :selected="itemCategorySelected"
+        @categorySelected="handleCategorySelected" 
         class="swal"
         />
       <my-select 
@@ -45,7 +44,7 @@
   
   import { ref, computed, watch, onMounted } from 'vue';
   import { useStore } from 'vuex';
-  import { findIndexById }                    from '@/utilidades'
+  import { createCopy, dispatch, findIndexById, generateID }                    from '@/utilidades'
 
   import Swal from 'sweetalert2';
   import MyCard from '@components/MyCard.vue'
@@ -56,6 +55,10 @@
   import { notify } from '@kyvg/vue3-notification';
   import { localStorageService } from '@/localStorageService';
 
+  const id=generateID()
+  const id1=`anchorEditarProducto-${id}`
+  const id2=`divEditarProducto-${id}`
+  
   const props=defineProps({ orderBy:            { type: String, default: 'name' }, })
   
   const setProductsData =newData=>store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
@@ -64,7 +67,6 @@
   const store                   = useStore()
   const storeGet                = store.getters
 
-  const categoryAtEdit          = ref(0)
   const controlY                = ref(-1)
   const ignoreLongClickTimeout  = ref(0)
   const itemCategorySelected    = ref(0)
@@ -87,7 +89,10 @@
   const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
   const productosVisibles       = computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
   const amount2Buy              = computed(()=>productosVisibles.value.filter(i=>i.selected).length)
-  
+
+  const handleCategorySelected=(category)=>{
+    itemCategorySelected.value=category.id
+  }
   const handleDragCard = event => {
     if (typeof event.touches==='undefined') return
     if (event.touches.length==0) return
@@ -117,7 +122,7 @@
     if (storeGet.getIgnoreDrag()) return
     productoSeleccionado.value=product;
     Swal.fire({
-      title: product.text,
+      title: `«${product.text}»`,
       text: '¿Qué desea hacer?',
       icon: 'question',
       showCancelButton: true,
@@ -138,10 +143,10 @@
     });
   }
   const handleEditarProducto    = () =>{
-    let aux=document.getElementById("divEditarProducto");
+    let aux=document.getElementById(id2);
     let producto=productoSeleccionado.value;
     productoAEditar.value=producto.text
-    categoryAtEdit.value=categoriesData.value[producto.id_categoria]
+    itemCategorySelected.value=producto.id_categoria
     supermarketAtEdit.value=supermarketsData[producto.id_supermercado]
     Swal.fire({
       title:              `Editar Producto<br>«${producto.text}»`,
@@ -151,11 +156,10 @@
       cancelButtonText:   'Cancelar',
       target:             document.querySelector("#appContainer"),
       willOpen: ()=>{
-        itemCategorySelected.value=producto.id_categoria;
         supermercadoProducto.value=supermarketsData[producto.id_supermercado]
         document.getElementById('VueSweetAlert2').appendChild(aux);
       },
-      willClose:()=>{document.getElementById('anchorEditarProducto').appendChild(aux)}
+      willClose:()=>{document.getElementById(id1).appendChild(aux)}
     }).then((result) => {
       if (result.isConfirmed){
         const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
@@ -169,8 +173,9 @@
           done: false,
         }
         if (!areTheSame(producto,newData)){
-          productsData.value[findIndexById(newData.id, productsData.value)] = newData;
-          productsData.value=[...productsData.value]
+          let aux=createCopy(productsData.value)
+          aux[findIndexById(newData.id, aux)] = newData;
+          dispatch(store,'productos',aux)
           Swal.fire({
             title:'Atención',
             icon: 'success',
@@ -215,13 +220,13 @@
   const updateTooltip=()=>{
     const productos=withScrollRef.value.querySelectorAll(".productText")
     for (let producto of productos) {
-      const rect = producto.getBoundingClientRect();
-      const p=letraActualRef.value.getBoundingClientRect();
-      if (rect.top >= p.top && rect.bottom <= p.bottom) {
+      const pBCR = producto.getBoundingClientRect();
+      const lBCR=letraActualRef.value.getBoundingClientRect();
+      if (pBCR.top < lBCR.top) continue
+      else if (pBCR.bottom <= lBCR.bottom)
         letraActual.value=producto.innerText[0].toUpperCase()
-        //break;
-      }
-  }
+      else break
+    }
     if (!letraActualRef.value.classList.contains("show"))
     {
         muestraOcultaTooltip()
@@ -236,9 +241,9 @@
   watch(productoAEditarRef,nv=>nv?console.log(nv.value):null)
   onMounted(()=>{
       watch(()=>myCardRef.value?.height, newValue=>setMaxHeight(newValue))
-      setTimeout(()=>setMaxHeight(myCardRef.value.height),100)
+      myCardRef.value?.height && setTimeout(()=>setMaxHeight(myCardRef.value?.height??300),100)
       if (props.orderBy.toLowerCase()=="name")
-        withScrollRef.value.addEventListener('scroll',updateTooltip)
+        withScrollRef.value.addEventListener('scroll',updateTooltip,{passive:true})
   })
 </script>
 <style scoped>

@@ -29,7 +29,7 @@
 
 
   const ignoreKeys    = ['Enter','Backspace','Delete']
-  const focusInput    = () => (props.autofocus)?inputRef.value.focus():null;
+  const focusInput    = () => (props.autofocus)?inputRef.value?.focus():null;
   const handleKeyDown = event => realMaxLenght.value !== Infinity && inputValue.value.length >= realMaxLenght.value && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
   const hadleKeyUp    = event => event.key === 'Enter' && emit('keyPressed:enter')
   const handleBlur    = event => emit('blur',event)

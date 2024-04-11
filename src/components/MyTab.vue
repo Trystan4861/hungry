@@ -24,6 +24,7 @@ import MyImage from '@components/MyImage.vue';
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useStore } from 'vuex';
 import { localStorageService } from '@/localStorageService';
+import { getDataFromLocalStorage } from '@/utilidades'
 
 
 const props = defineProps({
@@ -39,14 +40,14 @@ const emptyIMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1
 const tabsContainerRef = ref(null);
 const activeTab = ref(props.defaultActive);
 
-const initialData             = storeGet.getConfiguration()
+/*const initialData             = storeGet.getConfiguration()
 const getDataFromLocalStorage = index=> {
           let storedData = localStorageService.getSubItem(index);
           if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
           return storedData ?? localStorageService.setSubItem(index, initialData[index]);
-      }
+      }*/
 if (props.defaultActive==-1)
-  activeTab.value=getDataFromLocalStorage('defaultTabActive')
+  activeTab.value=getDataFromLocalStorage(store,'defaultTabActive')
 
 const tabStyle = ref({});
 
