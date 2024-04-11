@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-  import { ref, watch, defineEmits, defineProps, onMounted, computed } from 'vue';
+  import { ref, watch, onMounted, computed } from 'vue';
   import { useStore } from 'vuex';
 
   const props             = defineProps({
@@ -60,6 +60,7 @@
   const handleRelease     = () => (clearTimeout(longPressTimeout.value), dragEnd());
 
   const handleDrag        = event => {
+    if (event.type=='mousemove') return;
     if (ignoreDrag.value || !props.product.selected) return;
     dragDirection.value = touchStartX !== null ? (event.touches[0].clientX > touchStartX ? 'right' : 'left') : null;
     if (props.canBeDone || dragging) return;

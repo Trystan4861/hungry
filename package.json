@@ -1,7 +1,7 @@
 {
   "name": "hungry",
-  "version": "0.1.15",
-  "revision": "20240409.1447",
+  "version": "0.1.16",
+  "revision": "20240410.1806",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -44,7 +44,8 @@
   "eslintConfig": {
     "root": true,
     "env": {
-      "node": true
+      "node": true,
+      "vue/setup-compiler-macros": true
     },
     "extends": [
       "plugin:vue/vue3-essential",

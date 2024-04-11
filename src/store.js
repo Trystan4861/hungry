@@ -4,8 +4,6 @@ export default createStore({
   state: {
     appStatic:{
       maxLenght: 40,
-      varIDCategoria:-1,
-      saveProductsState:true,
       ignoreDrag:false,
       heightDesviation: -90,
       localStorageKeys:['categoriesData','productsData'],
@@ -27,7 +25,7 @@ export default createStore({
         { id: 3, text:'La Carmela',             logo:'super_carmela.svg', class:''},
       ]
     },
-    configuration:{
+    configuracion:{
       appName:'Hungry!',
       defaultTabActive:1,
       alturaDisponible:0,
@@ -66,24 +64,24 @@ export default createStore({
   mutations: {
     updateCategoria(state, payload){
       const {id, text, bgColor, visible} = payload;
-      const index = state.configuration.categorias.findIndex(categoria => categoria.id === id);
+      const index = state.configuracion.categorias.findIndex(categoria => categoria.id === id);
       if(!index<0){
-        state.configuration.categorias[index].text = text;
-        state.configuration.categorias[index].bgColor = bgColor;
-        state.configuration.categorias[index].visible = Boolean(visible);
+        state.configuracion.categorias[index].text = text;
+        state.configuracion.categorias[index].bgColor = bgColor;
+        state.configuracion.categorias[index].visible = Boolean(visible);
       }
     },
-    setAlturaDisponible   ( state,     alturaDisponible) { state.configuration.alturaDisponible   = alturaDisponible  },
-    setCategorias         ( state,     categorias      ) { state.configuration.categorias         = categorias        },
-    setConfiguration      ( state,     configuration   ) { state.configuration                    = configuration     },
-    setDefaultTabActive   ( state,     defaultTabActive) { state.configuration.defaultTabActive   = defaultTabActive  },
-    setFullScreen         ( state,     fullScreen      ) { state.configuration.fullScreen         = fullScreen        },
+    setAlturaDisponible   ( state,     alturaDisponible) { state.configuracion.alturaDisponible   = alturaDisponible  },
+    setCategorias         ( state,     categorias      ) { state.configuracion.categorias         = categorias        },
+    setConfiguration      ( state,     configuration   ) { state.configuracion                    = configuration     },
+    setDefaultTabActive   ( state,     defaultTabActive) { state.configuracion.defaultTabActive   = defaultTabActive  },
+    setFullScreen         ( state,     fullScreen      ) { state.configuracion.fullScreen         = fullScreen        },
     setIgnoreDrag         ( state,     ignoreDrag      ) { state.appStatic.ignoreDrag             = ignoreDrag        },
-    setProducts           ( state,     productos       ) { state.configuration.productos          = productos         },
-    setEmail              ( state,     email           ) { state.configuration.loginData.email    = email             },
-    setLogged             ( state,     logged          ) { state.configuration.loginData.logged   = logged            },
-    setToken              ( state,     token           ) { state.configuration.loginData.token    = token             },
-    setCanClickProducts   (state,      canClickProducts) { state.configuration.canClickProducts   = canClickProducts  },
+    setProducts           ( state,     productos       ) { state.configuracion.productos          = productos         },
+    setEmail              ( state,     email           ) { state.configuracion.loginData.email    = email             },
+    setLogged             ( state,     logged          ) { state.configuracion.loginData.logged   = logged            },
+    setToken              ( state,     token           ) { state.configuracion.loginData.token    = token             },
+    setCanClickProducts   (state,      canClickProducts) { state.configuracion.canClickProducts   = canClickProducts  },
   },
   actions: {
     setAlturaDisponible   ({ commit }, alturaDisponible) { commit('setAlturaDisponible', alturaDisponible)            },
@@ -100,29 +98,27 @@ export default createStore({
 
   },
   getters: {
-    getAlturaDisponible:  (state)=>(  )=>state.configuration.alturaDisponible,
-    getCategoriaFromID:   (state)=>(id)=>state.configuration.categorias.find(categoria => categoria.id === id),
-    getCategorias:        (state)=>(  )=>state.configuration.categorias,
-    getConfiguration:     (state)=>(  )=>state.configuration,
-    getDefaultTabActive:  (state)=>(  )=>state.configuration.defaultTabActive,
-    getFullScreen:        (state)=>(  )=>state.configuration.fullScreen,
-    getProductos:         (state)=>(  )=>state.configuration.productos,
+    getAlturaDisponible:  (state)=>(  )=>state.configuracion.alturaDisponible,
+    getCategoriaFromID:   (state)=>(id)=>state.configuracion.categorias.find(categoria => categoria.id === id),
+    getCategorias:        (state)=>(  )=>state.configuracion.categorias,
+    getConfiguration:     (state)=>(  )=>state.configuracion,
+    getDefaultTabActive:  (state)=>(  )=>state.configuracion.defaultTabActive,
+    getFullScreen:        (state)=>(  )=>state.configuracion.fullScreen,
+    getProductos:         (state)=>(  )=>state.configuracion.productos,
 
-    getEmail:             (state)=>(  )=>state.configuration.loginData.email,
-    getLogged:            (state)=>(  )=>state.configuration.loginData.logged,
-    getToken:             (state)=>(  )=>state.configuration.loginData.token,
+    getEmail:             (state)=>(  )=>state.configuracion.loginData.email,
+    getLogged:            (state)=>(  )=>state.configuracion.loginData.logged,
+    getToken:             (state)=>(  )=>state.configuracion.loginData.token,
 
     getConfigNames:       (state)=>(  )=>state.appStatic.configNames,
     getHeightDesviation:  (state)=>(  )=>state.appStatic.heightDesviation,
     getIgnoreDrag:        (state)=>(  )=>state.appStatic.ignoreDrag,
     getLocalStorageKeys:  (state)=>(  )=>state.appStatic.localStorageKeys,
     getMaxLenght:         (state)=>(  )=>state.appStatic.maxLenght,
-    getSaveProductsState: (state)=>(  )=>state.appStatic.saveProductsState,
     getSupermercadoFromID:(state)=>(id)=>state.appStatic.supermercados.find(supermercado=>supermercado.id===id),
     getSupermercados:     (state)=>(  )=>state.appStatic.supermercados,
     getTabs:              (state)=>(  )=>state.appStatic.tabs,
-    getVarIDCategoria:    (state)=>(  )=>state.appStatic.varIDCategoria,
 
-    getCanClickProducts:  (state)=>(  )=>state.configuration.canClickProducts,
+    getCanClickProducts:  (state)=>(  )=>state.configuracion.canClickProducts,
   }
 });

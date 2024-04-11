@@ -1,57 +1,69 @@
 <template> <!-- Add new product -->
+  <MyCard
+  borderStyle="rounded-bottom"
+  >
     <MyCategoriesList class="mb-4" 
-      :categories="props.categoriesData" 
-      @categoryLongClick="handleCategoryLongClick" 
-      @categorySelected="handleCategorySelected" 
-      />
+    @categoryLongClick="handleCategoryLongClick" 
+    @categorySelected="handleCategorySelected" 
+    />
     <MySelect 
-      placeholder="Selecciona un supermercado" 
-      :options="props.supermercados" 
-      :selected="props.supermercados[0]" 
-      @select="handleSelectSupermercado" 
-      />
+    placeholder="Selecciona un supermercado" 
+    :options="props.supermercados" 
+    :selected="props.supermercados[0]" 
+    @select="handleSelectSupermercado" 
+    />
     <MyInput 
-      class="mb-4" 
-      placeholder="Introducir nombre de producto" 
-      v-model="nuevoProducto" 
-      :autofocus="true" 
-      :maxLength="props.maxLenght" 
-      @keyPressed:enter="handleAddClick" 
-      :id="id"
-      @blur="handleBlur"
-      />
+    class="mb-4" 
+    placeholder="Introducir nombre de producto" 
+    v-model="nuevoProducto" 
+    :autofocus="true" 
+    :maxLength="realMaxLength" 
+    @keyPressed:enter="handleAddClick" 
+    :id="id"
+    @blur="handleBlur"
+    />
     <MyButton 
-      text="Añadir" 
-      @click="handleAddClick" 
-      />
+    text="Añadir" 
+    @click="handleAddClick" 
+    />
+  </MyCard>
 </template>  
 
 <script setup>
-  import MySelect                           from '@components/MySelect.vue'
-  import MyCategoriesList                   from '@components/MyCategoriesList.vue'
-  import Swal                               from 'sweetalert2'
-  import MyInput                            from '@components/MyInput.vue'
-  import MyButton                           from '@components/MyButton.vue'
-  import { ref,defineEmits,defineProps,defineExpose }  from 'vue';
+  import MyCard             from '@/components/MyCard.vue'
+  import MySelect           from '@components/MySelect.vue'
+  import MyCategoriesList   from '@components/MyCategoriesList.vue'
+  import Swal               from 'sweetalert2'
+  import MyInput            from '@components/MyInput.vue'
+  import MyButton           from '@components/MyButton.vue'
+  import { ref, computed }  from 'vue';
+  import { useStore }       from 'vuex'
+  import { generateID,dispatch, createCopy }     from '@/utilidades'
 
-  const id = `'inputAddNewProduct-${Math.random().toString(36).slice(2)}`;
+  const id = `'inputAddNewProduct-${generateID()}`;
+  const store=useStore()
+  const storeGet=store.getters
 
   const props=defineProps({ 
-    categoriesData: { type: Array,  required: true    }, 
-    supermercados:  { type: Array,  required: true    },
-    maxLenght:      { type: Number, default:  Infinity}
+    supermercados:    { type: Array,    required: true      },
+    maxLenght:        { type: Number,   default:  Infinity  },
+    defaultMaxLength: { type: Boolean,  defaul:   false     },
   })
+  const realMaxLength=ref(props.maxLenght)
+  if (props.defaultMaxLength) realMaxLength.value=storeGet.getMaxLenght();
   const handleBlur=(event)=>emit('blur',event)
+
+  const categoriesData=computed(()=>storeGet.getCategorias())
 
   const nuevoProducto=ref("")
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
-  const categoriaActiva= ref(props.categoriesData[0])
+  const categoriaActiva= ref(categoriesData.value[0])
   const supermercadoActivo=ref(props.supermercados[0])
   const handleCategoryLongClick=categoria=>{
     Swal.fire({
       title: `Cambiar Nombre de Categoría<br> «${categoria?.text}»`,
       html: ` <label for="inputModifyCategory">Introduzca un nuevo nombre para la categoría</label>
-              <input type="text" class="swal2-input" id="inputModifyCategory" maxlenght="${props.maxLenght}" value="${categoria.text}">
+              <input type="text" class="swal2-input" id="inputModifyCategory" maxlenght="${realMaxLength.value}" value="${categoria.text}">
       `,
       target: document.querySelector("#appContainer"),
       didOpen: ()=>{
@@ -63,6 +75,9 @@
         return new Promise((resolve)=>{
             resolve({value: document.querySelector("#inputModifyCategory").value})
         }).then((result)=>{
+          let aux=createCopy(categoriesData.value)
+          aux[categoria.id].text=result.value
+          dispatch(store,'categorias',aux)
           emit ('categoryChanged', categoria.id,result.value)
         })
       },

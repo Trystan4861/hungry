@@ -20,7 +20,7 @@
 
 <script setup>
 import MyCheckbox from '@components/MyCheckbox.vue';
-import { ref, watchEffect, defineEmits,defineProps } from 'vue';
+import { ref, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({

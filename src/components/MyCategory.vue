@@ -1,16 +1,17 @@
 <template>
   <div class="my-category-container" :class="{ 'selected': isActive }">
     <div class="my-category" :style="{ backgroundColor: bgColor }" 
-    @click="handleClick"  
-    @mousedown ="handleMouseDown" @mouseup ="handleMouseUp" 
-    @touchstart="handleMouseDown" @touchend="handleMouseUp">
-        <p class="category-title" :class="{active: isActive}">{{ text }}</p>
+      @click="handleClick"  
+      @mousedown ="handleMouseDown" @mouseup ="handleMouseUp" 
+      @touchstart="handleMouseDown" @touchend="handleMouseUp"
+    >
+      <p class="category-title" :class="{active: isActive}" v-html="text.replaceAll('/','<br />')"/>
     </div>
   </div>
 </template>
   
 <script setup>
-  import { ref, watch,defineProps,defineEmits } from 'vue';
+  import { ref, watch } from 'vue';
 
   const props = defineProps({
     text:             { type: String,   default: ""           },
@@ -57,6 +58,7 @@
   user-select:        none;
   white-space:        nowrap; 
   z-index:            1000; 
+  text-align:         center;
 }
 .category-title.active {
   display:            block;

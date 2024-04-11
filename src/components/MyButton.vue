@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 const props = defineProps({
   text: { type: String, required: true },
   btnClass: { type: String, default: "success" },

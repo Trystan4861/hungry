@@ -7,13 +7,24 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useStore } from 'vuex';
+
 
 const props         = defineProps({
   height:         { type: Number, default: 0          },
   heightModifier: { type: Number, default: 0          },
   borderStyle:    { type: String, default: 'squared'  },
 });
+
+const store=useStore()
+const storeGet=store.getters
+const height=ref(props.height)
+
+if (props.height==0)
+{
+  height.value=storeGet.getAlturaDisponible()
+}
 
 const borderStyles  = {
   'rounded':              '.5rem  .5rem .5rem .5rem ',
@@ -28,10 +39,12 @@ const borderStyles  = {
 
 const cardStyle     = computed(() => {
   return {
-    'height':         `${props.height + props.heightModifier}px`,
+    'height':         `${height.value + props.heightModifier}px`,
     'border-radius':  borderStyles[props.borderStyle.toLowerCase()] || '0',
   };
 });
+watch(()=>storeGet.getAlturaDisponible(),newValue=>height.value=newValue)
+defineExpose({height})
 </script>
 
 <style scoped>

@@ -21,20 +21,37 @@
 </template>
 <script setup>
 import MyImage from '@components/MyImage.vue';
-import { ref, watch, onMounted, onBeforeUnmount, defineEmits, defineProps, defineExpose } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
+import { useStore } from 'vuex';
+import { localStorageService } from '@/localStorageService';
+import { getDataFromLocalStorage } from '@/utilidades'
+
 
 const props = defineProps({
   tabs:             { type: Array,    required: true, },
-  defaultActive:    { type: Number,   default:  0     },
+  defaultActive:    { type: Number,   default:  -1    },
   heightDesviation: { type: Number,   default:  0     },
-  heightResponsive: { type: Boolean,  default:  false },
+  heightResponsive: { type: Boolean,  default:  true },
 });
 
+const store=useStore()
+const storeGet=store.getters
 const emptyIMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=";
 const tabsContainerRef = ref(null);
 const activeTab = ref(props.defaultActive);
+
+/*const initialData             = storeGet.getConfiguration()
+const getDataFromLocalStorage = index=> {
+          let storedData = localStorageService.getSubItem(index);
+          if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
+          return storedData ?? localStorageService.setSubItem(index, initialData[index]);
+      }*/
+if (props.defaultActive==-1)
+  activeTab.value=getDataFromLocalStorage(store,'defaultTabActive')
+
 const tabStyle = ref({});
-const alturaDisponible=ref(0)
+
+const heightDesviation  = computed(()=>storeGet.getHeightDesviation())
 
 watch(() => props.defaultActive, (newValue) => activeTab.value = newValue);
 
@@ -45,10 +62,8 @@ const updateTabStyle = () => {
   (props.heightResponsive)?getAvailHeight():null;
 };
 
-const calcAvailHeight=()=>tabsContainerRef.value?tabsContainerRef.value.clientHeight + props.heightDesviation:null;
 const getAvailHeight =()=>{
-  alturaDisponible.value!=calcAvailHeight()?emit('tabHeightChanged', calcAvailHeight()):null
-  alturaDisponible.value==calcAvailHeight()??0
+  store.dispatch('setAlturaDisponible',localStorageService.setSubItem('alturaDisponible',  tabsContainerRef.value?tabsContainerRef.value.clientHeight + heightDesviation.value:0))
 }
 onMounted(() => {
   window.addEventListener('resize', updateTabStyle, { passive: true });
@@ -63,6 +78,7 @@ const activateTab = (index) => {
   emit('tabChanged', index);
 };
 
+
 const emit = defineEmits(['tabChanged', 'tabHeightChanged']);
 
 defineExpose({getAvailHeight})
@@ -71,54 +87,57 @@ defineExpose({getAvailHeight})
   
 <style scoped>
 .my-tab {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  user-select: none;
+  display:                      flex;
+  flex-direction:               column;
+  height:                       100%;
+  user-select:                  none;
 }
 .tab-content {
-  flex-grow: 1; /* Esto permite que el contenido de la pestaña se expanda para ocupar el espacio restante */
-  display: flex;
-  flex-direction: column;
+  flex-grow:                    1;
+  display:                      flex;
+  flex-direction:               column;
+  min-width:                    18.125rem;
 }
 .tab-pane {
-  flex-grow: 1;
-  overflow-y: auto; /* Permite el desplazamiento si el contenido excede el alto disponible */
+  flex-grow:                    1;
+  overflow-y:                   auto; 
 }
 li.nav-item:first-child {
-  max-width: 3.75rem;
+  max-width:                    3.75rem;
 }
 .nav-tabs{
-  --bs-nav-tabs-border-color: black;
-  justify-content: space-between;
+  --bs-nav-tabs-border-color: #585858;
+  justify-content:              space-between;
 }
 .nav-tabs .nav-link{
-  background-color: #585858;
-  color: white;
-  display: flex;
-  height:100%;
-  justify-content: center;
+  background-color:           #585858;
+  color:                      white;
+  display:                      flex;
+  height:                       100%;
+  justify-content:              center;
+  min-width:                    3.4375rem;
 }
 .nav-tabs .nav-link.active{
-  background-color: #e6e6e6;
-  color:black;
-  border: 0;
+  background-color:           #e6e6e6;
+  color:                      black;
+  border:                       0;
 }
 .nav-item:nth-child(2) .nav-link.active .MyImage,
 .nav-item:nth-child(5) .nav-link.active .MyImage,
 .nav-item:first-child .nav-link.active .MyImage{
-  filter: grayscale(1) brightness(100) invert(1);
+  filter:                       grayscale(1) brightness(100) invert(1);
 }
 .nav-item .nav-link .MyImage{
-  margin:0! important;
+  margin:                       0! important;
 }
 span.nav-link
 {
-  min-width: 25%;
-  width: 100%;
-  cursor: pointer;
-  padding: 0;
+  min-width:                    25%;
+  width:                        100%;
+  cursor:                       pointer;
+  padding:                      0;
 }
 .logo{
-  width: 3.125rem;
-}</style>
+  width:                        3.125rem;
+}
+</style>

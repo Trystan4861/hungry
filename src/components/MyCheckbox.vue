@@ -28,7 +28,8 @@
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits } from 'vue';
+import { computed } from 'vue';
+import { generateID } from '@/utilidades'
 
 const props=defineProps({
   value:          { required: true                      },
@@ -45,7 +46,7 @@ const props=defineProps({
   dotDiameter:    { type: String,   default: '1rem'     }, //'1.25rem'
 });
 
-const id            = `'checkbox-${Math.random().toString(36).slice(2)}`;
+const id            = `'checkbox-${generateID()}`;
 const isChecked     = computed(() => (props.group ? props.checkedValues.includes(props.value) : props.selected));
 const emit          = defineEmits(['lastCheckedDeletionAttempt','update:checkedValues','update:checkedValue'])
 const handleChange  = event => {

@@ -14,14 +14,16 @@
 
 <script setup>
   import MySelect from '@components/MySelect.vue'
-  import { defineProps,defineEmits } from 'vue';
 
     const props=defineProps({ 
       tabs:     { type: Array,  required: true }, 
       selected: { type: Number, required: true },
     })
+
     const handleSelect = selected => emit('change',selected.id)
     const emit=defineEmits(['change'])
+    
+
 </script>
 <style scoped>
 </style>
