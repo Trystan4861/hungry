@@ -12,9 +12,9 @@ Está inspirada en una aplicación (ya retirada de la appstore) llamada igualmen
 
 ## Características Principales
 
-- **Funcionalidad 1:** Permite crear distintos productos, asignándoles una categoría y un supermercado específico para su posterior compra.
-- **Funcionalidad 2:** Es totalmente responsiva y permite modificar tanto los productos como los nombres de las categorías.
-- **Funcionalidad 3:** En continuo desarrollo y mejora.
+- Permite crear distintos productos, asignándoles una categoría y un supermercado específico para su posterior compra.
+- Es totalmente responsiva y permite modificar tanto los productos como los nombres de las categorías.
+- En continuo desarrollo y mejora.
 
 ## Capturas de Pantalla
 
