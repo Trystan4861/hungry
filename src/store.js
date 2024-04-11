@@ -13,10 +13,6 @@ const initialState= {
       { id: 3, text:'Por categoría',          logo: 'categorias.svg', selectable:true,  class:''},
       { id: 4, text:'Lista de la compra',     logo: 'cart.svg',       selectable:true,  class:''},
     ],
-    configNames:[
-      'Categorías',
-      'Productos'
-    ],
     supermercados:[
       { id: 0, text:'Cualquier Supermercado', logo:'hungry.svg',        class:''},
       { id: 1, text:'Carrefour',              logo:'carrefour.svg',     class:''},
@@ -106,7 +102,6 @@ export default createStore({
     getLogged:            (state)=>(  )=>state.configuracion.loginData.logged,
     getToken:             (state)=>(  )=>state.configuracion.loginData.token,
 
-    getConfigNames:       (state)=>(  )=>state.appStatic.configNames,
     getHeightDesviation:  (state)=>(  )=>state.appStatic.heightDesviation,
     getIgnoreDrag:        (state)=>(  )=>state.appStatic.ignoreDrag,
     getLocalStorageKeys:  (state)=>(  )=>state.appStatic.localStorageKeys,

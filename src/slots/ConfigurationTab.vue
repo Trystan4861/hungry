@@ -37,9 +37,7 @@
           />
       </div>
       <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <slot-configuration-export ref="exportRef"
-          :configNames="CONFIG_NAMES" 
-          />
+        <slot-configuration-export ref="exportRef" />
       </div>
       <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
         <my-button 
@@ -85,7 +83,6 @@
   const storeGet=store.getters
 
   const tabsData                = storeGet.getTabs()
-  const CONFIG_NAMES            = storeGet.getConfigNames()
 
   const fullScreen              = computed(()=>storeGet.getFullScreen())
   const categoriesData          = computed(()=>storeGet.getCategorias())
