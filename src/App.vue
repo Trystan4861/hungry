@@ -46,7 +46,7 @@
   import SlotShoppingList                     from '@slots/ShoppingList.vue'
 
   import Swal                                 from 'sweetalert2'
-  import { ref, watch, onMounted }  from 'vue'
+  import { ref, watch, onMounted, onBeforeMount }  from 'vue'
   import { useStore }                         from 'vuex'
   //import axios                        from 'axios'
   import { notify,Notifications }             from '@kyvg/vue3-notification'
@@ -129,6 +129,7 @@
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value=newData)
 
+  onBeforeMount(()=>getDataFromLocalStorage('configuracion'))
   onMounted(()=>{
     document.addEventListener('contextmenu', event => event.preventDefault())
   })

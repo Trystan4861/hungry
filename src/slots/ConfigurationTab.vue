@@ -75,28 +75,24 @@
   const storeGet=store.getters
 
   const tabsData                = storeGet.getTabs()
-  const initialData             = storeGet.getConfiguration()
   const CONFIG_NAMES            = storeGet.getConfigNames()
 
-  const getDataFromLocalStorage = index=> {
-    let storedData = localStorageService.getSubItem(index);
-    if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
-    return storedData ?? localStorageService.setSubItem(index, initialData[index]);
-  }
-  const defaultTabActive        = ref(getDataFromLocalStorage('defaultTabActive'))
+  const fullScreen              = computed(()=>storeGet.getFullScreen())
+  const categoriesData          = computed(()=>storeGet.getCategorias())
+  
+  const defaultTabActive          = computed(()=>storeGet.getDefaultTabActive())
+
   
   const changes2Save={
     categoriasVisibiles:false,
-    defaultTabActive: defaultTabActive.value
+    defaultTabActive: defaultTabActive.value,
   }
       
       
-  const fullScreen              = ref(getDataFromLocalStorage('fullScreen'      ))
-  const categoriesData          = computed(()=>storeGet.getCategorias())
   
   const configFullScreen        = ref(fullScreen.value)
 
-  const handleChangeFullScreen  = checked => { configFullScreen.value=checked }
+  const handleChangeFullScreen  = checked => configFullScreen.value=checked
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
   const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
@@ -122,7 +118,6 @@
         store.dispatch('setConfiguration', localStorageService.setItem(data));
         
         defaultTabActive.value=storeGet.getDefaultTabActive()
-        fullScreen.value=storeGet.getFullScreen()
 
         Swal.fire({
           icon:'success',
@@ -184,7 +179,6 @@
     }
     if(fullScreen.value!=configFullScreen.value)
     {
-      fullScreen.value=configFullScreen.value
       dispatch('fullScreen',configFullScreen.value);
     }
 

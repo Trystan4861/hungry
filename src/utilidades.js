@@ -16,6 +16,7 @@ export function getDataFromLocalStorage (index) {
   let storedData = localStorageService.getSubItem(index);
   const store=useStore()
 
-  if (storedData && index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
+  if (storedData )//&& index != 'configuracion' ) 
+    store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
   return storedData ?? localStorageService.setSubItem(index, store.getters.getConfiguration()[index]);
 }

@@ -19,7 +19,9 @@
   const props               = defineProps(
     { selected: { type: Boolean, required: true } },
   );
-  const handleCheckedValue  = (_,checked) => emit('change', checked)
+  const handleCheckedValue  = (_,checked) => {
+    emit('change', checked)
+  }
   const emit                = defineEmits(['change'])
 </script>
 <style scoped>

@@ -139,10 +139,9 @@ defineExpose({seleccionarCategoria,selected})
   position:           absolute;
   user-select:        none; 
   z-index:            100;
-  width:              50px;
+  width:              25px;
   clip-path:          border-box;
   height:             107px;
-  display:            none;
 }
 .leftShadow {
   background-image: url('@/public/images/box-shadow-left.png');
@@ -175,7 +174,7 @@ defineExpose({seleccionarCategoria,selected})
   height:             6.875rem;
   overflow-x:         scroll;
   scroll-snap-type:   x proximity;
-  /*background-image: url('@/public/images/box-shadow-bg.png');*/
+  background-image: url('@/public/images/box-shadow-bg.png');
 }
 .my-categories-list-container:hover {
   height:             7.28rem;
