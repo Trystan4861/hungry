@@ -5,7 +5,7 @@
     <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
       <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
     </h1>
-    <div class="row withScroll">
+    <div class="row configWithScroll">
       <div class="col">
         <div class="row">
           <div class="col-lg-4 col-12 col-md-6">
@@ -40,12 +40,12 @@
           </div>
         </div>
         <div class="row align-items-end">
-          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
             <slot-configuration-import 
               @configurationFileReaded="handleImportConfigurationFile" 
               />
           </div>
-          <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+          <div class="order-2 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
             <slot-configuration-export ref="exportRef" />
           </div>
           <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
@@ -57,7 +57,14 @@
           </div>
         </div>
         <div class="row align-items-end">
-          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+          <div class="col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <my-button 
+              btnClass="info bold" 
+              text="Iniciar Sesión" 
+              @click="handleLogin" 
+              />
+          </div>
+          <div class="col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
             <my-button 
               btnClass="warning bold" 
               text="Restablecer Aplicación" 
@@ -67,8 +74,7 @@
         </div>
       </div>
     </div>
-
-    <div class="revision">rev. {{ packageJson.revision }}</div>
+    <div class="revision">{{ packageJson.revision }}</div>
   </my-card>
 </template>
 
@@ -114,6 +120,9 @@
   const handleChangeFullScreen  = checked => configFullScreen.value=checked
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
+  const handleLogin=()=>{
+    console.log("handleLogin")
+  }
 //  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
 
   const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
@@ -237,3 +246,9 @@
     return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
   }
 </script>
+<style scoped>
+.configWithScroll{
+  overflow-y: auto;
+  max-height: 500px;
+}
+</style>

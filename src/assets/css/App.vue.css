@@ -43,7 +43,7 @@ div:where(.swal2-container) hr {
   height:               100%; 
   flex-direction:       column; 
   flex-grow:            1; 
-  min-width:            18.125rem;
+  min-width:            21.875rem;
 }
 .appBrand { 
   width:                60px; 
@@ -109,9 +109,10 @@ div:where(.swal2-container) hr {
 .bold {
   --bs-btn-font-weight: bold !important;
 }
-.btn-warning {
+.btn {
   --bs-btn-color:       #fff !important;
 }
 .btn{
   --bs-btn-hover-color: #fff !important;
+  --bs-btn-font-size: 100% !important;
 }
