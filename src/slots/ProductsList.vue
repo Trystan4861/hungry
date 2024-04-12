@@ -4,16 +4,21 @@
     v-touch:drag.once="handleDragCard"
     ref="myCardRef"
     >
-    <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
-    <div class="withScroll" ref="withScrollRef">
-      <my-product-list 
-      :orderBy="props.orderBy"
-      :productList="productosVisibles" 
-      @click="handleClickProduct"
-      @longClick="handeLongClickProduct"
-      @drag="handleDrag"
-      ref="productListRef"
-      />
+    <div class="h-100" v-show="cantidadProductos==0">
+        <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase">No hay productos dados de alta</h2></div>
+    </div> 
+    <div v-show="cantidadProductos>0">
+      <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
+      <div class="withScroll" ref="withScrollRef">
+        <my-product-list 
+        :orderBy="props.orderBy"
+        :productList="productosVisibles" 
+        @click="handleClickProduct"
+        @longClick="handeLongClickProduct"
+        @drag="handleDrag"
+        ref="productListRef"
+        />
+      </div>
     </div>
   </my-card>
   <div :id="id1" class="d-none">
@@ -88,6 +93,7 @@
   const categoriesData          = computed(()=>storeGet.getCategorias())
   const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
   const productosVisibles       = computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
+  const cantidadProductos       = computed(()=>productosVisibles.value.length)
   const amount2Buy              = computed(()=>productosVisibles.value.filter(i=>i.selected).length)
 
   const handleCategorySelected=(category)=>{
@@ -250,8 +256,9 @@
 .withScroll
 {
   --height: auto;
+  --height-modifier: 50px
   overflow-y: auto;
-  height: calc(var(--height,60px) - 50px );
+  height: calc(var(--height,60px) - var(--height-modifier,0px) );
 }
 .letraActual{
   display: flex;
