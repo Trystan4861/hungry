@@ -1,10 +1,17 @@
 <template>
-  <MyFile :text="'Importar Configuración'" btnClass="primary bold" @fileReaded="handleFileReaded" @fileReadError="handeFileReadError" :maxFileSize="maxFileSize" :accept="'application/json'" />
+  <MyFile 
+    text="Importar Configuración" 
+    btnClass="primary bold" 
+    @fileReaded="handleFileReaded" 
+    @fileReadError="handeFileReadError" 
+    :maxFileSize="maxFileSize" 
+    accept="application/json" 
+  />
 </template>
 
 <script setup>
-  import MyFile                       from '@components/MyFile.vue';
-  import Swal                         from 'sweetalert2';
+  import MyFile from '@components/MyFile.vue';
+  import Swal   from 'sweetalert2';
 
   const props=defineProps({ 
     showInternalSwalError:  { type:Boolean, default:true      },
