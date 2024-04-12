@@ -24,6 +24,7 @@
     />
     <MyButton 
     text="Añadir" 
+    btnClass="success bold"
     @click="handleAddClick" 
     />
   </MyCard>

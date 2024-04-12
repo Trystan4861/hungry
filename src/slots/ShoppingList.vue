@@ -8,7 +8,7 @@
         :selected="supermercados[1]" 
         />
         <MyButton
-        btnClass="danger" 
+        btnClass="danger bold" 
         class="clearList"
         text="Limpiar Lista" 
         :styleButton="{width: anchoBoton,borderRadius:'0px'}"
@@ -21,7 +21,7 @@
     >
       <div class="text-end" v-show="productosSeleccionados.length>0">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
       <div class="h-100" v-show="amount2Buy==0">
-        <div class="d-flex justify-content-center align-items-center h-100">La lista de la compra está vacía.</div>
+        <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase">La lista de la compra está vacía</h2></div>
       </div> 
       <div v-show="AmountInThisSupermarket>0"
         >

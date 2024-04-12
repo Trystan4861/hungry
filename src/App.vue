@@ -87,7 +87,7 @@
   const haddleAddNewProductClick= (nuevoProducto,id_categoria,id_supermercado)=>{
     if (!productsData.value.some(producto => producto.text.toLowerCase() === nuevoProducto.toLowerCase())){
       productsData.value.push({
-        id: productsData.value[productsData.value.length - 1].id+1,
+        id: productsData.value.length?productsData.value[productsData.value.length - 1].id+1:1,
         text:nuevoProducto,
         amount: 1,
         id_categoria:id_categoria,

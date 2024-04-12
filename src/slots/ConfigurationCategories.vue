@@ -1,6 +1,6 @@
 <template>
   <div id="SlotConfigurationCategories">
-    <div class="text-center mb-1">Visibilidad de Categorías</div>
+    <div class="text-center mb-1 text-uppercase">Visibilidad de Categorías</div>
     <div class="categoriesContainer">
       <MyCheckbox
         v-for="(item, index) in categorias"

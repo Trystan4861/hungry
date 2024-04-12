@@ -5,50 +5,69 @@
     <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
       <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
     </h1>
-    <div class="row">
-      <div class="col-lg-4 col-12 col-md-6">
-        <slot-configuration-categories 
-          :categorias="categoriesData" 
-          @categoriesChecked="handleCategoriesChecked" 
-          />
-      </div>
-      <div class="col-lg-8 col-12 col-md-6">
+    <div class="row withScroll">
+      <div class="col">
         <div class="row">
-          <div class="col-lg-6 col-12 mt-0">
-            <slot-configuration-tabs-active 
-              :selected="defaultTabActive" 
-              :tabs="tabsData" 
-              @change="handleChangeTabActive" 
+          <div class="col-lg-4 col-12 col-md-6">
+            <slot-configuration-categories 
+              :categorias="categoriesData" 
+              @categoriesChecked="handleCategoriesChecked" 
               />
           </div>
-          <div class="col-lg-6 col-12 mt-lg-0 mt-2">
-            <slot-configuration-full-screen 
-              :selected="configFullScreen" 
-              @change="handleChangeFullScreen" 
+          <div class="col-lg-8 col-12 col-md-6">
+            <div class="row h-100">
+              <div class="col-lg-6 col-12 mt-0">
+                <div class="row h-100">
+                  <div class="col-12 mt-0">
+                    <slot-configuration-tabs-active 
+                      :selected="defaultTabActive" 
+                      :tabs="tabsData" 
+                      @change="handleChangeTabActive" 
+                      />
+                    </div>
+                    <div class="col-12 mt-lg-4 mt-2 text-center text-uppercase">
+                      Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado de alta
+                    </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 col-12 mt-lg-0 mt-2">
+                <slot-configuration-full-screen 
+                  :selected="configFullScreen" 
+                  @change="handleChangeFullScreen" 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-end">
+          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <slot-configuration-import 
+              @configurationFileReaded="handleImportConfigurationFile" 
+              />
+          </div>
+          <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <slot-configuration-export ref="exportRef" />
+          </div>
+          <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <my-button 
+              btnClass="danger bold" 
+              text="Guardar Cambios" 
+              @click="saveConfigChanges" 
+              />
+          </div>
+        </div>
+        <div class="row align-items-end">
+          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <my-button 
+              btnClass="warning bold" 
+              text="Resetear Configuración" 
+              @click="resetConfig" 
               />
           </div>
         </div>
       </div>
     </div>
-    <div class="row align-items-end">
-      <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <slot-configuration-import 
-          @configurationFileReaded="handleImportConfigurationFile" 
-          />
-      </div>
-      <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <slot-configuration-export 
-          :configNames="CONFIG_NAMES" 
-          />
-      </div>
-      <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <my-button 
-          btnClass="danger" 
-          text="Guardar Cambios" 
-          @click="saveConfigChanges" 
-          />
-      </div>
-    </div>
+
     <div class="revision">rev. {{ packageJson.revision }}</div>
   </my-card>
 </template>
@@ -65,7 +84,7 @@
   import SlotConfigurationImport      from '@slots/ConfigurationImport.vue';
   import SlotConfigurationFullScreen  from '@slots/ConfigurationFullScreen.vue';
   import SlotConfigurationTabsActive  from '@slots/ConfigurationTabsActive.vue';
-  import { useStore }                 from "vuex";
+  import { useStore }    from "vuex";
   import { notify }                   from '@kyvg/vue3-notification';
   import { ref,computed }                      from 'vue';
   import { localStorageService }      from '@/localStorageService'
@@ -76,20 +95,19 @@
   const storeGet=store.getters
 
   const tabsData                = storeGet.getTabs()
-  const CONFIG_NAMES            = storeGet.getConfigNames()
 
   const fullScreen              = computed(()=>storeGet.getFullScreen())
   const categoriesData          = computed(()=>storeGet.getCategorias())
+  const productsAmount          = computed(()=>storeGet.getProductos().length)
   
-  const defaultTabActive          = computed(()=>storeGet.getDefaultTabActive())
+  const defaultTabActive        = computed(()=>storeGet.getDefaultTabActive())
 
+  const exportRef               = ref(null)
   
   const changes2Save={
     categoriasVisibiles:false,
     defaultTabActive: defaultTabActive.value,
   }
-      
-      
   
   const configFullScreen        = ref(fullScreen.value)
 
@@ -106,6 +124,38 @@
     categoriasVisibles.value= aux
     changes2Save.categoriasVisibiles=true
   }      
+  const resetConfig= ()=>{
+    Swal.fire({
+        icon: 'info',
+        title: 'Atención',
+        html: 'Se restablecerá la configuración a los valores de fábrica.<br /><br />Esto eliminará cualquier cambio que hayas hecho en las categorias así como todos los productos introducidos<br /><br /><b>¡Esta acción no se puede deshacer!</b>',
+        showConfirmButton: true,
+        confirmButtonText: 'Restablecer',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        target: document.querySelector("#appContainer"),
+        allowOutsideClick: false
+      }).then(result=>{
+        if (result.isConfirmed)
+        {
+          Swal.fire({
+            icon: 'question',
+            html: '¿Desea realizar una <b>copia de seguridad</b> de sus datos <b>antes de borrarlos</b>?',
+            showConfirmButton: true,
+            confirmButtonText: 'si',
+            showCancelButton: true,
+            cancelButtonText: 'no',
+            target: document.querySelector("#appContainer"),
+            allowOutsideClick: false
+          }).then(result=>{
+            if (result.isConfirmed)
+              exportRef.value.exportConfig()
+              store.commit('resetStore');
+
+          });    
+        }
+      });    
+  }
   const handleImportConfigurationFile=data=>{
     Swal.fire({
       title: '¿Qué deseas importar?',

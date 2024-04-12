@@ -1,5 +1,5 @@
 <template>
-  <my-button text="Exportar Configuración" @click="exportConfig" />
+  <my-button text="Exportar Configuración" btnClass="success bold" @click="exportConfig" />
 </template>
 
 <script setup>
@@ -22,6 +22,7 @@ const downloadJSON=(obj, filename = 'hungry.json')=>{
 const store = useStore().getters;
 const exportConfig = () => downloadJSON(store.getConfiguration());
 
+defineExpose({exportConfig})
 </script>
 <style scoped>
 </style>

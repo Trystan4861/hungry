@@ -1,7 +1,7 @@
 <template>
   <div>
     <input :id="id"  type="file" :accept="accept" @change="handleFileChange">
-    <label :for="id" class="btn btn-primary">{{ text }}</label>
+    <label :for="id" :class="['btn', `btn-${props.btnClass}`,{ 'text-uppercase': props.uppercase }]">{{ text }}</label>
   </div>
 </template>
 
@@ -11,10 +11,12 @@
 
   const props             = defineProps({
     fileName:       { validator: value => value instanceof RegExp || typeof value === 'string', default: () => /^.*hungry.*\.json$/i },
-    accept:         { type: String,   default: "*.*" },
-    forceFileName:  { type: Boolean,  default: false },
-    maxFileSize:    { type: Number,   default: null },
-    text:           { type: String,   default: 'Seleccionar archivo' },
+    accept:         { type: String,   default: "*.*"                  },
+    forceFileName:  { type: Boolean,  default: false                  },
+    maxFileSize:    { type: Number,   default: null                   },
+    text:           { type: String,   default: 'Seleccionar archivo'  },
+    btnClass:       { type: String,   default: 'primary'              },
+    uppercase:      { type: Boolean,  default: true                   },
   });
 
   const readFile          = (inputFile) => new Promise((resolve, reject) => {
