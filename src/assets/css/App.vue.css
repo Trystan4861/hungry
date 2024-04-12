@@ -112,3 +112,6 @@ div:where(.swal2-container) hr {
 .btn-warning {
   --bs-btn-color:       #fff !important;
 }
+.btn{
+  --bs-btn-hover-color: #fff !important;
+}

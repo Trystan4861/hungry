@@ -60,7 +60,7 @@
           <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
             <my-button 
               btnClass="warning bold" 
-              text="Resetear Configuración" 
+              text="Restablecer Aplicación" 
               @click="resetConfig" 
               />
           </div>
@@ -128,7 +128,7 @@
     Swal.fire({
         icon: 'info',
         title: 'Atención',
-        html: 'Se restablecerá la configuración a los valores de fábrica.<br /><br />Esto eliminará cualquier cambio que hayas hecho en las categorias así como todos los productos introducidos<br /><br /><b>¡Esta acción no se puede deshacer!</b>',
+        html: 'Se restablecerá la aplicación a los valores de fábrica.<br /><br />Esto eliminará cualquier cambio que hayas hecho en las categorias así como todos los productos que hayas añadido.<br /><br /><b>¡Esta acción no se puede deshacer!</b>',
         showConfirmButton: true,
         confirmButtonText: 'Restablecer',
         showCancelButton: true,
