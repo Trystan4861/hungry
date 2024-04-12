@@ -5,57 +5,69 @@
     <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
       <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
     </h1>
-    <div class="row">
-      <div class="col-lg-4 col-12 col-md-6">
-        <slot-configuration-categories 
-          :categorias="categoriesData" 
-          @categoriesChecked="handleCategoriesChecked" 
-          />
-      </div>
-      <div class="col-lg-8 col-12 col-md-6">
+    <div class="row withScroll">
+      <div class="col">
         <div class="row">
-          <div class="col-lg-6 col-12 mt-0">
-            <slot-configuration-tabs-active 
-              :selected="defaultTabActive" 
-              :tabs="tabsData" 
-              @change="handleChangeTabActive" 
+          <div class="col-lg-4 col-12 col-md-6">
+            <slot-configuration-categories 
+              :categorias="categoriesData" 
+              @categoriesChecked="handleCategoriesChecked" 
               />
           </div>
-          <div class="col-lg-6 col-12 mt-lg-0 mt-2">
-            <slot-configuration-full-screen 
-              :selected="configFullScreen" 
-              @change="handleChangeFullScreen" 
+          <div class="col-lg-8 col-12 col-md-6">
+            <div class="row h-100">
+              <div class="col-lg-6 col-12 mt-0">
+                <div class="row h-100">
+                  <div class="col-12 mt-0">
+                    <slot-configuration-tabs-active 
+                      :selected="defaultTabActive" 
+                      :tabs="tabsData" 
+                      @change="handleChangeTabActive" 
+                      />
+                    </div>
+                    <div class="col-12 mt-lg-4 mt-2 text-center text-uppercase">
+                      Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado de alta
+                    </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 col-12 mt-lg-0 mt-2">
+                <slot-configuration-full-screen 
+                  :selected="configFullScreen" 
+                  @change="handleChangeFullScreen" 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-end">
+          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <slot-configuration-import 
+              @configurationFileReaded="handleImportConfigurationFile" 
+              />
+          </div>
+          <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <slot-configuration-export ref="exportRef" />
+          </div>
+          <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <my-button 
+              btnClass="danger bold" 
+              text="Guardar Cambios" 
+              @click="saveConfigChanges" 
+              />
+          </div>
+        </div>
+        <div class="row align-items-end">
+          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+            <my-button 
+              btnClass="warning bold" 
+              text="Resetear Configuración" 
+              @click="resetConfig" 
               />
           </div>
         </div>
       </div>
     </div>
-    <div class="row align-items-end">
-      <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <slot-configuration-import 
-          @configurationFileReaded="handleImportConfigurationFile" 
-          />
-      </div>
-      <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <slot-configuration-export ref="exportRef" />
-      </div>
-      <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <my-button 
-          btnClass="danger bold" 
-          text="Guardar Cambios" 
-          @click="saveConfigChanges" 
-          />
-      </div>
-    </div>
-    <div class="row align-items-end">
-      <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
-        <my-button 
-          btnClass="warning bold" 
-          text="Resetear Configuración" 
-          @click="resetConfig" 
-          />
-      </div>
-    </div>
+
     <div class="revision">rev. {{ packageJson.revision }}</div>
   </my-card>
 </template>
@@ -86,6 +98,7 @@
 
   const fullScreen              = computed(()=>storeGet.getFullScreen())
   const categoriesData          = computed(()=>storeGet.getCategorias())
+  const productsAmount          = computed(()=>storeGet.getProductos().length)
   
   const defaultTabActive        = computed(()=>storeGet.getDefaultTabActive())
 
