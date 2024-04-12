@@ -1,6 +1,6 @@
 <template>
   <div id="SlotFullScreen">
-    <div class="text-center">Ejecutar en Pantalla Completa</div>
+    <div class="text-center text-uppercase">Ejecutar en Pantalla Completa</div>
     <div>
       <my-checkbox
         value="1"

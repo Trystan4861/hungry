@@ -1,7 +1,7 @@
 <template>
   <div id="SlotFullScreen">
     <div>
-      <div class="text-center mb-1">Pestaña activa por defecto</div>
+      <div class="text-center mb-1 text-uppercase">Pestaña activa por defecto</div>
       <my-select 
           :options="props.tabs.filter(item=>item.selectable)" 
           :selected="props.tabs[selected]" 

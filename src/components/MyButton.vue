@@ -1,6 +1,6 @@
 <template>
   <div class="my-button">
-    <button :class="['btn', `btn-${props.btnClass}`]" @click="click" :style="styleOfButton"><span class="btn-text">{{ props.text }}</span></button>
+    <button :class="['btn', `btn-${props.btnClass}`,{ 'text-uppercase': props.uppercase }]" @click="click" :style="styleOfButton"><span class="btn-text">{{ props.text }}</span></button>
   </div>
 </template>
 
@@ -10,6 +10,7 @@ const props = defineProps({
   text: { type: String, required: true },
   btnClass: { type: String, default: "success" },
   styleButton: { type: Object, default: () => ({ borderRadius: "0.375rem" }) },
+  uppercase: {type: Boolean, default:true},
 });
 const styleOfButton = ref(props.styleButton);
 watch(() => props.styleButton, (newData) => styleOfButton.value = newData);
