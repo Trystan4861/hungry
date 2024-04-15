@@ -114,4 +114,8 @@ div:where(.swal2-container) hr {
 }
 .btn{
   --bs-btn-hover-color: #fff !important;
+  --bs-btn-font-size: 100% !important;
+}
+.mt-4{
+  margin-top: 1.25rem !important;
 }

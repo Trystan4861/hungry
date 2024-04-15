@@ -26,11 +26,9 @@ import { useStore } from 'vuex';
 import { localStorageService } from '@/localStorageService';
 import { getDataFromLocalStorage } from '@/utilidades'
 
-
 const props = defineProps({
   tabs:             { type: Array,    required: true, },
   defaultActive:    { type: Number,   default:  -1    },
-  heightDesviation: { type: Number,   default:  0     },
   heightResponsive: { type: Boolean,  default:  true },
 });
 
@@ -40,12 +38,6 @@ const emptyIMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1
 const tabsContainerRef = ref(null);
 const activeTab = ref(props.defaultActive);
 
-/*const initialData             = storeGet.getConfiguration()
-const getDataFromLocalStorage = index=> {
-          let storedData = localStorageService.getSubItem(index);
-          if (storedData) if (index != 'configuracion' ) store.dispatch(`set${index.replace(/\b\w/g,c=>c.toUpperCase())}`, storedData);
-          return storedData ?? localStorageService.setSubItem(index, initialData[index]);
-      }*/
 if (props.defaultActive==-1)
   activeTab.value=getDataFromLocalStorage(store,'defaultTabActive')
 
@@ -59,7 +51,7 @@ const updateTabStyle = () => {
   const container = tabsContainerRef.value;
   if (!container) return null;
   tabStyle.value = { width: `${(((container.clientWidth - 60) / 4) - 1)}px` };
-  (props.heightResponsive)?getAvailHeight():null;
+  props.heightResponsive && getAvailHeight()
 };
 
 const getAvailHeight =()=>{
@@ -79,7 +71,7 @@ const activateTab = (index) => {
 };
 
 
-const emit = defineEmits(['tabChanged', 'tabHeightChanged']);
+const emit = defineEmits(['tabChanged']);
 
 defineExpose({getAvailHeight})
 </script>
@@ -108,6 +100,7 @@ li.nav-item:first-child {
 .nav-tabs{
   --bs-nav-tabs-border-color: #585858;
   justify-content:              space-between;
+  height:                       3.125rem;
 }
 .nav-tabs .nav-link{
   background-color:           #585858;

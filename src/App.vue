@@ -37,20 +37,20 @@
 </template>
 
 <script setup>
-  import { localStorageService }              from '@/localStorageService'
-  import MyTab                                from '@components/MyTab.vue'
+  import { localStorageService }                  from '@/localStorageService'
+  import MyTab                                    from '@components/MyTab.vue'
 
-  import SlotProductsList                   from '@slots/ProductsList.vue'
-  import SlotConfigurationTab                 from '@slots/ConfigurationTab.vue'
-  import SlotAddNewProduct                    from '@slots/AddNewProduct.vue'
-  import SlotShoppingList                     from '@slots/ShoppingList.vue'
+  import SlotProductsList                         from '@slots/ProductsList.vue'
+  import SlotConfigurationTab                     from '@slots/ConfigurationTab.vue'
+  import SlotAddNewProduct                        from '@slots/AddNewProduct.vue'
+  import SlotShoppingList                         from '@slots/ShoppingList.vue'
 
-  import Swal                                 from 'sweetalert2'
-  import { ref, watch, onMounted, onBeforeMount }  from 'vue'
-  import { useStore }                         from 'vuex'
+  import Swal                                     from 'sweetalert2'
+  import { ref, watch, onMounted, onBeforeMount } from 'vue'
+  import { useStore }                             from 'vuex'
   //import axios                        from 'axios'
-  import { notify,Notifications }             from '@kyvg/vue3-notification'
-  import { getDataFromLocalStorage }          from '@/utilidades'
+  import { notify,Notifications }                 from '@kyvg/vue3-notification'
+  import { getDataFromLocalStorage }              from '@/utilidades'
   
   const store                   = useStore()
   const storeGet                = store.getters
@@ -123,7 +123,7 @@
   }*/
 
   const handleBlur=()=>myTabRef.value.getAvailHeight() //para lidiar con el comportamiento anómalo en algunos navegadores al mostrarse y ocultarse el teclado virtual
-
+  
   watch(productsData,   newData => store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
   watch(categoriesData, newData => store.dispatch('setCategorias',  localStorageService.setSubItem('categorias',  newData)));
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)

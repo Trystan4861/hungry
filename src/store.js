@@ -111,5 +111,5 @@ export default createStore({
     getTabs:              (state)=>(  )=>state.appStatic.tabs,
 
     getCanClickProducts:  (state)=>(  )=>state.configuracion.canClickProducts,
-  }
-});
+  },
+})
