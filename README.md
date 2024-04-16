@@ -44,8 +44,7 @@ Aquí tienes algunas instrucciones básicas sobre cómo utilizar nuestra aplicac
 
 ## Tecnologías Utilizadas
 
-- **Frontend:** [HTML, CSS, JavaScript, VUE3].
-- **Backend desarrollo:** [Vite]
+- HTML5, CSS3, VUE3
 - IDE: Visual Studio Code
 
 ## Contribución

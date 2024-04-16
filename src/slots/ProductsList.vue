@@ -2,10 +2,9 @@
   <my-card 
     borderStyle="rounded-bottom" 
     v-touch:drag.once="handleDragCard"
-    ref="myCardRef"
     >
     <div class="h-100" v-show="cantidadProductos==0">
-        <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase">No hay productos dados de alta</h2></div>
+        <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase text-center">No hay productos dados de alta</h2></div>
     </div> 
     <div v-show="cantidadProductos>0">
       <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
@@ -77,7 +76,6 @@
   const itemCategorySelected    = ref(0)
   const letraActual             = ref('')
   const letraActualRef          = ref(null)
-  const myCardRef               = ref(null)
   const productoAEditar         = ref('')
   const productoAEditarRef      = ref(null)
   const productoSeleccionado    = ref(null)
@@ -243,11 +241,14 @@
   watch(productsData,   newData => storeGet.getProductos()!=newData && store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
   watch(()=>storeGet.getProductos(),newData=>productsData.value!=newData && (productsData.value=newData))
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value!=newData && (categoriesData.value=newData))
-  const setMaxHeight=maxHeight=>withScrollRef.value.style.setProperty('--height',`${maxHeight}px`)
+  const setMaxHeight=maxHeight=>
+  {
+    withScrollRef.value?.style.setProperty('--height',`${maxHeight}px`)
+  }
   watch(productoAEditarRef,nv=>nv?console.log(nv.value):null)
   onMounted(()=>{
-      watch(()=>myCardRef.value?.height, newValue=>setMaxHeight(newValue))
-      myCardRef.value?.height && setTimeout(()=>setMaxHeight(myCardRef.value?.height??300),100)
+      watch(()=>storeGet.getAlturaDisponible(), newValue=>setMaxHeight(newValue))
+      setTimeout(()=>setMaxHeight(storeGet.getAlturaDisponible()),100)
       if (props.orderBy.toLowerCase()=="name")
         withScrollRef.value.addEventListener('scroll',updateTooltip,{passive:true})
   })

@@ -26,7 +26,7 @@
                       />
                     </div>
                     <div class="col-12 mt-lg-4 mt-2 text-center text-uppercase">
-                      Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado de alta
+                      Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado{{ productsAmount!=1?'s':'' }} de alta
                     </div>
                   </div>
               </div>
@@ -60,7 +60,7 @@
           <div class="col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
             <my-button 
               btnClass="info bold" 
-              text="Iniciar Sesión" 
+              :text="`${token.length==0?'Iniciar':'Cerrar'} Sesión`" 
               @click="handleLogin" 
               />
           </div>
@@ -99,6 +99,8 @@
 
   const store=useStore()
   const storeGet=store.getters
+
+  const token                   = computed(()=>storeGet.getToken())
 
   const tabsData                = storeGet.getTabs()
 
