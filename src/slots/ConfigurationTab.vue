@@ -96,6 +96,8 @@
   import { localStorageService }      from '@/localStorageService'
   import Swal                         from 'sweetalert2'
   import { dispatch } from '@/utilidades';
+  import axios from 'axios';
+  import md5 from 'crypto-js/md5'
 
   const store=useStore()
   const storeGet=store.getters
@@ -123,8 +125,52 @@
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
   const handleLogin=()=>{
-    console.log("handleLogin")
-  }
+    Swal.fire({
+      title: 'Iniciar sesión',
+      html: `
+        <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
+        <div class="input-group">
+          <input id="pass" type="password" class="swal2-input password-input" placeholder="Contraseña" autocomplete="off">
+          <div class="input-group-append">
+            <label for="pass" class="input-group-text toggle-password">&#x1f512;&#xfe0e;</label>
+          </div>
+        </div>
+      `,
+      focusConfirm: false,
+      preConfirm: () => {
+        const email = Swal.getPopup().querySelector('#email').value.toLowerCase().trim();
+        const pass = md5(Swal.getPopup().querySelector('#pass').value.trim()).toString();
+
+        let urlbase = 'https://www.infoinnova.es/lolo/api';
+        let data = { email, pass };
+        
+        return axios.post(urlbase + '/login', data, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+        }).then(response=>{
+          if (response.data.result) {
+            const loginData={
+              email,token:response.data.token
+            }
+            store.dispatch('setLoginData',localStorageService.setSubItem('loginData',loginData))
+            Swal.fire({
+              html:'Has iniciado sesión correctamente',
+              icon:'success'
+            })
+          } else {
+            Swal.fire({
+              title:'ERROR',
+              html:response.data.error_msg,
+              icon:'error'
+            })
+          }
+        }).catch(error=>{
+          console.log('Error:', error);
+        });
+      }
+    });
+  };
 //  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
 
   const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
