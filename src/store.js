@@ -2,6 +2,7 @@ import { createStore } from 'vuex';
 
 const initialState= {
   appStatic:{
+    appName:'Hungry!',
     maxLenght: 40,
     ignoreDrag:false,
     heightDesviation: -90,
@@ -21,7 +22,6 @@ const initialState= {
     ]
   },
   configuracion:{
-    appName:'Hungry!',
     defaultTabActive:1,
     alturaDisponible:0,
     fullScreen: false,
@@ -64,7 +64,7 @@ export default createStore({
       state.configuracion.alturaDisponible=alturaDisponible;
     }, 
     setAlturaDisponible   ( state,      alturaDisponible  ) { state.configuracion.alturaDisponible   = alturaDisponible  },
-    setConfiguration      ( state,      configuration     ) { state.configuracion                    = configuration     },
+    setConfiguracion      ( state,      configuracion     ) { state.configuracion                    = configuracion     },
     setDefaultTabActive   ( state,      defaultTabActive  ) { state.configuracion.defaultTabActive   = defaultTabActive  },
     setFullScreen         ( state,      fullScreen        ) { state.configuracion.fullScreen         = fullScreen        },
     setIgnoreDrag         ( state,      ignoreDrag        ) { state.appStatic.ignoreDrag             = ignoreDrag        },
@@ -80,7 +80,7 @@ export default createStore({
   },
   actions: {
     setAlturaDisponible   ({ commit },  alturaDisponible  ) { commit('setAlturaDisponible', alturaDisponible)            },
-    setConfiguration      ({ commit },  configuration     ) { commit('setConfiguration',    configuration   )            },
+    setConfiguracion      ({ commit },  configuracion     ) { commit('setConfiguracion',    configuracion   )            },
     setDefaultTabActive   ({ commit },  defaultTabActive  ) { commit('setDefaultTabActive', defaultTabActive)            },
     setFullScreen         ({ commit },  fullScreen        ) { commit('setFullScreen',       fullScreen      )            },
     setIgnoreDrag         ({ commit },  ignoreDrag        ) { commit('setIgnoreDrag',       ignoreDrag      )            },
@@ -99,7 +99,7 @@ export default createStore({
     getSupermercadoFromID:( state )=>(id)=>state.appStatic.supermercados.find(s => s.id === id),
     
     getAlturaDisponible:  ( state )=>(  )=>state.configuracion.alturaDisponible,
-    getConfiguration:     ( state )=>(  )=>state.configuracion,
+    getConfiguracion:     ( state )=>(  )=>state.configuracion,
     getDefaultTabActive:  ( state )=>(  )=>state.configuracion.defaultTabActive,
     getFullScreen:        ( state )=>(  )=>state.configuracion.fullScreen,
     getIgnoreDrag:        ( state )=>(  )=>state.appStatic.ignoreDrag,
@@ -118,5 +118,7 @@ export default createStore({
     getTabs:              ( state )=>(  )=>state.appStatic.tabs,
 
     getCanClickProducts:  ( state )=>(  )=>state.configuracion.canClickProducts,
+
+    getAppName:           ( state )=>(  )=>state.appStatic.appName,
   },
 })

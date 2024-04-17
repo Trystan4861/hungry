@@ -62,8 +62,7 @@
   const categoriesData          = ref(getDataFromLocalStorage(store,'categorias'      ))
   const tabActiva               = ref(getDataFromLocalStorage(store,'defaultTabActive'))
   const myTabRef                = ref(null)
-
-  typeof categoriesData.value==='undefined'  && (categoriesData.value=storeGet.getConfiguration().categorias)
+  typeof categoriesData.value==='undefined'  && (categoriesData.value=storeGet.getCategorias())
 
   const handleUpdateTabActive               = tab=>tabActiva.value=tab
   
@@ -105,22 +104,6 @@
         target: document.querySelector("#appContainer"),
     })
   }
-    //TODO hacer el login
-  //funcion para hacer llamada mediante axios
-  /*async function doLogin() {
-    let email="";
-    let pass="";
-    let urlbase = 'https://www.infoinnova.es/lolo/api';
-    let data = { email,  pass };
-
-    const response = await axios.post(urlbase + '/login', data, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-    });
-    console.log('Success:', response.data);
-    return response.data;
-  }*/
 
   const handleBlur=()=>myTabRef.value.getAvailHeight() //para lidiar con el comportamiento anómalo en algunos navegadores al mostrarse y ocultarse el teclado virtual
   
@@ -129,7 +112,7 @@
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value=newData)
 
-  onBeforeMount(()=>getDataFromLocalStorage(store,'configuracion'))
+  onBeforeMount(()=>{ getDataFromLocalStorage(store,'configuracion') }) // actualizamos el store desde el localStorage si existe
   onMounted(()=>{
     document.addEventListener('contextmenu', event => event.preventDefault())
 

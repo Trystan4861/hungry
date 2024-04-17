@@ -16,5 +16,8 @@ export const localStorageService = {
   setItem(value, key="hungryConfigData"){
     localStorage.setItem(key, JSON.stringify(value));
     return value;
+  },
+  getItem(key="hungryConfigData"){
+    return JSON.parse(localStorage.getItem(key));
   }
 };

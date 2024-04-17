@@ -12,6 +12,10 @@
 <script setup>
   import MyFile from '@components/MyFile.vue';
   import Swal   from 'sweetalert2';
+import { useStore } from 'vuex';
+
+  const store=useStore()
+  const storeGet=store.getters
 
   const props=defineProps({ 
     showInternalSwalError:  { type:Boolean, default:true      },
@@ -19,7 +23,7 @@
   })
   const emit=defineEmits(['configurationFileReaded','configurationFileError'])
   
-  const handleFileReaded= data => (data.appName!="Hungry!")?emit('configurationFileError','ERROR_APPNAME'):emit('configurationFileReaded',data)
+  const handleFileReaded= data => (data.appName!=storeGet.getAppName())?emit('configurationFileError','ERROR_APPNAME'):emit('configurationFileReaded',data)
 
   const handeFileReadError= error => {
     if (props.showInternalSwalError) {

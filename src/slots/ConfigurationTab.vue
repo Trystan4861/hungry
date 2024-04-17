@@ -223,7 +223,7 @@
       cancelButtonText: 'Sólo productos y categorías'
     }).then((result) => {
       if (result.isConfirmed){
-        store.dispatch('setConfiguration', localStorageService.setItem(data));
+        store.dispatch('setConfiguracion', localStorageService.setItem(data));
         
         defaultTabActive.value=storeGet.getDefaultTabActive()
 

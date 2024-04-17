@@ -20,10 +20,14 @@ export function generateID(){return Math.random().toString(36).slice(2)}
 // si no hay datos en el localStorage, se obtienen los datos por defecto del store y se guardan en el localStorage
 // se devuelven los datos obtenidos del localStorage o los datos por defecto del store si no hay datos en el localStorage
 export function getDataFromLocalStorage (store,index) {
-  let storedData = localStorageService.getSubItem(index);
-  if (storedData )//&& index != 'configuracion' ) 
+  let storedData=null
+  if (index!= 'configuracion')
+    storedData = localStorageService.getSubItem(index);
+  else
+    storedData = localStorageService.getItem();
+  if (storedData )
     dispatch(store,index, storedData);
-  return storedData ?? localStorageService.setSubItem(index, store.getters.getConfiguration()[index]);
+  return storedData ?? localStorageService.setSubItem(index, store.getters.getConfiguracion()[index]);
 }
 
 // función para crear una copia profunda de un array|objeto usando JSON
