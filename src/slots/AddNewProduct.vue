@@ -103,9 +103,9 @@
       })
     }
     else
-      emit('addClick',nuevoProducto.value,categoriaActiva.value.id,supermercadoActivo.value.id)
+      emit('click',nuevoProducto.value,categoriaActiva.value.id,supermercadoActivo.value.id)
   }
-  const emit =defineEmits(['categoryChanged','addClick','update:modelValue','blur'])
+  const emit =defineEmits(['categoryChanged','click','update:modelValue','blur'])
   defineExpose({clearInput})
 </script>
 <style scoped>

@@ -52,7 +52,7 @@ const handleLastCategoryVisible = () => {
   });
 };
 
-const emit = defineEmits(['categoriesChecked', 'buttonClicked']);
+const emit = defineEmits(['categoriesChecked']);
 
 </script>
 
