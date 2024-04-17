@@ -2,7 +2,7 @@
   <div class="d-flex align-items-center cursor-pointer">
     <div v-if="styled">
       <label class="Toggle" :class="group?'mb-1':''" :for="id" @click="handleChange">
-      <input type="checkbox" :name="id" :id="id" class="Toggle__input" :value="value" :checked="isChecked">
+      <input type="checkbox" :name="id" :id="id" class="Toggle__input" :value="value" :checked="isChecked" :disabled="!props.enabled">
         <span class="Toggle__display" :style="{ backgroundColor:isChecked?checkedColor:uncheckedColor, '--diameter': dotDiameter}">
           <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="Toggle__icon" :style="{color: checkmarkColor}">
             <path d="M6.08471 10.6237L2.29164 6.83059L1 8.11313L6.08471 13.1978L17 2.28255L15.7175 1L6.08471 10.6237Z" fill="currentcolor" stroke="currentcolor"></path>
@@ -21,6 +21,7 @@
         :value="value"
         :checked="isChecked"
         @click="handleChange"
+        :disabled="!props.enabled"
       >
       <label :for="id">{{ label }}</label>
     </div>
@@ -35,6 +36,7 @@ const props=defineProps({
   value:          { required: true                      },
   label:          { type: String,   default: ''         },
   group:          { type: String                        },
+  enabled:        { type: Boolean,  default: true       },
   checkedValues:  { type: Array                         },
   required:       { type: Boolean,  default: false      },
   selected:       { type: Boolean,  default: false      },

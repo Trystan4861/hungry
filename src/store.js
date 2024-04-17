@@ -6,20 +6,13 @@ const initialState= {
     maxLenght: 40,
     ignoreDrag:false,
     heightDesviation: -90,
-    localStorageKeys:['categoriesData','productsData'],
     tabs: [
-      { id: 0, text:'Configuración',          logo: 'config.svg',     selectable:false, class:''},
-      { id: 1, text:'Añadir Productos',       logo: 'add.svg',        selectable:true,  class:''},
-      { id: 2, text:'Por orden alfabético',   logo: 'a2z.svg',        selectable:true,  class:''},
-      { id: 3, text:'Por categoría',          logo: 'categorias.svg', selectable:true,  class:''},
-      { id: 4, text:'Lista de la compra',     logo: 'cart.svg',       selectable:true,  class:''},
+      { id: 0, text: 'Configuración',          logo: 'config.svg',        selectable: false,  },
+      { id: 1, text: 'Añadir Productos',       logo: 'add.svg',           selectable: true,   },
+      { id: 2, text: 'Por orden alfabético',   logo: 'a2z.svg',           selectable: true,   },
+      { id: 3, text: 'Por categoría',          logo: 'categorias.svg',    selectable: true,   },
+      { id: 4, text: 'Lista de la compra',     logo: 'cart.svg',          selectable: true,   },
     ],
-    supermercados:[
-      { id: 0, text:'Cualquier Supermercado', logo:'hungry.svg',        class:''},
-      { id: 1, text:'Carrefour',              logo:'carrefour.svg',     class:''},
-      { id: 2, text:'Mercadona',              logo:'mercadona.svg',     class:''},
-      { id: 3, text:'La Carmela',             logo:'super_carmela.svg', class:''},
-    ]
   },
   configuracion:{
     defaultTabActive:1,
@@ -30,6 +23,12 @@ const initialState= {
       email:"",
       token:"",
     },
+    supermercados:[
+      { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible:    true, editable: false },
+      { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible:    true, editable: true  },
+      { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible:    true, editable: true  },
+      { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible:    true, editable: true  },
+    ],
     categorias: [
       { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
       { id: 1, text:'Categoría  2', bgColor:'#d8993c', visible:true },
@@ -71,6 +70,7 @@ export default createStore({
     
     setProducts           ( state,      productos         ) { state.configuracion.productos          = productos         },
     setCategorias         ( state,      categorias        ) { state.configuracion.categorias         = categorias        },
+    setSupermercados      ( state,      supermercados     ) { state.configuracion.supermercados      = supermercados     },
 
     setLoginData          ( state,      loginData         ) { state.configuracion.loginData          = loginData         },
     setEmail              ( state,      email             ) { state.configuracion.loginData.email    = email             },
@@ -87,6 +87,7 @@ export default createStore({
 
     setCategorias         ({ commit },  categorias        ) { commit('setCategorias',       categorias      )            },
     setProductos          ({ commit },  productos         ) { commit('setProducts',         productos       )            },
+    setSupermercados      ({ commit },  supermercados     ) { commit('setSupermercados',    supermercados   )            },
 
     setLoginData          ({ commit },  loginData         ) { commit('setLoginData',        loginData       )            },
     setEmail              ({ commit },  email             ) { commit('setEmail',            email           )            },
@@ -96,7 +97,7 @@ export default createStore({
   },
   getters: {
     getCategoriaFromID:   ( state )=>(id)=>state.configuracion.categorias.find(c => c.id === id),
-    getSupermercadoFromID:( state )=>(id)=>state.appStatic.supermercados.find(s => s.id === id),
+    getSupermercadoFromID:( state )=>(id)=>state.configuracion.supermercados.find(s => s.id === id),
     
     getAlturaDisponible:  ( state )=>(  )=>state.configuracion.alturaDisponible,
     getConfiguracion:     ( state )=>(  )=>state.configuracion,
@@ -112,13 +113,14 @@ export default createStore({
     getToken:             ( state )=>(  )=>state.configuracion.loginData.token,
 
     getHeightDesviation:  ( state )=>(  )=>state.appStatic.heightDesviation,
-    getLocalStorageKeys:  ( state )=>(  )=>state.appStatic.localStorageKeys,
     getMaxLenght:         ( state )=>(  )=>state.appStatic.maxLenght,
-    getSupermercados:     ( state )=>(  )=>state.appStatic.supermercados,
+    getSupermercados:     ( state )=>(  )=>state.configuracion.supermercados,
     getTabs:              ( state )=>(  )=>state.appStatic.tabs,
 
     getCanClickProducts:  ( state )=>(  )=>state.configuracion.canClickProducts,
 
     getAppName:           ( state )=>(  )=>state.appStatic.appName,
+
+    getInitialState:      (       )=>(id)=>initialState.configuracion[id],
   },
 })

@@ -7,18 +7,16 @@
       ref="myTabRef"
     >
       <template v-slot:tabContent0> <!-- Configuration -->
-        <SlotConfigurationTab 
-          @categoriasVisibilesChanged="handlecategoriasVisibilesChanged" 
-        />
+        <SlotConfigurationTab />
       </template>
       <template v-slot:tabContent1> <!-- Add new product -->
         <SlotAddNewProduct 
           ref               = "slotAddNewProductRef"
           :supermercados    = "supermarketsData" 
           :defaultMaxLength = "true"
-          @categoryChanged  = "handleCategoryChanged" 
-          @addClick         = "haddleAddNewProductClick"
-          @blur             = "handleBlur"
+          @categoryChanged  = "handleAddNewProductCategoryChanged" 
+          @click            = "haddleAddNewProductClick"
+          @blur             = "handleAddNewProductBlur"
           />
       </template>    
       <template v-slot:tabContent2> 
@@ -66,11 +64,7 @@
 
   const handleUpdateTabActive               = tab=>tabActiva.value=tab
   
-  const handlecategoriasVisibilesChanged=(newCategoriesData)=>{
-    console.log(newCategoriesData)//categoriesData.value=newCategoriesData.value
-  }
-
-  const handleCategoryChanged   = (id_categoria,text) =>{
+   const handleAddNewProductCategoryChanged   = (id_categoria,text) =>{
     categoriesData.value[id_categoria].text=text
     categoriesData.value=[...categoriesData.value]
   }
@@ -105,14 +99,17 @@
     })
   }
 
-  const handleBlur=()=>myTabRef.value.getAvailHeight() //para lidiar con el comportamiento anómalo en algunos navegadores al mostrarse y ocultarse el teclado virtual
+  const handleAddNewProductBlur=()=>myTabRef.value.getAvailHeight() //para lidiar con el comportamiento anómalo en algunos navegadores al mostrarse y ocultarse el teclado virtual
   
   watch(productsData,   newData => store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
   watch(categoriesData, newData => store.dispatch('setCategorias',  localStorageService.setSubItem('categorias',  newData)));
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value=newData)
 
-  onBeforeMount(()=>{ getDataFromLocalStorage(store,'configuracion') }) // actualizamos el store desde el localStorage si existe
+  onBeforeMount(()=>{ 
+    getDataFromLocalStorage(store,'configuracion')
+    console.log(getDataFromLocalStorage(store,'supermercados'))
+  }) // actualizamos el store desde el localStorage si existe
   onMounted(()=>{
     document.addEventListener('contextmenu', event => event.preventDefault())
 

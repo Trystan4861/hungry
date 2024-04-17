@@ -81,7 +81,7 @@
   const productoSeleccionado    = ref(null)
   const selectRef               = ref(null)
   const supermarketAtEdit       = ref(null)
-  const supermarketsData        = storeGet.getSupermercados()
+  const supermarketsData        = storeGet.getSupermercados()??storeGet.getInitialState('supermercados')
   const supermercadoProducto    = ref(null)
   const withScrollRef           = ref(null)
   const ocultaTooltipTimeout    = ref(0)

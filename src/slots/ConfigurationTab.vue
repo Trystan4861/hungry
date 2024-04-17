@@ -16,6 +16,12 @@
           </div>
           <div class="col-lg-8 col-12 col-md-6">
             <div class="row h-100">
+              <div class="col-lg-6 col-12 mt-lg-0 mt-2">
+                <slot-configuration-supermarkets 
+                  :supermarkets="supermarketsData" 
+                  @supermarketsChecked="handleSupermarketsChecked"
+                />
+              </div>
               <div class="col-lg-6 col-12 mt-0">
                 <div class="row h-100">
                   <div class="col-12 mt-0">
@@ -25,16 +31,14 @@
                       @change="handleChangeTabActive" 
                       />
                     </div>
-                    <div class="col-12 mt-lg-4 mt-2 text-center text-uppercase">
-                      Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado{{ productsAmount!=1?'s':'' }} de alta
+                    <div class="col-12 mt-lg-2 mt-2 text-center text-uppercase">
+                      <div class="mb-2">Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado{{ productsAmount!=1?'s':'' }} de alta</div>
+                      <slot-configuration-full-screen 
+                        :selected="configFullScreen" 
+                        @change="handleChangeFullScreen" 
+                      />
                     </div>
                   </div>
-              </div>
-              <div class="col-lg-6 col-12 mt-lg-0 mt-2">
-                <slot-configuration-full-screen 
-                  :selected="configFullScreen" 
-                  @change="handleChangeFullScreen" 
-                />
               </div>
             </div>
           </div>
@@ -86,6 +90,7 @@
   import packageJson                  from '@/../package.json'
 
   import SlotConfigurationCategories  from '@slots/ConfigurationCategories.vue';
+  import SlotConfigurationSupermarkets  from '@slots/ConfigurationSupermarkets.vue';
   import SlotConfigurationExport      from '@slots/ConfigurationExport.vue';
   import SlotConfigurationImport      from '@slots/ConfigurationImport.vue';
   import SlotConfigurationFullScreen  from '@slots/ConfigurationFullScreen.vue';
@@ -108,6 +113,7 @@
 
   const fullScreen              = computed(()=>storeGet.getFullScreen())
   const categoriesData          = computed(()=>storeGet.getCategorias())
+  const supermarketsData        = computed(()=>storeGet.getSupermercados()??storeGet.getInitialState('supermercados'))
   const productsAmount          = computed(()=>storeGet.getProductos().length)
   
   const defaultTabActive        = computed(()=>storeGet.getDefaultTabActive())
@@ -116,6 +122,7 @@
   
   const changes2Save={
     categoriasVisibiles:false,
+    supermarketsVisibles:false,
     defaultTabActive: defaultTabActive.value,
   }
   
@@ -171,9 +178,9 @@
       }
     });
   };
-//  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
 
-  const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
+const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
+const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ...supermercado })))
 
   const handleCategoriesChecked = data =>{
     let aux=categoriesData.value.map(categoria => ({ ...categoria }))
@@ -181,6 +188,13 @@
     categoriasVisibles.value= aux
     changes2Save.categoriasVisibiles=true
   }      
+  const handleSupermarketsChecked = data =>{
+    let aux=supermarketsData.value.map(supermercado => ({ ...supermercado }))
+    aux.forEach((item,index)=>item.visible=data.includes(index))
+    supermarketsVisibles.value= aux
+    changes2Save.supermarketsVisibles=true
+  }      
+
   const resetConfig= ()=>{
     Swal.fire({
         icon: 'info',
@@ -205,10 +219,8 @@
             target: document.querySelector("#appContainer"),
             allowOutsideClick: false
           }).then(result=>{
-            if (result.isConfirmed)
-              exportRef.value.exportConfig()
-              store.commit('resetStore');
-
+            result.isConfirmed && exportRef.value.exportConfig()
+            store.commit('resetStore');
           });    
         }
       });    
@@ -257,7 +269,7 @@
     });
   }
   const saveConfigChanges=()=>{
-    let toSave=changes2Save.defaultTabActive!=defaultTabActive.value || changes2Save.categoriasVisibiles || fullScreen.value!=configFullScreen.value;
+    let toSave=changes2Save.defaultTabActive!=defaultTabActive.value || changes2Save.categoriasVisibiles || changes2Save.supermarketsVisibles || fullScreen.value!=configFullScreen.value;
     if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
     if (changes2Save.categoriasVisibiles)
     {
@@ -269,6 +281,10 @@
         confirmButtonText:'Aceptar',
         target: document.querySelector("#appContainer"),
       })
+    }
+    if (changes2Save.supermarketsVisibles)
+    {
+      dispatch(store,'supermercados',supermarketsVisibles.value)
     }
     if (changes2Save.defaultTabActive!=defaultTabActive.value)
     {
@@ -291,7 +307,8 @@
     }
 
     changes2Save.categoriasVisibiles=false;
-    return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
+    changes2Save.supermarketsVisibles=false;
+    return notify({group:"app", text:`Cambios guardados correctamente`,type:"success", duration:3000})
   }
 </script>
 <style scoped>

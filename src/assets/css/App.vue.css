@@ -63,6 +63,9 @@ div:where(.swal2-container) hr {
 .mr-0 { 
   margin-right:         0rem !important;
 }
+.mb-2{
+  margin-bottom:        .5rem;
+}
 .overflow-hidden{ 
   overflow:             hidden;
 }

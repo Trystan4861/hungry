@@ -78,7 +78,7 @@
   const props=defineProps({
     active:       {type:Boolean,required:true}
   })
-  const supermercados                   = computed(()=>storeGet.getSupermercados())
+  const supermercados                   = computed(()=>storeGet.getSupermercados()??storeGet.getInitialState('supermercados'))
   const productsData                    = computed(()=>storeGet.getProductos())
   const categoriesData                  = computed(()=>storeGet.getCategorias())
   const idsCategoriasVisibles           = computed(()=>createCopy(categoriesData.value).filter(item=>item.visible).map(item=>item.id))
