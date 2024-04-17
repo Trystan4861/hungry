@@ -5,7 +5,7 @@
     <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
       <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
     </h1>
-    <div class="row withScroll">
+    <div class="row configWithScroll">
       <div class="col">
         <div class="row">
           <div class="col-lg-4 col-12 col-md-6">
@@ -40,12 +40,12 @@
           </div>
         </div>
         <div class="row align-items-end">
-          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+          <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
             <slot-configuration-import 
               @configurationFileReaded="handleImportConfigurationFile" 
               />
           </div>
-          <div class="order-2 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
+          <div class="order-2 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
             <slot-configuration-export ref="exportRef" />
           </div>
           <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
@@ -74,8 +74,7 @@
         </div>
       </div>
     </div>
-
-    <div class="revision">rev. {{ packageJson.revision }}</div>
+    <div class="revision">{{ packageJson.revision }}</div>
   </my-card>
 </template>
 
@@ -97,6 +96,8 @@
   import { localStorageService }      from '@/localStorageService'
   import Swal                         from 'sweetalert2'
   import { dispatch } from '@/utilidades';
+  import axios from 'axios';
+  import md5 from 'crypto-js/md5'
 
   const store=useStore()
   const storeGet=store.getters
@@ -123,6 +124,53 @@
   const handleChangeFullScreen  = checked => configFullScreen.value=checked
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
+  const handleLogin=()=>{
+    Swal.fire({
+      title: 'Iniciar sesión',
+      html: `
+        <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
+        <div class="input-group">
+          <input id="pass" type="password" class="swal2-input password-input" placeholder="Contraseña" autocomplete="off">
+          <div class="input-group-append">
+            <label for="pass" class="input-group-text toggle-password">&#x1f512;&#xfe0e;</label>
+          </div>
+        </div>
+      `,
+      focusConfirm: false,
+      preConfirm: () => {
+        const email = Swal.getPopup().querySelector('#email').value.toLowerCase().trim();
+        const pass = md5(Swal.getPopup().querySelector('#pass').value.trim()).toString();
+
+        let urlbase = 'https://www.infoinnova.es/lolo/api';
+        let data = { email, pass };
+        
+        return axios.post(urlbase + '/login', data, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+        }).then(response=>{
+          if (response.data.result) {
+            const loginData={
+              email,token:response.data.token
+            }
+            store.dispatch('setLoginData',localStorageService.setSubItem('loginData',loginData))
+            Swal.fire({
+              html:'Has iniciado sesión correctamente',
+              icon:'success'
+            })
+          } else {
+            Swal.fire({
+              title:'ERROR',
+              html:response.data.error_msg,
+              icon:'error'
+            })
+          }
+        }).catch(error=>{
+          console.log('Error:', error);
+        });
+      }
+    });
+  };
 //  const dispatch=(where,what)=>store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  localStorageService.setSubItem(where, what));
 
   const categoriasVisibles= ref(categoriesData.value.map(categoria => ({ ...categoria })))
@@ -246,3 +294,9 @@
     return notify({group:"app", text:`Cambis guardados correctamente`,type:"success", duration:3000})
   }
 </script>
+<style scoped>
+.configWithScroll{
+  overflow-y: auto;
+  max-height: 500px;
+}
+</style>

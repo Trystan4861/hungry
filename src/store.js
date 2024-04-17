@@ -29,7 +29,6 @@ const initialState= {
     loginData:{
       email:"",
       token:"",
-      logged:false,
     },
     categorias: [
       { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
@@ -64,48 +63,55 @@ export default createStore({
       Object.assign(state,initialState)
       state.configuracion.alturaDisponible=alturaDisponible;
     }, 
-    setAlturaDisponible   ( state,     alturaDisponible) { state.configuracion.alturaDisponible   = alturaDisponible  },
-    setCategorias         ( state,     categorias      ) { state.configuracion.categorias         = categorias        },
-    setConfiguration      ( state,     configuration   ) { state.configuracion                    = configuration     },
-    setDefaultTabActive   ( state,     defaultTabActive) { state.configuracion.defaultTabActive   = defaultTabActive  },
-    setFullScreen         ( state,     fullScreen      ) { state.configuracion.fullScreen         = fullScreen        },
-    setIgnoreDrag         ( state,     ignoreDrag      ) { state.appStatic.ignoreDrag             = ignoreDrag        },
-    setProducts           ( state,     productos       ) { state.configuracion.productos          = productos         },
-    setEmail              ( state,     email           ) { state.configuracion.loginData.email    = email             },
-    setLogged             ( state,     logged          ) { state.configuracion.loginData.logged   = logged            },
-    setToken              ( state,     token           ) { state.configuracion.loginData.token    = token             },
-    setCanClickProducts   ( state,     canClickProducts) { state.configuracion.canClickProducts   = canClickProducts  },
+    setAlturaDisponible   ( state,      alturaDisponible  ) { state.configuracion.alturaDisponible   = alturaDisponible  },
+    setConfiguration      ( state,      configuration     ) { state.configuracion                    = configuration     },
+    setDefaultTabActive   ( state,      defaultTabActive  ) { state.configuracion.defaultTabActive   = defaultTabActive  },
+    setFullScreen         ( state,      fullScreen        ) { state.configuracion.fullScreen         = fullScreen        },
+    setIgnoreDrag         ( state,      ignoreDrag        ) { state.appStatic.ignoreDrag             = ignoreDrag        },
+    
+    setProducts           ( state,      productos         ) { state.configuracion.productos          = productos         },
+    setCategorias         ( state,      categorias        ) { state.configuracion.categorias         = categorias        },
+
+    setLoginData          ( state,      loginData         ) { state.configuracion.loginData          = loginData         },
+    setEmail              ( state,      email             ) { state.configuracion.loginData.email    = email             },
+    setToken              ( state,      token             ) { state.configuracion.loginData.token    = token             },
+    
+    setCanClickProducts   ( state,      canClickProducts  ) { state.configuracion.canClickProducts   = canClickProducts  },
   },
   actions: {
-    setAlturaDisponible   ({ commit }, alturaDisponible) { commit('setAlturaDisponible', alturaDisponible)            },
-    setCategorias         ({ commit }, categorias      ) { commit('setCategorias',       categorias      )            },
-    setConfiguration      ({ commit }, configuration   ) { commit('setConfiguration',    configuration   )            },
-    setDefaultTabActive   ({ commit }, defaultTabActive) { commit('setDefaultTabActive', defaultTabActive)            },
-    setFullScreen         ({ commit }, fullScreen      ) { commit('setFullScreen',       fullScreen      )            },
-    setIgnoreDrag         ({ commit }, ignoreDrag      ) { commit('setIgnoreDrag',       ignoreDrag      )            },
-    setProductos          ({ commit }, productos       ) { commit('setProducts',         productos       )            },
-    setEmail              ({ commit }, email           ) { commit('setEmail',            email           )            },
-    setLogged             ({ commit }, logged          ) { commit('setLogged',           logged          )            },
-    setToken              ({ commit }, token           ) { commit('setToken',            token           )            },
-    setCanClickProducts   ({ commit }, canClickProducts) { commit('setCanClickProducts', canClickProducts)            },
+    setAlturaDisponible   ({ commit },  alturaDisponible  ) { commit('setAlturaDisponible', alturaDisponible)            },
+    setConfiguration      ({ commit },  configuration     ) { commit('setConfiguration',    configuration   )            },
+    setDefaultTabActive   ({ commit },  defaultTabActive  ) { commit('setDefaultTabActive', defaultTabActive)            },
+    setFullScreen         ({ commit },  fullScreen        ) { commit('setFullScreen',       fullScreen      )            },
+    setIgnoreDrag         ({ commit },  ignoreDrag        ) { commit('setIgnoreDrag',       ignoreDrag      )            },
+
+    setCategorias         ({ commit },  categorias        ) { commit('setCategorias',       categorias      )            },
+    setProductos          ({ commit },  productos         ) { commit('setProducts',         productos       )            },
+
+    setLoginData          ({ commit },  loginData         ) { commit('setLoginData',        loginData       )            },
+    setEmail              ({ commit },  email             ) { commit('setEmail',            email           )            },
+    setToken              ({ commit },  token             ) { commit('setToken',            token           )            },
+
+    setCanClickProducts   ({ commit },  canClickProducts  ) { commit('setCanClickProducts', canClickProducts)            },
   },
   getters: {
     getCategoriaFromID:   ( state )=>(id)=>state.configuracion.categorias.find(c => c.id === id),
     getSupermercadoFromID:( state )=>(id)=>state.appStatic.supermercados.find(s => s.id === id),
     
     getAlturaDisponible:  ( state )=>(  )=>state.configuracion.alturaDisponible,
-    getCategorias:        ( state )=>(  )=>state.configuracion.categorias,
     getConfiguration:     ( state )=>(  )=>state.configuracion,
     getDefaultTabActive:  ( state )=>(  )=>state.configuracion.defaultTabActive,
     getFullScreen:        ( state )=>(  )=>state.configuracion.fullScreen,
+    getIgnoreDrag:        ( state )=>(  )=>state.appStatic.ignoreDrag,
+
+    getCategorias:        ( state )=>(  )=>state.configuracion.categorias,
     getProductos:         ( state )=>(  )=>state.configuracion.productos,
  
+    getLoginData:         ( state )=>(  )=>state.configuracion.loginData,
     getEmail:             ( state )=>(  )=>state.configuracion.loginData.email,
-    getLogged:            ( state )=>(  )=>state.configuracion.loginData.logged,
     getToken:             ( state )=>(  )=>state.configuracion.loginData.token,
 
     getHeightDesviation:  ( state )=>(  )=>state.appStatic.heightDesviation,
-    getIgnoreDrag:        ( state )=>(  )=>state.appStatic.ignoreDrag,
     getLocalStorageKeys:  ( state )=>(  )=>state.appStatic.localStorageKeys,
     getMaxLenght:         ( state )=>(  )=>state.appStatic.maxLenght,
     getSupermercados:     ( state )=>(  )=>state.appStatic.supermercados,

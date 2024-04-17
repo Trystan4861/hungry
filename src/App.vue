@@ -132,6 +132,23 @@
   onBeforeMount(()=>getDataFromLocalStorage(store,'configuracion'))
   onMounted(()=>{
     document.addEventListener('contextmenu', event => event.preventDefault())
+
+    // Agregamos un event listener a al docmuemento para habilitar el mostrar/ocultar contraseña según sea necesario
+    document.addEventListener('click', function(event) {
+      // Verificamos si el elemento que desencadenó el evento tiene la clase toggle-password
+      if (event.target.classList.contains('toggle-password')) {
+        // obtenemos el campo de tipo contraseña
+        const passwordInput = event.target.closest('.input-group').querySelector('.password-input');
+        // intercambiamos el tipo y el icono asociado al input
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          event.target.innerHTML = '&#x1f513;&#xfe0e;'; // Icono de ojo abierto
+        } else {
+          passwordInput.type = 'password';
+          event.target.innerHTML = '&#x1f512;&#xfe0e;'; // Icono de ojo cerrado
+        }
+      }
+    });
   })
 </script>
 
