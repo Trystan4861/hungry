@@ -32,7 +32,7 @@
                       />
                     </div>
                     <div class="col-12 mt-lg-2 mt-2 text-center text-uppercase">
-                      <div class="mb-2">Hay {{ productsAmount }} producto{{ productsAmount!=1?'s':'' }} dado{{ productsAmount!=1?'s':'' }} de alta</div>
+                      <div class="mb-2">Hay <b>{{ productsAmount }}</b> producto{{ productsAmount!=1?'s':'' }} dado{{ productsAmount!=1?'s':'' }} de alta</div>
                       <slot-configuration-full-screen 
                         :selected="configFullScreen" 
                         @change="handleChangeFullScreen" 
@@ -99,7 +99,7 @@
   import { useStore }                   from 'vuex';
   import { notify }                     from '@kyvg/vue3-notification';
   import { localStorageService }        from '@/localStorageService'
-  import { dispatch }                   from '@/utilidades';
+  import { dispatchWhere as dispatch }  from '@/utilidades';
   import Swal                           from 'sweetalert2'
   import axios                          from 'axios';
   import md5                            from 'crypto-js/md5'
@@ -144,11 +144,14 @@
         </div>
       `,
       focusConfirm: false,
+      showCancelButton:true,
+      cancelButtonText:"Cancelar",
+      confirmButtonText: "Aceptar",
       preConfirm: async () => {
         const email = Swal.getPopup().querySelector('#email').value.toLowerCase().trim();
         const pass = md5(Swal.getPopup().querySelector('#pass').value.trim()).toString();
 
-        let urlbase = 'https://www.infoinnova.es/lolo/api';
+        let urlbase = storeGet.getURLBase;
         let data = { email, pass };
         
         try {
@@ -229,7 +232,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
   const handleConfigurationImportFileReaded=data=>{
     Swal.fire({
       title: '¿Qué deseas importar?',
-      text: '¿Deseas importar el archivo de configuración completo o sólo los productos y las categorías?',
+      text: '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Completo',
@@ -238,6 +241,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
       denyButtonText:"Sólo datos"
     }).then((result) => {
       if (result.isConfirmed){
+        data.loginData={email:'',token:''}
         store.dispatch('setConfiguracion', localStorageService.setItem(data));
         
         defaultTabActive.value=storeGet.getDefaultTabActive()
@@ -252,21 +256,15 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
       }
       else if (result.isDenied){
         let importado=[];
-        if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0 && JSON.stringify(data.productos)!=JSON.stringify(storeGet.getProductos())){
-          dispatch(store,'productos',data.productos)
-          importado.push("los productos")
-        }
-        if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0 && JSON.stringify(data.categorias)!=JSON.stringify(storeGet.getCategorias())){
-          dispatch(store,'categorias',data.categorias)
-          importado.push("las categorias")
-        }
-        if (Object.prototype.hasOwnProperty.call(data, 'supermercados') && data.supermercados.length>0 && JSON.stringify(data.supermercados)!=JSON.stringify(storeGet.getSupermercados())){
-          dispatch(store,'supermercados',data.supermercados)
-          importado.push("los supermercados")
-        }
+        storeGet.getDatos().forEach(el=>
+          Object.prototype.hasOwnProperty.call(data, el) && 
+          data[el].length>0 && 
+          JSON.stringify(data[el])!=JSON.stringify(storeGet.getState(el)) &&
+          importado.push(dispatch(store,el,data[el]))
+        )
         if (importado.length>0)
         {
-          importado = importado.length > 1 ? `${importado.slice(0, -1).join(", ")}, y ${importado.slice(-1)}` : importado[0];
+          importado = importado.length > 1 ? `${importado.slice(0, -1).join(", ")} y ${importado.slice(-1)}` : importado[0];
           Swal.fire({
             icon:'success',
             title:'Atención',

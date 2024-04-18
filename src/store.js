@@ -13,6 +13,8 @@ const initialState= {
       { id: 3, text: 'Por categoría',          logo: 'categorias.svg',    selectable: true,   },
       { id: 4, text: 'Lista de la compra',     logo: 'cart.svg',          selectable: true,   },
     ],
+    datos: ['productos','categorias','supermercados'],
+    URLBase: 'https://www.infoinnova.es/lolo/api',
   },
   configuracion:{
     defaultTabActive:1,
@@ -125,5 +127,9 @@ export default createStore({
     getAppName:           ( state )=>(  )=>state.appStatic.appName,
 
     getInitialState:      (       )=>(id)=>initialState.configuracion[id],
+
+    getState:             ( state )=>(id)=>state.configuracion[id],
+    getDatos:             ( state )=>(  )=>state.appStatic.datos,
+    getURLBase:           ( state )=>(  )=>state.appStatic.URLBase,
   },
 })

@@ -12,7 +12,11 @@ export function dispatch(store,where,what,setLocalStorage=true){
   store.dispatch(`set${where.replace(/\b\w/g,c=>c.toUpperCase())}`,  setLocalStorage?localStorageService.setSubItem(where, what):what); 
   return what;
 }
-
+export function dispatchWhere(store,where,what,setLocalStorage=true){ 
+  dispatch(store,where,what,setLocalStorage) 
+  return where;
+}
+  
 // función para generar un ID aleatorio
 export function generateID(){return Math.random().toString(36).slice(2)}
 
