@@ -106,11 +106,9 @@
   watch(()=>storeGet.getProductos(),newData=>productsData.value=newData)
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value=newData)
 
-  onBeforeMount(()=>{ 
-    getDataFromLocalStorage(store,'configuracion')
-    console.log(getDataFromLocalStorage(store,'supermercados'))
-  }) // actualizamos el store desde el localStorage si existe
+  onBeforeMount(()=>getDataFromLocalStorage(store,'state')) // actualizamos el store desde el localStorage si existe
   onMounted(()=>{
+    document.store=store
     document.addEventListener('contextmenu', event => event.preventDefault())
 
     // Agregamos un event listener a al docmuemento para habilitar el mostrar/ocultar contraseña según sea necesario
