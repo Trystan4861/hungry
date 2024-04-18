@@ -22,7 +22,6 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New update has been found')
     },
     updated () {
-      console.log('New content is available; please refresh.')
       Swal.fire({
         title: 'Actualización disponible',
         html: 'Existe una nueva versión de la aplicación.<br /><br />¿Desea actualizarla?',

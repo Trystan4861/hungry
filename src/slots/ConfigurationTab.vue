@@ -83,29 +83,29 @@
 </template>
 
 <script setup>
-  import MyButton                     from '@components/MyButton.vue'
-  import MyCard                       from '@/components/MyCard.vue';
-  import MyImage                      from '@/components/MyImage.vue';
+  import MyButton                       from '@components/MyButton.vue'
+  import MyCard                         from '@/components/MyCard.vue';
+  import MyImage                        from '@/components/MyImage.vue';
   
-  import packageJson                  from '@/../package.json'
+  import packageJson                    from '@/../package.json'
 
-  import SlotConfigurationCategories  from '@slots/ConfigurationCategories.vue';
+  import SlotConfigurationCategories    from '@slots/ConfigurationCategories.vue';
   import SlotConfigurationSupermarkets  from '@slots/ConfigurationSupermarkets.vue';
-  import SlotConfigurationExport      from '@slots/ConfigurationExport.vue';
-  import SlotConfigurationImport      from '@slots/ConfigurationImport.vue';
-  import SlotConfigurationFullScreen  from '@slots/ConfigurationFullScreen.vue';
-  import SlotConfigurationTabsActive  from '@slots/ConfigurationTabsActive.vue';
-  import { useStore }    from "vuex";
-  import { notify }                   from '@kyvg/vue3-notification';
-  import { ref,computed }                      from 'vue';
-  import { localStorageService }      from '@/localStorageService'
-  import Swal                         from 'sweetalert2'
-  import { dispatch } from '@/utilidades';
-  import axios from 'axios';
-  import md5 from 'crypto-js/md5'
+  import SlotConfigurationExport        from '@slots/ConfigurationExport.vue';
+  import SlotConfigurationImport        from '@slots/ConfigurationImport.vue';
+  import SlotConfigurationFullScreen    from '@slots/ConfigurationFullScreen.vue';
+  import SlotConfigurationTabsActive    from '@slots/ConfigurationTabsActive.vue';
+  import { ref,computed }               from 'vue';
+  import { useStore }                   from 'vuex';
+  import { notify }                     from '@kyvg/vue3-notification';
+  import { localStorageService }        from '@/localStorageService'
+  import { dispatch }                   from '@/utilidades';
+  import Swal                           from 'sweetalert2'
+  import axios                          from 'axios';
+  import md5                            from 'crypto-js/md5'
 
-  const store=useStore()
-  const storeGet=store.getters
+  const store                   = useStore()
+  const storeGet                = store.getters
 
   const token                   = computed(()=>storeGet.getToken())
 
@@ -120,7 +120,7 @@
 
   const exportRef               = ref(null)
   
-  const changes2Save={
+  const changes2Save            ={
     categoriasVisibiles:false,
     supermarketsVisibles:false,
     defaultTabActive: defaultTabActive.value,
@@ -144,37 +144,38 @@
         </div>
       `,
       focusConfirm: false,
-      preConfirm: () => {
+      preConfirm: async () => {
         const email = Swal.getPopup().querySelector('#email').value.toLowerCase().trim();
         const pass = md5(Swal.getPopup().querySelector('#pass').value.trim()).toString();
 
         let urlbase = 'https://www.infoinnova.es/lolo/api';
         let data = { email, pass };
         
-        return axios.post(urlbase + '/login', data, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-        }).then(response=>{
+        try {
+          const response = await axios.post(urlbase + '/login', data, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+          });
           if (response.data.result) {
-            const loginData={
-              email,token:response.data.token
-            }
-            store.dispatch('setLoginData',localStorageService.setSubItem('loginData',loginData))
+            const loginData = {
+              email, token: response.data.token
+            };
+            store.dispatch('setLoginData', localStorageService.setSubItem('loginData', loginData));
             Swal.fire({
-              html:'Has iniciado sesión correctamente',
-              icon:'success'
-            })
+              html: 'Has iniciado sesión correctamente',
+              icon: 'success'
+            });
           } else {
             Swal.fire({
-              title:'ERROR',
-              html:response.data.error_msg,
-              icon:'error'
-            })
+              title: 'ERROR',
+              html: response.data.error_msg,
+              icon: 'error'
+            });
           }
-        }).catch(error=>{
+        } catch (error) {
           console.log('Error:', error);
-        });
+        }
       }
     });
   };

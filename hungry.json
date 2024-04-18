@@ -1,18 +1,52 @@
 {
-  "appName": "Hungry!",
-  "maxLenght": 40,
-  "defaultTabActive": 1,
-  "alturaDisponible": 580,
+  "defaultTabActive": 3,
+  "alturaDisponible": 771,
+  "fullScreen": false,
+  "canClickProducts": true,
+  "loginData": {
+    "email": "",
+    "token": ""
+  },
+  "supermercados": [
+    {
+      "id": 0,
+      "text": "Cualquier Supermercado",
+      "logo": "hungry.svg",
+      "visible": true,
+      "editable": false
+    },
+    {
+      "id": 1,
+      "text": "Carrefour",
+      "logo": "carrefour.svg",
+      "visible": true,
+      "editable": true
+    },
+    {
+      "id": 2,
+      "text": "Mercadona",
+      "logo": "mercadona.svg",
+      "visible": true,
+      "editable": true
+    },
+    {
+      "id": 3,
+      "text": "La Carmela",
+      "logo": "super_carmela.svg",
+      "visible": true,
+      "editable": true
+    }
+  ],
   "categorias": [
     {
       "id": 0,
-      "text": "Carnes y Huevos",
+      "text": "Carnicería / Charcutería",
       "bgColor": "#d83c3d",
       "visible": true
     },
     {
       "id": 1,
-      "text": "Legumbres y Pastas",
+      "text": "Legumbres / Pastas",
       "bgColor": "#d8993c",
       "visible": true
     },
@@ -54,7 +88,7 @@
     },
     {
       "id": 8,
-      "text": "Varios",
+      "text": "Desechables",
       "bgColor": "#b83cd8",
       "visible": true
     },
@@ -66,7 +100,7 @@
     },
     {
       "id": 10,
-      "text": "Aceites y Salsas",
+      "text": "Aceites / Salsas",
       "bgColor": "#6f1918",
       "visible": true
     },
@@ -84,7 +118,7 @@
     },
     {
       "id": 13,
-      "text": "Condimentos y Especias",
+      "text": "Condimentos / Especias",
       "bgColor": "#2b6f18",
       "visible": true
     },
@@ -164,714 +198,2051 @@
     },
     {
       "id": 4,
-      "text": "Tomate frito",
-      "id_categoria": 3,
+      "text": "Tomate frito 🍅",
+      "id_categoria": 10,
       "id_supermercado": 3,
+      "amount": 1,
       "selected": false,
-      "done": false,
-      "amount": 1
+      "done": false
     },
     {
       "id": 5,
       "text": "Bacon en tiras",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "selected": false,
+      "selected": true,
       "done": false,
-      "amount": 0
+      "amount": 1
     },
     {
       "id": 6,
       "text": "Carne picada",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 7,
       "text": "Chorizo",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 8,
       "text": "Chuletas 🥩",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 9,
       "text": "Conejo 🐰",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 10,
       "text": "Costillas de cerdo 🐽",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 11,
       "text": "Jamón",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 12,
       "text": "Lomo adobado",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 13,
       "text": "Manitas de cerdo 🐽",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 14,
       "text": "Pollo 🐔",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 15,
       "text": "Puchero",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 16,
       "text": "Salchichas 🌭",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 17,
-      "text": "Alubias 🫘",
+      "text": "Alubias",
       "id_categoria": 1,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 18,
       "text": "Arroz largo 🥘",
       "id_categoria": 1,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 19,
       "text": "Garbanzos",
       "id_categoria": 1,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 20,
       "text": "Lentejas",
       "id_categoria": 1,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 21,
       "text": "Acelgas",
       "id_categoria": 2,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 22,
       "text": "Aguacates 🥑",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 23,
-      "text": "Ajos 🧄 ",
+      "text": "Ajos 🧄",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 24,
-      "text": "Albahaca 🌿 ",
+      "text": "Albahaca 🌿",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 25,
       "text": "Apio",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 26,
       "text": "Berenjena 🍆",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 27,
       "text": "Boniato 🍠",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 28,
-      "text": "Brócoli 🥦 ",
+      "text": "Brócoli 🥦",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 29,
       "text": "Calabacín 🥒",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 30,
       "text": "Cebollas 🧅",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 31,
-      "text": "Cerezas 🍒 ",
+      "text": "Cerezas 🍒",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 32,
       "text": "Champiñones 🍄",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 33,
       "text": "Coliflor",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 34,
-      "text": "Ensalada 🥗 ",
+      "text": "Ensalada 🥗",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 35,
       "text": "Espinacas 🌿",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 36,
       "text": "Espárragos",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 37,
       "text": "Fresas 🍓",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 38,
       "text": "Jengibre",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 39,
       "text": "Judías verdes",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 40,
-      "text": "Limones 🍋 ",
+      "text": "Limones 🍋",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 41,
       "text": "Mandarinas 🍊",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 42,
       "text": "Mango 🥭",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 43,
       "text": "Manzana verde 🍏",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 44,
       "text": "Manzana roja🍎",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 2
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
     },
     {
       "id": 45,
-      "text": "Melocoton 🍑 ",
+      "text": "Melocoton 🍑",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 46,
-      "text": "Melón 🍈 ",
+      "text": "Melón 🍈",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 47,
       "text": "Naranjas 🍊",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 48,
-      "text": "Patatas frescas 🥔 ",
+      "text": "Patatas frescas 🥔",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 49,
-      "text": "Pepino 🥒 ",
+      "text": "Pepino 🥒",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 50,
       "text": "Peras 🍐",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 51,
       "text": "Peregil 🌱",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 52,
       "text": "Pimiento Rojo 🌶",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 53,
       "text": "Pimiento verde 🫑",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 54,
       "text": "Plátanos 🍌",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 55,
       "text": "Puerro",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 56,
       "text": "Remolacha",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 57,
       "text": "Repollo",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 58,
-      "text": "Sandía 🍉 ",
+      "text": "Sandía 🍉",
       "id_categoria": 2,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 59,
       "text": "Tomates 🍅",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 60,
-      "text": "Uvas 🍇 ",
+      "text": "Uvas 🍇",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 61,
-      "text": "Zanahorias 🥕 ",
+      "text": "Zanahorias 🥕",
       "amount": 1,
       "id_categoria": 2,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 62,
-      "text": "Atún lata🥫",
+      "text": "Atún al natural 🥫",
       "amount": 1,
       "id_categoria": 3,
-      "id_supermercado": 1
-    },
-    {
-      "id": 63,
-      "text": "Atún🥫",
-      "amount": 1,
-      "id_categoria": 3,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 64,
-      "text": "Mejillones 🥫",
+      "text": "Mejillones en escabeche 🥫",
       "amount": 1,
       "id_categoria": 3,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 65,
       "text": "Pimientos del piquillo 🥫",
       "amount": 1,
       "id_categoria": 3,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 66,
       "text": "Fajitas 🌯",
       "amount": 1,
       "id_categoria": 4,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 67,
       "text": "Harina de repostería 🥧",
       "amount": 1,
       "id_categoria": 4,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 68,
       "text": "Harina 🌾",
       "amount": 1,
       "id_categoria": 4,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 69,
       "text": "Maicena 🌽",
       "amount": 1,
       "id_categoria": 4,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 70,
-      "text": "Pan rallado 🥖 ",
+      "text": "Pan rallado 🥖",
       "amount": 1,
       "id_categoria": 4,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 71,
       "text": "Pan 🍞",
       "amount": 1,
       "id_categoria": 4,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 72,
       "text": "Bacalao",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 73,
       "text": "Croquetas",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 74,
-      "text": "Edamame 🫛 🇯🇵 ",
+      "text": "Edamame 🇯🇵",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 75,
       "text": "Gambas 🦐",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 76,
-      "text": "Guisantes 🫛",
+      "text": "Guisantes",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 77,
-      "text": "Helados 🍦 ",
+      "text": "Helados 🍦",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 2
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
     },
     {
       "id": 78,
-      "text": "Merluza 🐟 ",
+      "text": "Merluza 🐟",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 79,
       "text": "Nugets 🐔",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 80,
-      "text": "Flan 🍮 ",
+      "text": "Flan 🍮",
       "id_categoria": 6,
       "id_supermercado": 0,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 81,
-      "text": "Leche de almendra 🥛 ",
+      "text": "Leche de almendra 🥛",
       "id_categoria": 6,
       "id_supermercado": 0,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 82,
       "text": "Leche evaporada",
       "id_categoria": 6,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 83,
       "text": "Mantequilla",
       "amount": 1,
       "id_categoria": 5,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 84,
       "text": "Queso filadelfia",
       "id_categoria": 6,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 85,
-      "text": "Queso rallado ",
+      "text": "Queso rallado",
       "id_categoria": 6,
       "id_supermercado": 0,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 86,
       "text": "Queso rulo 🍥",
       "id_categoria": 6,
       "id_supermercado": 0,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 87,
       "text": "Queso 🧀",
       "id_categoria": 6,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 88,
       "text": "Yogur 0,0 bifidus",
       "id_categoria": 6,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 89,
       "text": "Yogur Julen",
       "id_categoria": 6,
       "id_supermercado": 1,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 90,
-      "text": "Yogur líquido ",
+      "text": "Yogur líquido",
       "id_categoria": 6,
       "id_supermercado": 0,
-      "amount": 1
+      "amount": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 91,
       "text": "Aceitunas 🫒",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 92,
       "text": "Almendras",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 93,
       "text": "Altramuces",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 94,
       "text": "Cacahuetes 🥜",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 95,
       "text": "Chocolate 🍫",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 96,
       "text": "Frutos secos",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 97,
       "text": "Palomitas 🍿",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 2
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
     },
     {
       "id": 98,
       "text": "Nachos",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 99,
       "text": "Nueces",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 100,
       "text": "Nutella",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 101,
       "text": "Tortitas 🥞",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     },
     {
       "id": 102,
       "text": "Pasas",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 0
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
     },
     {
       "id": 103,
       "text": "Pipas 🌻",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 3
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false
     },
     {
       "id": 104,
       "text": "Pistachos",
       "amount": 1,
       "id_categoria": 7,
-      "id_supermercado": 1
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 105,
+      "text": "Espaguetis 🍝",
+      "amount": 1,
+      "id_categoria": 1,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 106,
+      "text": "Fideos 🍜",
+      "amount": 1,
+      "id_categoria": 1,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 107,
+      "text": "Macarrones",
+      "amount": 1,
+      "id_categoria": 1,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 108,
+      "text": "Agua 🥤",
+      "id_categoria": 9,
+      "id_supermercado": 2,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 109,
+      "text": "Miniagua 🍼",
+      "amount": 1,
+      "id_categoria": 9,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 110,
+      "text": "Refresco de limón 🍋",
+      "amount": 1,
+      "id_categoria": 9,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 111,
+      "text": "Refresco de naranja 🍊",
+      "amount": 1,
+      "id_categoria": 9,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 112,
+      "text": "Vino blanco 🍷",
+      "amount": 1,
+      "id_categoria": 9,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 113,
+      "text": "Zumos 🧃",
+      "amount": 1,
+      "id_categoria": 9,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 114,
+      "text": "AOVE 🫒",
+      "id_categoria": 10,
+      "id_supermercado": 3,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 115,
+      "text": "Aceite de oliva 🫒",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 116,
+      "text": "Bechamel",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 117,
+      "text": "Guacamole 🥑",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 118,
+      "text": "Ketchup 🍅",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 119,
+      "text": "Mayonesa 🥚",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 120,
+      "text": "Mostaza",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 121,
+      "text": "Salsa césar",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 122,
+      "text": "Salsa barbacoa",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 123,
+      "text": "Salsa de soja",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 124,
+      "text": "Vinagre de manzana 🍏",
+      "amount": 1,
+      "id_categoria": 10,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 125,
+      "text": "Almejas",
+      "amount": 1,
+      "id_categoria": 11,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 126,
+      "text": "Pescado 🐠",
+      "amount": 1,
+      "id_categoria": 11,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 127,
+      "text": "Pota 🦑",
+      "amount": 1,
+      "id_categoria": 11,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 128,
+      "text": "Tofu",
+      "amount": 1,
+      "id_categoria": 12,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 129,
+      "text": "Ajo en polvo",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 130,
+      "text": "Azúcar",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 131,
+      "text": "Comino",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 132,
+      "text": "Laurel",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 133,
+      "text": "Orégano",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 134,
+      "text": "Peregil en polvo",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 135,
+      "text": "Albahaca en polvo",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 136,
+      "text": "Pimentón dulce",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 137,
+      "text": "Romero",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 138,
+      "text": "Sal fina",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 139,
+      "text": "Sal gruesa",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 140,
+      "text": "Vainilla",
+      "amount": 1,
+      "id_categoria": 13,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 141,
+      "text": "Aceite de coco 🥥",
+      "id_categoria": {
+        "id": 0,
+        "text": "Carnes y Huevos",
+        "bgColor": "#d83c3d",
+        "visible": true
+      },
+      "id_supermercado": 0,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 142,
+      "text": "Aceite de pelo",
+      "id_categoria": 14,
+      "id_supermercado": 3,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 143,
+      "text": "Acondicionador",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 144,
+      "text": "Agua oxigenada",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 145,
+      "text": "Alcohol 70º",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 146,
+      "text": "Algodón",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 147,
+      "text": "Bastoncillos",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 148,
+      "text": "Enjuague de Julen",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 149,
+      "text": "Cepillo de dientes 🪥",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 150,
+      "text": "Champú",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 151,
+      "text": "Compresa 4🩸",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 152,
+      "text": "Crema Mussvital Julen",
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 153,
+      "text": "Cuchillas 🪒",
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 154,
+      "text": "Dentífrico",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 155,
+      "text": "Dentífrico Infantil",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 156,
+      "text": "Desmaquillante",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 157,
+      "text": "Discos desmaquillantes",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 158,
+      "text": "Gel Infantil",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 159,
+      "text": "Gel Femenino",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 160,
+      "text": "Gel de baño",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 161,
+      "text": "Gel de manos 👐",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 162,
+      "text": "Enjuague colgate",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 163,
+      "text": "Laca 💇",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 164,
+      "text": "Lima de uñas 💅",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 165,
+      "text": "Maquillaje 💄",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 166,
+      "text": "Salva slip",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 167,
+      "text": "Spray Zapatos 🧦",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 168,
+      "text": "Tinte de pelo 💇",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 169,
+      "text": "Tiritas 🩹",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 170,
+      "text": "Toallitas infantiles",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 171,
+      "text": "Avena 🥣",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 172,
+      "text": "Bicarbonato sódico",
+      "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 173,
+      "text": "Café ☕",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 174,
+      "text": "Cereales Con Miel 🍯",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 175,
+      "text": "Cereales Integrales 🌾",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 176,
+      "text": "Chocolate líquido",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 177,
+      "text": "Crema de cacahuete 🥜",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 178,
+      "text": "Croissant 🥐",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 179,
+      "text": "Infusión Sueño 🫖",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 3,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 180,
+      "text": "Galletas Integrales",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 181,
+      "text": "Galletas Infantiles 🍪",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 182,
+      "text": "Galletas María 🥠",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 183,
+      "text": "Infusión de jengibre",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 184,
+      "text": "Menta poleo",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 185,
+      "text": "Picos integrales",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 186,
+      "text": "Manzanilla",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 187,
+      "text": "Mermelada",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 188,
+      "text": "Miel 🍯",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 189,
+      "text": "Nesquick",
+      "amount": 1,
+      "id_categoria": 15,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 190,
+      "text": "Aceite de motor",
+      "id_categoria": 16,
+      "id_supermercado": 3,
+      "amount": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 191,
+      "text": "Ambientador",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 192,
+      "text": "Calcetines 🧦",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 193,
+      "text": "Citronela",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 194,
+      "text": "Film transparente",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 195,
+      "text": "Insecticida",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 196,
+      "text": "Lápices ✏️",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 197,
+      "text": "Papel de cocina",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 198,
+      "text": "Papel higiénico 🧻",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 199,
+      "text": "Servilletas 🗳️",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 200,
+      "text": "Pajitas 🥤",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 201,
+      "text": "Papel de aluminio",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 202,
+      "text": "Papel de horno",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 203,
+      "text": "Pañuelos",
+      "amount": 1,
+      "id_categoria": 8,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 204,
+      "text": "Pilas AAA",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 205,
+      "text": "Rotuladores pizarra blanca",
+      "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 206,
+      "text": "Bayetas",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 207,
+      "text": "Bolsas de basura 🚮",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 208,
+      "text": "Bolsas de congelados ❄",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 209,
+      "text": "Bolsas de papeleta 🗑️",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 210,
+      "text": "Cepillo 🧹",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 211,
+      "text": "Desatasca tuberías",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 212,
+      "text": "Detergente Marsella",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 213,
+      "text": "Detergente blancos",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 214,
+      "text": "Detergente color",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 215,
+      "text": "Fregona",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 216,
+      "text": "Guantes",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 217,
+      "text": "KH7",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 218,
+      "text": "Lavavajillas",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 219,
+      "text": "Lejía",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 220,
+      "text": "Limpia parabrisas",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 221,
+      "text": "Limpiador atrapapolvo",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 222,
+      "text": "Limpia muebles",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 223,
+      "text": "Líquido para suelos",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 224,
+      "text": "Limpia baños",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 225,
+      "text": "Salvauñas",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 226,
+      "text": "Sanitol",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 227,
+      "text": "Suavizante",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 228,
+      "text": "Tinte negro",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 229,
+      "text": "Vanish blanco",
+      "amount": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 230,
+      "text": "Comida mike",
+      "amount": 1,
+      "id_categoria": 18,
+      "id_supermercado": 2,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 231,
+      "text": "Empapaderas",
+      "amount": 1,
+      "id_categoria": 18,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
     }
   ]
 }
