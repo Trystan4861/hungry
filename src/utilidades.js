@@ -21,7 +21,7 @@ export function generateID(){return Math.random().toString(36).slice(2)}
 // se devuelven los datos obtenidos del localStorage o los datos por defecto del store si no hay datos en el localStorage
 export function getDataFromLocalStorage (store,index) {
   let storedData=null
-  if (index!= 'configuracion')
+  if (index!= 'state')
     storedData = localStorageService.getSubItem(index);
   else
     storedData = localStorageService.getItem();

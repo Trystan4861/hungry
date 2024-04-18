@@ -62,38 +62,41 @@ export default createStore({
       Object.assign(state,initialState)
       state.configuracion.alturaDisponible=alturaDisponible;
     }, 
-    setAlturaDisponible   ( state,      alturaDisponible  ) { state.configuracion.alturaDisponible   = alturaDisponible  },
-    setConfiguracion      ( state,      configuracion     ) { state.configuracion                    = configuracion     },
-    setDefaultTabActive   ( state,      defaultTabActive  ) { state.configuracion.defaultTabActive   = defaultTabActive  },
-    setFullScreen         ( state,      fullScreen        ) { state.configuracion.fullScreen         = fullScreen        },
-    setIgnoreDrag         ( state,      ignoreDrag        ) { state.appStatic.ignoreDrag             = ignoreDrag        },
+    setAlturaDisponible   ( state,      alturaDisponible  ) { state.configuracion.alturaDisponible   = alturaDisponible },
+    setConfiguracion      ( state,      configuracion     ) { state.configuracion                    = configuracion    },
+    setDefaultTabActive   ( state,      defaultTabActive  ) { state.configuracion.defaultTabActive   = defaultTabActive },
+    setFullScreen         ( state,      fullScreen        ) { state.configuracion.fullScreen         = fullScreen       },
+    setIgnoreDrag         ( state,      ignoreDrag        ) { state.appStatic.ignoreDrag             = ignoreDrag       },
     
-    setProducts           ( state,      productos         ) { state.configuracion.productos          = productos         },
-    setCategorias         ( state,      categorias        ) { state.configuracion.categorias         = categorias        },
-    setSupermercados      ( state,      supermercados     ) { state.configuracion.supermercados      = supermercados     },
+    setProducts           ( state,      productos         ) { state.configuracion.productos          = productos        },
+    setCategorias         ( state,      categorias        ) { state.configuracion.categorias         = categorias       },
+    setSupermercados      ( state,      supermercados     ) { state.configuracion.supermercados      = supermercados    },
 
-    setLoginData          ( state,      loginData         ) { state.configuracion.loginData          = loginData         },
-    setEmail              ( state,      email             ) { state.configuracion.loginData.email    = email             },
-    setToken              ( state,      token             ) { state.configuracion.loginData.token    = token             },
+    setLoginData          ( state,      loginData         ) { state.configuracion.loginData          = loginData        },
+    setEmail              ( state,      email             ) { state.configuracion.loginData.email    = email            },
+    setToken              ( state,      token             ) { state.configuracion.loginData.token    = token            },
     
-    setCanClickProducts   ( state,      canClickProducts  ) { state.configuracion.canClickProducts   = canClickProducts  },
+    setCanClickProducts   ( state,      canClickProducts  ) { state.configuracion.canClickProducts   = canClickProducts },
+
+    setState              ( state,      newState          ) { Object.assign(state, newState)                            }
   },
   actions: {
-    setAlturaDisponible   ({ commit },  alturaDisponible  ) { commit('setAlturaDisponible', alturaDisponible)            },
-    setConfiguracion      ({ commit },  configuracion     ) { commit('setConfiguracion',    configuracion   )            },
-    setDefaultTabActive   ({ commit },  defaultTabActive  ) { commit('setDefaultTabActive', defaultTabActive)            },
-    setFullScreen         ({ commit },  fullScreen        ) { commit('setFullScreen',       fullScreen      )            },
-    setIgnoreDrag         ({ commit },  ignoreDrag        ) { commit('setIgnoreDrag',       ignoreDrag      )            },
+    setAlturaDisponible   ({ commit },  alturaDisponible  ) { commit('setAlturaDisponible', alturaDisponible)           },
+    setConfiguracion      ({ commit },  configuracion     ) { commit('setConfiguracion',    configuracion   )           },
+    setDefaultTabActive   ({ commit },  defaultTabActive  ) { commit('setDefaultTabActive', defaultTabActive)           },
+    setFullScreen         ({ commit },  fullScreen        ) { commit('setFullScreen',       fullScreen      )           },
+    setIgnoreDrag         ({ commit },  ignoreDrag        ) { commit('setIgnoreDrag',       ignoreDrag      )           },
 
-    setCategorias         ({ commit },  categorias        ) { commit('setCategorias',       categorias      )            },
-    setProductos          ({ commit },  productos         ) { commit('setProducts',         productos       )            },
-    setSupermercados      ({ commit },  supermercados     ) { commit('setSupermercados',    supermercados   )            },
+    setCategorias         ({ commit },  categorias        ) { commit('setCategorias',       categorias      )           },
+    setProductos          ({ commit },  productos         ) { commit('setProducts',         productos       )           },
+    setSupermercados      ({ commit },  supermercados     ) { commit('setSupermercados',    supermercados   )           },
 
-    setLoginData          ({ commit },  loginData         ) { commit('setLoginData',        loginData       )            },
-    setEmail              ({ commit },  email             ) { commit('setEmail',            email           )            },
-    setToken              ({ commit },  token             ) { commit('setToken',            token           )            },
+    setLoginData          ({ commit },  loginData         ) { commit('setLoginData',        loginData       )           },
+    setEmail              ({ commit },  email             ) { commit('setEmail',            email           )           },
+    setToken              ({ commit },  token             ) { commit('setToken',            token           )           },
 
-    setCanClickProducts   ({ commit },  canClickProducts  ) { commit('setCanClickProducts', canClickProducts)            },
+    setCanClickProducts   ({ commit },  canClickProducts  ) { commit('setCanClickProducts', canClickProducts)           },
+    setState              ({ commit },  newState          ) { commit('setState',            newState        )           },
   },
   getters: {
     getCategoriaFromID:   ( state )=>(id)=>state.configuracion.categorias.find(c => c.id === id),
@@ -107,6 +110,7 @@ export default createStore({
 
     getCategorias:        ( state )=>(  )=>state.configuracion.categorias,
     getProductos:         ( state )=>(  )=>state.configuracion.productos,
+    getSupermercados:     ( state )=>(  )=>state.configuracion.supermercados,
  
     getLoginData:         ( state )=>(  )=>state.configuracion.loginData,
     getEmail:             ( state )=>(  )=>state.configuracion.loginData.email,
@@ -114,7 +118,6 @@ export default createStore({
 
     getHeightDesviation:  ( state )=>(  )=>state.appStatic.heightDesviation,
     getMaxLenght:         ( state )=>(  )=>state.appStatic.maxLenght,
-    getSupermercados:     ( state )=>(  )=>state.configuracion.supermercados,
     getTabs:              ( state )=>(  )=>state.appStatic.tabs,
 
     getCanClickProducts:  ( state )=>(  )=>state.configuracion.canClickProducts,

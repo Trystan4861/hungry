@@ -245,7 +245,6 @@
   {
     withScrollRef.value?.style.setProperty('--height',`${maxHeight}px`)
   }
-  watch(productoAEditarRef,nv=>nv?console.log(nv.value):null)
   onMounted(()=>{
       watch(()=>storeGet.getAlturaDisponible(), newValue=>setMaxHeight(newValue))
       setTimeout(()=>setMaxHeight(storeGet.getAlturaDisponible()),100)

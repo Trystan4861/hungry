@@ -8,7 +8,7 @@
     />
     <MySelect 
     placeholder="Selecciona un supermercado" 
-    :options="props.supermercados" 
+    :options="supermercadosVisibles" 
     :selected="props.supermercados[0]" 
     @select="handleSelectSupermercado" 
     />
@@ -45,6 +45,7 @@
   const store=useStore()
   const storeGet=store.getters
 
+  
   const props=defineProps({ 
     supermercados:    { type: Array,    required: true      },
     maxLenght:        { type: Number,   default:  Infinity  },
@@ -60,6 +61,7 @@
   const focusInput = input => { input.focus(); input.setSelectionRange(input.value.length,input.value.length) }
   const categoriaActiva= ref(categoriesData.value[0])
   const supermercadoActivo=ref(props.supermercados[0])
+  const supermercadosVisibles=computed(()=>storeGet.getSupermercados().filter(i=>i.visible))
   const handleCategoryLongClick=categoria=>{
     Swal.fire({
       title: `Cambiar Nombre de Categoría<br> «${categoria?.text}»`,
