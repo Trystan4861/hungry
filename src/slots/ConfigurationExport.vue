@@ -20,7 +20,9 @@ const downloadJSON=(obj, filename = 'hungry.json')=>{
 }
 
 const store = useStore().getters;
-const exportConfig = () => downloadJSON(store.getConfiguracion());
+const config2Export=store.getConfiguracion();
+config2Export.appName=store.getAppName()
+const exportConfig = () => downloadJSON(config2Export);
 
 defineExpose({exportConfig})
 </script>

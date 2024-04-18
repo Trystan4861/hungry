@@ -1,4 +1,5 @@
 {
+  "appName":"Hungry!",
   "defaultTabActive": 3,
   "alturaDisponible": 771,
   "fullScreen": false,
@@ -2228,7 +2229,7 @@
     },
     {
       "id": 230,
-      "text": "Comida mike",
+      "text": "Comida para perros",
       "amount": 1,
       "id_categoria": 18,
       "id_supermercado": 2,

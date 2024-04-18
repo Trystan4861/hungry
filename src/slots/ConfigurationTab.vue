@@ -46,7 +46,7 @@
         <div class="row align-items-end">
           <div class="order-3 order-md-1 order-lg-1 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
             <slot-configuration-import 
-              @configurationFileReaded="handleImportConfigurationFile" 
+              @configurationFileReaded="handleConfigurationImportFileReaded" 
               />
           </div>
           <div class="order-2 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
@@ -226,14 +226,16 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         }
       });    
   }
-  const handleImportConfigurationFile=data=>{
+  const handleConfigurationImportFileReaded=data=>{
     Swal.fire({
       title: '¿Qué deseas importar?',
       text: '¿Deseas importar el archivo de configuración completo o sólo los productos y las categorías?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Completo',
-      cancelButtonText: 'Sólo productos y categorías'
+      cancelButtonText: 'Cancelar',
+      showDenyButton: true,
+      denyButtonText:"Sólo datos"
     }).then((result) => {
       if (result.isConfirmed){
         store.dispatch('setConfiguracion', localStorageService.setItem(data));
@@ -243,29 +245,46 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         Swal.fire({
           icon:'success',
           title:'Atención',
-          html:`Configuración importada correctamente`,
+          html:`Configuración importada correctamente<br /><br /><b>Todos los datos han sido sobreescritos con los contenidos en el archivo importado</b>`,
           confirmButtonText:'Aceptar',
           target: document.querySelector("#appContainer"),
         })
       }
-      else if (result.dismiss === Swal.DismissReason.cancel){
+      else if (result.isDenied){
         let importado=[];
-        if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0){
-          dispatch(store,'categorias',data.categorias)
-          importado.push("las categorias")
-        }
-        if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0){
+        if (Object.prototype.hasOwnProperty.call(data, 'productos') && data.productos.length>0 && JSON.stringify(data.productos)!=JSON.stringify(storeGet.getProductos())){
           dispatch(store,'productos',data.productos)
           importado.push("los productos")
         }
-        importado=importado.join(" y ")
-        Swal.fire({
-          icon:'success',
-          title:'Atención',
-          html:`Se han importado ${importado}<br>desde el archivo de configuración<br>correctamente`,
-          confirmButtonText:'Aceptar',
-          target: document.querySelector("#appContainer"),
-        })
+        if (Object.prototype.hasOwnProperty.call(data, 'categorias') && data.categorias.length>0 && JSON.stringify(data.categorias)!=JSON.stringify(storeGet.getCategorias())){
+          dispatch(store,'categorias',data.categorias)
+          importado.push("las categorias")
+        }
+        if (Object.prototype.hasOwnProperty.call(data, 'supermercados') && data.supermercados.length>0 && JSON.stringify(data.supermercados)!=JSON.stringify(storeGet.getSupermercados())){
+          dispatch(store,'supermercados',data.supermercados)
+          importado.push("los supermercados")
+        }
+        if (importado.length>0)
+        {
+          importado = importado.length > 1 ? `${importado.slice(0, -1).join(", ")}, y ${importado.slice(-1)}` : importado[0];
+          Swal.fire({
+            icon:'success',
+            title:'Atención',
+            html:`Se han importado ${importado}<br>desde el archivo de configuración<br>correctamente`,
+            confirmButtonText:'Aceptar',
+            target: document.querySelector("#appContainer"),
+          })
+        }
+        else
+        {
+          Swal.fire({
+            icon:'info',
+            title:'Atención',
+            html:`Los datos actuales son los mismos contenidos en el archivo importado<br /><br /><b>Nada ha sido cambiado</b>`,
+            confirmButtonText:'Aceptar',
+            target: document.querySelector("#appContainer"),
+          })
+        }
       }
     });
   }
