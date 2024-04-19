@@ -62,7 +62,7 @@ Aquí tienes algunas instrucciones básicas sobre cómo utilizar nuestra aplicac
 «Hungry!» está bajo la Licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0). Para más detalles, consulta el archivo [LICENSE.md](https://github.com/trystan4861/hungry/blob/master/LICENSE.md)
 
 ## Contribuidores
-<img src="https://contrib.rocks/image?repo=trystan4861/hungry" alt="contribs"/>
+[<img src="https://contrib.rocks/image?repo=trystan4861/hungry" alt="contribs"/>](https://github.com/Trystan4861/hungry/graphs/contributors)
 
 ## Contacto
 
