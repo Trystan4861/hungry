@@ -222,6 +222,7 @@
   }
   const muestraOcultaTooltip=()=>letraActualRef.value.classList.toggle('show')
   const updateTooltip=()=>{
+    console.log("updateTooltip")
     const productos=withScrollRef.value.querySelectorAll(".productText")
     for (let producto of productos) {
       const pBCR = producto.getBoundingClientRect();
@@ -256,7 +257,7 @@
 .withScroll
 {
   --height: auto;
-  --height-modifier: 50px
+  --height-modifier: 50px;
   overflow-y: auto;
   height: calc(var(--height,60px) - var(--height-modifier,0px) );
 }
