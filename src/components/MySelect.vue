@@ -69,7 +69,7 @@ defineExpose({selectOption,toggleDropdown,closeDropdown,openDropdown,selectedOpt
   background-color: #333; 
   border:             .0625rem solid #ccc; 
   cursor:             pointer; 
-  height:             3.125rem; 
+  height:             3.1875rem;
   flex-wrap:          wrap; 
   align-items:        center; 
   display:            flex; 
@@ -143,6 +143,5 @@ img {
 }
 .selected-option.show::after {
   transform:          translateY(-50%) rotate(-180deg); 
-
 }
 </style>

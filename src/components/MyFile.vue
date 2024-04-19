@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <input :id="id"  type="file" :accept="accept" @change="handleFileChange">
-    <label :for="id" :class="['btn', `btn-${props.btnClass}`,{ 'text-uppercase': props.uppercase }]">{{ text }}</label>
+  <div class="w-100">
+    <input  ref="inputFileRef" :id="id"  type="file" :accept="accept" @change="handleFileChange">
+    <button @click.stop="handleClick" :class="['btn', `btn-${props.btnClass}`,{ 'text-uppercase': props.uppercase }]" class="w-100 cursor-pointer">{{ text }}</button>
   </div>
 </template>
 
 <script setup>
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
   import { generateID } from '@/utilidades'
 
   const props             = defineProps({
@@ -19,6 +19,7 @@
     uppercase:      { type: Boolean,  default: true                   },
   });
 
+  const inputFileRef          = ref(null)
   const readFile          = (inputFile) => new Promise((resolve, reject) => {
     const reader          = new FileReader();
     reader.onload         = event => {
@@ -29,6 +30,7 @@
     reader.readAsText(inputFile);
   });
 
+  const handleClick       = ()=>inputFileRef.value.click()
   const fileName_error    = computed(() => `Nombre de archivo erróneo,<br>se esperaba «${props.fileName}»`);
   const fileSize_error    = computed(() => `Archivo demasiado grande,<br>tamaño máximo ${props.maxFileSize / 1024}KB`);
   const emit=defineEmits(['fileReadError','fileReaded','fileReadError'])
@@ -61,12 +63,5 @@ div   {
 }
 input {
   display:          none;
-}
-label {
-  width:            100%;
-  height:           100%;
-  display:          flex;
-  justify-content:  center;
-  align-items:      center;
 }
 </style>
