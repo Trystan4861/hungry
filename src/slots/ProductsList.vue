@@ -222,7 +222,6 @@
   }
   const muestraOcultaTooltip=()=>letraActualRef.value.classList.toggle('show')
   const updateTooltip=()=>{
-    console.log("updateTooltip")
     const productos=withScrollRef.value.querySelectorAll(".productText")
     for (let producto of productos) {
       const pBCR = producto.getBoundingClientRect();
