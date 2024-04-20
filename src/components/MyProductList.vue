@@ -10,13 +10,14 @@
       @product:longClick="handleLongClick(product)"
       @product:drag="handleDrag"
       :index="product.id"
+
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed,ref } from 'vue';
+import { computed,ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import MyProduct from '@components/MyProduct.vue';
 
@@ -39,21 +40,18 @@ const handleDrag        = (dir, product) => {
   dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1 
   emit('drag')
 }
-const handleClick       = product => {
-  product.amount==0?product.amount=1:null
-  doEmit(product)
-}
+const handleClick       = product => (product.amount==0?product.amount=1:null,doEmit(product))
 const handleLongClick   = product => emit('longClick', product)
 
 const doEmit=product=>{
   if (canClickProducts.value)
   {
-    setcanClickProductsValue(false)
-    setTimeout(()=>setcanClickProductsValue(true),250)
+    store.dispatch('setCanClickProducts',false)
+    setTimeout(()=>store.dispatch('setCanClickProducts',true),250)
     emit('click', product)
   }
 }
-const setcanClickProductsValue=newValue=>store.dispatch('setCanClickProducts',canClickProducts.value=newValue)
+watch(()=>storeGet.getCanClickProducts(),newValue=>canClickProducts.value=newValue)
 
 const sortedProductList = computed(() => {
   let aux = props.productList;
