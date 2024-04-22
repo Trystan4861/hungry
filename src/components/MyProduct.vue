@@ -36,7 +36,7 @@
   const longClicked       = ref(false);
   const longPressTimeout  = ref(null);
   const tiempoDrag        = 500;
-  const store = useStore();
+  const store             = useStore();
   
   let dragging            = false;
   let touchStartX         = null;
@@ -47,7 +47,7 @@
 
   const bgColor = computed(() => {
     let categoria = storeGet.getCategoriaFromID(props.product.id_categoria);
-    return categoria?.bgColor || "#fff";
+    return categoria.bgColor ?? "#fff";
   });
 
   const handlePress       = () => {
