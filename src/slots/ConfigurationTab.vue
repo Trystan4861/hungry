@@ -332,6 +332,6 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
 <style scoped>
 .configWithScroll{
   overflow-y: auto;
-  max-height: 500px;
+  max-height: 610px;
 }
 </style>

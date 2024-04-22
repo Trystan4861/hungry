@@ -64,4 +64,7 @@ div   {
 input {
   display:          none;
 }
+button{
+  padding: 0;
+}
 </style>
