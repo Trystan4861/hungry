@@ -24,7 +24,7 @@
   const props             = defineProps({
     canBeDone:      { type: Boolean,  default:  false },
     dragTime:       { type: Number,   default:  500   },
-    index:          { type: Number,   default:  null   },
+    index:          { type: Number,   default:  null  },
     longClickTime:  { type: Number,   default:  2000  },
     product:        { type: Object,   required: true  },
     amount:         { type: Number,   default:  1     },
@@ -37,13 +37,16 @@
   const longPressTimeout  = ref(null);
   const tiempoDrag        = 500;
   const store             = useStore();
-  
+
   let dragging            = false;
   let touchStartX         = null;
   let storeGet            = store.getters;
 
   const cantidad          = computed(()=>{return props.amount})
-  const handleTap         = () => !longClicked.value ? emit('product:click', props.product) : longClicked.value = false;
+  const handleTap         = () => {
+    console.log(longClicked.value)
+    !longClicked.value ? emit('click', props.product) : longClicked.value = false;
+  }
 
   const bgColor = computed(() => {
     let categoria = storeGet.getCategoriaFromID(props.product.id_categoria);
@@ -53,7 +56,7 @@
   const handlePress       = () => {
     if (props.canBeDone || dragging || props.product.selected) return;
     longClicked.value = false;
-    longPressTimeout.value = setTimeout(() => { longClicked.value = true; emit('product:longClick', props.product); }, props.longClickTime);
+    longPressTimeout.value = setTimeout(() => { longClicked.value = true; emit('longClick', props.product); setTimeout(()=>longClicked.value=false,1000)}, props.longClickTime);
   };
   watch(() => props.amount, (newValue) => newValue < 0?cantidad.value = 0:undefined);
 
@@ -77,21 +80,21 @@
 
   const emitDragDirection = () => {
     if (!props.product.selected) dragEnd();
-    emit(`product:drag.${dragDirection.value}`, props.product);
-    emit('product:drag', dragDirection.value, props.product);
+    emit(`drag.${dragDirection.value}`, props.product);
+    emit('drag', dragDirection.value, props.product);
   };
   const emit=defineEmits([
-    'product:click',
-    'product:drag',
-    'product:drag.left',
-    'product:drag.right',
-    'product:longClick',
+    'click',
+    'drag',
+    'drag.left',
+    'drag.right',
+    'longClick',
   ])
 
   watch(() => storeGet.getIgnoreDrag(), (newValue) => ignoreDrag.value = newValue);
 
   onMounted(() => {
-    ignoreDrag.value = storeGet.getIgnoreDrag(); // Ahora podemos acceder al store y a storeGet aquí dentro
+    ignoreDrag.value = storeGet.getIgnoreDrag()
   });
 </script>
 

@@ -6,19 +6,18 @@
       :product="product"
       :canBeDone="canBeDone" 
       :amount="product.amount"
-      @product:click="handleClick(product)" 
-      @product:longClick="handleLongClick(product)"
-      @product:drag="handleDrag"
+      @click="handleClick(product)" 
+      @longClick="handleLongClick(product)"
+      @drag="handleDrag"
       :index="product.id"
-
+      :lastClick="lastClick"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed,ref, watch } from 'vue';
-import { useStore } from 'vuex';
+import { computed, ref } from 'vue';
 import MyProduct from '@components/MyProduct.vue';
 
 const props = defineProps({
@@ -31,27 +30,17 @@ const props = defineProps({
   filter:           { type: String,   default:  ''    }
 });
 
-const store=useStore()
-const storeGet=store.getters
-const canClickProducts=ref(storeGet.getCanClickProducts())
+const lastClick = ref(Date.now())
+
 const emit = defineEmits(['click', 'longClick','drag']);
 
 const handleDrag        = (dir, product) => {
   dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1 
   emit('drag')
 }
-const handleClick       = product => (product.amount==0?product.amount=1:null,doEmit(product))
 const handleLongClick   = product => emit('longClick', product)
 
-const doEmit=product=>{
-  if (canClickProducts.value)
-  {
-    store.dispatch('setCanClickProducts',false)
-    setTimeout(()=>store.dispatch('setCanClickProducts',true),250)
-    emit('click', product)
-  }
-}
-watch(()=>storeGet.getCanClickProducts(),newValue=>canClickProducts.value=newValue)
+const handleClick = product => Date.now() - lastClick.value > 100 && (lastClick.value = Date.now(), product.amount === 0 && (product.amount = 1), emit('click', product));
 
 const sortedProductList = computed(() => {
   let aux = props.productList;
