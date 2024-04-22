@@ -43,10 +43,7 @@
   let storeGet            = store.getters;
 
   const cantidad          = computed(()=>{return props.amount})
-  const handleTap         = () => {
-    console.log(longClicked.value)
-    !longClicked.value ? emit('click', props.product) : longClicked.value = false;
-  }
+  const handleTap         = () => !longClicked.value ? emit('click', props.product) : longClicked.value = false;
 
   const bgColor = computed(() => {
     let categoria = storeGet.getCategoriaFromID(props.product.id_categoria);

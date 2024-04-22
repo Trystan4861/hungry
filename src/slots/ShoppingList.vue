@@ -98,6 +98,7 @@
   const productosSeleccionados          = computed(()=>productosDeCategoriasVisibles.value.filter(item=>item.selected))
   const amount2Buy                      = computed(()=>productosSeleccionados.value.filter(i=>!i.done).length)
   const amountBuyed                     = computed(()=>productosSeleccionados.value.length-amount2Buy.value)
+  const lastClick                       = ref(Date.now())
 
   const filterSupermercados=()=>{
     let aux=createCopy(supermercadosVisibles.value)
@@ -127,8 +128,12 @@
   
   
   const handleShoplistClick=item=>{
-    productsData.value[findIndexById(item.id,productsData.value)].done=!productsData.value[findIndexById(item.id,productsData.value)].done
-    setProductsData(productsData.value)
+    if(Date.now()-lastClick.value>200)
+    {
+      productsData.value[findIndexById(item.id,productsData.value)].done=!productsData.value[findIndexById(item.id,productsData.value)].done
+      setProductsData(productsData.value)
+      lastClick.value=Date.now()
+    }
   }
   const clearList=()=>{
         const productosSeleccionados=productsData.value.filter(item=>item.selected)
