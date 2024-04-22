@@ -105,9 +105,9 @@ div:where(.swal2-container) hr {
   user-select:          none; 
 }
 .revision {
-  right:                10px;
-  position:             absolute;
-  bottom:               0;
+  right: 15px;
+  position: fixed;
+  bottom: 15px;
 }
 .bold {
   --bs-btn-font-weight: bold !important;
