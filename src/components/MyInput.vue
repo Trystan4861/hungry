@@ -14,10 +14,10 @@
       @keyup="hadleKeyUp" 
       @blur="handleBlur" 
     >
-    <span class="cross" @click="handleCrossClick" v-show="showClose">❌</span>
+    <span class="cross" @click="handleCrossClick" v-show="showCross || showEmpty">{{ (showCross && showEmpty)?(inputValue!=''?crossEmptyText:crossCloseText):(showCross?crossCloseText:crossEmptyText) }}</span>
   </div>
 </template>
-<!-- ✖ -->
+<!-- ✖ ❌ -->
 <script setup>
   import { ref, watch, onMounted } from 'vue';
   import { useStore } from 'vuex';
@@ -27,9 +27,13 @@
     autofocus:        { type: Boolean,  default: false                  },
     maxLength:        { type: Number,   default: Infinity               },
     defaultMaxLength: { type: Boolean,  default: false                  },
-    showClose:        { type: Boolean,  default: false                  },
+    showCross:        { type: Boolean,  default: false                  },
+    showEmpty:        { type: Boolean,  default: false                  },
     class:            { type: String,                                   },
     style:            { type: String,                                   },
+    crossEmptyText:   { type: String,   default: '🗑'                   },
+    crossCloseText:   { type: String,   default: '✖'                    },
+
   });
 
   const store         = useStore();
@@ -50,7 +54,8 @@
   const handleKeyDown     = event => realMaxLenght.value !== Infinity && inputValue.value.length >= realMaxLenght.value && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
   const hadleKeyUp        = event => event.key === 'Enter' && emit('keyPressed:enter')
   const handleBlur        = event => emit('blur',event)
-  const handleCrossClick  = event => emit('click',event)
+  const handleCrossClick  = event => (inputValue.value!='' && props.showEmpty)? inputValue.value='':emit('click',event)
+
   watch (() => props.modelValue,  newValue => inputValue.value = newValue);
   watch (inputValue,              newValue => emit('update:modelValue', newValue));
   

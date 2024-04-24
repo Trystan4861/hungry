@@ -13,7 +13,8 @@
           <MyInput 
             class="border-0" 
             style="height: 24px;" 
-            :showClose="true" 
+            :showCross="true"
+            :showEmpty="true"
             :maxLength="20" 
             v-else 
             @click="handleFind" 
