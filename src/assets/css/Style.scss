@@ -1,0 +1,39 @@
+$breakpoints: (
+  xxs: 20em,  // 320px
+  xs: 30em,   // 480px
+  sm: 48em,   // 768px
+  md: 64em,   // 1024px
+  lg: 80em,   // 1280px
+  xl: 120em   // 1920px
+);
+// definición de variables para los tamaños de padding
+$paddings: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 1rem,
+  4: 1.5rem,
+  5: 3rem
+);
+
+// mixin para generar las reglas de padding
+@mixin padding-classes($type, $size) {
+  @each $name, $value in $paddings {
+    $property: if($type == 't', 'top', if($type == 'b', 'bottom', if($type == 'r', 'right', if($type == 'l', 'left', 'error'))));
+    
+    $screenSize: map-get($breakpoints, $size);
+
+    @media only screen and (min-width: $screenSize){
+      .p#{$type}-#{$size}-#{$name} {
+        padding-#{$property}: $value;
+      }
+    }
+  }
+}
+
+// Generar clases de padding para cada tipo y tamaño de pantalla
+@each $size in xxs, xs, sm, md, lg, xl {
+  @each $type in t, b, r, l {
+    @include padding-classes($type, $size);
+  }
+}
