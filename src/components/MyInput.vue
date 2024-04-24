@@ -1,5 +1,18 @@
 <template>
-    <input :style="props.style" ref="inputRef" :class="props.class" type="text" :id="inputID" v-model="inputValue" @blur="handleBlur" @keydown="handleKeyDown" @keyup="hadleKeyUp" :placeholder="placeholder" :maxlength="maxLength">
+    <input 
+      type="text" 
+      v-model="inputValue" 
+
+      :style="props.style" ref="inputRef" 
+      :class="props.class" 
+      :id="inputID" 
+      :placeholder="placeholder" 
+      :maxlength="realMaxLenght"
+
+      @keydown="handleKeyDown" 
+      @keyup="hadleKeyUp" 
+      @blur="handleBlur" 
+    >
     <div class="input-group-append" v-show="showClose">
       <label for="pass" class="cross" @click="handleCrossClick">❌</label>
     </div>
@@ -13,7 +26,7 @@
     placeholder:      { type: String,   default: 'Añade elementos aquí' },
     autofocus:        { type: Boolean,  default: false                  },
     maxLength:        { type: Number,   default: Infinity               },
-    defaultMaxLenght: { type: Boolean,  default: false                  },
+    defaultMaxLength: { type: Boolean,  default: false                  },
     showClose:        { type: Boolean,  default: false                  },
     class:            { type: String,                                   },
     style:            { type: String,                                   },
@@ -27,7 +40,7 @@
   
   const realMaxLenght = ref(props.maxLength)
 
-  if (props.defaultMaxLenght) realMaxLenght.value= storeGet.getMaxLenght()
+  if (props.defaultMaxLength) realMaxLenght.value= storeGet.getMaxLenght()
 
 
 

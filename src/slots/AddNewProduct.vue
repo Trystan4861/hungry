@@ -19,7 +19,6 @@
     :autofocus="true" 
     :maxLength="realMaxLength" 
     @keyPressed:enter="handleAddClick" 
-    :id="id"
     @blur="handleBlur"
     />
     <MyButton 
@@ -39,9 +38,8 @@
   import MyButton           from '@components/MyButton.vue'
   import { ref, computed }  from 'vue';
   import { useStore }       from 'vuex'
-  import { generateID,dispatch, createCopy }     from '@/utilidades'
+  import { dispatch, createCopy }     from '@/utilidades'
 
-  const id = `'inputAddNewProduct-${generateID()}`;
   const store=useStore()
   const storeGet=store.getters
 
