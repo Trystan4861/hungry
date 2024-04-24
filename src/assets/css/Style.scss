@@ -6,7 +6,7 @@ $breakpoints: (
   lg: 80em,   // 1280px
   xl: 120em   // 1920px
 );
-// definición de variables para los tamaños de padding
+
 $remNumbers: (
   0: 0,
   1: 0.25rem,
@@ -16,27 +16,23 @@ $remNumbers: (
   5: 3rem
 );
 
-// mixin para generar las reglas de padding
-@mixin generate-classes($mode,$type, $size) {
-  @each $name, $value in $remNumbers {
-    $property: if($type == 't', 'top', if($type == 'b', 'bottom', if($type == 'r', 'right', if($type == 'l', 'left', 'error'))));
-    
-    $screenSize: map-get($breakpoints, $size);
-    $class: if($mode == 'p', 'padding', 'margin');
-    
-    @media only screen and (min-width: $screenSize){
-      .#{$mode}#{$type}-#{$size}-#{$name} {
-        #{$class}-#{$property}: $value;
-      }
+@mixin generate-styles($rule, $type: null, $size: null) {
+  $property: if($type == 't', '-top', if($type == 'b', '-bottom', if($type == 'r', '-right', if($type == 'l', '-left', ''))));
+  $class-rule: if($rule == 'p', 'padding', 'margin');
+  @each $number,$value in $remNumbers{
+    @if $size != null {
+      $screenSize: map-get($breakpoints, $size);
+      @media only screen and (min-width: $screenSize) { .#{$rule}#{$type}-#{$size}-#{$number} { #{$class-rule}#{$property}: $value !important; } }
+    } @else {
+      .#{$rule}#{$type}-#{$number} { #{$class-rule}#{$property}: $value !important; }
     }
   }
 }
 
-// Generar clases de padding para cada tipo y tamaño de pantalla
-@each $mode in m, p {
-  @each $size in xxs, xs, sm, md, lg, xl {
-    @each $type in t, b, r, l {
-      @include generate-classes($mode,$type, $size);
+@each $size in null, xxs, xs, sm, md, lg, xl {
+  @each $rule in m, p {
+    @each $type in null, t, b, r, l {
+      @include generate-styles($rule,$type, $size);
     }
   }
 }
