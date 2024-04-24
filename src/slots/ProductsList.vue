@@ -265,7 +265,7 @@
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value!=newData && (categoriesData.value=newData))
   const setMaxHeight=maxHeight=>
   {
-    withScrollRef.value?.style.setProperty('--height',`${maxHeight}px`)
+    withScrollRef.value?.style.setProperty('--height',`${maxHeight-10}px`)
   }
   onMounted(()=>{
       watch(()=>storeGet.getAlturaDisponible(), newValue=>setMaxHeight(newValue))
@@ -281,6 +281,7 @@
   --height-modifier: 50px;
   overflow-y: auto;
   height: calc(var(--height,60px) - var(--height-modifier,0px) );
+  margin-top: 10px;
 }
 .letraActual{
   display: flex;
