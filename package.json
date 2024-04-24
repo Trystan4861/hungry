@@ -1,7 +1,7 @@
 {
   "name": "hungry",
   "version": "0.1.15",
-  "revision": "rev.20240422.1820",
+  "revision": "rev.20240424.1246",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -39,6 +39,9 @@
     "bootstrap": "^5.3.2",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "node-sass": "^9.0.0",
+    "sass": "^1.75.0",
+    "sass-loader": "^14.2.1",
     "vite": "^5.1.7",
     "vite-plugin-vue-devtools": "^7.0.25",
     "vue-style-loader": "^4.1.3"

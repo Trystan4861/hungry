@@ -7,11 +7,25 @@
         <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase text-center">No hay productos dados de alta</h2></div>
     </div> 
     <div v-show="cantidadProductos>0">
-      <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
+      <div class="d-flex justify-content-between">
+        <div class="text-start">
+          <MyButton v-if="!showFinder" btnClass="none" @click="showFinder=!showFinder">&#x1f50d;</MyButton>
+          <MyInput 
+            class="border-0" 
+            style="height: 24px;" 
+            :showClose="true" 
+            maxLength="20" 
+            v-else 
+            @click="handleFind" 
+            placeholder="Buscar producto" 
+            v-model="finder"></MyInput>
+        </div>
+        <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
+      </div>
       <div class="withScroll" ref="withScrollRef">
         <my-product-list 
         :orderBy="props.orderBy"
-        :productList="productosVisibles" 
+        :productList="productosFiltrados" 
         @click="handleClickProduct"
         @longClick="handeLongClickProduct"
         @drag="handleDrag"
@@ -58,16 +72,18 @@
   import MyCategoriesList from '@components/MyCategoriesList.vue';
   import { notify } from '@kyvg/vue3-notification';
   import { localStorageService } from '@/localStorageService';
+  import MyButton from '@components/MyButton.vue';
 
   const id=generateID()
   const id1=`anchorEditarProducto-${id}`
   const id2=`divEditarProducto-${id}`
-  
+  const showFinder=ref(false)
   const props=defineProps({ orderBy:            { type: String, default: 'name' }, })
   
   const setProductsData =newData=>store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
   const handleDrag=()=>setProductsData(productsData.value)
 
+  const finder                  = ref('')
   const store                   = useStore()
   const storeGet                = store.getters
 
@@ -94,6 +110,12 @@
   const cantidadProductos       = computed(()=>productosVisibles.value.length)
   const amount2Buy              = computed(()=>productosVisibles.value.filter(i=>i.selected).length)
 
+  const productosFiltrados      = computed(()=>productosVisibles.value.filter(i=>i.text.toLowerCase().includes(finder.value.toLowerCase())))
+
+  const handleFind=()=>{
+    finder.value=''
+    showFinder.value=false
+  }
   const handleCategorySelected=(category)=>{
     itemCategorySelected.value=category.id
   }
