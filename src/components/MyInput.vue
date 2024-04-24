@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-flex">
+  <div class="d-inline-flex w-100">
     <input 
       type="text" 
       v-model="inputValue" 
