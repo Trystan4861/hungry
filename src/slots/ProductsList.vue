@@ -14,7 +14,7 @@
             class="border-0" 
             style="height: 24px;" 
             :showClose="true" 
-            maxLength="20" 
+            :maxLength="20" 
             v-else 
             @click="handleFind" 
             placeholder="Buscar producto" 

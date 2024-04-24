@@ -1,4 +1,5 @@
 <template>
+  <div class="d-inline-flex">
     <input 
       type="text" 
       v-model="inputValue" 
@@ -13,9 +14,8 @@
       @keyup="hadleKeyUp" 
       @blur="handleBlur" 
     >
-    <div class="input-group-append" v-show="showClose">
-      <label for="pass" class="cross" @click="handleCrossClick">❌</label>
-    </div>
+    <span class="cross" @click="handleCrossClick" v-show="showClose">❌</span>
+  </div>
 </template>
 <!-- ✖ -->
 <script setup>
@@ -71,10 +71,8 @@ input:focus-visible {
 }
 .cross
 {
-    background: transparent;
-    border: 0;
-    right: 0.1875rem;
-    top: -1.5625rem;
-    position: absolute;
+  left: -23px;
+  position: relative;
+  cursor: pointer;
 }
 </style>
