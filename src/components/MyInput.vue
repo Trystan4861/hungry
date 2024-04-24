@@ -1,9 +1,10 @@
 <template>
-  <div class="input-container">
-    <input ref="inputRef" type="text" :id="inputID" v-model="inputValue" @blur="handleBlur" @keydown="handleKeyDown" @keyup="hadleKeyUp" :placeholder="placeholder" :maxlength="maxLength">
-  </div>
+    <input :style="props.style" ref="inputRef" :class="props.class" type="text" :id="inputID" v-model="inputValue" @blur="handleBlur" @keydown="handleKeyDown" @keyup="hadleKeyUp" :placeholder="placeholder" :maxlength="maxLength">
+    <div class="input-group-append" v-show="showClose">
+      <label for="pass" class="cross" @click="handleCrossClick">❌</label>
+    </div>
 </template>
-
+<!-- ✖ -->
 <script setup>
   import { ref, watch, onMounted } from 'vue';
   import { useStore } from 'vuex';
@@ -13,6 +14,9 @@
     autofocus:        { type: Boolean,  default: false                  },
     maxLength:        { type: Number,   default: Infinity               },
     defaultMaxLenght: { type: Boolean,  default: false                  },
+    showClose:        { type: Boolean,  default: false                  },
+    class:            { type: String,                                   },
+    style:            { type: String,                                   },
   });
 
   const store         = useStore();
@@ -28,26 +32,22 @@
 
 
 
-  const ignoreKeys    = ['Enter','Backspace','Delete']
-  const focusInput    = () => (props.autofocus)?inputRef.value?.focus():null;
-  const handleKeyDown = event => realMaxLenght.value !== Infinity && inputValue.value.length >= realMaxLenght.value && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
-  const hadleKeyUp    = event => event.key === 'Enter' && emit('keyPressed:enter')
-  const handleBlur    = event => emit('blur',event)
-  
+  const ignoreKeys        = ['Enter','Backspace','Delete']
+  const focusInput        = () => (props.autofocus)?inputRef.value?.focus():null;
+  const handleKeyDown     = event => realMaxLenght.value !== Infinity && inputValue.value.length >= realMaxLenght.value && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
+  const hadleKeyUp        = event => event.key === 'Enter' && emit('keyPressed:enter')
+  const handleBlur        = event => emit('blur',event)
+  const handleCrossClick  = event => emit('click',event)
   watch (() => props.modelValue,  newValue => inputValue.value = newValue);
   watch (inputValue,              newValue => emit('update:modelValue', newValue));
   
   onMounted (() => setTimeout(() =>(props.autofocus)?focusInput():null, 1000));
   
-  const emit = defineEmits(['update:modelValue','keyPressed:enter','blur']);
+  const emit = defineEmits(['update:modelValue','keyPressed:enter','blur','click']);
   defineExpose({inputValue})
 </script>
 
 <style scoped>
-.input-container {
-  display:        flex;
-  flex-direction: column;
-}
 input {
   width:          100%;
   height:         3.125rem;
@@ -55,5 +55,13 @@ input {
 }
 input:focus-visible { 
   outline:        0; 
+}
+.cross
+{
+    background: transparent;
+    border: 0;
+    right: 0.1875rem;
+    top: -1.5625rem;
+    position: absolute;
 }
 </style>
