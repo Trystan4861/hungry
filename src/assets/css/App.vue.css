@@ -21,13 +21,13 @@ div:where(.swal2-container) hr {
   width:                4px; 
 }
 ::-webkit-scrollbar-track { 
-  background:           #f0f0f0;
+  background:           #555;
 }
 ::-webkit-scrollbar-thumb { 
-  background:           #888;
+  background:           #f0f0f0;
 }
 ::-webkit-scrollbar-thumb:hover { 
-  background:           #555;
+  background:           #f0f0f0;
 }
 .author {
   font-size:            xx-small;

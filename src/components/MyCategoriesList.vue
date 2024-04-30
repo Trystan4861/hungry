@@ -6,7 +6,7 @@
       <div class="my-categories-list" :style="categoryListStyle">
         <MyCategory
           v-for="(category, index) in visibleCategories"
-          :key="index"
+          :key="category.id"
           :text="category.text"
           :bgColor="category.bgColor"
           @categoryClick="handleCategoryClick(index)"

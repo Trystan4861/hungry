@@ -30,15 +30,15 @@
 </template>  
 
 <script setup>
-  import MyCard             from '@/components/MyCard.vue'
-  import MySelect           from '@components/MySelect.vue'
-  import MyCategoriesList   from '@components/MyCategoriesList.vue'
-  import Swal               from 'sweetalert2'
-  import MyInput            from '@components/MyInput.vue'
-  import MyButton           from '@components/MyButton.vue'
-  import { ref, computed }  from 'vue';
-  import { useStore }       from 'vuex'
-  import { dispatch, createCopy }     from '@/utilidades'
+  import MyCard                   from '@components/MyCard.vue'
+  import MySelect                 from '@components/MySelect.vue'
+  import MyCategoriesList         from '@components/MyCategoriesList.vue'
+  import Swal                     from 'sweetalert2'
+  import MyInput                  from '@components/MyInput.vue'
+  import MyButton                 from '@components/MyButton.vue'
+  import { ref, computed }        from 'vue';
+  import { useStore }             from 'vuex'
+  import { dispatch, createCopy } from '@/utilidades'
 
   const store=useStore()
   const storeGet=store.getters

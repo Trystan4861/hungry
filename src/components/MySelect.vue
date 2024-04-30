@@ -5,7 +5,13 @@
       {{ selectedOption.text ? selectedOption.text : placeholder }}
     </div>
     <div class="dropdown" :class="{ show: showDropdown }">
-      <div v-for="(option, index) in options" :key="index" class="option" :class="toFilter.includes(option.logo)?'filter':''" @mouseup="selectOption(option)">
+      <div 
+        v-for="option in options" 
+        :key="option.id" 
+        class="option" 
+        :class="toFilter.includes(option.logo)?'filter':''" 
+        @mouseup="selectOption(option)"
+      >
         <MyImage :id="id" :image="option.logo" :className="'option-logo'" />
         <div class="label">{{ option.text }}</div>
       </div>

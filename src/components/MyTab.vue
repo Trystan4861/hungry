@@ -2,7 +2,13 @@
   <div class="my-tab" ref="tabsContainerRef">
     <ul class="nav nav-tabs">
       <!-- Mostramos cada pestaña en la cabecera -->
-      <li class="nav-item" :class="{ active: activeTab === index }" v-for="(tab, index) in tabs" :key="index" :style="tabStyle">
+      <li 
+        class="nav-item" 
+        :class="{ active: activeTab === index }" 
+        v-for="(tab, index) in tabs" 
+        :key="tab.id" 
+        :style="tabStyle"
+      >
         <span
           class="nav-link"
           :class="{ active: activeTab === index }"

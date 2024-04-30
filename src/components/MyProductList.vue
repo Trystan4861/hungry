@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="my-product-list">
-      <MyProduct v-for="(product, index) in sortedProductList" 
-      :key="index" 
+      <MyProduct v-for="(product) in sortedProductList" 
+      :key="product.id" 
       :product="product"
       :canBeDone="canBeDone" 
       :amount="product.amount"
@@ -49,7 +49,7 @@ const sortedProductList = computed(() => {
     aux = props.productList.filter(product => product.done);
   } else if (props.filter.toLowerCase()=="undone") {
     aux = props.productList.filter(product => !product.done);
-    //para el caso del filtro "undone" si el supermercado actual no es cualquier supermercado, quitamos los productos que son de otros supermercados
+    //para el caso del filtro "undone" si el supermercado actual no es "cualquier supermercado", quitamos los productos que son de otros supermercados
     if (props.supermercado !== 0) {
       aux = aux.filter(product =>  props.hideSupermercado ? 
         (product.id_supermercado !== props.supermercado && product.id_supermercado !== 0) :

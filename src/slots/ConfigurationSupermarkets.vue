@@ -4,7 +4,7 @@
     <div class="SupermarketsContainer">
       <MyCheckbox
         v-for="(item, index) in supermarkets"
-        :key="index"
+        :key="item.id"
         :value="index"
         :label="item.text"
         :checkedValues="checkedItems"
@@ -51,19 +51,9 @@ const emit = defineEmits(['supermarketsChecked']);
   height:             150px;
   overflow-y:         scroll;
   margin-bottom:      .625rem;
-  border:             1px solid;
+  border:             3px solid #555;
   border-right-width: 0;
   user-select:        none;
   padding-top:        15px;
-}
-::-webkit-scrollbar       { 
-  height:             4px; 
-  width:              4px; 
-}
-::-webkit-scrollbar-track { 
-  background:       #f0f0f0; 
-}
-::-webkit-scrollbar-thumb { 
-  background:       #888; 
 }
 </style>
