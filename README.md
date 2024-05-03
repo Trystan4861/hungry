@@ -1,9 +1,12 @@
 # Bienvenido a Hungry! by trystan4861
 
 <a><img src="https://ik.imagekit.io/trystan4861/hungry/hungry.svg" alt="Logo de Hungry" style="height:100px;"></a>
+| Commits | Report a bug | Ask a Question | License |
+|---------|--------------|----------------|---------|
+| <a href="https://github.com/trystan4861/hungry/pulse"><img src="https://img.shields.io/github/commit-activity/m/trystan4861/hungry" alt="commits"></a> | <a href="https://github.com/trystan4861/hungry/issues/new"><img src="https://camo.githubusercontent.com/a0c58cbfe38aa59eb31d0920befeb48ed583a917b015665e51dea6245c0da064/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5265706f72742061206275672d4769746875622d253233314638304330" alt="Report a bug" data-canonical-src="https://img.shields.io/badge/Report a bug-Github-%231F80C0" style="max-width: 100%;"></a> | <a href="https://github.com/trystan4861/hungry/discussions/new?category=q-a"><img src="https://img.shields.io/badge/Ask%20a%20question-Github-%231F80C0" alt="haz una pregunta"></a> | <a href="https://github.com/trystan4861/hungry/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-CC%20BY%204.0-%231F80C0" alt="Licencia"></a> |
 
-| Main Branch | FrontEnd | BackEnd|
-|-------------|----------|--------|
+| Main Branch | FrontEnd | BackEnd |
+|-------------|----------|---------|
 | [![Netlify Status](https://api.netlify.com/api/v1/badges/88f22b9a-dd72-4dce-8964-19e19426b546/deploy-status)](https://mpc-hungry.netlify.app) | <a href="#"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018da359-3bd2-4948-a5cf-5a8b59500694.svg" /></a> | <a href="https://github.com/Trystan4861/hungry-api"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018ea986-4ed8-4e8f-9f81-a0efdc31528c.svg?style=default" /></a> |
 
 
