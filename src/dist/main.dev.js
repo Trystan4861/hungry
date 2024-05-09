@@ -8,6 +8,8 @@ var _store = _interopRequireDefault(require("./store"));
 
 var _vue3TouchEvents = _interopRequireDefault(require("vue3-touch-events"));
 
+var _utilidades = require("./utilidades");
+
 require("./assets/css/bootstrap.min.css");
 
 require("./assets/css/Style.scss");
@@ -21,3 +23,6 @@ app.use(_store["default"]);
 app.use(_vue3TouchEvents["default"]);
 app.config.productionTip = false;
 app.mount('#app');
+window.DID = _utilidades.DID;
+window.DOM = _utilidades.DOM;
+window._DOM = _utilidades._DOM;

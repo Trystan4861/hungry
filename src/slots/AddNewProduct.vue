@@ -38,7 +38,7 @@
   import MyButton                 from '@components/MyButton.vue'
   import { ref, computed }        from 'vue';
   import { useStore }             from 'vuex'
-  import { dispatch, createCopy } from '@/utilidades'
+  import { dispatch, createCopy, _DOM } from '@/utilidades'
 
   const store=useStore()
   const storeGet=store.getters
@@ -66,15 +66,15 @@
       html: ` <label for="inputModifyCategory">Introduzca un nuevo nombre para la categoría</label>
               <input type="text" class="swal2-input" id="inputModifyCategory" maxlenght="${realMaxLength.value}" value="${categoria.text}">
       `,
-      target: document.querySelector("#appContainer"),
+      target: _DOM("#appContainer"),
       didOpen: ()=>{
         setTimeout(()=>{
-          focusInput(document.querySelector("#inputModifyCategory"))
+          focusInput(_DOM("#inputModifyCategory"))
         },50)
       },
       preConfirm: ()=>{
         return new Promise((resolve)=>{
-            resolve({value: document.querySelector("#inputModifyCategory").value})
+            resolve({value: _DOM("#inputModifyCategory").value})
         }).then((result)=>{
           let aux=createCopy(categoriesData.value)
           aux[categoria.id].text=result.value
@@ -99,7 +99,7 @@
         title:'Error',
         text:'Debes introducir un nombre para el nuevo producto',
         confirmButtonText:'Aceptar',
-        target: document.querySelector("#appContainer"),
+        target: _DOM("#appContainer"),
       })
     }
     else

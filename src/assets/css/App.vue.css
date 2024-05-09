@@ -118,3 +118,18 @@ div:where(.swal2-container) hr {
 .cursor-pointer {
   cursor: pointer;
 }
+.no-select {
+  user-select: none;
+}
+.no-select:hover {
+  user-select: none;
+}
+.no-select:active {
+  user-select: none;
+}
+.no-select:focus {
+  user-select: none;
+}
+.no-select:focus-visible {
+  user-select: none;
+}

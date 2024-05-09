@@ -64,7 +64,7 @@
           <div class="col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
             <my-button 
               btnClass="info bold" 
-              :text="`${token.length==0?'Iniciar':'Cerrar'} Sesión`" 
+              :text="`${token.length==0?'Registrarse / Iniciar':'Cerrar'} Sesión`" 
               @click="handleLogin" 
               />
           </div>
@@ -80,6 +80,11 @@
     </div>
     <div class="revision">{{ packageJson.revision }}</div>
   </my-card>
+  <div id="anchorLoginLinks-configuration" class="d-none">
+    <div class="justify-content-between d-flex mt-2" :id="id">
+      <a class="link cursor-pointer no-select" @click="handleForgetPass">¿Olvidaste tu contraseña?</a><a class="link cursor-pointer no-select" @click="handleRegister">{{ showRegisterMessage?"¿No tienes cuenta?":"Iniciar Sesión" }}</a>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -99,7 +104,7 @@
   import { useStore }                   from 'vuex';
   import { notify }                     from '@kyvg/vue3-notification';
   import { localStorageService }        from '@/localStorageService'
-  import { dispatchWhere as dispatch }  from '@/utilidades';
+  import { DID, _DOM, dispatchWhere as dispatch }  from '@/utilidades';
   import Swal                           from 'sweetalert2'
   import axios                          from 'axios';
   import md5                            from 'crypto-js/md5'
@@ -125,37 +130,59 @@
     supermarketsVisibles:false,
     defaultTabActive: defaultTabActive.value,
   }
-  
+  const id='divLoginLinks'
   const configFullScreen        = ref(fullScreen.value)
+
+  const showRegisterMessage = ref(true)
 
   const handleChangeFullScreen  = checked => configFullScreen.value=checked
   const handleChangeTabActive   = data => changes2Save.defaultTabActive=data 
 
-  const handleLogin=()=>{
+  const handleForgetPass = () => {
+    console.log('handleForgetPass')
+  }
+  const handleRegister = () => {
+    console.log('handleRegister')
+    DID("swal2-title").innerText=showRegisterMessage.value? "Realizar Registro":"Iniciar Sesión"
+    _DOM(".swal2-confirm").innerHTML=showRegisterMessage.value? "Registrarse":"Acepar"
+    showRegisterMessage.value=!showRegisterMessage.value
+  }
+  const handleLogin=()=>{ 
     Swal.fire({
-      title: 'Iniciar sesión',
+      title: 'Iniciar Sesión',
       html: `
-        <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
-        <div class="input-group">
-          <input id="pass" type="password" class="swal2-input password-input" placeholder="Contraseña" autocomplete="off">
-          <div class="input-group-append">
-            <label for="pass" class="input-group-text toggle-password">&#x1f512;&#xfe0e;</label>
-          </div>
+      <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
+      <div class="input-group">
+        <input id="pass" type="password" class="swal2-input password-input" placeholder="Contraseña" autocomplete="off">
+        <div class="input-group-append">
+          <label for="pass" class="input-group-text toggle-password">&#x1f512;&#xfe0e;</label>
         </div>
+      </div>
+      <div id="LoginFormLinksSweetAlert2"></div>
       `,
       focusConfirm: false,
       showCancelButton:true,
       cancelButtonText:"Cancelar",
       confirmButtonText: "Aceptar",
+      target: _DOM("#appContainer"),
+      willOpen: ()=>{
+        showRegisterMessage.value=true
+        DID('LoginFormLinksSweetAlert2').appendChild(DID(id));
+      },
+      willClose:()=>{
+        DID("anchorLoginLinks-configuration").appendChild(DID(id))
+      },
       preConfirm: async () => {
-        const email = Swal.getPopup().querySelector('#email').value.toLowerCase().trim();
-        const pass = md5(Swal.getPopup().querySelector('#pass').value.trim()).toString();
+        const email = _DOM('#email',Swal.getPopup()).value.toLowerCase().trim();
+        const pass = md5(_DOM('#pass',Swal.getPopup()).value.trim()).toString();
 
-        let urlbase = storeGet.getURLBase;
+        DID("anchorLoginLinks-configuration").appendChild(DID(id))
+
+        let urlbase = storeGet.getURLBase();
         let data = { email, pass };
         
         try {
-          const response = await axios.post(urlbase + '/login', data, {
+          const response = await axios.post(urlbase + '/' + (showRegisterMessage.value?'login':'register'), data, {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -208,7 +235,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         confirmButtonText: 'Restablecer',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
-        target: document.querySelector("#appContainer"),
+        target: _DOM("#appContainer"),
         allowOutsideClick: false
       }).then(result=>{
         if (result.isConfirmed)
@@ -220,7 +247,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
             confirmButtonText: 'si',
             showCancelButton: true,
             cancelButtonText: 'no',
-            target: document.querySelector("#appContainer"),
+            target: _DOM("#appContainer"),
             allowOutsideClick: false
           }).then(result=>{
             result.isConfirmed && exportRef.value.exportConfig()
@@ -244,14 +271,14 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         data.loginData={email:'',token:''}
         store.dispatch('setConfiguracion', localStorageService.setItem(data));
         
-        defaultTabActive.value=storeGet.getDefaultTabActive()
+        //defaultTabActive.value=storeGet.getDefaultTabActive()
 
         Swal.fire({
           icon:'success',
           title:'Atención',
           html:`Configuración importada correctamente<br /><br /><b>Todos los datos han sido sobreescritos con los contenidos en el archivo importado</b>`,
           confirmButtonText:'Aceptar',
-          target: document.querySelector("#appContainer"),
+          target: _DOM("#appContainer"),
         })
       }
       else if (result.isDenied){
@@ -270,7 +297,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
             title:'Atención',
             html:`Se han importado ${importado}<br>desde el archivo de configuración<br>correctamente`,
             confirmButtonText:'Aceptar',
-            target: document.querySelector("#appContainer"),
+            target: _DOM("#appContainer"),
           })
         }
         else
@@ -280,7 +307,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
             title:'Atención',
             html:`Los datos actuales son los mismos contenidos en el archivo importado<br /><br /><b>Nada ha sido cambiado</b>`,
             confirmButtonText:'Aceptar',
-            target: document.querySelector("#appContainer"),
+            target: _DOM("#appContainer"),
           })
         }
       }
@@ -297,7 +324,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         title:'Atención',
         html:`Cambibos guardados correctamente<br><br>Recuerda que todos los productos pertenecientes a categorías ocultas también estarán ocultos`,
         confirmButtonText:'Aceptar',
-        target: document.querySelector("#appContainer"),
+        target: _DOM("#appContainer"),
       })
     }
     if (changes2Save.supermarketsVisibles)
@@ -315,7 +342,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         confirmButtonText: 'Aceptar',
         showDenyButton: true,
         denyButtonText: 'Recargar',
-        target: document.querySelector("#appContainer"),
+        target: _DOM("#appContainer"),
         allowOutsideClick: false
       }).then(result=>result.isDenied?window.location.reload():null);
     }
