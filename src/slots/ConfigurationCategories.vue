@@ -22,6 +22,7 @@
 import MyCheckbox from '@components/MyCheckbox.vue';
 import { ref, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
+import { _DOM } from '@/utilidades';
 
 const props = defineProps({
   categorias: { type: Array, required: true }
@@ -48,7 +49,7 @@ const handleLastCategoryVisible = () => {
     title: 'Error',
     html: "Al menos una categoría debe permanecer visible",
     confirmButtonText: 'Aceptar',
-    target: document.querySelector("#SlotConfigurationCategories"),
+    target: _DOM("#SlotConfigurationCategories"),
   });
 };
 

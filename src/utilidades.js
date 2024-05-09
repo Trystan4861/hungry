@@ -31,8 +31,23 @@ export function getDataFromLocalStorage (store,index) {
     storedData = localStorageService.getItem();
   if (storedData )
     dispatch(store,index, storedData);
-  return storedData ?? localStorageService.setSubItem(index, store.getters.getConfiguracion()[index]);
+  return storedData ?? index!= 'state'?localStorageService.setSubItem(index, store.getters.getConfiguracion()[index]):null;
 }
+
+// funcion para obtener un elemento por su ID
+export function DID(id){return document.getElementById(id)}
+
+// funcion para obtener elementos por su selector
+export function DOM(selector){return document.querySelectorAll(selector)}
+
+// funcion para obtener un elemento por su selector
+export function _DOM(selector){return document.querySelector(selector)}
 
 // función para crear una copia profunda de un array|objeto usando JSON
 export function createCopy(ofWhat){ return JSON.parse(JSON.stringify(ofWhat))}//return ofWhat.map(item => ({ ...item }))}
+
+// función para obtener los hijos de un elemento
+export function getChildNodes(ofWhat){return Array.from(ofWhat.childNodes).filter(item=>item.nodeType===1)} 
+
+// función para obtener los hijos de un elemento por su ID
+export function getChildNodesID(id){return getChildNodes(document.getElementById(id))}

@@ -1,7 +1,7 @@
 {
   "name": "hungry",
   "version": "0.2.0",
-  "revision": "rev.20240430.2219",
+  "revision": "rev.20240509.1836",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -19,6 +19,7 @@
     "core-js": "^3.8.3",
     "crypto-js": "^4.2.0",
     "postcss": "^8.4.38",
+    "pug": "^3.0.2",
     "register-service-worker": "^1.7.2",
     "sweetalert2": "^11.6.13",
     "uuid": "^9.0.1",

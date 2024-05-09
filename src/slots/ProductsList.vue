@@ -63,7 +63,7 @@
   
   import { ref, computed, watch, onMounted } from 'vue';
   import { useStore } from 'vuex';
-  import { createCopy, dispatch, findIndexById, generateID }                    from '@/utilidades'
+  import { DID, _DOM, createCopy, dispatch, findIndexById, generateID }                    from '@/utilidades'
 
   import Swal from 'sweetalert2';
   import MyCard from '@components/MyCard.vue'
@@ -163,14 +163,14 @@
       buttonsStyling: false, 
       showDenyButton: true, 
       denyButtonText: 'Eliminar Producto', 
-      target: document.querySelector("#appContainer"),
+      target: _DOM("#appContainer"),
     }).then((result) => {
       if (result.isConfirmed) handleEditarProducto()
       else if (result.isDenied) handleEliminarProducto()
     });
   }
   const handleEditarProducto    = () =>{
-    let aux=document.getElementById(id2);
+    let aux=DID(id2);
     let producto=productoSeleccionado.value;
     productoAEditar.value=producto.text
     itemCategorySelected.value=producto.id_categoria
@@ -181,12 +181,12 @@
       showCancelButton:   true,
       confirmButtonText:  'Confirmar',
       cancelButtonText:   'Cancelar',
-      target:             document.querySelector("#appContainer"),
+      target:             _DOM("#appContainer"),
       willOpen: ()=>{
         supermercadoProducto.value=supermarketsData[producto.id_supermercado]
-        document.getElementById('VueSweetAlert2').appendChild(aux);
+        DID('VueSweetAlert2').appendChild(aux);
       },
-      willClose:()=>{document.getElementById(id1).appendChild(aux)}
+      willClose:()=>{DID(id1).appendChild(aux)}
     }).then((result) => {
       if (result.isConfirmed){
         const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
@@ -207,7 +207,7 @@
             title:'Atención',
             icon: 'success',
             text: 'Producto modificado correctamente',
-            target: document.querySelector("#appContainer"),
+            target: _DOM("#appContainer"),
           })
         }
         else {
@@ -215,7 +215,7 @@
             title:'Atención',
             icon: 'info',
             text: 'No has realizado cambios al producto',
-            target: document.querySelector("#appContainer"),
+            target: _DOM("#appContainer"),
           })
         }
       }
@@ -234,7 +234,7 @@
         cancelButton: 'btn btn-success mb-2', 
       },
       buttonsStyling: false, 
-      target: document.querySelector("#appContainer"),
+      target: _DOM("#appContainer"),
     }).then((result) => {
       if (result.isConfirmed){
         setProductsData(productsData.value.filter(item => item.id !== productoSeleccionado.value.id))

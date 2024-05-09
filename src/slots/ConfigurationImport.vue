@@ -10,7 +10,8 @@
 </template>
 
 <script setup>
-  import MyFile from '@components/MyFile.vue';
+  import { _DOM } from '@/utilidades';
+import MyFile from '@components/MyFile.vue';
   import Swal   from 'sweetalert2';
 import { useStore } from 'vuex';
 
@@ -35,7 +36,7 @@ import { useStore } from 'vuex';
         title,
         html,
         confirmButtonText:'Aceptar',
-        target: document.querySelector("#appContainer"),
+        target: _DOM("#appContainer"),
       })
     }
     else

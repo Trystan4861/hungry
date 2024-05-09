@@ -72,7 +72,7 @@
   import MyProductList from '@components/MyProductList.vue';
   import Swal from 'sweetalert2';
   import { ref, computed, watch,onMounted } from 'vue';
-  import { createCopy, findIndexById }            from '@/utilidades'
+  import { _DOM, createCopy, findIndexById }            from '@/utilidades'
   import { useStore } from 'vuex';
   import { localStorageService } from '@/localStorageService';
 
@@ -118,7 +118,7 @@
   const AmountInOtherSupermarkets=computed(()=>amount2Buy.value-AmountInThisSupermarket.value)
 
   const anchoBoton=ref('100px')
-  const recalculateAnchoBoton=()=>anchoBoton.value=(document.querySelector(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
+  const recalculateAnchoBoton=()=>anchoBoton.value=(_DOM(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
 
   window.addEventListener('resize',()=>setTimeout(recalculateAnchoBoton,50))
   watch(() => props.active, newValue => newValue && recalculateAnchoBoton());
@@ -152,7 +152,7 @@
           },
           showDenyButton: auxClearList,
           buttonsStyling: false, 
-          target: document.querySelector("#appContainer"),
+          target: _DOM("#appContainer"),
         }).then((result) => {
           if (result.isDenied){
             productsData.value.forEach(producto=>{

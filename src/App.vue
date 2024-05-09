@@ -48,7 +48,7 @@
   import { useStore }                             from 'vuex'
   //import axios                        from 'axios'
   import { notify,Notifications }                 from '@kyvg/vue3-notification'
-  import { getDataFromLocalStorage }              from '@/utilidades'
+  import { DID, _DOM, getDataFromLocalStorage }              from '@/utilidades'
   
   const store                   = useStore()
   const storeGet                = store.getters
@@ -71,7 +71,7 @@
   const setFullScreen           = () => {
     if (!storeGet.getFullScreen()) return document.fullscreenElement?document.exitFullscreen():null
     if (document.fullscreenElement) return
-    const    elemento=document.getElementById("appContainer");
+    const    elemento=DID("appContainer");
     if      (elemento.requestFullscreen       ) elemento.requestFullscreen()
     else if (elemento.mozRequestFullScreen    ) elemento.mozRequestFullScreen()
     else if (elemento.webkitRequestFullscreen ) elemento.webkitRequestFullscreen()
@@ -95,7 +95,7 @@
         icon:'warning',
         title: 'Atención',
         html: `Ya existe un producto llamado<br>«${nuevoProducto}»`,
-        target: document.querySelector("#appContainer"),
+        target: _DOM("#appContainer"),
     })
   }
 
