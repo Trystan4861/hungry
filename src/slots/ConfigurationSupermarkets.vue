@@ -12,7 +12,7 @@
         :required="true"
         :styled="true"
         :enabled="item.editable"
-        @update:checkedValues="handleCheckedValuesUpdate"
+        @checkedValues="handleCheckedValues"
       />
     </div>
   </div>
@@ -21,22 +21,22 @@
 <script setup>
 import MyCheckbox from '@components/MyCheckbox.vue';
 import { ref, watchEffect } from 'vue';
+import { useStore } from 'vuex';
 
-const props = defineProps({
-  supermarkets: { type: Array, required: true }
-});
+const store = useStore();
+const storeGet = store.getters;
+
+const supermarkets= storeGet.getSupermercados();
 
 const checkedItems      = ref([]);
-const visibleSupermarkets = ref([]);
 
 const getVisibleIndices = data => data.map((item, index) => (item.visible ? index : null)).filter(index => index !== null);
 
 watchEffect(() => {
-  visibleSupermarkets.value = props.supermarkets.filter(item => item.visible);
-  checkedItems.value = getVisibleIndices(props.supermarkets);
+  checkedItems.value = getVisibleIndices(supermarkets);
 });
 
-const handleCheckedValuesUpdate = (newCheckedItems) => {
+const handleCheckedValues = (newCheckedItems) => {
   checkedItems.value = newCheckedItems.sort((a, b) => a - b);
   emit('supermarketsChecked', newCheckedItems);
 };

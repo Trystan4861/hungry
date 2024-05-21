@@ -50,7 +50,7 @@ const props=defineProps({
 
 const id            = `'checkbox-${generateID()}`;
 const isChecked     = computed(() => (props.group ? props.checkedValues.includes(props.value) : props.selected));
-const emit          = defineEmits(['lastCheckedDeletionAttempt','update:checkedValues','update:checkedValue'])
+const emit          = defineEmits(['lastCheckedDeletionAttempt','checkedValues','checkedValue'])
 const handleChange  = event => {
   if (typeof event.target.checked === 'undefined') return;
   if (props.group) {
@@ -58,9 +58,9 @@ const handleChange  = event => {
       emit('lastCheckedDeletionAttempt', props.checkedValues);
       return event.preventDefault();
     }
-    emit('update:checkedValues', (event.target.checked)?[...props.checkedValues, props.value]:props.checkedValues.filter(val => val !== props.value));
+    emit('checkedValues', (event.target.checked)?[...props.checkedValues, props.value]:props.checkedValues.filter(val => val !== props.value));
   } else {
-    emit('update:checkedValue', props.value, event.target.checked);
+    emit('checkedValue', props.value, event.target.checked);
   }
 };
 </script>

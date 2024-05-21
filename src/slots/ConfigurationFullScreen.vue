@@ -3,11 +3,11 @@
     <div class="text-center text-uppercase">Ejecutar en Pantalla Completa</div>
     <div>
       <my-checkbox
-        value="1"
-        :label="props.selected?'Sí':'No'"
+        :label="props.selected? props.labelOK : props.labelKO"
         :selected="props.selected"
         :styled="true"
-        @update:checkedValue="handleCheckedValue"
+        @checkedValue="handleCheckedValue"
+        value="1"
       />
     </div>
   </div>
@@ -16,13 +16,16 @@
 <script setup>
   import MyCheckbox from '@components/MyCheckbox.vue'
 
-  const props               = defineProps(
-    { selected: { type: Boolean, required: true } },
-  );
+  const emit                = defineEmits(['change'])
+  const props               = defineProps({ 
+    selected: { type: Boolean,  required: true },
+    labelOK:  { type: String,   default: "Sí" },
+    labelKO:  { type: String,   default: "No" },
+  });
+
   const handleCheckedValue  = (_,checked) => {
     emit('change', checked)
   }
-  const emit                = defineEmits(['change'])
 </script>
 <style scoped>
 </style>

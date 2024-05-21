@@ -10,7 +10,6 @@
         <div class="row">
           <div class="col-lg-4 col-12 col-md-6">
             <slot-configuration-categories 
-              :categorias="categoriesData" 
               @categoriesChecked="handleCategoriesChecked" 
               />
           </div>
@@ -18,7 +17,6 @@
             <div class="row h-100">
               <div class="col-lg-6 col-12 mt-lg-0 mt-2">
                 <slot-configuration-supermarkets 
-                  :supermarkets="supermarketsData" 
                   @supermarketsChecked="handleSupermarketsChecked"
                 />
               </div>
@@ -258,9 +256,9 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
   }
   const handleConfigurationImportFileReaded=data=>{
     Swal.fire({
-      title: '¿Qué deseas importar?',
-      text: '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?',
       icon: 'question',
+      title: '¿Qué deseas importar?',
+      html: '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?',
       showCancelButton: true,
       confirmButtonText: 'Completo',
       cancelButtonText: 'Cancelar',
@@ -270,9 +268,6 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
       if (result.isConfirmed){
         data.loginData={email:'',token:''}
         store.dispatch('setConfiguracion', localStorageService.setItem(data));
-        
-        //defaultTabActive.value=storeGet.getDefaultTabActive()
-
         Swal.fire({
           icon:'success',
           title:'Atención',

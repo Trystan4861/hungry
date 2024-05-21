@@ -1,7 +1,7 @@
 {
   "name": "hungry",
   "version": "0.2.0",
-  "revision": "rev.20240514.1116",
+  "revision": "rev.20240521.1649",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",

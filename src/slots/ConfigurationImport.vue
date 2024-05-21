@@ -11,20 +11,20 @@
 
 <script setup>
   import { _DOM } from '@/utilidades';
-import MyFile from '@components/MyFile.vue';
+  import MyFile from '@components/MyFile.vue';
   import Swal   from 'sweetalert2';
-import { useStore } from 'vuex';
+  import { useStore } from 'vuex';
 
   const store=useStore()
   const storeGet=store.getters
 
+  const emit=defineEmits(['configurationFileReaded','configurationFileError'])
   const props=defineProps({ 
     showInternalSwalError:  { type:Boolean, default:true      },
     maxFileSize:            { type:Number,  default:100*1024  },
   })
-  const emit=defineEmits(['configurationFileReaded','configurationFileError'])
   
-  const handleFileReaded= data => (data.appName!=storeGet.getAppName())?handeFileReadError():emit('configurationFileReaded',data)
+  const handleFileReaded= data => data.appName!=storeGet.getAppName()?handeFileReadError():emit('configurationFileReaded',data)
 
   const handeFileReadError= error => {
     if (props.showInternalSwalError) {

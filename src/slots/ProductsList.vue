@@ -9,19 +9,19 @@
     <div v-show="cantidadProductos>0">
       <div class="d-flex justify-content-between">
         <div class="text-start">
-          <MyButton v-if="!showFinder" btnClass="none" @click="showFinder=!showFinder">&#x1f50d;</MyButton>
+          <MyButton v-if="!showFinder" btnClass="none" @click="toggleFinder">&#x1f50d;</MyButton>
           <MyInput 
             class="border-0" 
-            style="height: 24px;" 
+            :style="'height: 24px;'" 
             :showCross="true"
             :showEmpty="true"
             :maxLength="20" 
             v-else 
-            @click="handleFind" 
+            @click="toggleFinder" 
             placeholder="Buscar producto" 
             v-model="finder"></MyInput>
         </div>
-        <div class="text-end">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} seleccionado{{ amount2Buy!=1?'s':'' }}</div>
+        <div class="text-end" @click="toggleFinder">{{ amount2Buy }} producto{{ pluralize(amount2Buy) }} seleccionado{{ pluralize(amount2Buy) }}</div>
       </div>
       <div class="withScroll" ref="withScrollRef">
         <my-product-list 
@@ -61,29 +61,35 @@
 </template>
 <script setup>
   
-  import { ref, computed, watch, onMounted } from 'vue';
-  import { useStore } from 'vuex';
-  import { DID, _DOM, createCopy, dispatch, findIndexById, generateID }                    from '@/utilidades'
+  import { ref, computed, watch, onMounted }                            from 'vue';
+  import { useStore }                                                   from 'vuex';
+  import { DID, _DOM, createCopy, dispatch, findIndexById, generateID } from '@/utilidades'
+  import Swal                                                           from 'sweetalert2';
+  import MyCard                                                         from '@components/MyCard.vue'
+  import MyProductList                                                  from '@components/MyProductList.vue';
+  import MyInput                                                        from '@components/MyInput.vue';
+  import MySelect                                                       from '@components/MySelect.vue';
+  import MyCategoriesList                                               from '@components/MyCategoriesList.vue';
+  import { notify }                                                     from '@kyvg/vue3-notification';
+  import { localStorageService }                                        from '@/localStorageService';
+  import MyButton                                                       from '@components/MyButton.vue';
 
-  import Swal from 'sweetalert2';
-  import MyCard from '@components/MyCard.vue'
-  import MyProductList from '@components/MyProductList.vue';
-  import MyInput from '@components/MyInput.vue';
-  import MySelect from '@components/MySelect.vue';
-  import MyCategoriesList from '@components/MyCategoriesList.vue';
-  import { notify } from '@kyvg/vue3-notification';
-  import { localStorageService } from '@/localStorageService';
-  import MyButton from '@components/MyButton.vue';
-
-  const id=generateID()
-  const id1=`anchorEditarProducto-${id}`
-  const id2=`divEditarProducto-${id}`
-  const showFinder=ref(false)
-  const props=defineProps({ orderBy:            { type: String, default: 'name' }, })
+  const id                      = generateID()
+  const id1                     = `anchorEditarProducto-${id}`
+  const id2                     = `divEditarProducto-${id}`
+  const showFinder              = ref(false)
+  const props                   = defineProps({
+    orderBy: { type: String, default: 'name' }, 
+  })
   
-  const setProductsData =newData=>store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
-  const handleDrag=()=>setProductsData(productsData.value)
+  const setProductsData         = newData     => store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
+  const handleDrag              = ()          => setProductsData(productsData.value)
 
+  const pluralize               = c=>c!==1?'s':''
+  const toggleFinder            = ()=>{
+    finder.value=''
+    showFinder.value=!showFinder.value
+  }
   const finder                  = ref('')
   const store                   = useStore()
   const storeGet                = store.getters
@@ -98,46 +104,36 @@
   const productoSeleccionado    = ref(null)
   const selectRef               = ref(null)
   const supermarketAtEdit       = ref(null)
-  const supermarketsData        = storeGet.getSupermercados()??storeGet.getInitialState('supermercados')
   const supermercadoProducto    = ref(null)
   const withScrollRef           = ref(null)
   const ocultaTooltipTimeout    = ref(0)
   const productListRef          = ref(null)
   
-  const productsData            = computed(()=>storeGet.getProductos())
-  const categoriesData          = computed(()=>storeGet.getCategorias())
-  const categoriasVisiblesIds   = computed(()=>[...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
-  const productosVisibles       = computed(()=>productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
-  const cantidadProductos       = computed(()=>productosVisibles.value.length)
-  const amount2Buy              = computed(()=>productosVisibles.value.filter(i=>i.selected).length)
+  const supermarketsData        = storeGet.getSupermercados()??storeGet.getInitialState('supermercados')
+  const productsData            = computed(() => storeGet.getProductos())
+  const categoriesData          = computed(() => storeGet.getCategorias())
+  const categoriasVisiblesIds   = computed(() => [...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
+  const productosVisibles       = computed(() => productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
+  const cantidadProductos       = computed(() => productosVisibles.value.length)
+  const amount2Buy              = computed(() => productosVisibles.value.filter(i=>i.selected).length)
 
-  const productosFiltrados      = computed(()=>productosVisibles.value.filter(i=>i.text.toLowerCase().includes(finder.value.toLowerCase())))
+  const productosFiltrados      = computed(() => productosVisibles.value.filter(i=>i.text.toLowerCase().includes(finder.value.toLowerCase())))
 
-  const handleFind=()=>{
-    finder.value=''
-    showFinder.value=false
-  }
-  const handleCategorySelected=(category)=>{
-    itemCategorySelected.value=category.id
-  }
-  const handleDragCard = event => {
+  const handleCategorySelected  = category    =>  itemCategorySelected.value=category.id
+
+  const handleDragCard          = event       => {
     if (typeof event.touches==='undefined') return
     if (event.touches.length==0) return
     if (controlY.value<0) controlY.value=event.touches[0].clientY
-    if (controlY.value-event.touches[0].clientY>10){
-      if (!storeGet.getIgnoreDrag())
-      {
-        store.dispatch('setIgnoreDrag',true)
-      }
-    }
+    controlY.value-event.touches[0].clientY>10 && !storeGet.getIgnoreDrag() && store.dispatch('setIgnoreDrag',true)
     clearTimeout(ignoreLongClickTimeout.value)
     ignoreLongClickTimeout.value=setTimeout(releaseIgnoreLongClick ,1000)
   }
-  const releaseIgnoreLongClick= () => {
+  const releaseIgnoreLongClick  = ()          => {
     controlY.value=-1
     store.dispatch('setIgnoreDrag',false)
   }
-  const handleClickProduct      = product => {
+  const handleClickProduct      = product     => {
     if (storeGet.getIgnoreDrag()) return
     let aux=[...productsData.value]
     let index=findIndexById(product.id,aux)
@@ -145,7 +141,7 @@
     aux[index].done=false
     setProductsData(aux)
   }
-  const handeLongClickProduct   = product => {
+  const handeLongClickProduct   = product     => {
     if (storeGet.getIgnoreDrag()) return
     productoSeleccionado.value=product;
     Swal.fire({
@@ -169,7 +165,7 @@
       else if (result.isDenied) handleEliminarProducto()
     });
   }
-  const handleEditarProducto    = () =>{
+  const handleEditarProducto    = ()          => {
     let aux=DID(id2);
     let producto=productoSeleccionado.value;
     productoAEditar.value=producto.text
@@ -182,13 +178,10 @@
       confirmButtonText:  'Confirmar',
       cancelButtonText:   'Cancelar',
       target:             _DOM("#appContainer"),
-      willOpen: ()=>{
-        supermercadoProducto.value=supermarketsData[producto.id_supermercado]
-        DID('VueSweetAlert2').appendChild(aux);
-      },
-      willClose:()=>{DID(id1).appendChild(aux)}
-    }).then((result) => {
-      if (result.isConfirmed){
+      willOpen: ()        => (supermercadoProducto.value=supermarketsData[producto.id_supermercado]) && DID('VueSweetAlert2').appendChild(aux),
+      willClose:()        => DID(id1).appendChild(aux)
+    }).then(    (result)  => {
+      if (result.isConfirmed) {
         const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
         let newData={
           id:producto.id,
@@ -199,7 +192,7 @@
           selected: false,
           done: false,
         }
-        if (!areTheSame(producto,newData)){
+        if (!areTheSame(producto,newData)) {
           let aux=createCopy(productsData.value)
           aux[findIndexById(newData.id, aux)] = newData;
           dispatch(store,'productos',aux)
@@ -221,7 +214,7 @@
       }
     });
   }
-  const handleEliminarProducto=()=>{
+  const handleEliminarProducto  = ()          => {
     Swal.fire({
       title: '¿Estás seguro de que quieres eliminar el producto?',
       text: 'Esta acción no se puede deshacer',
@@ -243,22 +236,19 @@
       }
     });
   }
-  const muestraOcultaTooltip=()=>letraActualRef.value.classList.toggle('show')
-  const updateTooltip=()=>{
+  const muestraOcultaTooltip    = ()            => letraActualRef.value.classList.toggle('show')
+  const updateTooltip           = ()            => {
     const productos=withScrollRef.value.querySelectorAll(".productText")
     for (let producto of productos) {
-      const pBCR = producto.getBoundingClientRect();
-      const lBCR=letraActualRef.value.getBoundingClientRect();
-      if (pBCR.top < lBCR.top) continue
-      else if (pBCR.bottom <= lBCR.bottom)
-        letraActual.value=producto.innerText[0].toUpperCase()
-      else break
+      if (producto.getBoundingClientRect().top < letraActualRef.value.getBoundingClientRect().top) continue
+      letraActual.value=producto.innerText[0].toUpperCase()
+      break
     }
     if (!letraActualRef.value.classList.contains("show"))
     {
-        muestraOcultaTooltip()
-        clearTimeout(ocultaTooltipTimeout.value)
-        ocultaTooltipTimeout.value=setTimeout(muestraOcultaTooltip,1000)
+      muestraOcultaTooltip()
+      clearTimeout(ocultaTooltipTimeout.value)
+      ocultaTooltipTimeout.value=setTimeout(muestraOcultaTooltip,1000)
     }
   }
   watch(productsData,   newData => storeGet.getProductos()!=newData && store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
@@ -269,54 +259,53 @@
     withScrollRef.value?.style.setProperty('--height',`${maxHeight-10}px`)
   }
   onMounted(()=>{
-      watch(()=>storeGet.getAlturaDisponible(), newValue=>setMaxHeight(newValue))
-      setTimeout(()=>setMaxHeight(storeGet.getAlturaDisponible()),100)
-      if (props.orderBy.toLowerCase()=="name")
-        withScrollRef.value.addEventListener('scroll',updateTooltip,{passive:true})
+    watch(()=>storeGet.getAlturaDisponible(), newValue=>setMaxHeight(newValue))
+    setTimeout(()=>setMaxHeight(storeGet.getAlturaDisponible()),100)
+    if (props.orderBy.toLowerCase()=="name")
+      withScrollRef.value.addEventListener('scroll',updateTooltip,{passive:true})
   })
 </script>
 <style scoped>
-.withScroll
-{
-  --height: auto;
-  --height-modifier: 50px;
-  overflow-y: auto;
-  height: calc(var(--height,60px) - var(--height-modifier,0px) );
-  margin-top: 10px;
-}
-.letraActual{
-  display: flex;
-  opacity: 0;
-  position: relative;
-  bottom: 50%;
-  left: 100%;
-  margin-left: -30px;
-  background-color: #ccc;
-  color: #333;
-  font-weight: bold;
-  width: 10vmin;
-  height: 10vmin;
-  justify-content: center;
-  align-items: center;
-  translate: -100%;
-  border-radius: 1cap;
-  -webkit-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-  -moz-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-  box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-  transition: opacity 1s ease;
-}
-.letraActual:after{
+  .withScroll {
+    --height: auto;
+    --height-modifier: 50px;
+    overflow-y: auto;
+    height: calc(var(--height,60px) - var(--height-modifier,0px) );
+    margin-top: 10px;
+  }
+  .letraActual {
+    display: flex;
+    opacity: 0;
+    position: relative;
+    bottom: 50%;
+    left: 100%;
+    margin-left: -30px;
+    background-color: #ccc;
+    color: #333;
+    font-weight: bold;
+    width: 10vmin;
+    height: 10vmin;
+    justify-content: center;
+    align-items: center;
+    translate: -100%;
+    border-radius: 1cap;
+    -webkit-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
+    transition: opacity 1s ease;
+  }
+  .letraActual:after {
     content: '';
     position: absolute;
     right: -10px;
     border-style: solid;
     border-width: 10px 0 10px 14px;
     border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #ccc;
-}
-.letraActual span{
-  font-size: 1.5625rem;
-}
-.active.show{
-  opacity: 1
-}
+  }
+  .letraActual span {
+    font-size: 1.5625rem;
+  }
+  .active.show {
+    opacity: 1
+  }
 </style>

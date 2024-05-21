@@ -11,7 +11,7 @@
         group="configCategoriesVisibility"
         :required="true"
         :styled="true"
-        @update:checkedValues="handleCheckedValuesUpdate"
+        @checkedValues="handleCheckedValues"
         @lastCheckedDeletionAttempt="handleLastCategoryVisible"
       />
     </div>
@@ -23,22 +23,22 @@ import MyCheckbox from '@components/MyCheckbox.vue';
 import { ref, watchEffect } from 'vue';
 import Swal from 'sweetalert2';
 import { _DOM } from '@/utilidades';
+import {useStore} from 'vuex';
 
-const props = defineProps({
-  categorias: { type: Array, required: true }
-});
+const store = useStore();
+const storeGet= store.getters
+
+const categorias = storeGet.getCategorias();
 
 const checkedItems      = ref([]);
-const visibleCategories = ref([]);
 
 const getVisibleIndices = data => data.map((item, index) => (item.visible ? index : null)).filter(index => index !== null);
 
 watchEffect(() => {
-  visibleCategories.value = props.categorias.filter(item => item.visible);
-  checkedItems.value = getVisibleIndices(props.categorias);
+  checkedItems.value = getVisibleIndices(categorias);
 });
 
-const handleCheckedValuesUpdate = (newCheckedItems) => {
+const handleCheckedValues = (newCheckedItems) => {
   checkedItems.value = newCheckedItems.sort((a, b) => a - b);
   emit('categoriesChecked', newCheckedItems);
 };

@@ -13,7 +13,7 @@
         btnClass="danger bold" 
         class="clearList"
         text="Limpiar Lista" 
-        :styleButton="{width: anchoBoton,borderRadius:'0px'}"
+        :styleButton="{width: anchoBotonLimpiarLista,borderRadius:'0px'}"
         @click="clearList" />
       </div>
     </div>
@@ -117,17 +117,15 @@
     ).length)
   const AmountInOtherSupermarkets=computed(()=>amount2Buy.value-AmountInThisSupermarket.value)
 
-  const anchoBoton=ref('100px')
-  const recalculateAnchoBoton=()=>anchoBoton.value=(_DOM(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
+  const anchoBotonLimpiarLista=ref('100px')
+  const recalculateAnchoBotonLimpiarLista=()=>anchoBotonLimpiarLista.value=(_DOM(".nav-item:last-child")?.getClientRects()[0].width ?? 100)+'px'
 
-  window.addEventListener('resize',()=>setTimeout(recalculateAnchoBoton,50))
-  watch(() => props.active, newValue => newValue && recalculateAnchoBoton());
+  window.addEventListener('resize',()=>setTimeout(recalculateAnchoBotonLimpiarLista,50))
+  watch(() => props.active, newValue => newValue && recalculateAnchoBotonLimpiarLista());
 
-  onMounted(()=>setTimeout(recalculateAnchoBoton,500))
+  onMounted(()=>setTimeout(recalculateAnchoBotonLimpiarLista,500))
   
-  
-  
-  const handleShoplistClick=item=>{
+    const handleShoplistClick=item=>{
     if(Date.now()-lastClick.value>200)
     {
       productsData.value[findIndexById(item.id,productsData.value)].done=!productsData.value[findIndexById(item.id,productsData.value)].done

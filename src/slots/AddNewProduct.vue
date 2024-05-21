@@ -48,6 +48,7 @@
     supermercados:    { type: Array,    required: true      },
     maxLenght:        { type: Number,   default:  Infinity  },
     defaultMaxLength: { type: Boolean,  defaul:   false     },
+    emptyOnCreate:    { type: Boolean,  default:  false     },
   })
   const realMaxLength=ref(props.maxLenght)
   if (props.defaultMaxLength) realMaxLength.value=storeGet.getMaxLenght();
@@ -103,7 +104,10 @@
       })
     }
     else
+    {
       emit('click',nuevoProducto.value,categoriaActiva.value.id,supermercadoActivo.value.id)
+      if (props.emptyOnCreate) clearInput()
+    }
   }
   const emit =defineEmits(['categoryChanged','click','update:modelValue','blur'])
   defineExpose({clearInput})

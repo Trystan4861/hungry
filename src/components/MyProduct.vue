@@ -37,28 +37,24 @@
   const longPressTimeout  = ref(null);
   const tiempoDrag        = 500;
   const store             = useStore();
+  const storeGet          = store.getters;
 
   let dragging            = false;
   let touchStartX         = null;
-  let storeGet            = store.getters;
 
   const cantidad          = computed(()=>{return props.amount})
   const handleTap         = () => !longClicked.value ? emit('click', props.product) : longClicked.value = false;
 
-  const bgColor = computed(() => {
-    let categoria = storeGet.getCategoriaFromID(props.product.id_categoria);
-    return categoria.bgColor ?? "#fff";
-  });
+  const bgColor           = computed(() => storeGet.getCategoriaFromID(props.product.id_categoria).bgColor ?? "#fff");
 
   const handlePress       = () => {
     if (props.canBeDone || dragging || props.product.selected) return;
     longClicked.value = false;
     longPressTimeout.value = setTimeout(() => { longClicked.value = true; emit('longClick', props.product); setTimeout(()=>longClicked.value=false,1000)}, props.longClickTime);
   };
-  watch(() => props.amount, (newValue) => newValue < 0?cantidad.value = 0:undefined);
-
+    
   const handleRelease     = () => (clearTimeout(longPressTimeout.value), dragEnd());
-
+  
   const handleDrag        = event => {
     if (event.type=='mousemove') return;
     if (ignoreDrag.value || !props.product.selected) return;
@@ -70,11 +66,10 @@
     dragging = true;
     dragStart();
   };
-
-
-  const dragEnd       = () => (clearInterval(dragInterval.value),dragging = false)
-  const dragStart     = () => (dragging = true,dragInterval.value = setInterval(emitDragDirection, tiempoDrag))
-
+  
+  const dragEnd           = () => (clearInterval(dragInterval.value),dragging = false)
+  const dragStart         = () => (dragging = true,dragInterval.value = setInterval(emitDragDirection, tiempoDrag))
+  
   const emitDragDirection = () => {
     if (!props.product.selected) dragEnd();
     emit(`drag.${dragDirection.value}`, props.product);
@@ -87,12 +82,10 @@
     'drag.right',
     'longClick',
   ])
-
-  watch(() => storeGet.getIgnoreDrag(), (newValue) => ignoreDrag.value = newValue);
-
-  onMounted(() => {
-    ignoreDrag.value = storeGet.getIgnoreDrag()
-  });
+  
+  watch(()                => props.amount,              newValue => newValue < 0?(cantidad.value = 0):undefined);
+  watch(()                => storeGet.getIgnoreDrag(),  newValue => ignoreDrag.value = newValue);
+  onMounted(()            => ignoreDrag.value = storeGet.getIgnoreDrag());
 </script>
 
 <style scoped>

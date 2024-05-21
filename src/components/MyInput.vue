@@ -3,7 +3,6 @@
     <input 
       type="text" 
       v-model="inputValue" 
-
       :style="props.style" ref="inputRef" 
       :class="props.class" 
       :id="inputID" 
@@ -54,7 +53,7 @@
   const handleKeyDown     = event => realMaxLenght.value !== Infinity && inputValue.value.length >= realMaxLenght.value && !ignoreKeys.includes(event.key) ? event.preventDefault() :null;
   const hadleKeyUp        = event => event.key === 'Enter' && emit('keyPressed:enter')
   const handleBlur        = event => emit('blur',event)
-  const handleCrossClick  = event => (inputValue.value!='' && props.showEmpty)? inputValue.value='':emit('click',event)
+  const handleCrossClick  = () => (inputValue.value!='' && props.showEmpty)? inputValue.value='':emit('click')
 
   watch (() => props.modelValue,  newValue => inputValue.value = newValue);
   watch (inputValue,              newValue => emit('update:modelValue', newValue));
