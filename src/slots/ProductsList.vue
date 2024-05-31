@@ -11,10 +11,12 @@
         <div class="text-start">
           <MyButton v-if="!showFinder" btnClass="none" @click="toggleFinder">&#x1f50d;</MyButton>
           <MyInput 
+            :id="idInput"
             class="border-0" 
             :style="'height: 24px;'" 
             :showCross="true"
             :showEmpty="true"
+            :autoFocus="true"
             :maxLength="20" 
             v-else 
             @click="toggleFinder" 
@@ -30,7 +32,6 @@
         @click="handleClickProduct"
         @longClick="handeLongClickProduct"
         @drag="handleDrag"
-        ref="productListRef"
         />
       </div>
     </div>
@@ -77,6 +78,7 @@
   const id                      = generateID()
   const id1                     = `anchorEditarProducto-${id}`
   const id2                     = `divEditarProducto-${id}`
+  const idInput                 = `finder-${id}`
   const showFinder              = ref(false)
   const props                   = defineProps({
     orderBy: { type: String, default: 'name' }, 
@@ -107,8 +109,6 @@
   const supermercadoProducto    = ref(null)
   const withScrollRef           = ref(null)
   const ocultaTooltipTimeout    = ref(0)
-  const productListRef          = ref(null)
-  
   const supermarketsData        = storeGet.getSupermercados()??storeGet.getInitialState('supermercados')
   const productsData            = computed(() => storeGet.getProductos())
   const categoriesData          = computed(() => storeGet.getCategorias())

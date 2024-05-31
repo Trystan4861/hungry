@@ -16,7 +16,7 @@
     class="mb-4" 
     placeholder="Introducir nombre de producto" 
     v-model="nuevoProducto" 
-    :autofocus="true" 
+    :autoFocus="true" 
     :maxLength="realMaxLength" 
     @keyPressed:enter="handleAddClick" 
     @blur="handleBlur"
