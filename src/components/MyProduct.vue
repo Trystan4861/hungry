@@ -9,7 +9,7 @@
     v-touch:release="handleRelease"
     v-touch:drag.once="handleDrag"
     >
-    <span :style="{ backgroundColor: bgColor }" class="productCategory" />
+    <span :style="{ backgroundColor: bgColor }" class="productCategory" @click="emit('categoryClick',props.product)" />
     <div class="product" :class="{ selected: product.selected, done: product.done && canBeDone }">
       <div :style="{ display: product.selected ? 'block' : 'none' }" class="productAmount">{{ cantidad }}&nbsp;</div>
       <div class="productText">{{ product.text }}</div>
@@ -81,6 +81,7 @@
     'drag.left',
     'drag.right',
     'longClick',
+    'categoryClick',
   ])
   
   watch(()                => props.amount,              newValue => newValue < 0?(cantidad.value = 0):undefined);

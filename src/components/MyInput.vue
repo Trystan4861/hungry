@@ -76,18 +76,18 @@ import { ref, watch, onMounted } from 'vue';
 </script>
 
 <style scoped>
-input {
-  width:          100%;
-  height:         3.125rem;
-  border:         .125rem solid sandybrown;
-}
-input:focus-visible { 
-  outline:        0; 
-}
-.cross
-{
-  left: -23px;
-  position: relative;
-  cursor: pointer;
-}
+  input {
+    width:          100%;
+    height:         3.125rem;
+    border:         .125rem solid sandybrown;
+  }
+  input:focus-visible { 
+    outline:        0; 
+  }
+  .cross
+  {
+    left:           -23px;
+    position:       relative;
+    cursor:         pointer;
+  }
 </style>

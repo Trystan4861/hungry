@@ -8,6 +8,7 @@
       :amount="product.amount"
       @click="handleClick(product)" 
       @longClick="handleLongClick(product)"
+      @categoryClick="handleCategoryClick(product)"
       @drag="handleDrag"
       :index="product.id"
       :lastClick="lastClick"
@@ -32,7 +33,7 @@ const props = defineProps({
 
 const lastClick = ref(Date.now())
 
-const emit = defineEmits(['click', 'longClick','drag']);
+const emit = defineEmits(['click', 'longClick','drag','categoryClick']);
 
 const handleDrag        = (dir, product) => {
   dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1 
@@ -41,6 +42,7 @@ const handleDrag        = (dir, product) => {
 const handleLongClick   = product => emit('longClick', product)
 
 const handleClick = product => Date.now() - lastClick.value > 100 && (lastClick.value = Date.now(), product.amount === 0 && (product.amount = 1), emit('click', product));
+const handleCategoryClick = product => emit('categoryClick',product)
 
 const sortedProductList = computed(() => {
   let aux = props.productList.slice();

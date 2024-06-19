@@ -30,6 +30,7 @@
         :orderBy="props.orderBy"
         :productList="productosFiltrados" 
         @click="handleClickProduct"
+        @categoryClick="handleCategoryClick"
         @longClick="handeLongClickProduct"
         @drag="handleDrag"
         />
@@ -81,21 +82,27 @@
   const idInput                 = `finder-${id}`
   const showFinder              = ref(false)
   const props                   = defineProps({
-    orderBy: { type: String, default: 'name' }, 
+                                    orderBy: { type: String, default: 'name' }, 
   })
   
   const setProductsData         = newData     => store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData))
   const handleDrag              = ()          => setProductsData(productsData.value)
-
-  const pluralize               = c=>c!==1?'s':''
-  const toggleFinder            = ()=>{
-    finder.value=''
-    showFinder.value=!showFinder.value
-  }
-  const finder                  = ref('')
+  const pluralize               = c           => c!==1?'s':''
+  const toggleFinder            = ()          => showFinder.value=!showFinder.value
   const store                   = useStore()
   const storeGet                = store.getters
+  
+  const supermarketsData        = storeGet.getSupermercados()??storeGet.getInitialState('supermercados')
 
+  const productsData            = computed(() => storeGet.getProductos())
+  const categoriesData          = computed(() => storeGet.getCategorias())
+  const categoriasVisiblesIds   = computed(() => [...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
+  const productosVisibles       = computed(() => productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
+  const cantidadProductos       = computed(() => productosVisibles.value.length)
+  const amount2Buy              = computed(() => productosVisibles.value.filter(i=>i.selected).length)
+  const productosFiltrados      = computed(() => productosVisibles.value.filter(i=>i.text.toLowerCase().includes(finder.value.toLowerCase())))
+
+  const finder                  = ref('')
   const controlY                = ref(-1)
   const ignoreLongClickTimeout  = ref(0)
   const itemCategorySelected    = ref(0)
@@ -109,17 +116,10 @@
   const supermercadoProducto    = ref(null)
   const withScrollRef           = ref(null)
   const ocultaTooltipTimeout    = ref(0)
-  const supermarketsData        = storeGet.getSupermercados()??storeGet.getInitialState('supermercados')
-  const productsData            = computed(() => storeGet.getProductos())
-  const categoriesData          = computed(() => storeGet.getCategorias())
-  const categoriasVisiblesIds   = computed(() => [...categoriesData.value.map(item=>({...item})).filter(item=>item.visible).map(item=>item.id)])
-  const productosVisibles       = computed(() => productsData.value.filter(producto => categoriasVisiblesIds.value.includes(producto.id_categoria)))
-  const cantidadProductos       = computed(() => productosVisibles.value.length)
-  const amount2Buy              = computed(() => productosVisibles.value.filter(i=>i.selected).length)
 
-  const productosFiltrados      = computed(() => productosVisibles.value.filter(i=>i.text.toLowerCase().includes(finder.value.toLowerCase())))
-
-  const handleCategorySelected  = category    =>  itemCategorySelected.value=category.id
+  const setMaxHeight            = maxHeight   => withScrollRef.value?.style.setProperty('--height',`${maxHeight-10}px`)
+  const muestraOcultaTooltip    = ()          => letraActualRef.value.classList.toggle('show')
+  const handleCategorySelected  = category    => itemCategorySelected.value=category.id
 
   const handleDragCard          = event       => {
     if (typeof event.touches==='undefined') return
@@ -129,16 +129,21 @@
     clearTimeout(ignoreLongClickTimeout.value)
     ignoreLongClickTimeout.value=setTimeout(releaseIgnoreLongClick ,1000)
   }
-  const releaseIgnoreLongClick  = ()          => {
-    controlY.value=-1
-    store.dispatch('setIgnoreDrag',false)
-  }
+  const releaseIgnoreLongClick  = ()          => store.dispatch('setIgnoreDrag',!(controlY.value=-1))
+
   const handleClickProduct      = product     => {
     if (storeGet.getIgnoreDrag()) return
     let aux=[...productsData.value]
     let index=findIndexById(product.id,aux)
     aux[index].selected=(Object.prototype.hasOwnProperty.call(aux[index], 'selected'))?!aux[index].selected:true
     aux[index].done=false
+    setProductsData(aux)
+  }
+  const handleCategoryClick     = product     => {
+    if (storeGet.getIgnoreDrag()) return
+    let aux=[...productsData.value]
+    let index=findIndexById(product.id,aux)
+    aux[index].amount=1
     setProductsData(aux)
   }
   const handeLongClickProduct   = product     => {
@@ -165,7 +170,7 @@
       else if (result.isDenied) handleEliminarProducto()
     });
   }
-  const handleEditarProducto    = ()          => {
+  const handleEditarProducto      = ()        => {
     let aux=DID(id2);
     let producto=productoSeleccionado.value;
     productoAEditar.value=producto.text
@@ -182,7 +187,7 @@
       willClose:()        => DID(id1).appendChild(aux)
     }).then(    (result)  => {
       if (result.isConfirmed) {
-        const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(key => key in b && a[key] === b[key])
+        const areTheSame=(a,b)=>(Object.keys(a).length!==Object.keys(b).length)?false:Object.keys(a).every(k => k in b && a[k] === b[k])
         let newData={
           id:producto.id,
           text:productoAEditar.value,
@@ -196,21 +201,10 @@
           let aux=createCopy(productsData.value)
           aux[findIndexById(newData.id, aux)] = newData;
           dispatch(store,'productos',aux)
-          Swal.fire({
-            title:'Atención',
-            icon: 'success',
-            text: 'Producto modificado correctamente',
-            target: _DOM("#appContainer"),
-          })
+          notify({group:"app", text:'Producto modificado correctamente',type:"success", duration:3000})
         }
-        else {
-          Swal.fire({
-            title:'Atención',
-            icon: 'info',
-            text: 'No has realizado cambios al producto',
-            target: _DOM("#appContainer"),
-          })
-        }
+        else 
+          notify({group:"app", text:'No has realizado cambios al producto',type:"info", duration:3000})
       }
     });
   }
@@ -236,7 +230,6 @@
       }
     });
   }
-  const muestraOcultaTooltip    = ()            => letraActualRef.value.classList.toggle('show')
   const updateTooltip           = ()            => {
     const productos=withScrollRef.value.querySelectorAll(".productText")
     for (let producto of productos) {
@@ -254,10 +247,7 @@
   watch(productsData,   newData => storeGet.getProductos()!=newData && store.dispatch('setProductos',   localStorageService.setSubItem('productos',   newData)));
   watch(()=>storeGet.getProductos(),newData=>productsData.value!=newData && (productsData.value=newData))
   watch(()=>storeGet.getCategorias(),newData=>categoriesData.value!=newData && (categoriesData.value=newData))
-  const setMaxHeight=maxHeight=>
-  {
-    withScrollRef.value?.style.setProperty('--height',`${maxHeight-10}px`)
-  }
+  watch(showFinder,newData=>!newData?finder.value='':null)
   onMounted(()=>{
     watch(()=>storeGet.getAlturaDisponible(), newValue=>setMaxHeight(newValue))
     setTimeout(()=>setMaxHeight(storeGet.getAlturaDisponible()),100)
