@@ -16,7 +16,7 @@
     <span class="cross" @click="handleCrossClick" v-show="showCross || showEmpty">{{ (showCross && showEmpty)?(inputValue!=''?crossEmptyText:crossCloseText):(showCross?crossCloseText:crossEmptyText) }}</span>
   </div>
 </template>
-<!-- ✖ ❌ -->
+<!-- ✖ ❌ ✖️ -->
 <script setup>
   import { generateID } from '@/utilidades';
 import { ref, watch, onMounted } from 'vue';
@@ -32,7 +32,7 @@ import { ref, watch, onMounted } from 'vue';
     class:            { type: String,                                   },
     style:            { type: String,                                   },
     crossEmptyText:   { type: String,   default: '🗑'                   },
-    crossCloseText:   { type: String,   default: '✖️'                    },
+    crossCloseText:   { type: String,   default: '❌'                   },
     id:               { type: String,   default: null                   }
 
   });
