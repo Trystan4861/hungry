@@ -1,7 +1,7 @@
 {
   "name": "hungry",
   "version": "0.2.0",
-  "revision": "rev.20240922.2107",
+  "revision": "rev.20240619.1442",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -26,9 +26,7 @@
     "vite-plugin-pwa": "^0.19.7",
     "volar-service-vetur": "^0.0.30",
     "vue": "^3.4.19",
-    "vue-draggable-plus": "^0.5.0",
     "vue3-touch-events": "^4.1.8",
-    "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
@@ -36,18 +34,17 @@
     "@babel/eslint-parser": "^7.12.16",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.1",
     "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/cli-plugin-babel": "^5.0.8",
-    "@vue/cli-plugin-eslint": "^5.0.8",
-    "@vue/cli-plugin-pwa": "^5.0.8",
-    "@vue/cli-service": "^3.3.1",
-    "@vue/compiler-sfc": "^3.5.8",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
     "bootstrap": "^5.3.2",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "node-sass": "^9.0.0",
     "sass": "^1.75.0",
     "sass-loader": "^14.2.1",
-    "vite": "^5.4.7",
+    "vite": "^5.1.7",
     "vite-plugin-vue-devtools": "^7.0.25",
     "vue-style-loader": "^4.1.3"
   },
