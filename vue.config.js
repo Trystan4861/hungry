@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  transpileDependencies: true,
   chainWebpack: config => {
     config.resolve.alias.set('@',           path.resolve(__dirname, 'src'));
     config.resolve.alias.set('@assets',     path.resolve(__dirname, 'src/assets'));

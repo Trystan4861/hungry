@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="my-product-list">
-      <MyProduct v-for="(product) in sortedProductList" 
+      <MyProduct v-for="product in sortedProductList" 
       :key="product.id" 
       :product="product"
       :canBeDone="canBeDone" 
@@ -18,8 +18,8 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import MyProduct from '@components/MyProduct.vue';
+import { computed, ref }  from 'vue';
+import MyProduct          from '@components/MyProduct.vue';
 
 const props = defineProps({
   canBeDone:        { type: Boolean,  default:  false },
@@ -31,18 +31,15 @@ const props = defineProps({
   supermercado:     { type: Number,   default:  0     },
 });
 
-const lastClick = ref(Date.now())
-
-const emit = defineEmits(['click', 'longClick','drag','categoryClick']);
-
-const handleDrag        = (dir, product) => {
+const lastClick           = ref(Date.now())
+const emit                = defineEmits(['click', 'longClick', 'drag', 'categoryClick']);
+const handleDrag          = (dir, product)  => {
   dir === 'left' ? product.amount = (product.amount > 1) ? product.amount - 1 : (product.selected = false, 1) : product.amount += 1 
   emit('drag')
 }
-const handleLongClick   = product => emit('longClick', product)
-
-const handleClick = product => Date.now() - lastClick.value > 100 && (lastClick.value = Date.now(), product.amount === 0 && (product.amount = 1), emit('click', product));
-const handleCategoryClick = product => emit('categoryClick',product)
+const handleLongClick     = product         => emit('longClick', product)
+const handleClick         = product         => Date.now() - lastClick.value > 100 && (lastClick.value = Date.now(), product.amount === 0 && (product.amount = 1), emit('click', product));
+const handleCategoryClick = product         => emit('categoryClick',product)
 
 const sortedProductList = computed(() => {
   let aux = props.productList.slice();
