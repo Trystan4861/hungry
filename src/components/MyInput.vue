@@ -32,7 +32,7 @@ import { ref, watch, onMounted } from 'vue';
     class:            { type: String,                                   },
     style:            { type: String,                                   },
     crossEmptyText:   { type: String,   default: '🗑'                   },
-    crossCloseText:   { type: String,   default: '✖'                    },
+    crossCloseText:   { type: String,   default: '❌'                   },
     id:               { type: String,   default: null                   }
 
   });

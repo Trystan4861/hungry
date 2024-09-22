@@ -4,15 +4,18 @@
     :data-supermercado="product.id_supermercado"
     :data-categoria="product.id_categoria"
     :data-index="index"
-    v-touch:tap="handleTap"
-    v-touch:press="handlePress"
-    v-touch:release="handleRelease"
-    v-touch:drag.once="handleDrag"
     >
     <span :style="{ backgroundColor: bgColor }" class="productCategory" @click="emit('categoryClick',props.product)" />
     <div class="product" :class="{ selected: product.selected, done: product.done && canBeDone }">
-      <div :style="{ display: product.selected ? 'block' : 'none' }" class="productAmount">{{ cantidad }}&nbsp;</div>
-      <div class="productText">{{ product.text }}</div>
+      <div class="productAmount" :style="{ display: product.selected ? 'block' : 'none' }">{{ cantidad }}</div>
+      <div class="productText"
+      v-touch:tap="handleTap"
+      v-touch:press="handlePress"
+      v-touch:release="handleRelease"
+      v-touch:drag.once="handleDrag"
+      >{{ product.text }}</div>
+      <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="plus" @click.stop="plus">➕</div>
+      <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="minus" @click.stop="minus">➖</div>
     </div>
   </div>
 </template>
@@ -70,6 +73,14 @@
   const dragEnd           = () => (clearInterval(dragInterval.value),dragging = false)
   const dragStart         = () => (dragging = true,dragInterval.value = setInterval(emitDragDirection, tiempoDrag))
   
+  const plus              = ()=> doDrag('right')
+  const minus              = ()=> doDrag('left')
+  const doDrag            = direction =>{
+    dragDirection.value=direction;
+    emitDragDirection();
+    dragDirection.value=null;
+  }
+
   const emitDragDirection = () => {
     if (!props.product.selected) dragEnd();
     emit(`drag.${dragDirection.value}`, props.product);
@@ -105,6 +116,7 @@
 .product {
   display:          flex;
   padding-left:     .625rem;
+  width: 100%;
 }
 .selected {
   font-weight:      bold;
@@ -115,5 +127,18 @@
 span {
   left:             -0.3125rem;
   position:         relative;
+}
+.productAmount{
+  width: 2%;
+}
+
+.productText{
+  width: 100%;
+}
+.plus{
+  width: 2.5%;
+}
+.minus{
+  width: 2.5%;
 }
 </style>

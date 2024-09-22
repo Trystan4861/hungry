@@ -1,7 +1,7 @@
 {
   "name": "hungry",
   "version": "0.2.0",
-  "revision": "rev.20240619.1442",
+  "revision": "rev.20240922.2056",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -26,7 +26,9 @@
     "vite-plugin-pwa": "^0.19.7",
     "volar-service-vetur": "^0.0.30",
     "vue": "^3.4.19",
+    "vue-draggable-plus": "^0.5.0",
     "vue3-touch-events": "^4.1.8",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

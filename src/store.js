@@ -26,10 +26,10 @@ const initialState= {
       token:"",
     },
     supermercados:[
-      { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible:    true, editable: false },
-      { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible:    true, editable: true  },
-      { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible:    true, editable: true  },
-      { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible:    true, editable: true  },
+      { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible:    true, order:0, editable: false },
+      { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible:    true, order:1, editable: true  },
+      { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible:    true, order:2, editable: true  },
+      { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible:    true, order:3, editable: true  },
     ],
     categorias: [
       { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },

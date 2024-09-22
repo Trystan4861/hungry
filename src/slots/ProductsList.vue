@@ -65,15 +65,14 @@
   
   import { ref, computed, watch, onMounted }                            from 'vue';
   import { useStore }                                                   from 'vuex';
-  import { DID, _DOM, createCopy, dispatch, findIndexById, generateID } from '@/utilidades'
+  import { DID, _DOM, alert, createCopy, dispatch, findIndexById, generateID } from '@/utilidades'
+  import { localStorageService }                                        from '@/localStorageService';
   import Swal                                                           from 'sweetalert2';
   import MyCard                                                         from '@components/MyCard.vue'
   import MyProductList                                                  from '@components/MyProductList.vue';
   import MyInput                                                        from '@components/MyInput.vue';
   import MySelect                                                       from '@components/MySelect.vue';
   import MyCategoriesList                                               from '@components/MyCategoriesList.vue';
-  import { notify }                                                     from '@kyvg/vue3-notification';
-  import { localStorageService }                                        from '@/localStorageService';
   import MyButton                                                       from '@components/MyButton.vue';
 
   const id                      = generateID()
@@ -132,6 +131,7 @@
   const releaseIgnoreLongClick  = ()          => store.dispatch('setIgnoreDrag',!(controlY.value=-1))
 
   const handleClickProduct      = product     => {
+    console.log("jar")
     if (storeGet.getIgnoreDrag()) return
     let aux=[...productsData.value]
     let index=findIndexById(product.id,aux)
@@ -144,6 +144,7 @@
     let aux=[...productsData.value]
     let index=findIndexById(product.id,aux)
     aux[index].amount=1
+    aux[index].selected=!aux[index].selected
     setProductsData(aux)
   }
   const handeLongClickProduct   = product     => {
@@ -201,10 +202,10 @@
           let aux=createCopy(productsData.value)
           aux[findIndexById(newData.id, aux)] = newData;
           dispatch(store,'productos',aux)
-          notify({group:"app", text:'Producto modificado correctamente',type:"success", duration:3000})
+          alert('Producto modificado correctamente')
         }
         else 
-          notify({group:"app", text:'No has realizado cambios al producto',type:"info", duration:3000})
+          alert('No has realizado cambios al producto',"info")
       }
     });
   }
@@ -225,7 +226,7 @@
     }).then((result) => {
       if (result.isConfirmed){
         setProductsData(productsData.value.filter(item => item.id !== productoSeleccionado.value.id))
-        notify({group:"app", text:`Producto «${productoSeleccionado.value.text}» eliminado correctamente`,type:"warn", duration:3000})
+        alert(`Producto «${productoSeleccionado.value.text}» eliminado correctamente`,"warn")
         productoSeleccionado.value=null;
       }
     });

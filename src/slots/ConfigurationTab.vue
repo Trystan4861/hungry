@@ -100,9 +100,8 @@
   import SlotConfigurationTabsActive    from '@slots/ConfigurationTabsActive.vue';
   import { ref,computed }               from 'vue';
   import { useStore }                   from 'vuex';
-  import { notify }                     from '@kyvg/vue3-notification';
   import { localStorageService }        from '@/localStorageService'
-  import { DID, _DOM, dispatchWhere as dispatch }  from '@/utilidades';
+  import { DID, _DOM, dispatchWhere as dispatch, alert }  from '@/utilidades';
   import Swal                           from 'sweetalert2'
   import axios                          from 'axios';
   import md5                            from 'crypto-js/md5'
@@ -261,9 +260,9 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
       html: '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?',
       showCancelButton: true,
       confirmButtonText: 'Completo',
+      denyButtonText:"Sólo datos",
       cancelButtonText: 'Cancelar',
       showDenyButton: true,
-      denyButtonText:"Sólo datos"
     }).then((result) => {
       if (result.isConfirmed){
         data.loginData={email:'',token:''}
@@ -310,7 +309,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
   }
   const saveConfigChanges=()=>{
     let toSave=changes2Save.defaultTabActive!=defaultTabActive.value || changes2Save.categoriasVisibiles || changes2Save.supermarketsVisibles || fullScreen.value!=configFullScreen.value;
-    if (!toSave) return notify({group:"app", text:`No se han realizado cambios`,type:"info", duration:3000})
+    if (!toSave) return alert('No se han realizado cambios',"info")
     if (changes2Save.categoriasVisibiles)
     {
       dispatch(store,'categorias',categoriasVisibles.value)
@@ -322,10 +321,9 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         target: _DOM("#appContainer"),
       })
     }
-    if (changes2Save.supermarketsVisibles)
-    {
-      dispatch(store,'supermercados',supermarketsVisibles.value)
-    }
+    
+    (changes2Save.supermarketsVisibles && dispatch(store,'supermercados',supermarketsVisibles.value))
+    
     if (changes2Save.defaultTabActive!=defaultTabActive.value)
     {
       dispatch(store,'defaultTabActive',changes2Save.defaultTabActive);
@@ -341,14 +339,12 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
         allowOutsideClick: false
       }).then(result=>result.isDenied?window.location.reload():null);
     }
-    if(fullScreen.value!=configFullScreen.value)
-    {
-      dispatch(store,'fullScreen',configFullScreen.value);
-    }
+    
+    (fullScreen.value!=configFullScreen.value && dispatch(store,'fullScreen',configFullScreen.value))
 
     changes2Save.categoriasVisibiles=false;
     changes2Save.supermarketsVisibles=false;
-    return notify({group:"app", text:`Cambios guardados correctamente`,type:"success", duration:3000})
+    return alert('Cambios guardados correctamente')
   }
 </script>
 <style scoped>

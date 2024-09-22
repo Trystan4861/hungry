@@ -11,7 +11,9 @@
             <path d="M11.167 0L6.5 4.667L1.833 0L0 1.833L4.667 6.5L0 11.167L1.833 13L6.5 8.333L11.167 13L13 11.167L8.333 6.5L13 1.833L11.167 0Z" fill="currentcolor"></path>
           </svg>
         </span>
-      {{label}}
+        <slot>
+          {{label}}
+        </slot>
       </label>
     </div>
     <div v-else>
