@@ -129,16 +129,18 @@ span {
   position:         relative;
 }
 .productAmount{
-  width: 2%;
+  margin-right:2px;
 }
 
 .productText{
-  width: 100%;
+  width: 90%;
 }
 .plus{
-  width: 2.5%;
+  position: relative;
+  margin-right:10px;
 }
 .minus{
-  width: 2.5%;
+  position: relative;
+  margin-right:5px;
 }
 </style>
