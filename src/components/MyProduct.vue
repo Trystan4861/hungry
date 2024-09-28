@@ -15,7 +15,7 @@
       v-touch:drag.once="handleDrag"
       >{{ product.text }}</div>
       <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="plus" @click.stop="plus">➕</div>
-      <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="minus" @click.stop="minus"><span v-if="product.amount>1">➖</span><span v-else>✖</span></div>
+      <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="minus" @click.stop="minus"><div v-if="product.amount>1">➖</div><div v-else class="rotate-45">➕</div></div>
     </div>
   </div>
 </template>
@@ -146,5 +146,11 @@ span {
   position: relative;
   margin-right:5px;
   padding-left:10px;
+}
+.rotate-45
+{
+  transform: rotate(45deg);
+  transform-origin: top;
+  margin-top: 3px;
 }
 </style>
