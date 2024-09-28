@@ -15,7 +15,7 @@
       v-touch:drag.once="handleDrag"
       >{{ product.text }}</div>
       <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="plus" @click.stop="plus">➕</div>
-      <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="minus" @click.stop="minus">➖</div>
+      <div :style="{ display: product.selected && !props.canBeDone? 'block' : 'none' }" class="minus" @click.stop="minus"><span v-if="product.amount>1">➖</span><span v-else>✖</span></div>
     </div>
   </div>
 </template>
@@ -104,6 +104,7 @@
 .productCategory {
   height:           1.5625rem;
   width:            1.5625rem;
+  margin-top:       1px;
 }
 .my-product {
   cursor:           pointer;
@@ -133,14 +134,17 @@ span {
 }
 
 .productText{
-  width: 90%;
+  width: 100%;
 }
 .plus{
   position: relative;
+  padding-left:5px;
+  padding-right: 5px;
   margin-right:10px;
 }
 .minus{
   position: relative;
   margin-right:5px;
+  padding-left:10px;
 }
 </style>

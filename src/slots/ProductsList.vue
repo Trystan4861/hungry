@@ -131,8 +131,8 @@
   const releaseIgnoreLongClick  = ()          => store.dispatch('setIgnoreDrag',!(controlY.value=-1))
 
   const handleClickProduct      = product     => {
-    console.log("jar")
-    if (storeGet.getIgnoreDrag()) return
+    //if (storeGet.getIgnoreDrag()) return
+    if (product.selected) return
     let aux=[...productsData.value]
     let index=findIndexById(product.id,aux)
     aux[index].selected=(Object.prototype.hasOwnProperty.call(aux[index], 'selected'))?!aux[index].selected:true
@@ -265,8 +265,7 @@
     margin-top: 10px;
   }
   .letraActual {
-    display: flex;
-    opacity: 0;
+    display: none;
     position: relative;
     bottom: 50%;
     left: 100%;
@@ -283,7 +282,7 @@
     -webkit-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
     -moz-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
     box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-    transition: opacity 1s ease;
+    transition: all 1s ease;
   }
   .letraActual:after {
     content: '';
@@ -297,6 +296,6 @@
     font-size: 1.5625rem;
   }
   .active.show {
-    opacity: 1
+    display: flex
   }
 </style>
