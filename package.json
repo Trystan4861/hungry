@@ -1,7 +1,7 @@
 {
   "name": "hungry",
   "version": "0.3.1",
-  "revision": "rev.20240928.1733",
+  "revision": "rev.20240928.1738",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

@@ -144,13 +144,12 @@ span {
 }
 .minus{
   position: relative;
-  margin-right:5px;
+  margin-right:15px;
   padding-left:10px;
 }
 .rotate-45
 {
   transform: rotate(45deg);
-  transform-origin: top;
-  margin-top: 3px;
+  transform-origin: center;
 }
 </style>
