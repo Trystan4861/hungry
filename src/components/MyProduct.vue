@@ -140,7 +140,6 @@ span {
   position: relative;
   padding-left:5px;
   padding-right: 5px;
-  margin-right:10px;
 }
 .minus{
   position: relative;
