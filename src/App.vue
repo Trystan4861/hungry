@@ -123,4 +123,8 @@
 
 <style>
   @import url('@css/App.vue.css');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+      .emoji {
+        font-family: 'Noto Color Emoji', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+      }
 </style>
