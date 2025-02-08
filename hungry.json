@@ -1,9 +1,10 @@
 {
-  "appName":"Hungry!",
-  "defaultTabActive": 3,
-  "alturaDisponible": 771,
+  "defaultTabActive": 2,
+  "alturaDisponible": 613,
   "fullScreen": false,
   "canClickProducts": true,
+  "lastChangeTimestamp": 0,
+  "lastLoginTimestamp": 0,
   "loginData": {
     "email": "",
     "token": ""
@@ -14,40 +15,40 @@
       "text": "Cualquier Supermercado",
       "logo": "hungry.svg",
       "visible": true,
-      "editable": false
+      "order": 0
     },
     {
       "id": 1,
       "text": "Carrefour",
       "logo": "carrefour.svg",
       "visible": true,
-      "editable": true
+      "order": 1
     },
     {
       "id": 2,
       "text": "Mercadona",
       "logo": "mercadona.svg",
       "visible": true,
-      "editable": true
+      "order": 2
     },
     {
       "id": 3,
       "text": "La Carmela",
       "logo": "super_carmela.svg",
       "visible": true,
-      "editable": true
+      "order": 3
     }
   ],
   "categorias": [
     {
       "id": 0,
-      "text": "Carnicería / Charcutería",
+      "text": "Carnes y Huevos",
       "bgColor": "#d83c3d",
       "visible": true
     },
     {
       "id": 1,
-      "text": "Legumbres / Pastas",
+      "text": "Legumbres y Pastas",
       "bgColor": "#d8993c",
       "visible": true
     },
@@ -101,7 +102,7 @@
     },
     {
       "id": 10,
-      "text": "Aceites / Salsas",
+      "text": "Aceites y Salsas",
       "bgColor": "#6f1918",
       "visible": true
     },
@@ -119,7 +120,7 @@
     },
     {
       "id": 13,
-      "text": "Condimentos / Especias",
+      "text": "Condimentos y Especias",
       "bgColor": "#2b6f18",
       "visible": true
     },
@@ -199,7 +200,7 @@
     },
     {
       "id": 4,
-      "text": "Tomate frito 🍅",
+      "text": "Tomate frito 🍅 ",
       "id_categoria": 10,
       "id_supermercado": 3,
       "amount": 1,
@@ -211,9 +212,9 @@
       "text": "Bacon en tiras",
       "id_categoria": 0,
       "id_supermercado": 1,
-      "selected": true,
+      "selected": false,
       "done": false,
-      "amount": 1
+      "amount": 0
     },
     {
       "id": 6,
@@ -316,7 +317,7 @@
     },
     {
       "id": 17,
-      "text": "Alubias",
+      "text": "Alubias 🫘",
       "id_categoria": 1,
       "id_supermercado": 1,
       "amount": 1,
@@ -370,7 +371,7 @@
     },
     {
       "id": 23,
-      "text": "Ajos 🧄",
+      "text": "Ajos 🧄 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 1,
@@ -379,7 +380,7 @@
     },
     {
       "id": 24,
-      "text": "Albahaca 🌿",
+      "text": "Albahaca 🌿 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 0,
@@ -415,7 +416,7 @@
     },
     {
       "id": 28,
-      "text": "Brócoli 🥦",
+      "text": "Brócoli 🥦 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 0,
@@ -442,7 +443,7 @@
     },
     {
       "id": 31,
-      "text": "Cerezas 🍒",
+      "text": "Cerezas 🍒 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 0,
@@ -469,7 +470,7 @@
     },
     {
       "id": 34,
-      "text": "Ensalada 🥗",
+      "text": "Ensalada 🥗 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 1,
@@ -523,7 +524,7 @@
     },
     {
       "id": 40,
-      "text": "Limones 🍋",
+      "text": "Limones 🍋 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 1,
@@ -568,7 +569,7 @@
     },
     {
       "id": 45,
-      "text": "Melocoton 🍑",
+      "text": "Melocoton 🍑 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 0,
@@ -577,7 +578,7 @@
     },
     {
       "id": 46,
-      "text": "Melón 🍈",
+      "text": "Melón 🍈 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 1,
@@ -595,7 +596,7 @@
     },
     {
       "id": 48,
-      "text": "Patatas frescas 🥔",
+      "text": "Patatas frescas 🥔 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 0,
@@ -604,7 +605,7 @@
     },
     {
       "id": 49,
-      "text": "Pepino 🥒",
+      "text": "Pepino 🥒 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 1,
@@ -685,7 +686,7 @@
     },
     {
       "id": 58,
-      "text": "Sandía 🍉",
+      "text": "Sandía 🍉 ",
       "id_categoria": 2,
       "id_supermercado": 1,
       "amount": 1,
@@ -703,7 +704,7 @@
     },
     {
       "id": 60,
-      "text": "Uvas 🍇",
+      "text": "Uvas 🍇 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 0,
@@ -712,7 +713,7 @@
     },
     {
       "id": 61,
-      "text": "Zanahorias 🥕",
+      "text": "Zanahorias 🥕 ",
       "amount": 1,
       "id_categoria": 2,
       "id_supermercado": 1,
@@ -721,7 +722,16 @@
     },
     {
       "id": 62,
-      "text": "Atún al natural 🥫",
+      "text": "Atún lata🥫",
+      "amount": 1,
+      "id_categoria": 3,
+      "id_supermercado": 1,
+      "selected": false,
+      "done": false
+    },
+    {
+      "id": 63,
+      "text": "Atún🥫",
       "amount": 1,
       "id_categoria": 3,
       "id_supermercado": 1,
@@ -730,7 +740,7 @@
     },
     {
       "id": 64,
-      "text": "Mejillones en escabeche 🥫",
+      "text": "Mejillones 🥫",
       "amount": 1,
       "id_categoria": 3,
       "id_supermercado": 1,
@@ -784,7 +794,7 @@
     },
     {
       "id": 70,
-      "text": "Pan rallado 🥖",
+      "text": "Pan rallado 🥖 ",
       "amount": 1,
       "id_categoria": 4,
       "id_supermercado": 0,
@@ -820,7 +830,7 @@
     },
     {
       "id": 74,
-      "text": "Edamame 🇯🇵",
+      "text": "Edamame 🫛 🇯🇵 ",
       "amount": 1,
       "id_categoria": 5,
       "id_supermercado": 1,
@@ -838,7 +848,7 @@
     },
     {
       "id": 76,
-      "text": "Guisantes",
+      "text": "Guisantes 🫛",
       "amount": 1,
       "id_categoria": 5,
       "id_supermercado": 1,
@@ -847,7 +857,7 @@
     },
     {
       "id": 77,
-      "text": "Helados 🍦",
+      "text": "Helados 🍦 ",
       "amount": 1,
       "id_categoria": 5,
       "id_supermercado": 2,
@@ -856,7 +866,7 @@
     },
     {
       "id": 78,
-      "text": "Merluza 🐟",
+      "text": "Merluza 🐟 ",
       "amount": 1,
       "id_categoria": 5,
       "id_supermercado": 1,
@@ -874,7 +884,7 @@
     },
     {
       "id": 80,
-      "text": "Flan 🍮",
+      "text": "Flan 🍮 ",
       "id_categoria": 6,
       "id_supermercado": 0,
       "amount": 1,
@@ -883,12 +893,12 @@
     },
     {
       "id": 81,
-      "text": "Leche de almendra 🥛",
+      "text": "Leche de almendra 🥛 ",
       "id_categoria": 6,
-      "id_supermercado": 0,
-      "amount": 1,
+      "id_supermercado": 3,
       "selected": false,
-      "done": false
+      "done": false,
+      "amount": 1
     },
     {
       "id": 82,
@@ -919,7 +929,7 @@
     },
     {
       "id": 85,
-      "text": "Queso rallado",
+      "text": "Queso rallado ",
       "id_categoria": 6,
       "id_supermercado": 0,
       "amount": 1,
@@ -964,7 +974,7 @@
     },
     {
       "id": 90,
-      "text": "Yogur líquido",
+      "text": "Yogur líquido ",
       "id_categoria": 6,
       "id_supermercado": 0,
       "amount": 1,
@@ -1022,15 +1032,6 @@
       "amount": 1,
       "id_categoria": 7,
       "id_supermercado": 0,
-      "selected": false,
-      "done": false
-    },
-    {
-      "id": 97,
-      "text": "Palomitas 🍿",
-      "amount": 1,
-      "id_categoria": 7,
-      "id_supermercado": 2,
       "selected": false,
       "done": false
     },
@@ -1127,9 +1128,9 @@
     {
       "id": 108,
       "text": "Agua 🥤",
-      "id_categoria": 9,
-      "id_supermercado": 2,
       "amount": 1,
+      "id_categoria": 9,
+      "id_supermercado": 1,
       "selected": false,
       "done": false
     },
@@ -1225,7 +1226,7 @@
     },
     {
       "id": 119,
-      "text": "Mayonesa 🥚",
+      "text": "Mayonesa 🥚 ",
       "amount": 1,
       "id_categoria": 10,
       "id_supermercado": 3,
@@ -1243,7 +1244,7 @@
     },
     {
       "id": 121,
-      "text": "Salsa césar",
+      "text": "Salsa césar ",
       "amount": 1,
       "id_categoria": 10,
       "id_supermercado": 2,
@@ -1252,7 +1253,7 @@
     },
     {
       "id": 122,
-      "text": "Salsa barbacoa",
+      "text": "Salsa barbacoa ",
       "amount": 1,
       "id_categoria": 10,
       "id_supermercado": 1,
@@ -1261,7 +1262,7 @@
     },
     {
       "id": 123,
-      "text": "Salsa de soja",
+      "text": "Salsa de soja 🫛",
       "amount": 1,
       "id_categoria": 10,
       "id_supermercado": 1,
@@ -1270,7 +1271,7 @@
     },
     {
       "id": 124,
-      "text": "Vinagre de manzana 🍏",
+      "text": "Vinagre de manzana 🍏 ",
       "amount": 1,
       "id_categoria": 10,
       "id_supermercado": 1,
@@ -1279,7 +1280,7 @@
     },
     {
       "id": 125,
-      "text": "Almejas",
+      "text": "Almejas ",
       "amount": 1,
       "id_categoria": 11,
       "id_supermercado": 1,
@@ -1424,23 +1425,18 @@
     {
       "id": 141,
       "text": "Aceite de coco 🥥",
-      "id_categoria": {
-        "id": 0,
-        "text": "Carnes y Huevos",
-        "bgColor": "#d83c3d",
-        "visible": true
-      },
-      "id_supermercado": 0,
       "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
       "selected": false,
       "done": false
     },
     {
       "id": 142,
       "text": "Aceite de pelo",
-      "id_categoria": 14,
-      "id_supermercado": 3,
       "amount": 1,
+      "id_categoria": 14,
+      "id_supermercado": 0,
       "selected": false,
       "done": false
     },
@@ -1518,7 +1514,7 @@
     },
     {
       "id": 151,
-      "text": "Compresa 4🩸",
+      "text": "Compresa 4🩸 ",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 0,
@@ -1554,7 +1550,7 @@
     },
     {
       "id": 155,
-      "text": "Dentífrico Infantil",
+      "text": "Dentífrico de Julen",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 1,
@@ -1581,7 +1577,7 @@
     },
     {
       "id": 158,
-      "text": "Gel Infantil",
+      "text": "Gel Julen",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 1,
@@ -1590,7 +1586,7 @@
     },
     {
       "id": 159,
-      "text": "Gel Femenino",
+      "text": "Gel Chilli",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 1,
@@ -1662,7 +1658,7 @@
     },
     {
       "id": 167,
-      "text": "Spray Zapatos 🧦",
+      "text": "Spray pies 🧦",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 1,
@@ -1671,7 +1667,7 @@
     },
     {
       "id": 168,
-      "text": "Tinte de pelo 💇",
+      "text": "Tinte de pelo 💇 ",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 1,
@@ -1689,7 +1685,7 @@
     },
     {
       "id": 170,
-      "text": "Toallitas infantiles",
+      "text": "Toallitas infantiles ",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 0,
@@ -1698,7 +1694,7 @@
     },
     {
       "id": 171,
-      "text": "Avena 🥣",
+      "text": "Avena 🥣 ",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1707,7 +1703,7 @@
     },
     {
       "id": 172,
-      "text": "Bicarbonato sódico",
+      "text": "Bicarbonato sódico ",
       "amount": 1,
       "id_categoria": 14,
       "id_supermercado": 0,
@@ -1725,7 +1721,7 @@
     },
     {
       "id": 174,
-      "text": "Cereales Con Miel 🍯",
+      "text": "Cereales Julen 🍯",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1734,7 +1730,7 @@
     },
     {
       "id": 175,
-      "text": "Cereales Integrales 🌾",
+      "text": "Cereales 🌾",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1761,7 +1757,7 @@
     },
     {
       "id": 178,
-      "text": "Croissant 🥐",
+      "text": "Croissant 🥐 ",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 0,
@@ -1770,7 +1766,7 @@
     },
     {
       "id": 179,
-      "text": "Infusión Sueño 🫖",
+      "text": "Duerme bien 🫖",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 3,
@@ -1779,7 +1775,7 @@
     },
     {
       "id": 180,
-      "text": "Galletas Integrales",
+      "text": "Galletas Carol ",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1788,7 +1784,7 @@
     },
     {
       "id": 181,
-      "text": "Galletas Infantiles 🍪",
+      "text": "Galletas Julen 🍪",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1797,7 +1793,7 @@
     },
     {
       "id": 182,
-      "text": "Galletas María 🥠",
+      "text": "Galletas María 🥠 ",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1806,7 +1802,7 @@
     },
     {
       "id": 183,
-      "text": "Infusión de jengibre",
+      "text": "Infusión de jengibre ",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 2,
@@ -1851,7 +1847,7 @@
     },
     {
       "id": 188,
-      "text": "Miel 🍯",
+      "text": "Miel 🍯 ",
       "amount": 1,
       "id_categoria": 15,
       "id_supermercado": 1,
@@ -1870,9 +1866,9 @@
     {
       "id": 190,
       "text": "Aceite de motor",
-      "id_categoria": 16,
-      "id_supermercado": 3,
       "amount": 1,
+      "id_categoria": 16,
+      "id_supermercado": 1,
       "selected": false,
       "done": false
     },
@@ -1887,7 +1883,7 @@
     },
     {
       "id": 192,
-      "text": "Calcetines 🧦",
+      "text": "Calcetines 🧦 ",
       "amount": 1,
       "id_categoria": 16,
       "id_supermercado": 1,
@@ -1896,7 +1892,7 @@
     },
     {
       "id": 193,
-      "text": "Citronela",
+      "text": "Citronela ",
       "amount": 1,
       "id_categoria": 16,
       "id_supermercado": 2,
@@ -1905,7 +1901,7 @@
     },
     {
       "id": 194,
-      "text": "Film transparente",
+      "text": "Film transparente ",
       "amount": 1,
       "id_categoria": 16,
       "id_supermercado": 0,
@@ -1941,7 +1937,7 @@
     },
     {
       "id": 198,
-      "text": "Papel higiénico 🧻",
+      "text": "Papel higiénico 🧻 ",
       "amount": 1,
       "id_categoria": 8,
       "id_supermercado": 2,
@@ -1959,7 +1955,7 @@
     },
     {
       "id": 200,
-      "text": "Pajitas 🥤",
+      "text": "Pajitas 🥤 ",
       "amount": 1,
       "id_categoria": 8,
       "id_supermercado": 1,
@@ -1968,7 +1964,7 @@
     },
     {
       "id": 201,
-      "text": "Papel de aluminio",
+      "text": "Papel de aluminio ",
       "amount": 1,
       "id_categoria": 8,
       "id_supermercado": 0,
@@ -1986,7 +1982,7 @@
     },
     {
       "id": 203,
-      "text": "Pañuelos",
+      "text": "Pañuelos ",
       "amount": 1,
       "id_categoria": 8,
       "id_supermercado": 2,
@@ -2004,7 +2000,7 @@
     },
     {
       "id": 205,
-      "text": "Rotuladores pizarra blanca",
+      "text": "Rotuladores pizarra blanca ",
       "amount": 1,
       "id_categoria": 16,
       "id_supermercado": 1,
@@ -2022,7 +2018,7 @@
     },
     {
       "id": 207,
-      "text": "Bolsas de basura 🚮",
+      "text": "Bolsas de basura 🚮 ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2031,7 +2027,7 @@
     },
     {
       "id": 208,
-      "text": "Bolsas de congelados ❄",
+      "text": "Bolsas de congelados ❄ ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2076,7 +2072,7 @@
     },
     {
       "id": 213,
-      "text": "Detergente blancos",
+      "text": "Detergente blancos ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2121,7 +2117,7 @@
     },
     {
       "id": 218,
-      "text": "Lavavajillas",
+      "text": "Lavavajillas ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2130,7 +2126,7 @@
     },
     {
       "id": 219,
-      "text": "Lejía",
+      "text": "Lejía ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 0,
@@ -2157,7 +2153,7 @@
     },
     {
       "id": 222,
-      "text": "Limpia muebles",
+      "text": "Limpia muebles ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2184,7 +2180,7 @@
     },
     {
       "id": 225,
-      "text": "Salvauñas",
+      "text": "Salvauñas ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2202,7 +2198,7 @@
     },
     {
       "id": 227,
-      "text": "Suavizante",
+      "text": "Suavizante ",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 2,
@@ -2220,7 +2216,7 @@
     },
     {
       "id": 229,
-      "text": "Vanish blanco",
+      "text": "Vanish Color",
       "amount": 1,
       "id_categoria": 17,
       "id_supermercado": 0,
@@ -2229,21 +2225,13 @@
     },
     {
       "id": 230,
-      "text": "Comida para perros",
+      "text": "Vanish Blanco",
       "amount": 1,
-      "id_categoria": 18,
-      "id_supermercado": 2,
-      "selected": false,
-      "done": false
-    },
-    {
-      "id": 231,
-      "text": "Empapaderas",
-      "amount": 1,
-      "id_categoria": 18,
-      "id_supermercado": 1,
+      "id_categoria": 17,
+      "id_supermercado": 0,
       "selected": false,
       "done": false
     }
-  ]
+  ],
+  "appName": "Hungry!"
 }

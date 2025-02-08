@@ -17,19 +17,21 @@ const initialState= {
     URLBase: 'https://www.infoinnova.es/lolo/api',
   },
   configuracion:{
-    defaultTabActive:1,
-    alturaDisponible:0,
+    defaultTabActive: 1,
+    alturaDisponible: 0,
     fullScreen: false,
-    canClickProducts:true,
+    canClickProducts: true,
+    lastChangeTimestamp: 0,
+    lastLoginTimestamp: 0,
     loginData:{
       email:"",
       token:"",
     },
     supermercados:[
-      { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible:    true, order:0, editable: false },
-      { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible:    true, order:1, editable: true  },
-      { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible:    true, order:2, editable: true  },
-      { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible:    true, order:3, editable: true  },
+      { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible:    true, order:0 },
+      { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible:    true, order:1 },
+      { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible:    true, order:2 },
+      { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible:    true, order:3 },
     ],
     categorias: [
       { id: 0, text:'Categoría  1', bgColor:'#d83c3d', visible:true },
