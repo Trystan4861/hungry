@@ -51,7 +51,7 @@
     let text = props.product.text.replace(emojiRegex, '<span class="emoji">$1</span>');
     // eslint-disable-next-line
     const regionalIndicatorRegex = /([\uD83C][\uDDE6-\uDDFF]){2}/g;
-    text = text.replace(regionalIndicatorRegex, '<span class="emoji">$1</span>');
+    text = text.replace(regionalIndicatorRegex, '<span class="emoji">$&</span>');
     return text;
   });
 
