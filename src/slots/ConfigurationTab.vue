@@ -80,7 +80,7 @@
   </my-card>
   <div id="anchorLoginLinks-configuration" class="d-none">
     <div class="justify-content-between d-flex mt-2" :id="id">
-      <a class="link cursor-pointer no-select" @click="handleForgetPass">¿Olvidaste tu contraseña?</a><a class="link cursor-pointer no-select" @click="handleRegister">{{ showRegisterMessage?"¿No tienes cuenta?":"Iniciar Sesión" }}</a>
+      <span class="link cursor-pointer no-select" @click="handleForgetPass">¿Olvidaste tu contraseña?</span><span class="link cursor-pointer no-select" @click="handleRegister">{{ showRegisterMessage?"¿No tienes cuenta?":"Iniciar Sesión" }}</span>
     </div>
   </div>
 </template>
