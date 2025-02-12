@@ -7,7 +7,7 @@
 
 | Instalar Aplicación | FrontEnd | BackEnd | Issues |
 |---------------------|----------|---------|--------|
-|[<img src="https://img.shields.io/badge/install_on-android-green" alt="Download to device">](https://dply.me/38hoth#install) | <a href="#"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018da359-3bd2-4948-a5cf-5a8b59500694.svg" /></a> | <a href="https://github.com/Trystan4861/hungry-api"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018ea986-4ed8-4e8f-9f81-a0efdc31528c.svg?style=default" /></a> | <a hre="https://github.com/trystan4861/hungry/issues?q=is%3Aopen+is%3Aissue"><img src="https://img.shields.io/github/issues/trystan4861/hungry.svg"></a>
+|[<img src="https://img.shields.io/badge/install_on-android-green" alt="Download to device">](https://dply.me/38hoth#install) | <a href="#"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018da359-3bd2-4948-a5cf-5a8b59500694.svg" /></a> | <a href="https://github.com/Trystan4861/hungry-api"><img src="https://wakatime.com/badge/user/ef1aa65d-c23f-4942-859c-ac4758ee1f03/project/018ea986-4ed8-4e8f-9f81-a0efdc31528c.svg?style=default" /></a> | [<img src="https://img.shields.io/github/issues/trystan4861/hungry.svg">](https://github.com/Trystan4861/hungry/issues)
 
 
 ¡Gracias por elegir nuestra aplicación! «Hungry!» es una herramienta poderosa diseñada para realizar listas de la compra con diversas funcionalidades.
