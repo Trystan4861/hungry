@@ -8,6 +8,9 @@ node_modules
 .env.local
 .env.*.local
 
+#local cert files
+*.pem
+
 # Log files
 npm-debug.log*
 yarn-debug.log*
