@@ -123,6 +123,22 @@
   window.addEventListener('resize',()=>setTimeout(recalculateAnchoBotonLimpiarLista,50))
   watch(() => props.active, newValue => newValue && recalculateAnchoBotonLimpiarLista());
 
+  
+  async function setDone(id, done) {
+    let urlbase = storeGet.getURLBase();
+    let data = { id, done};
+    const response = await axios.post(urlbase + '/setDone', data, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+    });
+    if (response.data.result) {
+      console.log('Producto actualizado')
+    } else {
+      console.log('Error al actualizar el producto',response.data)
+    }
+  }
+
   onMounted(()=>setTimeout(recalculateAnchoBotonLimpiarLista,500))
   
     const handleShoplistClick=item=>{
