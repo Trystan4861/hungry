@@ -123,7 +123,7 @@
   window.addEventListener('resize',()=>setTimeout(recalculateAnchoBotonLimpiarLista,50))
   watch(() => props.active, newValue => newValue && recalculateAnchoBotonLimpiarLista());
 
-  
+/*  
   async function setDone(id, done) {
     let urlbase = storeGet.getURLBase();
     let data = { id, done};
@@ -138,7 +138,7 @@
       console.log('Error al actualizar el producto',response.data)
     }
   }
-
+*/
   onMounted(()=>setTimeout(recalculateAnchoBotonLimpiarLista,500))
   
     const handleShoplistClick=item=>{
