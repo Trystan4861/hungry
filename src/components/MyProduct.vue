@@ -23,7 +23,7 @@
 <script setup>
   import { ref, watch, onMounted, computed } from 'vue';
   import { useStore } from 'vuex';
-  import parseEmoji from '@/utilidades';
+  import { parseEmoji } from '@/utilidades';
 
   const props             = defineProps({
     canBeDone:      { type: Boolean,  default:  false },
