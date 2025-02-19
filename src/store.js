@@ -63,7 +63,7 @@ export default createStore({
   mutations: {
     resetStore            ( state,                     ) { 
       let alturaDisponible=state.configuracion.alturaDisponible;
-      Object.assign(state,initialState)
+            Object.assign(state,initialState)
       state.configuracion.alturaDisponible=alturaDisponible;
     }, 
     setAlturaDisponible   ( state,      alturaDisponible  ) { state.configuracion.alturaDisponible   = alturaDisponible },
@@ -82,7 +82,7 @@ export default createStore({
     
     setCanClickProducts   ( state,      canClickProducts  ) { state.configuracion.canClickProducts   = canClickProducts },
 
-    setState              ( state,      newState          ) { Object.assign(state, newState)                            }
+    setState              ( state,      newState          ) { Object.assign(state.configuracion, newState)                            }
   },
   actions: {
     setAlturaDisponible   ({ commit },  alturaDisponible  ) { commit('setAlturaDisponible', alturaDisponible)           },

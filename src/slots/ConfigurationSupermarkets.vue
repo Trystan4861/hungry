@@ -3,8 +3,9 @@
     <div class="text-center mb-1 text-uppercase">Visibilidad de Supermercados</div>
     <div class="SupermarketsContainer">
       <MyCheckbox
-        v-for="(item, index) in supermarkets.filter(i=>i.id>0)"
+        v-for="(item, index) in supermarkets"
         :checkedValues="checkedItems"
+        :enabled="index!=0"
         :key="item.id"
         :label="item.text"
         group="configSupermarketsVisibility"
@@ -27,9 +28,11 @@ const storeGet            = store.getters;
 const supermarkets        = storeGet.getSupermercados();
 const checkedItems        = ref([]);
 const getVisibleIndices   = data => data.map((item, index) => (item.visible ? index : null)).filter(index => index !== null);
-const handleCheckedValues = (newCheckedItems) => checkedItems.value = newCheckedItems.sort((a, b) => a - b) && emit('supermarketsChecked', newCheckedItems)
+const handleCheckedValues = (newCheckedItems) => {
+  checkedItems.value = newCheckedItems.sort((a, b) => a - b) //&& emit('supermarketsChecked', newCheckedItems)
+  emit('supermarketsChecked', newCheckedItems)
+}
 const emit                = defineEmits(['supermarketsChecked']);
-
 watchEffect(() => checkedItems.value = getVisibleIndices(supermarkets));
 
 </script>
