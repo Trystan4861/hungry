@@ -1,10 +1,19 @@
 import { defineConfig } from 'vite';
+import fs from 'fs';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { readFileSync } from 'fs';
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  server:{
+    https:{
+      key: fs.readFileSync('localhost-key.pem'),
+      cert: fs.readFileSync('localhost-cert.pem'),
+    },
+    host: 'localhost',
+    port: 5173,
+  },
   plugins: [
     vue(),
     {
