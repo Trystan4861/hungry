@@ -47,7 +47,7 @@
               @configurationFileReaded="handleConfigurationImportFileReaded" 
               />
           </div>
-          <div class="order-2 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
+          <div v-if="!isCordova" class="order-2 col-lg-4 col-md-4 col-6 mt-md-4 mt-lg-4 mt-1">
             <slot-configuration-export ref="exportRef" />
           </div>
           <div class="order-1 order-md-3 order-lg-3 col-lg-4 col-md-4 col-12 mt-md-4 mt-lg-4 mt-1">
@@ -121,7 +121,9 @@
   const defaultTabActive        = computed(()=>storeGet.getDefaultTabActive())
 
   const exportRef               = ref(null)
-  
+
+  const isCordova = computed(() => (window.cordova = window.cordova || undefined, typeof window.cordova !== 'undefined'));
+
   const changes2Save            ={
     categoriasVisibiles:false,
     supermarketsVisibles:false,
