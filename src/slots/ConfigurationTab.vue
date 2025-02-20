@@ -76,7 +76,7 @@
         </div>
       </div>
     </div>
-    <div class="revision">{{ packageJson.revision }}</div>
+    <div class="revision">{{ packageJson.revision }}{{ isCordoba?'c':'' }}</div>
   </my-card>
   <div id="anchorLoginLinks-configuration" class="d-none">
     <div class="justify-content-between d-flex mt-2" :id="id">
