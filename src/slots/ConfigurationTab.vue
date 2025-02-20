@@ -98,7 +98,7 @@
   import SlotConfigurationImport        from '@slots/ConfigurationImport.vue';
   import SlotConfigurationFullScreen    from '@slots/ConfigurationFullScreen.vue';
   import SlotConfigurationTabsActive    from '@slots/ConfigurationTabsActive.vue';
-  import { ref,computed }               from 'vue';
+  import { ref,computed, onMounted }    from 'vue';
   import { useStore }                   from 'vuex';
   import { localStorageService }        from '@/localStorageService'
   import { DID, _DOM, dispatchWhere as dispatch, alert }  from '@/utilidades';
@@ -122,7 +122,18 @@
 
   const exportRef               = ref(null)
 
-  const isCordova = computed(() => (window.cordova = window.cordova || undefined, typeof window.cordova !== 'undefined'));
+  const isCordova = ref(false);
+
+  onMounted(() => {
+    document.addEventListener(
+      "deviceready",
+      () => {
+        isCordova.value = typeof window.cordova !== "undefined";
+        console.log("Cordova detectado:", isCordova.value);
+      },
+      false
+    );
+  });
 
   const changes2Save            ={
     categoriasVisibiles:false,
