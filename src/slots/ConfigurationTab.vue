@@ -2,7 +2,7 @@
   <my-card 
     borderStyle="rounded-bottom"
   >
-    <h1 class="text-center"><span class="appName">Hungry!</span><my-image :image="'hungry.svg'" class="logo appBrand" />
+    <h1 class="text-center"><span class="appName">Hungry!</span><a href="javascript:document.location.reload();"><my-image :image="'hungry.svg'" class="logo appBrand" /></a>
       <div class="justify-content-between author"><span class="mr-1">v{{packageJson.version}}</span> <span>by Trystan4861</span></div>
     </h1>
     <div class="row configWithScroll">
