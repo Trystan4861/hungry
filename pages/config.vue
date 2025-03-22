@@ -105,6 +105,29 @@
           />
         </div>
       </div>
+      <div class="row">
+        <div class="col-4">
+          <MyButton
+            :text="store.loginData.value.logged ? 'Cerrar Sesión' : 'Registrarse / Iniciar Sesión'"
+            :btn-class="'btn btn-info fw-bold'"
+            class="mx-3 mt-4"
+            @click="handleLogin"
+          />
+        </div>
+        <div class="col-4">
+          <MyButton
+            text="Restablecer Aplicación"
+            :btn-class="'btn btn-warning fw-bold'"
+            class="mx-3 mt-4"
+            @click="handleReset"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="anchorLoginLinks-configuration" class="d-none">
+    <div class="justify-content-between d-flex mt-2" :id="dll">
+      <span class="link cursor-pointer no-select" @click="handleForgetPass">¿Olvidaste tu contraseña?</span><span class="link cursor-pointer no-select" @click="handleRegister">{{ showRegisterMessage?"¿No tienes cuenta?":"Iniciar Sesión" }}</span>
     </div>
   </div>
 </template>
@@ -112,9 +135,14 @@
 <script lang="ts" setup>
   import type { Tab } from '~/types';
   import { myStore } from '~/composables/useStore';
-  import { ref } from 'vue';
-  import { _DOM } from '~/utilidades'
+  import { ref, onMounted } from 'vue';
   import Swal from 'sweetalert2'
+  import { localStorageService } from '~/localStorageService'
+  import md5 from 'md5'
+  import axios from 'axios'
+  import * as FingerprintJS from '@fingerprintjs/fingerprintjs'
+  import { compactString } from '~/utils/fingerprint'
+  import { _DOM, DOM, DID } from '~/utils/dom'
 
   // Define package info directly instead of importing package.json
   const packageInfo = {
@@ -142,6 +170,43 @@
     defaultTabActive: false,
     fullScreen: false
   })
+
+  // Variables para autenticación
+  const showRegisterMessage = ref(true)
+  const fingerID = ref(store.loginData.value.fingerID || '')
+  const dll = ref('loginLinks')
+
+  // Función para obtener el fingerID
+  const getFingerprint = async () => {
+    try {
+      const fpPromise = FingerprintJS.load();
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const compactedId = compactString(result.visitorId);
+      fingerID.value = compactedId;
+
+      // Actualizar el fingerID en el store y localStorage
+      store.loginData.value.fingerID = compactedId;
+      localStorageService.setSubItem('loginData', store.loginData.value);
+
+      return compactedId;
+    } catch (error) {
+      console.error('Error al obtener fingerprint:', error);
+      return '';
+    }
+  }
+
+  // Cargar el fingerprint al montar el componente
+  onMounted(async () => {
+    if (!fingerID.value) {
+      await getFingerprint();
+    }
+  });
+
+  // Función para obtener la URL base de la API
+  const getURLBase = () => {
+    return 'https://infoinnova.es/lolo/api'
+  }
 
   const handleCategoriasCheckedValues = (values: number[]) => {
     categoriasVisibles.value=values
@@ -355,59 +420,200 @@
   const handleSave = () => {
    console.log("handleSave")
    //comprobamos si algun valor de changes2Save es true usando funciones de array
-   const hasChanges = Object.values(changes2Save.value).some(value => value)
-   if (hasChanges) {
-    let mensaje:string="Se han guardado los cambios realizados a "
-    //recorremos changes2Save y actualizamos el store si está a true
-    for (const [key, value] of Object.entries(changes2Save.value)) {
-      if (value) {
-        //si key es categoriasVisibiles, supermarketsVisible, defaultTabActive o fullScreen
-        if (key === 'categoriasVisibiles') {
-          //Utilizamos la nueva función updateCategorias para actualizar todas las categorías de una vez
-          mensaje += "Categorías, ";
-          store.updateCategorias(categoriasVisibles.value);
-          changes2Save.value.categoriasVisibiles = false;
-        } else if (key === 'supermarketsVisible') {
-          //Utilizamos la nueva función updateSupermercados para actualizar todos los supermercados de una vez
-          mensaje += "Supermercados, ";
-          store.updateSupermercados(supermarketsVisibles.value);
-          changes2Save.value.supermarketsVisible = false;
-        } else if (key === 'defaultTabActive') {
-          //Actualizamos la pestaña por defecto
-          mensaje += "Pestaña por defecto, ";
-          store.defaultTabActive.value = defaultTabActive.value;
-          changes2Save.value.defaultTabActive = false;
-        } else if (key === 'fullScreen') {
-          //Actualizamos el modo pantalla completa
-          mensaje += "Modo pantalla completa, "
-          store.setFullscreen(fullScreen.value);
-          changes2Save.value.fullScreen = false;
-        }
-      }
-    }
-    // Mostrar mensaje de éxito
-    Swal.fire({
-      icon: 'success',
-      title: 'Configuración guardada',
-      html: mensaje.slice(0, -1) + " correctamente",
-      confirmButtonText: 'Aceptar',
-      target: _DOM("#swallDestination") as HTMLElement,
-      timer: 2000,
-      timerProgressBar: true
-    });
-   }
-   else{
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      html: "No hay cambios para guardar",
-      confirmButtonText: 'Aceptar',
-      target: _DOM("#swallDestination") as HTMLElement,
-      timer: 2000,
-      timerProgressBar: true
-    });
+   if (Object.values(changes2Save.value).some(value => value)) {
+     console.log("Hay cambios que guardar")
+     if (changes2Save.value.categoriasVisibiles) {
+       console.log("Guardando categorias visibles")
+       store.updateCategorias(categoriasVisibles.value)
+     }
+     if (changes2Save.value.supermarketsVisible) {
+       console.log("Guardando supermercados visibles")
+       store.updateSupermercados(supermarketsVisibles.value)
+     }
+     if (changes2Save.value.defaultTabActive) {
+       console.log("Guardando pestaña activa por defecto")
+       store.setDefaultTabActive(defaultTabActive.value)
+     }
+     if (changes2Save.value.fullScreen) {
+       console.log("Guardando fullScreen")
+       store.setFullScreen(fullScreen.value)
+     }
+     Swal.fire({
+       icon: 'success',
+       title: 'Cambios guardados',
+       showConfirmButton: false,
+       timer: 1500
+     })
+     //reseteamos los cambios
+     changes2Save.value = {
+       categoriasVisibiles: false,
+       supermarketsVisible: false,
+       defaultTabActive: false,
+       fullScreen: false
+     }
    }
   }
+
+  // Funciones para autenticación
+  const handleForgetPass = () => {
+    console.log('handleForgetPass')
+  }
+
+  const handleRegister = () => {
+    console.log('handleRegister')
+    const titleElement = DID("swal2-title");
+    const confirmButton = _DOM(".swal2-confirm");
+
+    if (titleElement && confirmButton) {
+      titleElement.innerText = showRegisterMessage.value ? "Realizar Registro" : "Iniciar Sesión";
+      confirmButton.innerHTML = showRegisterMessage.value ? "Registrarse" : "Aceptar";
+    }
+
+    showRegisterMessage.value = !showRegisterMessage.value;
+  }
+
+  const handleLogin = () => {
+    if (!store.loginData.value.logged) {
+      Swal.fire({
+        title: 'Iniciar Sesión',
+        html: `
+        <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
+        <div class="input-group">
+          <input id="pass" type="password" class="swal2-input password-input" placeholder="Contraseña" autocomplete="off">
+          <div class="input-group-append">
+            <label for="pass" class="input-group-text toggle-password">&#x1f512;&#xfe0e;</label>
+          </div>
+        </div>
+        <div id="LoginFormLinksSweetAlert2"></div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        confirmButtonText: "Aceptar",
+        target: document.getElementById("swallDestination"),
+        didOpen: () => {
+          // Añadir funcionalidad para mostrar/ocultar contraseña
+          const togglePassword = _DOM('.toggle-password', Swal.getPopup());
+          const passInput = _DOM('#pass', Swal.getPopup()) as HTMLInputElement;
+
+          if (togglePassword && passInput) {
+            togglePassword.addEventListener('click', () => {
+              // Cambiar el tipo de input entre password y text
+              const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+              passInput.setAttribute('type', type);
+
+              // Cambiar el icono del candado
+              togglePassword.innerHTML = type === 'password' ? '&#x1f512;&#xfe0e;' : '&#x1f513;&#xfe0e;';
+            });
+          }
+        },
+        willOpen: () => {
+          showRegisterMessage.value = true;
+          const loginFormLinks = DID('LoginFormLinksSweetAlert2');
+          const loginLinks = DID(dll.value);
+
+          if (loginFormLinks && loginLinks) {
+            loginFormLinks.appendChild(loginLinks);
+          }
+        },
+        willClose: () => {
+          const anchorLinks = DID("anchorLoginLinks-configuration");
+          const loginLinks = DID(dll.value);
+
+          if (anchorLinks && loginLinks) {
+            anchorLinks.appendChild(loginLinks);
+          }
+        },
+        preConfirm: async () => {
+          const emailInput = _DOM('#email', Swal.getPopup()) as HTMLInputElement;
+          const passInput = _DOM('#pass', Swal.getPopup()) as HTMLInputElement;
+
+          if (!emailInput || !passInput) {
+            Swal.showValidationMessage('Error al obtener los campos del formulario');
+            return false;
+          }
+
+          const email = emailInput.value.toLowerCase().trim();
+          const pass = md5(passInput.value.trim()).toString();
+
+          const anchorLinks = DID("anchorLoginLinks-configuration");
+          const loginLinks = DID(dll.value);
+
+          if (anchorLinks && loginLinks) {
+            anchorLinks.appendChild(loginLinks);
+          }
+
+          let urlbase = getURLBase();
+          let data = { email, pass, fingerID: fingerID.value };
+
+          try {
+            const response = await axios.post(urlbase + '/' + (showRegisterMessage.value ? 'login' : 'register') + '/', data, {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+            });
+            if (response.data.result) {
+              const loginData = {
+                email,
+                token: response.data.token,
+                fingerID: fingerID.value,
+                logged: true
+              };
+
+              // Actualizar loginData en el store
+              store.loginData.value = loginData;
+              // Guardar en localStorage
+              localStorageService.setSubItem('loginData', loginData);
+
+              Swal.fire({
+                html: 'Has iniciado sesión correctamente',
+                icon: 'success'
+              });
+            } else {
+              Swal.fire({
+                title: 'ERROR',
+                html: response.data.error_msg,
+                icon: 'error'
+              });
+            }
+          } catch (error) {
+            console.log('Error:', error);
+            Swal.fire({
+              title: 'ERROR',
+              html: 'Ha ocurrido un error al conectar con el servidor',
+              icon: 'error'
+            });
+          }
+        }
+      });
+    } else {
+      // Mostramos un swal de confirmación para cerrar la sesión
+      Swal.fire({
+        icon: 'question',
+        title: 'Atención',
+        html: 'Se procederá a cerrar su sesión.<br>¿Desea continuar?',
+        showConfirmButton: true,
+        confirmButtonText: 'Cerrar Sesión',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        target: document.getElementById("swallDestination"),
+        allowOutsideClick: false
+      }).then(result => {
+        if (result.isConfirmed) {
+          // Actualizar loginData en el store
+          store.loginData.value = { email: '', token: '', fingerID: '', logged: false };
+          // Guardar en localStorage
+          localStorageService.setSubItem('loginData', { email: '', token: '', fingerID: '', logged: false });
+
+          Swal.fire({
+            html: 'Has cerrado sesión correctamente',
+            icon: 'success'
+          });
+        }
+      });
+    }
+  }
+
   const handleLastCheckedDeletionAttempt = (value: number) => {
     Swal.fire({
       icon: 'error',
@@ -418,9 +624,42 @@
     });
   };
 
+  const handleReset = () => {
+    Swal.fire({
+      title: 'Atención',
+      html: `
+        Se restablecerá la aplicación a los valores de fábrica.
+        <br><br>
+        Esto eliminará cualquier cambio que hayas hecho en las categorias así como todos los productos que hayas añadido.
+        <br><br>
+        <b>¡Esta acción no se puede deshacer!</b>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Restablecer',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      target: document.getElementById("swallDestination"),
+      preConfirm: () => {
+        // Borrar localStorage
+        localStorage.clear();
+
+        // Reiniciar el store a los valores por defecto
+        store.resetToDefaults();
+
+        // Mostrar mensaje de éxito
+        Swal.fire({
+          title: 'Aplicación restablecida',
+          text: 'La aplicación ha sido restablecida a los valores de fábrica',
+          icon: 'success',
+          target: document.getElementById("swallDestination")
+        });
+      }
+    });
+  };
 </script>
 <style scoped>
-  .header-container {
+.header-container {
     display: flex;
     justify-content: center;
     width: 100%;
@@ -492,5 +731,37 @@
 
   .my-container.withScroll{
     border-right-width: 0;
+  }
+
+  /* Estilos para el toggle de contraseña */
+  .input-group {
+    position: relative;
+    display: flex;
+    width: 100%;
+  }
+
+  .password-input {
+    width: 100%;
+  }
+
+  .input-group-append {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-group-text {
+    cursor: pointer;
+    padding: 0 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    border-left: 1px solid #ced4da;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
 </style>

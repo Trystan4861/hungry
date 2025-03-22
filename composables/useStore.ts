@@ -332,11 +332,54 @@ export const myStore = () => {
     saveDataToLocalStorage();
   };
 
+  const setFullScreen = setFullscreen; // Alias para mantener compatibilidad
+
   const appName = useState<string>('appName', () => 'Hungry!');
   const defaultTabActive = useState<number>('defaultTabActive', () => 2);
+  const setDefaultTabActive = (tabIndex: number) => {
+    defaultTabActive.value = tabIndex;
+    saveDataToLocalStorage();
+  };
+  
   const alturaDisponible = useState<number>('alturaDisponible', () => 0);
   const maxLenght = useState<number>('maxLenght', () => 29);
   const ignoreDrag = useState<boolean>('ignoreDrag', () => false);
+
+  const resetToDefaults = () => {
+    // Restablecer productos a un array vacío
+    productos.value = [];
+    
+    // Restablecer supermercados a los valores por defecto
+    supermercados.value = [
+      { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible: true, order: 0 },
+      { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible: true, order: 1 },
+      { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2 },
+      { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3 },
+    ];
+    
+    // Restablecer categorías a los valores por defecto
+    categorias.value = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      text: `Categoría ${String(i).padStart(2, '0')}`,
+      bgColor: bgColors[i],
+      visible: true
+    }));
+    
+    // Restablecer datos de inicio de sesión
+    loginData.value = { email: '', token: '', fingerID: '', logged: false };
+    
+    // Restablecer otras configuraciones
+    defaultTabActive.value = 0;
+    fullScreen.value = false;
+    
+    // Guardar los cambios en localStorage usando los métodos correctos
+    localStorageService.setSubItem('productos', productos.value);
+    localStorageService.setSubItem('supermercados', supermercados.value);
+    localStorageService.setSubItem('categorias', categorias.value);
+    localStorageService.setSubItem('loginData', loginData.value);
+    localStorageService.setSubItem('defaultTabActive', defaultTabActive.value);
+    localStorageService.setSubItem('fullScreen', fullScreen.value);
+  };
 
   loadDataFromLocalStorage();
 
@@ -350,20 +393,18 @@ export const myStore = () => {
     supermercados,
     categorias,
     productos,
+    tabs,
+    bgColors,
+    ignoreDrag,
     findProducto,
     findSupermercado,
     findCategoria,
-    exportData,
-    importData,
-    tabs,
-    ignoreDrag,
-    updateIgnoreDrag: (newValue: boolean) => ignoreDrag.value = newValue,
-    updateCategoria,
-    updateCategorias,
-    setVisibleCategoria,
-    updateSupermercados,
     addItem,
     updateProduct,
+    updateCategoria,
+    updateCategorias,
+    updateSupermercados,
+    setVisibleCategoria,
     setAmount,
     toggleSelected,
     toggleDone,
@@ -375,9 +416,14 @@ export const myStore = () => {
     sortedByCategory,
     purchased,
     clearList,
+    exportData,
+    importData,
     addMarket,
     setMarketVisible,
     setMarketOrder,
-    setFullscreen
+    setFullscreen,
+    setFullScreen,
+    setDefaultTabActive,
+    resetToDefaults
   };
 };

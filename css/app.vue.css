@@ -114,6 +114,7 @@
     background-color: inherit;
     border: 0;
     margin-top: .625rem;
+    color: gray;
   }
   .cursor-pointer {
     cursor: pointer;
