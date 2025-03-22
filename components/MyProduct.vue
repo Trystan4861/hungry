@@ -52,7 +52,7 @@
 import { ref, computed } from 'vue';
 import { myStore } from '~/composables/useStore';
 import type { Producto } from '~/types';
-import { parseEmoji } from '@/utilidades';
+import { parseEmoji } from '~/utils';
 
 // Props
 const props = defineProps({

@@ -18,7 +18,7 @@
 <!-- ✖ ❌ ✖️ -->
 <script lang="ts" setup>
   import { ref, watch, onMounted } from 'vue';
-  import { generateID } from '~/utilidades';
+  import { generateID } from '~/utils';
   const props         = defineProps({
     modelValue:       { type: String,   default: ''                     },
     placeholder:      { type: String,   default: 'Añade elementos aquí' },

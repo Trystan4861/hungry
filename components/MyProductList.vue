@@ -17,7 +17,8 @@
 
 <script lang="ts" setup>
 import { ref }  from 'vue';
-import MyProduct        from './MyProduct.vue';
+import MyProduct from './MyProduct.vue';
+// Importación relativa mientras se resuelve el problema con el alias
 import type { Producto } from '~/types';
 
 const props = defineProps({

@@ -60,5 +60,10 @@ export default defineNuxtConfig({
         },
       },
     },
+    resolve: {
+      alias: {
+        '~/types': 'types'
+      }
+    }
   },
 })
