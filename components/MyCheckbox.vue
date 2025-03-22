@@ -42,11 +42,11 @@
     required:       { type: Boolean,  default: false            },
     selected:       { type: Boolean,  default: false            },
     styled:         { type: Boolean,  default: false            },
-    checkmarkColor: { type: String,   default: 'white'          }, //'#1fb978'
-    crossColor:     { type: String,   default: 'white'          }, //'#e74c3c'
+    checkmarkColor: { type: String,   default: 'white'          },
+    crossColor:     { type: String,   default: 'white'          },
     checkedColor:   { type: String,   default: "#6c757d"        },
-    uncheckedColor: { type: String,   default: "#6c757d"        },
-    dotDiameter:    { type: String,   default: "1.5em"          }
+    uncheckedColor: { type: String,   default: '#333'           },
+    dotDiameter:    { type: String,   default: '1rem'           },
   });
 
   const id            = `'checkbox-${props.value}-${props.group}`;
