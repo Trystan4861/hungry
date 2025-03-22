@@ -1,0 +1,135 @@
+  #app {
+    height:               100% !important;
+  }
+  html,body {
+    --bs-body-bg:         black;
+    --bs-body-color:      white;
+    display:              flex;
+    flex-direction:       column;
+    height:               100vh;
+    margin:               0;
+    overflow:             hidden;
+    padding:              0;
+  }
+  div:where(.swal2-container) hr {
+    margin:               .5rem auto !important;
+    text-align:           center;
+    width:                60%;
+  }
+  ::-webkit-scrollbar {
+    height:               4px;
+    width:                4px;
+  }
+  ::-webkit-scrollbar-track {
+    background:           #555;
+  }
+  ::-webkit-scrollbar-thumb {
+    background:           #f0f0f0;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background:           #f0f0f0;
+  }
+  .author-revision,.author {
+    font-size:            xx-small;
+    left:                 -15px;
+    margin:               auto;
+    position:             relative;
+    top:                  0.15vw;
+    width:                fit-content;
+  }
+
+  .container {
+    display:              flex;
+    height:               100%;
+    flex-direction:       column;
+    flex-grow:            1;
+    min-width:            19.3rem;
+  }
+  .appBrand {
+    width:                60px;
+    position:             absolute;
+    top:                  10px;
+    left:                 calc(50% + 3.7rem);
+  }
+  .overflow-hidden{
+    overflow:             hidden;
+  }
+  .swal2-html-container {
+    z-index:              10 !important;
+    overflow:             visible !important;
+  }
+  .swal2-popup{
+    box-shadow:           5px 5px 5px 5px rgba(0,0,0,0.2);
+  }
+  .swal2-input{
+    left:                 50%;
+    margin:               20px 0 0;
+    position:             relative;
+    transform:            translateX(-50%);
+    width:                100%;
+  }
+  .swal2-title{
+    font-size:            1.5rem;
+  }
+  .tabs-container {
+    display:              flex;
+    flex-direction:       column;
+    flex-grow:            1;
+    overflow-y:           auto;
+  }
+  .touch {
+    height:               150px;
+    background:           gray;
+    margin-top:           10px;
+    justify-content:      center;
+    display:              flex;
+    align-items:          center;
+    user-select:          none;
+  }
+  .revision {
+    position: fixed;
+    right: 15px;
+    top: 0px;
+  }
+  .bold {
+    --bs-btn-font-weight: bold !important;
+  }
+  .btn {
+    --bs-btn-color:       #fff !important;
+    --bs-btn-hover-color: #fff !important;
+    --bs-btn-active-color: #fff !important;
+    --bs-btn-font-size: 100% !important;
+  }
+  .input-group-append {
+    position: relative;
+  }
+
+  .input-group-append .toggle-password {
+    height: 2.625em;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background-color: inherit;
+    border: 0;
+    margin-top: .625rem;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .no-select {
+    user-select: none;
+  }
+  .no-select:hover {
+    user-select: none;
+  }
+  .no-select:active {
+    user-select: none;
+  }
+  .no-select:focus {
+    user-select: none;
+  }
+  .no-select:focus-visible {
+    user-select: none;
+  }

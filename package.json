@@ -1,0 +1,28 @@
+{
+  "name": "hungry-by-trystan4861",
+  "author": "trystan4861",
+  "license": "MIT",
+  "version": "0.0.1",
+  "revision": "20250312.1341",
+  "description": "Lista de la compra realizada en Nuxt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "version": "node scripts/updateVersion.js",
+    "minorVersion": "node scripts/updateVersion.js minor",
+    "revision": "node scripts/updateVersion.js revision"
+  },
+  "dependencies": {
+    "@vite-pwa/nuxt": "^0.10.6",
+    "bootstrap": "^5.3.3",
+    "nuxt": "^3.16.0",
+    "sweetalert2": "^11.17.2",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  }
+}

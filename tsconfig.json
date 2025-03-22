@@ -1,0 +1,5 @@
+{
+  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json", //heredamos la configuración de typescript de nuxt
+  "exclude": ["**/*.ignore"] //excluimos todos los archivos .ignore
+}
