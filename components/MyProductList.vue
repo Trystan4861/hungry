@@ -5,6 +5,7 @@
       :key="product.id"
       :product="product"
       :can-be-done="canBeDone"
+      :show-edit="showEdit"
       :amount="product.amount"
       @click:edit="handleEditClick(product)"
       @update:amount="handleUpdateAmount(product, $event)"
@@ -23,6 +24,7 @@ import type { Producto } from '~/types';
 
 const props = defineProps({
   canBeDone:        { type: Boolean,  default:  false },
+  showEdit:         { type: Boolean,  default:  true   },
   productList:      { type: Array<Producto>,    required: true  },
 });
 
