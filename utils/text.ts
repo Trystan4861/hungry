@@ -21,3 +21,19 @@ export const parseEmoji = (text: string): string => {
   const regionalIndicatorRegex = /([\uD83C][\uDDE6-\uDDFF]){2}/g;
   return text.replace(emojiRegex, '<span class="emoji">$1</span>').replace(regionalIndicatorRegex, '<span class="emoji">$&</span>');
 };
+
+/**
+ * Normaliza un texto eliminando acentos y convirtiéndolo a minúsculas
+ * para facilitar búsquedas insensibles a acentos
+ * @param text Texto a normalizar
+ * @returns Texto normalizado sin acentos y en minúsculas
+ */
+export const normalizeText = (text: string): string => {
+  if (!text) return '';
+  
+  // Convertir a minúsculas y normalizar para separar los caracteres base de sus marcas diacríticas
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, ''); // Eliminar todas las marcas diacríticas (acentos, diéresis, etc.)
+};
