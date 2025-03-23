@@ -14,8 +14,5 @@ export * from './fingerprint';
 // Exportar utilidades de array
 export * from './array';
 
-// Exportar utilidades de store
-export * from './store';
-
 // Exportar utilidades de notificación
 export * from './notification';
