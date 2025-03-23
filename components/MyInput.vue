@@ -64,7 +64,7 @@
       focusInput()
     }
     else
-      emit('click')
+      emit('crossClick')
   }
 
   watch (() => props.modelValue,  newValue => inputValue.value = newValue);
@@ -72,7 +72,7 @@
 
   onMounted (() => setTimeout(() => focusInput(), 100));
 
-  const emit = defineEmits(['updateValue','keyPressed:enter','blur','click']);
+  const emit = defineEmits(['updateValue','keyPressed:enter','blur','click','crossClick']);
   defineExpose({inputValue})
 </script>
 
