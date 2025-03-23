@@ -26,3 +26,4 @@ logs
 *.stackdump
 hungry.json
 *.bak
+.vscode
