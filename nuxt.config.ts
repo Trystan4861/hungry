@@ -64,6 +64,9 @@ export default defineNuxtConfig({
       alias: {
         '~/types': 'types'
       }
+    },
+    json: {
+      stringify: true
     }
   },
 })

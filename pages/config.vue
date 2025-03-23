@@ -8,9 +8,10 @@
           </div>
           <div class="text-container">
             <div class="appName">Hungry!</div>
-            <div class="author">by {{ packageInfo.author }}</div>
+            <div class="author">by {{ packageJson.author }}</div>
           </div>
         </div>
+        <div class="revision">v{{ packageJson.version }}</div>
       </div>
     </div>
     <div class="configWithScroll">
@@ -143,11 +144,9 @@
   import * as FingerprintJS from '@fingerprintjs/fingerprintjs'
   import { compactString } from '~/utils/fingerprint'
   import { _DOM, DOM, DID } from '~/utils/dom'
-
-  // Define package info directly instead of importing package.json
-  const packageInfo = {
-    author: "trystan4861"
-  }
+  // Importar package.json para obtener la versión automáticamente
+  // @ts-ignore - Ignoramos el error de TypeScript para la importación de JSON
+  import * as packageJson from '../package.json'
 
   interface Change2Save {
     categoriasVisibiles: boolean;
@@ -396,15 +395,7 @@
         URL.revokeObjectURL(url);
       }, 100);
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Exportación completada',
-        html: 'La configuración se ha exportado correctamente',
-        confirmButtonText: 'Aceptar',
-        target: _DOM("#swallDestination") as HTMLElement,
-        timer: 2000,
-        timerProgressBar: true
-      });
+      // Se ha eliminado el Swal de éxito
     } catch (error) {
       console.error('Error al exportar configuración:', error);
       Swal.fire({

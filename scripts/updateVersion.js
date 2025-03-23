@@ -1,7 +1,7 @@
 // scripts/updateVersion.js
 
-import fs from 'fs';
-import { execSync } from 'child_process';
+const fs = require('fs');
+const { execSync } = require('child_process');
 
 // Obtener la versión actual desde package.json
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
