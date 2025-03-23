@@ -134,3 +134,7 @@
   .no-select:focus-visible {
     user-select: none;
   }
+  .tab-content{
+    max-height: 100vh;
+    overflow-y: auto;
+  }
