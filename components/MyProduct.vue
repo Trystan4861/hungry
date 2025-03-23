@@ -17,7 +17,7 @@
         :class="{ 'done': props.canBeDone && product.done }"
         @click="props.canBeDone ? handleDoneClick() : handleTap()">
         <span class="productAmount">{{ props.product.amount }}&nbsp;</span>
-        <span class="productName">{{ productName }}</span>
+        <span class="productName" v-html="productName"></span>
       </div>
       <div class="iconos" v-if="!props.canBeDone">
         <div
