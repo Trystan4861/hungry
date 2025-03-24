@@ -1,5 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
+  pages: false,
+  app: {
+      pageTransition: false,
+      layoutTransition: false
+  },
   modules: [
     process.env.NODE_ENV === 'production'
       ? ['@vite-pwa/nuxt', {

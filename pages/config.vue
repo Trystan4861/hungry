@@ -84,24 +84,21 @@
         <div class="col-4">
           <MyButton
             text="Importar Configuración"
-            :btn-class="'btn btn-primary fw-bold'"
-            class="mx-3 mt-4"
+            class="btn btn-primary fw-bold mx-3 mt-4"
             @click="handleImport"
           />
         </div>
         <div class="col-4">
           <MyButton
             text="Exportar Configuración"
-            :btn-class="'btn btn-success fw-bold'"
-            class="mx-3 mt-4"
+            class="btn btn-success fw-bold mx-3 mt-4"
             @click="handleExport"
           />
         </div>
         <div class="col-4">
           <MyButton
             text="Guardar Cambios"
-            :btn-class="'btn btn-danger fw-bold'"
-            class="mx-3 mt-4"
+            class="btn btn-danger fw-bold mx-3 mt-4"
             @click="handleSave"
           />
         </div>
@@ -110,16 +107,14 @@
         <div class="col-4">
           <MyButton
             :text="store.loginData.value.logged ? 'Cerrar Sesión' : 'Registrarse / Iniciar Sesión'"
-            :btn-class="'btn btn-info fw-bold'"
-            class="mx-3 mt-4"
+            class="btn btn-info fw-bold mx-3 mt-4"
             @click="handleLogin"
           />
         </div>
         <div class="col-4">
           <MyButton
             text="Restablecer Aplicación"
-            :btn-class="'btn btn-warning fw-bold'"
-            class="mx-3 mt-4"
+            class="btn btn-warning fw-bold mx-3 mt-4"
             @click="handleReset"
           />
         </div>

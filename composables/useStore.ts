@@ -48,7 +48,7 @@ export const myStore = () => {
       supermercados: supermercados.value,
       productos: productos.value,
     };
-    
+
     return data;
   };
 
@@ -59,7 +59,7 @@ export const myStore = () => {
       if (data.categorias) categorias.value = data.categorias;
       if (data.supermercados) supermercados.value = data.supermercados;
       if (data.productos) productos.value = data.productos;
-      
+
       // Si hay otros datos en el objeto importado, también los importamos
       if ('defaultTabActive' in data && typeof data.defaultTabActive === 'number') {
         defaultTabActive.value = data.defaultTabActive;
@@ -76,10 +76,10 @@ export const myStore = () => {
       if ('alturaDisponible' in data && typeof data.alturaDisponible === 'number') {
         alturaDisponible.value = data.alturaDisponible;
       }
-      
+
       // Guardamos los datos importados en localStorage
       localStorageService.importData(data);
-      
+
       return true;
     } catch (error) {
       console.error('Error al importar datos:', error);
@@ -91,7 +91,7 @@ export const myStore = () => {
     try {
       // Primero intentamos migrar datos antiguos si existen
       localStorageService.migrateOldData();
-      
+
       // Intentamos cargar los datos completos primero
       const completeData = localStorageService.getItem();
       if (completeData && typeof completeData === 'object') {
@@ -99,16 +99,16 @@ export const myStore = () => {
         importData(completeData);
         return;
       }
-      
+
       // Si no hay datos completos, cargamos los datos por subitems
       // Validación para productos
       const storedProductos = localStorageService.getSubItem('productos');
       if (storedProductos && Array.isArray(storedProductos)) {
         // Validar que cada producto tiene la estructura correcta
-        const validProductos = storedProductos.filter(p => 
-          p && typeof p === 'object' && 
-          typeof p.id === 'number' && 
-          typeof p.text === 'string' && 
+        const validProductos = storedProductos.filter(p =>
+          p && typeof p === 'object' &&
+          typeof p.id === 'number' &&
+          typeof p.text === 'string' &&
           typeof p.id_categoria === 'number'
         );
         if (validProductos.length === storedProductos.length) {
@@ -122,10 +122,10 @@ export const myStore = () => {
       const storedSupermercados = localStorageService.getSubItem('supermercados');
       if (storedSupermercados && Array.isArray(storedSupermercados)) {
         // Validar que cada supermercado tiene la estructura correcta
-        const validSupermercados = storedSupermercados.filter(s => 
-          s && typeof s === 'object' && 
-          typeof s.id === 'number' && 
-          typeof s.text === 'string' && 
+        const validSupermercados = storedSupermercados.filter(s =>
+          s && typeof s === 'object' &&
+          typeof s.id === 'number' &&
+          typeof s.text === 'string' &&
           typeof s.visible === 'boolean'
         );
         if (validSupermercados.length === storedSupermercados.length) {
@@ -139,11 +139,11 @@ export const myStore = () => {
       const storedCategorias = localStorageService.getSubItem('categorias');
       if (storedCategorias && Array.isArray(storedCategorias)) {
         // Validar que cada categoría tiene la estructura correcta
-        const validCategorias = storedCategorias.filter(c => 
-          c && typeof c === 'object' && 
-          typeof c.id === 'number' && 
-          typeof c.text === 'string' && 
-          typeof c.bgColor === 'string' && 
+        const validCategorias = storedCategorias.filter(c =>
+          c && typeof c === 'object' &&
+          typeof c.id === 'number' &&
+          typeof c.text === 'string' &&
+          typeof c.bgColor === 'string' &&
           typeof c.visible === 'boolean'
         );
         if (validCategorias.length === storedCategorias.length) {
@@ -158,9 +158,9 @@ export const myStore = () => {
       if (storedLoginData && typeof storedLoginData === 'object') {
         // Validar que loginData tiene la estructura correcta
         if (
-          typeof storedLoginData.email === 'string' && 
-          typeof storedLoginData.token === 'string' && 
-          typeof storedLoginData.fingerID === 'string' && 
+          typeof storedLoginData.email === 'string' &&
+          typeof storedLoginData.token === 'string' &&
+          typeof storedLoginData.fingerID === 'string' &&
           typeof storedLoginData.logged === 'boolean'
         ) {
           loginData.value = storedLoginData;
@@ -168,19 +168,19 @@ export const myStore = () => {
           console.warn('LoginData en localStorage no tiene el formato correcto');
         }
       }
-      
+
       // Cargar defaultTabActive
       const storedDefaultTabActive = localStorageService.getSubItem('defaultTabActive');
       if (storedDefaultTabActive !== null && typeof storedDefaultTabActive === 'number') {
         defaultTabActive.value = storedDefaultTabActive;
       }
-      
+
       // Cargar fullScreen
       const storedFullScreen = localStorageService.getSubItem('fullScreen');
       if (storedFullScreen !== null && typeof storedFullScreen === 'boolean') {
         fullScreen.value = storedFullScreen;
       }
-      
+
     } catch (error) {
       console.error('Error al cargar datos desde localStorage:', error);
       // En caso de error, podríamos limpiar el localStorage para evitar futuros problemas
@@ -197,8 +197,17 @@ export const myStore = () => {
     localStorageService.setSubItem('fullScreen', fullScreen.value);
   };
 
-  const addItem = (item: Producto) => {
-    productos.value.push(item);
+  const addProduct = (name: string,category_id:number,supermarket_id:number) => {
+    const newItem: Producto = {
+      id: productos.value.length > 0 ? Math.max(...productos.value.map(p => p.id)) + 1 : 0,
+      text: name.trim(),
+      id_categoria: category_id,
+      id_supermercado: supermarket_id,
+      selected: false,
+      done: false,
+      amount: 1
+    };
+    productos.value.push(newItem);
     saveDataToLocalStorage();
   };
 
@@ -340,7 +349,7 @@ export const myStore = () => {
     defaultTabActive.value = tabIndex;
     saveDataToLocalStorage();
   };
-  
+
   const alturaDisponible = useState<number>('alturaDisponible', () => 0);
   const maxLenght = useState<number>('maxLenght', () => 29);
   const ignoreDrag = useState<boolean>('ignoreDrag', () => false);
@@ -348,7 +357,7 @@ export const myStore = () => {
   const resetToDefaults = () => {
     // Restablecer productos a un array vacío
     productos.value = [];
-    
+
     // Restablecer supermercados a los valores por defecto
     supermercados.value = [
       { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible: true, order: 0 },
@@ -356,7 +365,7 @@ export const myStore = () => {
       { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2 },
       { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3 },
     ];
-    
+
     // Restablecer categorías a los valores por defecto
     categorias.value = Array.from({ length: 20 }, (_, i) => ({
       id: i,
@@ -364,14 +373,14 @@ export const myStore = () => {
       bgColor: bgColors[i],
       visible: true
     }));
-    
+
     // Restablecer datos de inicio de sesión
     loginData.value = { email: '', token: '', fingerID: '', logged: false };
-    
+
     // Restablecer otras configuraciones
     defaultTabActive.value = 0;
     fullScreen.value = false;
-    
+
     // Guardar los cambios en localStorage usando los métodos correctos
     localStorageService.setSubItem('productos', productos.value);
     localStorageService.setSubItem('supermercados', supermercados.value);
@@ -399,7 +408,7 @@ export const myStore = () => {
     findProducto,
     findSupermercado,
     findCategoria,
-    addItem,
+    addProduct,
     updateProduct,
     updateCategoria,
     updateCategorias,

@@ -11,16 +11,15 @@
         />
         <div class="shoppingList" v-show="supermercadosVisibles.length == 1">LISTA DE LA COMPRA</div>
         <MyButton
-        btnClass="danger bold"
-        class="clearList"
+        class="danger bold clearList"
         text="Limpiar Lista"
         :styleButton="{width: anchoBotonLimpiarLista,borderRadius:'0px'}"
         @click="clearList" />
       </div>
     </div>
     <div
-    class="rounded-bottom"
-    :style="{ height: productosSeleccionados.length>0 ? 'calc(100% - 50px)' : '100%' }"
+    class="rounded-bottom listaCompra"
+    :class="{ 'h-100': productosSeleccionados.length==0 }"
     >
       <div class="text-end mt-2 me-2" v-show="productosSeleccionados.length>0">{{ amount2Buy }} producto{{ amount2Buy!=1?'s':'' }} por comprar</div>
       <div class="h-100" v-show="productosSeleccionados.length==0">
@@ -304,5 +303,9 @@
 }
 .filaAcciones{
   align-items: center;
+}
+.listaCompra
+{
+  overflow-y: auto;
 }
 </style>

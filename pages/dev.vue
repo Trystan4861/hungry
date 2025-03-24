@@ -1,34 +1,29 @@
 <template>
   <div class="text-center">
     <h1>Dev</h1>
-    <MyCheckbox v-for="value in values"
-      :key="value"
-      :value="value"
-      :label="'Checkbox ' + value"
-      :styled="true"
-      :checkedValues="checkedValues"
-      :required="true"
-      group="lista"
-      @checked-values="handleCheckedValues"
-      @last-checked-deletion-attempt="handleLastCheckedDeletionAttempt"
+    <MyButton
+      text="Alert"
+      @click="showNotify()"
+      class="mt-4 btn btn-success text-white fw-bold"
     />
+
   </div>
 </template>
 <script setup lang="ts">
-  import { ref } from "vue";
-  import MyCheckbox from "~/components/MyCheckbox.vue";
-  const values = [1,2];
-  const checkedValues = ref(values);
 
-  function handleCheckedValues(value: Array<number>) {
-    checkedValues.value = value;
-    console.log("Checkbox values: " + checkedValues.value);
-    }
+import { notify } from "@kyvg/vue3-notification";
+import { _DOM } from "~/utils/dom";
 
-  function handleLastCheckedDeletionAttempt(value: Array<number>) {
-    console.log("Last checked deletion attempt");
-    console.log("Checkbox values: " + checkedValues.value);
-    }
+const showNotify = () => {
+  notify({
+    text: "Haz clic en el botón para ver más.",
+    type: "success",
+    group: "buttons",
+    duration: 50000,
+    closeOnClick: false,
+    data: { buttonText: "Aceptar", onClick: () => alert("Botón presionado") },
+  });
+  }
 </script>
 <style scoped>
 

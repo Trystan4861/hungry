@@ -1,5 +1,5 @@
 <template>
-  <div class="my-select"  @blur="closeDropdown">
+  <div class="my-select" ref="selectRef" @blur="closeDropdown">
     <div @click="toggleDropdown" class="selected-option" tabindex="0" :class="[(addFilter2Images.includes(selectedOption.logo) ? 'white' : ''), showDropdown ? 'show' : '']">
       <MyImage :image="selectedOption.logo" v-if="!hideSelectedImage" />
       <div class="label" :class="{ 'noimage': hideSelectedImage }">{{ selectedOption.text ? selectedOption.text : placeholder }}</div>
@@ -23,6 +23,8 @@
 import { ref, watch } from 'vue';
 import type { Supermercado, Tab } from '~/types';
 
+const selectRef = ref<HTMLElement | null>(null);
+
 const props = defineProps({
   hideSelectedImage: { type: Boolean, default: false },
   options: { type: Array as () => Supermercado[] | Tab[], required: true },
@@ -42,11 +44,13 @@ const dropdownLeft = ref(0);
 const dropdownWidth = ref(0);
 
 const toggleDropdown = () => {
-  const rect = document.querySelector('.selected-option')?.getBoundingClientRect();
-  if (rect) {
-    dropdownTop.value = rect.bottom;
-    dropdownLeft.value = rect.left;
-    dropdownWidth.value = rect.width;
+  if (selectRef.value) {
+    const rect = selectRef.value.querySelector('.selected-option')?.getBoundingClientRect();
+    if (rect) {
+      dropdownTop.value = rect.bottom;
+      dropdownLeft.value = rect.left;
+      dropdownWidth.value = rect.width;
+    }
   }
   emit('click', !showDropdown.value ? 'hidden' : 'visible');
   showDropdown.value = !showDropdown.value;

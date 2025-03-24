@@ -1,39 +1,37 @@
 <template>
-  <div>
-    <div class="h-100" v-if="productos.length==0">
-      <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase text-center">No hay productos dados de alta</h2></div>
-    </div>
-    <div v-else>
-      <div class="d-flex justify-content-between">
-        <div class="text-start mt-2">
-          <MyButton v-if="!showFinder" btnClass="none" @click="toggleFinder">&#x1f50d;</MyButton>
-          <MyInput
-            v-else
-            :id="idInput"
-            class="border-0 ms-2"
-            :style="'height: 24px;'"
-            :showCross="true"
-            :showEmpty="true"
-            :autoFocus="true"
-            :maxLength="20"
-            v-model="finder"
-            @updateValue="handleUpdateValue"
-            @crossClick="toggleFinder"
-            placeholder="Buscar producto"></MyInput>
-        </div>
-        <div class="text-end me-2 mt-2" @click="toggleFinder">{{ selectedProductsCount }} producto{{ pluralize(selectedProductsCount) }} seleccionado{{ pluralize(selectedProductsCount) }}</div>
-      </div>
-      <div class="withScroll" ref="withScrollRef">
-        <MyProductList
-          :product-list="filteredProducts"
-          :showEdit="showEdit"
-          @update:selected="handleUpdateSelected"
-          @update:amount="handleUpdateAmount"
-        />
-      </div>
-    </div>
-    <div v-if="props.showLetraActual" class="letraActual" :class="{'active': true, 'show': showLetraActual}" ref="letraActualRef"><span>{{ letraActual }}</span></div>
+  <div class="h-100" v-if="productos.length==0">
+    <div class="d-flex justify-content-center align-items-center h-100"><h2 class="text-uppercase text-center">No hay productos dados de alta</h2></div>
   </div>
+  <div v-else>
+    <div class="d-flex justify-content-between">
+      <div class="text-start mt-2">
+        <MyButton v-if="!showFinder" class="none" @click="toggleFinder">&#x1f50d;</MyButton>
+        <MyInput
+          v-else
+          :id="idInput"
+          class="border-0 ms-2"
+          :style="'height: 24px;'"
+          :showCross="true"
+          :showEmpty="true"
+          :autoFocus="true"
+          :maxLength="20"
+          v-model="finder"
+          @updateValue="handleUpdateValue"
+          @crossClick="toggleFinder"
+          placeholder="Buscar producto"></MyInput>
+      </div>
+      <div class="text-end me-2 mt-2" @click="toggleFinder">{{ selectedProductsCount }} producto{{ pluralize(selectedProductsCount) }} seleccionado{{ pluralize(selectedProductsCount) }}</div>
+    </div>
+    <div class="withScroll" ref="withScrollRef">
+      <MyProductList
+        :product-list="filteredProducts"
+        :showEdit="showEdit"
+        @update:selected="handleUpdateSelected"
+        @update:amount="handleUpdateAmount"
+      />
+    </div>
+  </div>
+  <div v-if="props.showLetraActual" class="letraActual" :class="{'active': true, 'show': showLetraActual}" ref="letraActualRef"><span>{{ letraActual }}</span></div>
 </template>
 
 <script setup lang="ts">
@@ -73,20 +71,13 @@ const productos = computed(() => {
     return store.sortedA2Z.value;
   } else {
     // Ordenar por categoría y luego alfabéticamente dentro de cada categoría
-    return [...store.productos.value].sort((a, b) => {
-      if (a.id_categoria !== b.id_categoria) {
-        return a.id_categoria - b.id_categoria;
-      }
-      return normalizeText(a.text).localeCompare(normalizeText(b.text));
-    });
+    return store.sortedByCategory.value;
   }
 });
 
 // Inicializar la lista filtrada con todos los productos
 onMounted(() => {
-  console.log(`Inicializando lista filtrada con: ${productos.value.length} productos (ordenados por ${props.orderType})`);
   filteredList.value = [...productos.value];
-
   // Configurar el evento de scroll para actualizar la letra actual solo si showLetraActual es true
   if (props.showLetraActual && withScrollRef.value) {
     withScrollRef.value.addEventListener('scroll', updateTooltip, { passive: true });
@@ -101,34 +92,25 @@ const handleUpdateValue = (value: string) => {
 
 // Actualizar la lista filtrada cuando cambia el texto de búsqueda
 const updateFilter = () => {
-  console.log("Actualizando filtro con texto:", finder.value);
-
   if (!finder.value.trim()) {
-    console.log("Texto vacío, mostrando todos los productos");
     filteredList.value = [...productos.value];
     return;
   }
 
   const normalizedSearch = normalizeText(finder.value);
-  console.log("Texto normalizado para búsqueda:", normalizedSearch);
 
   // Filtrar productos que contengan el texto de búsqueda (insensible a mayúsculas/minúsculas y acentos)
   const filtered = productos.value.filter(product => {
     const normalizedProductText = normalizeText(product.text);
     const match = normalizedProductText.includes(normalizedSearch);
-    if (match) {
-      console.log(`Producto coincide: "${product.text}" (normalizado: "${normalizedProductText}")`);
-    }
     return match;
   });
 
-  console.log(`Filtrado completado: ${filtered.length} productos coinciden de ${productos.value.length}`);
   filteredList.value = filtered;
 };
 
 // Usar la lista filtrada para mostrar los productos
 const filteredProducts = computed(() => {
-  console.log(`Devolviendo ${filteredList.value.length} productos filtrados`);
   return filteredList.value;
 });
 
@@ -139,18 +121,14 @@ const selectedProductsCount = computed(() =>
 
 // Actualizar la lista filtrada cuando cambia la lista de productos
 watch(() => productos.value, () => {
-  console.log("La lista de productos ha cambiado, actualizando filtro");
   updateFilter();
 }, { deep: true });
 
 const toggleFinder = () => {
   showFinder.value = !showFinder.value;
-  console.log("Buscador:", showFinder.value ? "abierto" : "cerrado");
-
   if (!showFinder.value) {
     finder.value = "";
     filteredList.value = [...productos.value];
-    console.log("Buscador cerrado, restableciendo lista completa");
   }
 };
 

@@ -21,6 +21,7 @@
     "@fingerprintjs/fingerprintjs": "^4.6.1",
     "@kyvg/vue3-notification": "^3.4.1",
     "@vite-pwa/nuxt": "^0.10.6",
+    "@vueuse/core": "^13.0.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "md5": "^2.3.0",

@@ -52,3 +52,13 @@ export interface ImportData {
   categorias?: Categoria[];
   productos?: Producto[];
 }
+
+export interface NotifyItemData {
+  onClick?: () => void;
+  buttonText?: string;
+}
+export interface NotifyItem {
+  title: string;
+  text: string;
+  data?: NotifyItemData;
+}

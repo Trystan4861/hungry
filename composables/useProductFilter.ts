@@ -37,9 +37,6 @@ export function useProductFilter(getProducts: () => Producto[]) {
     const filtered = getProducts().filter(product => {
       const normalizedProductText = normalizeText(product.text);
       const match = normalizedProductText.includes(normalizedSearch);
-      if (match) {
-        console.log(`Producto coincide: "${product.text}" (normalizado: "${normalizedProductText}")`);
-      }
       return match;
     });
 
