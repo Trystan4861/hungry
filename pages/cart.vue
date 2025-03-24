@@ -66,7 +66,7 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { ref, computed, watch, onMounted } from 'vue';
+  import { ref, computed, watch, onMounted, nextTick } from 'vue';
   import { myStore } from "~/composables/useStore";
   import { localStorageService } from "~/localStorageService";
   import { _DOM } from "~/utils";
@@ -89,7 +89,8 @@
 
   const store = myStore();
 
-  const productsData = ref<Producto[]>(store.productos.value);
+  // Usar una referencia reactiva que se actualizará automáticamente
+  const productsData = ref<Producto[]>(store.sortedByCategory.value);
   const categoriesData = ref<Categoria[]>(store.categorias.value);
 
   // Función para crear una copia de un array
@@ -133,20 +134,10 @@
     selectedSupermarket.value = option;
   };
 
-  const idsCategoriasVisibles = computed(() =>
-    createCopy(categoriesData.value)
-      .filter((item: Categoria) => item.visible)
-      .map((item: Categoria) => item.id)
-  );
 
-  const productosDeCategoriasVisibles = computed(() =>
-    productsData.value.filter((producto: Producto) =>
-      idsCategoriasVisibles.value.includes(producto.id_categoria)
-    )
-  );
 
   const productosSeleccionados = computed(() =>
-    productosDeCategoriasVisibles.value.filter((item: Producto) => item.selected)
+    productsData.value.filter((item: Producto) => item.selected)
   );
 
   const amount2Buy = computed(() =>
@@ -223,12 +214,21 @@
     // Update lastClick time
     lastClick.value = Date.now();
 
-    // Process the click
-    const index = findIndexById(item.id, productsData.value);
-    if (index !== -1) {
-      // Use the value from the event instead of toggling
-      productsData.value[index].done = value;
-      setProductsData(productsData.value);
+    // Process the click - usar updateProduct del store para actualizar el estado done
+    const producto = store.findProducto(item.id);
+    if (producto) {
+      // Crear una copia de todos los productos
+      const newProductos = [...store.productos.value];
+      // Encontrar el producto en la copia y actualizarlo
+      const index = newProductos.findIndex(p => p.id === item.id);
+      if (index !== -1) {
+        newProductos[index] = {
+          ...newProductos[index],
+          done: value
+        };
+        // Actualizar todos los productos usando la función centralizada
+        store.updateProductos(newProductos);
+      }
     }
 
     // Reset processing flag after lastClickTimeout ms
@@ -238,7 +238,7 @@
   };
 
   const clearList = (): void => {
-    const selectedProducts = productsData.value.filter((item: Producto) => item.selected);
+    const selectedProducts = store.productos.value.filter((item: Producto) => item.selected);
     const auxClearList = selectedProducts.some((item: Producto) => item.done) &&
                          !selectedProducts.every((item: Producto) => item.done);
 
@@ -259,31 +259,20 @@
       target: _DOM("#swallDestination") as HTMLElement,
     }).then((result) => {
       if (result.isDenied) {
-        productsData.value.forEach((producto: Producto) => {
-          if (producto.done) {
-            producto.selected = false;
-            producto.done = false;
-          }
-        });
+        // Limpiar solo los productos comprados
+        store.clearList(true);
       } else if (result.isConfirmed) {
-        productsData.value.forEach((producto: Producto) => {
-          producto.selected = false;
-          producto.done = false;
-        });
+        // Limpiar todos los productos seleccionados
+        store.clearList(false);
       }
-      setProductsData(productsData.value);
     });
   };
 
-  const setProductsData = (newData: Producto[]): void => {
-    store.productos.value = newData;
-    localStorageService.setItem(store.exportData());
-  };
+  // Ya no necesitamos la función setProductsData ni el watcher
+  // porque todas las actualizaciones se hacen a través del store
 
-  watch(productsData, (newData: Producto[]) => setProductsData(newData));
-
-  // Sincronizar con el store
-  watch(() => store.productos.value, (newData: Producto[]) => {
+  // Sincronizar con el store - usar sortedByCategory para mantener la coherencia
+  watch(() => store.sortedByCategory.value, (newData: Producto[]) => {
     if (JSON.stringify(productsData.value) !== JSON.stringify(newData)) {
       productsData.value = newData;
     }

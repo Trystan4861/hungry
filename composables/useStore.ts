@@ -1,5 +1,6 @@
 import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab } from '~/types';
 import { localStorageService } from '~/localStorageService'; // Import the localStorageService
+import { nextTick } from 'vue';
 
 export const myStore = () => {
   const tabs: Tab[] = [
@@ -58,7 +59,11 @@ export const myStore = () => {
       if (data.loginData) loginData.value = data.loginData;
       if (data.categorias) categorias.value = data.categorias;
       if (data.supermercados) supermercados.value = data.supermercados;
-      if (data.productos) productos.value = data.productos;
+      if (data.productos) {
+        // Usar updateProductos en lugar de asignar directamente
+        updateProductos(data.productos);
+        return true; // Salir temprano ya que updateProductos ya guarda en localStorage
+      }
 
       // Si hay otros datos en el objeto importado, también los importamos
       if ('defaultTabActive' in data && typeof data.defaultTabActive === 'number') {
@@ -112,6 +117,8 @@ export const myStore = () => {
           typeof p.id_categoria === 'number'
         );
         if (validProductos.length === storedProductos.length) {
+          // Usar updateProductos en lugar de asignar directamente
+          // Pero no llamamos a updateProductos aquí para evitar guardar en localStorage innecesariamente
           productos.value = storedProductos;
         } else {
           console.warn('Algunos productos en localStorage no tienen el formato correcto');
@@ -250,19 +257,39 @@ export const myStore = () => {
     }
   };
 
-  const toggleSelected = (id: number) =>{
+  const toggleSelected = (id: number) => {
       const producto = findProducto(id);
       if (producto) {
-        producto.selected = !producto.selected;
-        saveDataToLocalStorage();
+        // Crear una copia de todos los productos
+        const newProductos = [...productos.value];
+        // Encontrar el producto en la copia y actualizarlo
+        const index = newProductos.findIndex(p => p.id === id);
+        if (index !== -1) {
+          newProductos[index] = {
+            ...newProductos[index],
+            selected: !newProductos[index].selected
+          };
+          // Actualizar todos los productos usando la función centralizada
+          updateProductos(newProductos);
+        }
       }
   };
 
-  const toggleDone = (id: number) =>{
+  const toggleDone = (id: number) => {
       const producto = findProducto(id);
       if (producto) {
-        producto.done = !producto.done;
-        saveDataToLocalStorage();
+        // Crear una copia de todos los productos
+        const newProductos = [...productos.value];
+        // Encontrar el producto en la copia y actualizarlo
+        const index = newProductos.findIndex(p => p.id === id);
+        if (index !== -1) {
+          newProductos[index] = {
+            ...newProductos[index],
+            done: !newProductos[index].done
+          };
+          // Actualizar todos los productos usando la función centralizada
+          updateProductos(newProductos);
+        }
       }
   };
 
@@ -374,6 +401,22 @@ export const myStore = () => {
 
   const setFullScreen = setFullscreen; // Alias para mantener compatibilidad
 
+  // Función centralizada para actualizar productos
+  const updateProductos = (newProductos: Producto[]) => {
+    // Actualizar el estado de los productos
+    productos.value = newProductos;
+
+    // Guardar en localStorage
+    saveDataToLocalStorage();
+
+    // Forzar la actualización de las vistas que dependen de estos datos
+    // Esto es importante para asegurar que todas las vistas se actualicen
+    // cuando cambian los productos
+    nextTick(() => {
+      console.log('Productos actualizados en el store');
+    });
+  };
+
   const appName = useState<string>('appName', () => 'Hungry!');
   const defaultTabActive = useState<number>('defaultTabActive', () => 2);
   const setDefaultTabActive = (tabIndex: number) => {
@@ -464,6 +507,7 @@ export const myStore = () => {
     setFullscreen,
     setFullScreen,
     setDefaultTabActive,
-    resetToDefaults
+    resetToDefaults,
+    updateProductos
   };
 };

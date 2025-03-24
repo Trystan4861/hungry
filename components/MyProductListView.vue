@@ -116,7 +116,7 @@ const filteredProducts = computed(() => {
 
 // Calcular el número de productos seleccionados
 const selectedProductsCount = computed(() =>
-  store.productos.value.filter(product => product.selected).length
+  store.sortedA2Z.value.filter(product => product.selected).length
 );
 
 // Actualizar la lista filtrada cuando cambia la lista de productos
