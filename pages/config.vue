@@ -36,18 +36,33 @@
         <div class="col-lg-4 col-md-6 text-center text-uppercase">
           <h6>Visibilidad de Supermercados</h6>
           <div class="my-container mx-lg-3 mx-md-1" :class="{withScroll: store.supermercados.value.length > 4}">
-            <MyCheckbox
-              v-for="supermercado in store.supermercados.value"
-              :enabled="supermercado.id !== 0"
-              :key="supermercado.id"
-              :value="supermercado.id"
-              :label="supermercado.text"
-              :checked-values="supermarketsVisibles"
-              group="configSupermarketsVisibility"
-              :required="true"
-              :styled="true"
-              @checked-values="handleSupermarketsCheckedValues"
-            />
+            <draggable
+              v-model="supermercadosOrdenados"
+              item-key="id"
+              class="list-group"
+              group="supermarkets"
+              ghost-class="ghost"
+              :animation="150"
+              @start="onDragStart"
+              @end="onDragEnd"
+              :move="checkMove"
+            >
+              <template #item="{element, index}">
+                <div>
+                  <MyCheckbox
+                    :enabled="element.id !== 0"
+                    :key="element.id"
+                    :value="element.id"
+                    :label="element.text"
+                    :checked-values="supermarketsVisibles"
+                    group="configSupermarketsVisibility"
+                    :required="true"
+                    :styled="true"
+                    @checked-values="handleSupermarketsCheckedValues"
+                  />
+                </div>
+              </template>
+            </draggable>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 text-center text-uppercase">
@@ -129,9 +144,10 @@
 </template>
 
 <script lang="ts" setup>
+  import draggable from 'vuedraggable'
   import type { Tab } from '~/types';
   import { myStore } from '~/composables/useStore';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, watch } from 'vue';
   import Swal from 'sweetalert2'
   import { localStorageService } from '~/localStorageService'
   import md5 from 'md5'
@@ -164,6 +180,37 @@
     defaultTabActive: false,
     fullScreen: false
   })
+
+  // Añadir referencia ordenable para supermercados
+  const supermercadosOrdenados = ref(store.supermercados.value)
+
+  // Funciones para controlar el arrastre de elementos
+  const onDragStart = (evt: any) => {
+    // Verificar si el elemento que se está arrastrando es el primero (id === 0)
+    const itemId = supermercadosOrdenados.value[evt.oldIndex].id;
+    if (itemId === 0) {
+      // Cancelar el arrastre si es el primer elemento
+      evt.preventDefault();
+    }
+  }
+
+  const onDragEnd = (evt: any) => {
+    // Podemos usar esta función para realizar acciones después de que termine el arrastre
+    console.log('Drag ended', evt);
+  }
+
+  const checkMove = (evt: any) => {
+    // No permitir mover elementos a la posición 0 (antes del primer elemento)
+    if (evt.draggedContext.element.id === 0 || evt.relatedContext.index === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  // Modificar el watch para actualizar el orden en el store
+  watch(supermercadosOrdenados, (newVal) => {
+    store.supermercados.value = newVal
+  }, { deep: true })
 
   // Variables para autenticación
   const showRegisterMessage = ref(true)
@@ -750,4 +797,14 @@
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
   }
+
+  .ghost {
+    opacity: 0.5;
+    background: #c8ebfb;
+  }
+
+  .list-group {
+    min-height: 20px;
+  }
+
 </style>
