@@ -8,7 +8,7 @@
       :id="inputID"
       :placeholder="placeholder"
       :maxlength="realMaxLenght"
-
+      autocomplete="off"
       @keydown="handleKeyDown"
       @keyup="hadleKeyUp"
       @blur="handleBlur">
