@@ -11,7 +11,7 @@
             <div class="author">by {{ packageJson.author }}</div>
           </div>
         </div>
-        <div class="revision">v{{ packageJson.version }}</div>
+        <div class="revision">{{ store.loginData.value.fingerID + ' - ' }}v{{ packageJson.version }}</div>
       </div>
     </div>
     <div class="configWithScroll">
