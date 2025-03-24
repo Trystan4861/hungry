@@ -35,9 +35,9 @@
   <div id="swallDestination"></div>
   <notifications group="pwa" position="top center" width="50%"  />
   <notifications group="app" position="bottom center" width="50%"  />
-  <Notifications group="buttons" position="bottom center" width="50%">
+  <Notifications group="buttons" position="bottom center" width="50%" :ignore-duplicates="true">
     <template #body="{ item }">
-      <div class="vue-notification" :class="[item.type]">
+      <div class="vue-notification success">
         <div class="my-notification">
           <div class="row">
             <div class="col-12 notification-title">{{ item.title }}</div>
@@ -53,8 +53,8 @@
             </div>
           </div>
         </div>
-      </div>
-    </template>
+        <MyProgressBar class="notification-progress-bar" bgcolor="#42a85f" :is-notification="true" :duration="(item.data as NotifyItemData)?.progressBarDuration" />        </div>
+      </template>
   </Notifications>
 </template>
 
@@ -164,5 +164,11 @@ onMounted(async () => {
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+  .notification-progress-bar{
+    width: calc(100% + 20px);
+    position: relative;
+    bottom: -10px;
+    left: -10px;
   }
 </style>
