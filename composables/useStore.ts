@@ -286,9 +286,40 @@ export const myStore = () => {
     saveDataToLocalStorage();
   };
 
-  const sortedA2Z = computed(() => [...productos.value].sort((a, b) => a.text.localeCompare(b.text)));
-  const sortedByCategory = computed(() => [...productos.value].sort((a, b) => a.id_categoria - b.id_categoria || a.text.localeCompare(b.text)));
-  const purchased = computed(() => productos.value.filter(p => p.done));
+  const sortedA2Z = computed(() => {
+    // Obtener IDs de categorías visibles
+    const visibleCategoriaIds = categorias.value
+      .filter(cat => cat.visible)
+      .map(cat => cat.id);
+
+    // Filtrar productos por categorías visibles y luego ordenar alfabéticamente
+    return [...productos.value]
+      .filter(producto => visibleCategoriaIds.includes(producto.id_categoria))
+      .sort((a, b) => a.text.localeCompare(b.text));
+  });
+
+  const sortedByCategory = computed(() => {
+    // Obtener IDs de categorías visibles
+    const visibleCategoriaIds = categorias.value
+      .filter(cat => cat.visible)
+      .map(cat => cat.id);
+
+    // Filtrar productos por categorías visibles y luego ordenar por categoría y alfabéticamente
+    return [...productos.value]
+      .filter(producto => visibleCategoriaIds.includes(producto.id_categoria))
+      .sort((a, b) => a.id_categoria - b.id_categoria || a.text.localeCompare(b.text));
+  });
+
+  const purchased = computed(() => {
+    // Obtener IDs de categorías visibles
+    const visibleCategoriaIds = categorias.value
+      .filter(cat => cat.visible)
+      .map(cat => cat.id);
+
+    // Filtrar productos comprados (done) y que pertenezcan a categorías visibles
+    return productos.value
+      .filter(p => p.done && visibleCategoriaIds.includes(p.id_categoria));
+  });
 
   const clearList = (onlyDone: boolean) => {
     productos.value.forEach(p => {
