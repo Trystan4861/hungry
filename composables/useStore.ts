@@ -265,10 +265,17 @@ export const myStore = () => {
         // Encontrar el producto en la copia y actualizarlo
         const index = newProductos.findIndex(p => p.id === id);
         if (index !== -1) {
+          const newSelected = !newProductos[index].selected;
+
+          // Si estamos seleccionando el producto (selected cambia a true),
+          // también marcamos done como false para evitar que aparezca como comprado
           newProductos[index] = {
             ...newProductos[index],
-            selected: !newProductos[index].selected
+            selected: newSelected,
+            // Si se está seleccionando, asegurarse de que done sea false
+            done: newSelected ? false : newProductos[index].done
           };
+
           // Actualizar todos los productos usando la función centralizada
           updateProductos(newProductos);
         }
