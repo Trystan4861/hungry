@@ -27,4 +27,4 @@ logs
 hungry.json
 *.bak
 .vscode
-pages/dev.vue
+./pages/dev.vue
