@@ -43,12 +43,13 @@
               group="supermarkets"
               ghost-class="ghost"
               :animation="150"
+              handle=".drag-handle"
               @start="onDragStart"
               @end="onDragEnd"
               :move="checkMove"
             >
               <template #item="{element, index}">
-                <div>
+                <div class="d-flex align-items-center justify-content-between w-100">
                   <MyCheckbox
                     :enabled="element.id !== 0"
                     :key="element.id"
@@ -60,6 +61,10 @@
                     :styled="true"
                     @checked-values="handleSupermarketsCheckedValues"
                   />
+                  <div class="drag-handle ms-2 cursor-move" v-if="element.id !== 0">
+                    <span class="grip-icon"></span>
+                  </div>
+                  <div class="ms-2 invisible" v-else style="width: 20px;"></div>
                 </div>
               </template>
             </draggable>
@@ -184,7 +189,7 @@
   // Añadir referencia ordenable para supermercados
   const supermercadosOrdenados = ref(store.supermercados.value)
 
-  // Funciones para controlar el arrastre de elementos
+  // Funciones para controlar el arrastre de elementos de supermercados
   const onDragStart = (evt: any) => {
     // Verificar si el elemento que se está arrastrando es el primero (id === 0)
     const itemId = supermercadosOrdenados.value[evt.oldIndex].id;
@@ -196,7 +201,7 @@
 
   const onDragEnd = (evt: any) => {
     // Podemos usar esta función para realizar acciones después de que termine el arrastre
-    console.log('Drag ended', evt);
+    changes2Save.value.supermarketsVisible = true;
   }
 
   const checkMove = (evt: any) => {
@@ -266,13 +271,10 @@
 
   const handleFullscreenChange = (value: boolean) => {
     fullScreen.value = value
-    console.log("handleFullscreenChange: " + (value?"1":"0"))
     changes2Save.value.fullScreen=true
   }
 
   const handleImport = async () => {
-    console.log("handleImport");
-
     // Crear un input de tipo file oculto
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -409,8 +411,6 @@
   }
 
   const handleExport = () => {
-    console.log("handleExport");
-
     try {
       // Obtener los datos del store
       const data = store.exportData();
@@ -451,24 +451,18 @@
   }
 
   const handleSave = () => {
-   console.log("handleSave")
    //comprobamos si algun valor de changes2Save es true usando funciones de array
    if (Object.values(changes2Save.value).some(value => value)) {
-     console.log("Hay cambios que guardar")
      if (changes2Save.value.categoriasVisibiles) {
-       console.log("Guardando categorias visibles")
        store.updateCategorias(categoriasVisibles.value)
      }
      if (changes2Save.value.supermarketsVisible) {
-       console.log("Guardando supermercados visibles")
        store.updateSupermercados(supermarketsVisibles.value)
      }
      if (changes2Save.value.defaultTabActive) {
-       console.log("Guardando pestaña activa por defecto")
        store.setDefaultTabActive(defaultTabActive.value)
      }
      if (changes2Save.value.fullScreen) {
-       console.log("Guardando fullScreen")
        store.setFullScreen(fullScreen.value)
      }
      Swal.fire({
@@ -493,7 +487,6 @@
   }
 
   const handleRegister = () => {
-    console.log('handleRegister')
     const titleElement = DID("swal2-title");
     const confirmButton = _DOM(".swal2-confirm");
 
@@ -610,7 +603,6 @@
               });
             }
           } catch (error) {
-            console.log('Error:', error);
             Swal.fire({
               title: 'ERROR',
               html: 'Ha ocurrido un error al conectar con el servidor',
@@ -807,4 +799,36 @@
     min-height: 20px;
   }
 
+  .drag-handle {
+    color: #6c757d;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cursor-move {
+    cursor: move;
+  }
+
+  .grip-icon {
+    display: inline-block;
+    width: 16px;
+    height: 12px;
+    position: relative;
+  }
+
+  .grip-icon::before, .grip-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #6c757d;
+  }
+
+  .grip-icon::before {
+    top: 0;
+    box-shadow: 0 5px 0 #6c757d, 0 10px 0 #6c757d;
+  }
 </style>
