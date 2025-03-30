@@ -44,10 +44,52 @@ export function useUserData() {
       const response = await apiService.getAll();
 
       if (response.result) {
-        // Guardar los datos del usuario
-        serverData.value = response.data;
+        // Transformar los datos recibidos al formato esperado por ImportData
+        // La respuesta tiene una estructura diferente a la esperada
+        const formattedData: ImportData = {
+          // Añadir propiedades necesarias
+          appName: 'Hungry!',
+          lastChangeTimestamp: Date.now(),
+          loginData: store.loginData.value,
+
+          // Transformar categorías si es necesario
+          categorias: response.categorias?.map((cat: {
+            id_categoria: number;
+            text: string;
+            bgColor: string;
+            visible: number;
+            timestamp?: number;
+          }) => ({
+            id: cat.id_categoria,
+            text: cat.text,
+            bgColor: cat.bgColor,
+            visible: cat.visible === 1,
+            timestamp: cat.timestamp
+          })) || [],
+
+          // Usar productos directamente
+          productos: response.productos || [],
+
+          // Transformar supermercados si es necesario
+          supermercados: response.supermercados?.map((sup: {
+            id: number;
+            text: string;
+            logo: string;
+            timestamp?: number;
+          }) => ({
+            id: sup.id,
+            text: sup.text,
+            logo: sup.logo,
+            visible: true, // Por defecto todos visibles
+            order: sup.id, // Usar id como orden por defecto
+            timestamp: sup.timestamp
+          })) || []
+        };
+
+        // Guardar los datos transformados
+        serverData.value = formattedData;
         lastFetchTime.value = Date.now();
-        return response.data;
+        return formattedData;
       } else {
         // Si la respuesta no es exitosa, establecer el error
         const errorMsg = response.error_msg || 'Error al obtener los datos del usuario';
@@ -109,16 +151,21 @@ export function useUserData() {
     // Obtener datos locales
     const localData = store.exportData();
 
-    // Comparar timestamps si están disponibles
-    const serverTimestamp = serverData.lastChangeTimestamp || 0;
-    const localTimestamp = localData.lastChangeTimestamp || 0;
-    const serverNewer = serverTimestamp > localTimestamp;
+    // Determinar qué datos son más recientes
+    // Usamos una lógica simple: si hay datos en el servidor, asumimos que son más recientes
+    // a menos que tengamos más productos localmente
+    const localProductCount = localData.productos?.length || 0;
+    const serverProductCount = serverData.productos?.length || 0;
+
+    // Si hay productos en el servidor, asumimos que son más recientes
+    // Si no hay productos en el servidor pero sí localmente, asumimos que los locales son más recientes
+    const serverNewer = serverProductCount > 0 || localProductCount === 0;
 
     // Contar elementos en cada conjunto de datos
     const differences = {
       productos: {
-        local: localData.productos?.length || 0,
-        server: serverData.productos?.length || 0
+        local: localProductCount,
+        server: serverProductCount
       },
       categorias: {
         local: localData.categorias?.length || 0,
@@ -130,11 +177,16 @@ export function useUserData() {
       }
     };
 
-    // Determinar si hay diferencias
+    // Determinar si hay diferencias significativas
+    // Consideramos que hay cambios si:
+    // 1. El número de elementos es diferente en alguna categoría
+    // 2. Hay productos en el servidor pero no localmente o viceversa
     const hasChanges =
       differences.productos.local !== differences.productos.server ||
       differences.categorias.local !== differences.categorias.server ||
-      differences.supermercados.local !== differences.supermercados.server;
+      differences.supermercados.local !== differences.supermercados.server ||
+      (serverProductCount > 0 && localProductCount === 0) ||
+      (localProductCount > 0 && serverProductCount === 0);
 
     return {
       hasChanges,

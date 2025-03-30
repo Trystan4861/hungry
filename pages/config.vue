@@ -304,8 +304,11 @@
   /**
    * handleSync
    * Función para sincronizar manualmente los datos con el servidor
+   * Primero obtiene los datos del servidor, compara con los locales
+   * y muestra opciones al usuario
    */
   const handleSync = async (): Promise<void> => {
+    // Verificar si el usuario está autenticado
     if (!store.loginData.value.logged) {
       showError(
         'Error',
@@ -314,30 +317,75 @@
       return;
     }
 
+    // Importar el composable useUserData
+    const { useUserData } = await import('~/composables/useUserData');
+    const { fetchUserData, compareData } = useUserData();
+
+    // Mostrar diálogo de carga
     const loadingDialog = showLoading(
-      'Sincronizando',
-      'Sincronizando datos con el servidor...'
+      'Obteniendo datos',
+      'Obteniendo datos del servidor...'
     );
 
     try {
-      const success = await syncWithServer();
+      // Obtener datos del servidor
+      const serverData = await fetchUserData();
 
-      if (success) {
+      // Cerrar diálogo de carga
+      Swal.close();
+
+      // Comparar datos del servidor con datos locales
+      const comparison = compareData(serverData);
+
+      if (!comparison.hasChanges) {
+        // Si no hay diferencias, mostrar mensaje
         showSuccess(
           'Sincronización completada',
-          'Tus datos se han sincronizado correctamente'
+          'Tus datos ya están sincronizados con el servidor'
         );
-      } else {
-        showError(
-          'Error de sincronización',
-          'No se pudieron sincronizar los datos. Inténtalo de nuevo más tarde.'
-        );
+        return;
       }
+
+      // Si hay diferencias, mostrar diálogo para que el usuario decida
+      const { serverNewer, differences } = comparison;
+
+      // Construir mensaje con las diferencias
+      const diffMessage = `
+        <p>Se han encontrado diferencias entre tus datos locales y los del servidor:</p>
+        <ul>
+          <li>Productos: ${differences.productos.local} (local) vs ${differences.productos.server} (servidor)</li>
+          <li>Categorías: ${differences.categorias.local} (local) vs ${differences.categorias.server} (servidor)</li>
+          <li>Supermercados: ${differences.supermercados.local} (local) vs ${differences.supermercados.server} (servidor)</li>
+        </ul>
+        <p>${serverNewer ? 'Los datos del servidor son más recientes.' : 'Tus datos locales son más recientes.'}</p>
+        <p>¿Qué deseas hacer?</p>
+      `;
+
+      const result = await Swal.fire({
+        title: 'Sincronización de datos',
+        html: diffMessage,
+        icon: 'question',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: 'Botón A',
+        denyButtonText: 'Botón B',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (result.isConfirmed) {
+        // El usuario pulsó el botón A
+        console.log('Usuario pulsó el botón A');
+      } else if (result.isDenied) {
+        // El usuario pulsó el botón B
+        console.log('Usuario pulsó el botón B');
+      }
+
     } catch (error) {
       console.error('Error en sincronización:', error);
+      Swal.close();
       showError(
         'Error de sincronización',
-        'Ocurrió un error al sincronizar los datos. Inténtalo de nuevo más tarde.'
+        'Ocurrió un error al obtener los datos del servidor. Inténtalo de nuevo más tarde.'
       );
     }
   };
