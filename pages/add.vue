@@ -19,22 +19,22 @@
     class="mt-4 btn btn-success text-white fw-bold"
   />
 </div>
-Producto: {{ name }}<br>
-Categoría: {{ category.text + ' - ' + category.id }}<br>
-Supermercado: {{ supermercado.text + ' - ' + supermercado.id }}
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import type { Categoria, Supermercado } from "~/types";
 import { myStore } from "~/composables/useStore";
+import { useSync } from "~/composables/useSync";
 import Swal from "sweetalert2";
 import { notify } from "@kyvg/vue3-notification";
 
 const store = myStore();
+const { addProducto } = useSync();
 const category = ref<Categoria>(store.categorias.value[0]);
 const supermercado = ref<Supermercado>(store.supermercados.value[0]);
 const name = ref("");
+const isAdding = ref(false);
 
 const handleUpdateValue = (value: string) => {
   name.value = value;
@@ -47,14 +47,16 @@ const handleCategoryLongClick = (category: Categoria) => {
 };
 
 const handleKeyPressedEnter = () => {
-  console.log('Enter key pressed');
+  if (!isAdding.value && name.value.trim() !== '') {
+    handleAdd();
+  }
 };
 
 const handleSupermercadoSelected = (selectedSupermercado: Supermercado) => {
   supermercado.value = selectedSupermercado;
 };
 
-const handleAdd = () => {
+const handleAdd = async () => {
   if (name.value==''){
     Swal.fire({
       icon:'error',
@@ -63,13 +65,50 @@ const handleAdd = () => {
       confirmButtonText:'Aceptar',
       target: _DOM("#swallDestination") as HTMLElement,
     })
+    return;
   }
-  else
-  {
-    store.addProduct(name.value, category.value.id, supermercado.value.id);
-    notify({group:"app", text:`Producto «${name.value}» añadido correctamente en ${category.value.text} para poder comprarlo en ${supermercado.value.text}`,type:"success", duration:3000})
 
-    name.value = '';
+  if (isAdding.value) return; // Evitar múltiples clics
+
+  isAdding.value = true;
+
+  try {
+    // Usar el servicio de sincronización para añadir el producto
+    const productId = await addProducto(
+      name.value,
+      category.value.id,
+      supermercado.value.id
+    );
+
+    if (productId !== null) {
+      notify({
+        group: "app",
+        text: `Producto «${name.value}» añadido correctamente en ${category.value.text} para poder comprarlo en ${supermercado.value.text}`,
+        type: "success",
+        duration: 3000
+      });
+
+      name.value = '';
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo añadir el producto. Inténtalo de nuevo.',
+        confirmButtonText: 'Aceptar',
+        target: _DOM("#swallDestination") as HTMLElement,
+      });
+    }
+  } catch (error) {
+    console.error('Error al añadir producto:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un error al añadir el producto. Inténtalo de nuevo.',
+      confirmButtonText: 'Aceptar',
+      target: _DOM("#swallDestination") as HTMLElement,
+    });
+  } finally {
+    isAdding.value = false;
   }
 };
 </script>

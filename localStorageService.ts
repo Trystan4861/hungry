@@ -1,5 +1,10 @@
 export const localStorageService = {
     /**
+     * Timestamp por defecto: 21 de mayo de 1980 a las 16:25
+     */
+    defaultTimestamp: new Date(1980, 4, 21, 16, 25, 0).getTime() / 1000,
+
+    /**
      * setSubItem:
      * Establece un sub-item dentro de un objeto JSON almacenado en localStorage.
      * Si el objeto principal no existe, se crea automáticamente.
@@ -47,6 +52,7 @@ export const localStorageService = {
     /**
      * setItem:
      * Establece un elemento en el localStorage.
+     * Si no existe un archivo previo en localStorage, se establece el timestamp por defecto.
      *
      * @param value - El valor del elemento a establecer.
      * @param key - La clave para el elemento en el localStorage (por defecto es 'hungryConfigData').
@@ -54,6 +60,15 @@ export const localStorageService = {
      */
     setItem(value: any, key: string = 'hungryConfigData') {
         if (import.meta.client) {
+            // Verificar si ya existe un archivo en localStorage
+            const existingData = localStorage.getItem(key);
+
+            // Si no existe un archivo previo, establecer el timestamp por defecto
+            if (!existingData) {
+                // Agregar el timestamp por defecto
+                value.lastChangeTimestamp = this.defaultTimestamp;
+            }
+
             localStorage.setItem(key, JSON.stringify(value));
             return value;
         }
@@ -79,12 +94,22 @@ export const localStorageService = {
     /**
     * importData:
     * Importa datos desde un archivo JSON y los guarda en el localStorage bajo la clave especificada.
+    * Si no existe un archivo previo en localStorage, se establece el timestamp por defecto.
     *
     * @param data - Los datos a importar.
     * @param key - La clave para el elemento en el localStorage (por defecto es 'hungryConfigData').
     */
     importData(data: any, key: string = 'hungryConfigData') {
         if (import.meta.client) {
+            // Verificar si ya existe un archivo en localStorage
+            const existingData = localStorage.getItem(key);
+
+            // Si no existe un archivo previo o no hay timestamp, establecer el timestamp por defecto
+            if (!existingData || !data.lastChangeTimestamp) {
+                // Agregar el timestamp por defecto
+                data.lastChangeTimestamp = this.defaultTimestamp;
+            }
+
             // Si los datos vienen en el formato antiguo (como objeto plano),
             // los guardamos directamente como el valor completo
             localStorage.setItem(key, JSON.stringify(data));
@@ -111,6 +136,7 @@ export const localStorageService = {
     /**
      * migrateOldData:
      * Migrar datos antiguos almacenados en localStorage a un nuevo formato.
+     * Si no hay timestamp, se establece el timestamp por defecto.
      * @param removeOldKeys - Indica si se deben eliminar las claves antiguas después de la migración.
      * @returns True si se encontraron datos para migrar, false si no se encontraron.
      */
@@ -134,6 +160,11 @@ export const localStorageService = {
                 }
             });
             if (dataFound) { // Si encontramos datos para migrar, guardarlos en el nuevo formato
+                // Si no hay timestamp, establecer el timestamp por defecto
+                if (!hungryConfigData.lastChangeTimestamp) {
+                    hungryConfigData.lastChangeTimestamp = this.defaultTimestamp;
+                }
+
                 localStorage.setItem('hungryConfigData', JSON.stringify(hungryConfigData));
                 if (removeOldKeys)
                     keys.forEach(key => localStorage.removeItem(key));

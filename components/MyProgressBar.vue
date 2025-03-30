@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, withDefaults, ref, watch, onMounted } from "vue";
+    import { computed, ref, watch, onMounted } from "vue";
 
     interface Props {
         duration?: number;

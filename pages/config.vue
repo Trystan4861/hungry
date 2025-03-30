@@ -18,7 +18,7 @@
       <div class="row ">
         <div class="col-lg-4 col-md-6 text-center text-uppercase">
           <h6>Visibilidad de Categorías</h6>
-          <div class="my-container mx-lg-3 mx-md-2" :class="{withScroll: store.categorias.value.length > 4}">
+          <div class="my-container px-2 mx-lg-3 mx-md-2" :class="{withScroll: store.categorias.value.length > 4}">
             <MyCheckbox
               v-for="categoria in store.categorias.value"
               :key="categoria.id"
@@ -35,7 +35,7 @@
         </div>
         <div class="col-lg-4 col-md-6 text-center text-uppercase">
           <h6>Visibilidad de Supermercados</h6>
-          <div class="my-container mx-lg-3 mx-md-1" :class="{withScroll: store.supermercados.value.length > 4}">
+          <div class="my-container px-2 mx-lg-3 mx-md-1" :class="{withScroll: store.supermercados.value.length > 4}">
             <draggable
               v-model="supermercadosOrdenados"
               item-key="id"
@@ -101,42 +101,58 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-4">
+        <div class="col-lg-4 col-md-6 px-4 mt-4">
           <MyButton
             text="Importar Configuración"
-            class="btn btn-primary fw-bold mx-3 mt-4"
+            class="btn btn-primary fw-bold"
             @click="handleImport"
           />
         </div>
-        <div class="col-4">
+        <div class="col-lg-4 col-md-6 px-4 mt-4">
           <MyButton
             text="Exportar Configuración"
-            class="btn btn-success fw-bold mx-3 mt-4"
+            class="btn btn-success fw-bold"
             @click="handleExport"
           />
         </div>
-        <div class="col-4">
+        <div class="col-lg-4 col-md-6 px-4 mt-4">
           <MyButton
             text="Guardar Cambios"
-            class="btn btn-danger fw-bold mx-3 mt-4"
+            class="btn btn-danger fw-bold"
             @click="handleSave"
           />
         </div>
       </div>
       <div class="row">
-        <div class="col-4">
+        <div class="col-lg-4 col-md-6 px-4 mt-4">
           <MyButton
             :text="store.loginData.value.logged ? 'Cerrar Sesión' : 'Registrarse / Iniciar Sesión'"
-            class="btn btn-info fw-bold mx-3 mt-4"
+            class="btn btn-info fw-bold"
             @click="handleLogin"
           />
         </div>
-        <div class="col-4">
+        <div class="col-lg-4 col-md-6 px-4 mt-4">
           <MyButton
             text="Restablecer Aplicación"
-            class="btn btn-warning fw-bold mx-3 mt-4"
+            class="btn btn-warning fw-bold"
             @click="handleReset"
           />
+        </div>
+        <div class="col-lg-4 col-md-6 px-4 mt-4" v-if="store.loginData.value.logged">
+          <MyButton
+            :text="isSyncing ? 'Sincronizando...' : 'Sincronizar Datos'"
+            :disabled="isSyncing"
+            class="btn btn-secondary fw-bold w-100"
+            @click="handleSync"
+          />
+          <div class="text-center mt-1 small">
+            <span v-if="lastSyncTime">
+              Última sincronización: {{ new Date(lastSyncTime).toLocaleString() }}
+            </span>
+            <span v-else>
+              No se ha sincronizado aún
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -152,520 +168,193 @@
   import draggable from 'vuedraggable'
   import type { Tab } from '~/types';
   import { myStore } from '~/composables/useStore';
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, watch } from 'vue';
   import Swal from 'sweetalert2'
-  import { localStorageService } from '~/localStorageService'
-  import md5 from 'md5'
-  import axios from 'axios'
-  import * as FingerprintJS from '@fingerprintjs/fingerprintjs'
-  import { compactString } from '~/utils/fingerprint'
-  import { _DOM, DOM, DID } from '~/utils/dom'
+  import { _DOM, DID } from '~/utils/dom'
   // Importar package.json para obtener la versión automáticamente
   // @ts-ignore - Ignoramos el error de TypeScript para la importación de JSON
   import * as packageJson from '../package.json'
 
+  // Importar estilos específicos para este componente
+  import '~/css/config.vue.css'
+
+  // Importar composables y utilidades
+  import { useAuth } from '~/composables/useAuth';
+  import { useFingerprint } from '~/composables/useFingerprint';
+  import { useDraggable } from '~/composables/useDraggable';
+  import { useFormChanges } from '~/composables/useFormChanges';
+  import { handleImport as importFile, handleExport as exportFile } from '~/utils/fileHandlers';
+  import { showConfirm, showErrorSwal as showError, showSuccess, showLoading } from '~/utils/sweetalert';
+  import { useSync } from '~/composables/useSync';
+  import { apiService } from '~/services/apiService';
+
   interface Change2Save {
-    categoriasVisibiles: boolean;
+    categoriasVisibles: boolean;
     supermarketsVisible: boolean;
     defaultTabActive: boolean;
     fullScreen: boolean;
   }
   const store = myStore();
-  const defaultTabActive=ref(store.defaultTabActive)
+  const defaultTabActive = ref<number>(store.defaultTabActive.value);
   //creamos un array numerico únicamente con los ids de las categorias visibles
-  const categoriasVisibles= ref(store.categorias.value.filter(categoria => categoria.visible).map(categoria => categoria.id))
+  const categoriasVisibles = ref<number[]>(store.categorias.value.filter(categoria => categoria.visible).map(categoria => categoria.id));
 
   //creamos un array numerico únicamente con los ids de los supermercados visibles
-  const supermarketsVisibles= ref(store.supermercados.value.filter(supermercado => supermercado.visible).map(supermercado => supermercado.id))
-  const fullScreen=ref(store.fullScreen.value)
-  const tabselected= ref<Tab>(store.tabs[defaultTabActive.value])
-  const changes2Save=ref<Change2Save>({
-    categoriasVisibiles:false,
-    supermarketsVisible:false,
+  const supermarketsVisibles = ref<number[]>(store.supermercados.value.filter(supermercado => supermercado.visible).map(supermercado => supermercado.id));
+  const fullScreen = ref<boolean>(store.fullScreen.value);
+  const tabselected = ref<Tab>(store.tabs[defaultTabActive.value]);
+  // Usar el composable useFormChanges para gestionar los cambios
+  const { changes: changes2Save, markAsChanged, hasChanges, resetChanges, saveChanges } = useFormChanges({
+    categoriasVisibles: false,
+    supermarketsVisible: false,
     defaultTabActive: false,
     fullScreen: false
-  })
+  });
 
-  // Añadir referencia ordenable para supermercados
-  const supermercadosOrdenados = ref(store.supermercados.value)
-
-  // Funciones para controlar el arrastre de elementos de supermercados
-  const onDragStart = (evt: any) => {
-    // Verificar si el elemento que se está arrastrando es el primero (id === 0)
-    const itemId = supermercadosOrdenados.value[evt.oldIndex].id;
-    if (itemId === 0) {
-      // Cancelar el arrastre si es el primer elemento
-      evt.preventDefault();
-    }
-  }
-
-  const onDragEnd = (evt: any) => {
-    // Podemos usar esta función para realizar acciones después de que termine el arrastre
-    changes2Save.value.supermarketsVisible = true;
-  }
-
-  const checkMove = (evt: any) => {
-    // No permitir mover elementos a la posición 0 (antes del primer elemento)
-    if (evt.draggedContext.element.id === 0 || evt.relatedContext.index === 0) {
-      return false;
-    }
-    return true;
-  }
-
-  // Modificar el watch para actualizar el orden en el store
-  watch(supermercadosOrdenados, (newVal) => {
-    store.supermercados.value = newVal
-  }, { deep: true })
-
-  // Variables para autenticación
-  const showRegisterMessage = ref(true)
-  const fingerID = ref(store.loginData.value.fingerID || '')
-  const dll = ref('loginLinks')
-
-  // Función para obtener el fingerID
-  const getFingerprint = async () => {
-    try {
-      const fpPromise = FingerprintJS.load();
-      const fp = await fpPromise;
-      const result = await fp.get();
-      const compactedId = compactString(result.visitorId);
-      fingerID.value = compactedId;
-
-      // Actualizar el fingerID en el store y localStorage
-      store.loginData.value.fingerID = compactedId;
-      localStorageService.setSubItem('loginData', store.loginData.value);
-
-      return compactedId;
-    } catch (error) {
-      console.error('Error al obtener fingerprint:', error);
-      return '';
-    }
-  }
-
-  // Cargar el fingerprint al montar el componente
-  onMounted(async () => {
-    if (!fingerID.value) {
-      await getFingerprint();
+  // Usar el composable useDraggable para supermercados
+  const {
+    orderedItems: supermercadosOrdenados,
+    onDragStart,
+    onDragEnd,
+    checkMove
+  } = useDraggable(store.supermercados.value, {
+    fixedFirstItem: true,
+    onOrderChange: (newItems) => {
+      store.supermercados.value = newItems;
+      markAsChanged('supermarketsVisible');
     }
   });
 
-  // Función para obtener la URL base de la API
-  const getURLBase = () => {
-    return 'https://infoinnova.es/lolo/api'
+  // Usar composable de fingerprint
+  const { fingerID } = useFingerprint();
+
+  // Inicializar el composable de sincronización
+  const {
+    syncWithServer,
+    isSyncing,
+    lastSyncTime,
+    syncStatus
+  } = useSync();
+
+  const handleCategoriasCheckedValues = (values: number[]): void => {
+    categoriasVisibles.value = values;
+    markAsChanged('categoriasVisibles');
   }
 
-  const handleCategoriasCheckedValues = (values: number[]) => {
-    categoriasVisibles.value=values
-    changes2Save.value.categoriasVisibiles=true
+  const handleSupermarketsCheckedValues = (values: number[]): void => {
+    supermarketsVisibles.value = values;
+    markAsChanged('supermarketsVisible');
   }
 
-  const handleSupermarketsCheckedValues = (values: number[]) => {
-    supermarketsVisibles.value=values
-    changes2Save.value.supermarketsVisible=true
+  const handleDefaultTabActiveChange = (value: number): void => {
+    defaultTabActive.value = value;
+    markAsChanged('defaultTabActive');
   }
 
-  const handleDefaultTabActiveChange = (value: number) => {
-    defaultTabActive.value = value
-    changes2Save.value.defaultTabActive=true
+  const handleFullscreenChange = (value: boolean): void => {
+    fullScreen.value = value;
+    markAsChanged('fullScreen');
   }
 
-  const handleFullscreenChange = (value: boolean) => {
-    fullScreen.value = value
-    changes2Save.value.fullScreen=true
-  }
-
-  const handleImport = async () => {
-    // Crear un input de tipo file oculto
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.json';
-    fileInput.style.display = 'none';
-    document.body.appendChild(fileInput);
-
-    // Manejar el evento de cambio cuando se selecciona un archivo
-    fileInput.onchange = async (event) => {
-      const target = event.target as HTMLInputElement;
-      const files = target.files;
-
-      if (files && files.length > 0) {
-        const file = files[0];
-
-        // Verificar que el nombre del archivo contiene "hungry"
-        if (!file.name.toLowerCase().includes('hungry')) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Archivo no válido',
-            html: 'El archivo debe contener "hungry" en su nombre',
-            confirmButtonText: 'Aceptar',
-            target: _DOM("#swallDestination") as HTMLElement
-          });
-          document.body.removeChild(fileInput);
-          return;
-        }
-
-        try {
-          // Leer el contenido del archivo
-          const content = await file.text();
-          const data = JSON.parse(content);
-
-          // Verificar que el appName es "Hungry!" o agregarlo si no existe
-          if (!data.appName) {
-            data.appName = "Hungry!";
-          } else if (data.appName !== "Hungry!") {
-            Swal.fire({
-              icon: 'error',
-              title: 'Archivo no válido',
-              html: 'El archivo debe tener un appName igual a "Hungry!"',
-              confirmButtonText: 'Aceptar',
-              target: _DOM("#swallDestination") as HTMLElement
-            });
-            document.body.removeChild(fileInput);
-            return;
-          }
-
-          // Preguntar al usuario qué desea importar
-          const result = await Swal.fire({
-            icon: 'question',
-            title: '¿Qué deseas importar?',
-            html: '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?',
-            showCancelButton: true,
-            confirmButtonText: 'Completo',
-            cancelButtonText: 'Cancelar',
-            denyButtonText: 'Solo datos',
-            showDenyButton: true,
-            target: _DOM("#swallDestination") as HTMLElement
-          });
-
-          if (result.isConfirmed) {
-            // Importar configuración completa
-            // Limpiar datos sensibles de loginData
-            const importData = { ...data };
-            // Asegurarnos de que loginData tenga la estructura correcta
-            importData.loginData = { email: '', token: '', fingerID: '', logged: false };
-
-            const success = store.importData(importData);
-            if (success) {
-              // Actualizar las variables reactivas
-              categoriasVisibles.value = store.categorias.value.filter(categoria => categoria.visible).map(categoria => categoria.id);
-              supermarketsVisibles.value = store.supermercados.value.filter(supermercado => supermercado.visible).map(supermercado => supermercado.id);
-              defaultTabActive.value = store.defaultTabActive.value;
-              fullScreen.value = store.fullScreen.value;
-
-              Swal.fire({
-                icon: 'success',
-                title: 'Importación completada',
-                html: 'La configuración completa se ha importado correctamente',
-                confirmButtonText: 'Aceptar',
-                target: _DOM("#swallDestination") as HTMLElement,
-                timer: 2000,
-                timerProgressBar: true
-              });
-            }
-          } else if (result.isDenied) {
-            // Importar solo datos (productos, categorías y supermercados)
-            const importData = {
-              appName: "Hungry!",
-              productos: data.productos || [],
-              categorias: data.categorias || [],
-              supermercados: data.supermercados || [],
-              // Asegurarnos de que loginData tenga la estructura correcta
-              loginData: { email: '', token: '', fingerID: '', logged: false }
-            };
-
-            const success = store.importData(importData);
-            if (success) {
-              // Actualizar las variables reactivas
-              categoriasVisibles.value = store.categorias.value.filter(categoria => categoria.visible).map(categoria => categoria.id);
-              supermarketsVisibles.value = store.supermercados.value.filter(supermercado => supermercado.visible).map(supermercado => supermercado.id);
-
-              Swal.fire({
-                icon: 'success',
-                title: 'Importación completada',
-                html: 'Los datos se han importado correctamente',
-                confirmButtonText: 'Aceptar',
-                target: _DOM("#swallDestination") as HTMLElement,
-                timer: 2000,
-                timerProgressBar: true
-              });
-            }
-          }
-          // Si es cancelado, no hacemos nada
-        } catch (error) {
-          console.error('Error al importar archivo:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            html: 'Error al importar el archivo. Verifica que sea un JSON válido.',
-            confirmButtonText: 'Aceptar',
-            target: _DOM("#swallDestination") as HTMLElement
-          });
-        }
+  const handleImport = async (): Promise<void> => {
+    // Usar la utilidad de importación
+    importFile({
+      fileNameCheck: 'hungry',
+      appNameCheck: 'Hungry!',
+      updateUI: () => {
+        // Actualizar las variables reactivas
+        categoriasVisibles.value = store.categorias.value.filter(categoria => categoria.visible).map(categoria => categoria.id);
+        supermarketsVisibles.value = store.supermercados.value.filter(supermercado => supermercado.visible).map(supermercado => supermercado.id);
+        defaultTabActive.value = store.defaultTabActive.value;
+        fullScreen.value = store.fullScreen.value;
       }
+    });
+  }
 
-      // Eliminar el input del DOM
-      document.body.removeChild(fileInput);
+  const handleExport = (): void => {
+    // Usar la utilidad de exportación
+    exportFile({
+      fileName: 'hungry_config'
+    });
+  }
+
+  const handleSave = (): void => {
+    // Definir las funciones de guardado para cada campo
+    const saveCallbacks = {
+      categoriasVisibles: () => store.updateCategorias(categoriasVisibles.value),
+      supermarketsVisible: () => store.updateSupermercados(supermarketsVisibles.value),
+      defaultTabActive: () => store.setDefaultTabActive(defaultTabActive.value),
+      fullScreen: () => store.setFullScreen(fullScreen.value)
     };
 
-    // Simular clic en el input para abrir el selector de archivos
-    fileInput.click();
+    // Usar el método saveChanges del composable useFormChanges
+    saveChanges(saveCallbacks);
   }
 
-  const handleExport = () => {
-    try {
-      // Obtener los datos del store
-      const data = store.exportData();
+  // Usar composable de autenticación
+  const { showRegisterMessage, dll, handleForgetPass, handleRegister, handleLogin } = useAuth();
 
-      // Limpiar datos sensibles de loginData
-      data.loginData = { email: '', token: '', fingerID: '', logged: false };
-
-      // Convertir a JSON
-      const jsonString = JSON.stringify(data, null, 2);
-
-      // Crear un blob y un enlace para descargar
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `hungry_config_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-
-      // Limpiar
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
-
-      // Se ha eliminado el Swal de éxito
-    } catch (error) {
-      console.error('Error al exportar configuración:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        html: 'Error al exportar la configuración',
-        confirmButtonText: 'Aceptar',
-        target: _DOM("#swallDestination") as HTMLElement
-      });
-    }
-  }
-
-  const handleSave = () => {
-   //comprobamos si algun valor de changes2Save es true usando funciones de array
-   if (Object.values(changes2Save.value).some(value => value)) {
-     if (changes2Save.value.categoriasVisibiles) {
-       store.updateCategorias(categoriasVisibles.value)
-     }
-     if (changes2Save.value.supermarketsVisible) {
-       store.updateSupermercados(supermarketsVisibles.value)
-     }
-     if (changes2Save.value.defaultTabActive) {
-       store.setDefaultTabActive(defaultTabActive.value)
-     }
-     if (changes2Save.value.fullScreen) {
-       store.setFullScreen(fullScreen.value)
-     }
-     Swal.fire({
-       icon: 'success',
-       title: 'Cambios guardados',
-       showConfirmButton: false,
-       timer: 1500
-     })
-     //reseteamos los cambios
-     changes2Save.value = {
-       categoriasVisibiles: false,
-       supermarketsVisible: false,
-       defaultTabActive: false,
-       fullScreen: false
-     }
-   }
-  }
-
-  // Funciones para autenticación
-  const handleForgetPass = () => {
-    console.log('handleForgetPass')
-  }
-
-  const handleRegister = () => {
-    const titleElement = DID("swal2-title");
-    const confirmButton = _DOM(".swal2-confirm");
-
-    if (titleElement && confirmButton) {
-      titleElement.innerText = showRegisterMessage.value ? "Realizar Registro" : "Iniciar Sesión";
-      confirmButton.innerHTML = showRegisterMessage.value ? "Registrarse" : "Aceptar";
-    }
-
-    showRegisterMessage.value = !showRegisterMessage.value;
-  }
-
-  const handleLogin = () => {
-    if (!store.loginData.value.logged) {
-      Swal.fire({
-        title: 'Iniciar Sesión',
-        html: `
-        <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
-        <div class="input-group">
-          <input id="pass" type="password" class="swal2-input password-input" placeholder="Contraseña" autocomplete="off">
-          <div class="input-group-append">
-            <label for="pass" class="input-group-text toggle-password">&#x1f512;&#xfe0e;</label>
-          </div>
-        </div>
-        <div id="LoginFormLinksSweetAlert2"></div>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        cancelButtonText: "Cancelar",
-        confirmButtonText: "Aceptar",
-        target: document.getElementById("swallDestination"),
-        didOpen: () => {
-          // Añadir funcionalidad para mostrar/ocultar contraseña
-          const togglePassword = _DOM('.toggle-password', Swal.getPopup());
-          const passInput = _DOM('#pass', Swal.getPopup()) as HTMLInputElement;
-
-          if (togglePassword && passInput) {
-            togglePassword.addEventListener('click', () => {
-              // Cambiar el tipo de input entre password y text
-              const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
-              passInput.setAttribute('type', type);
-
-              // Cambiar el icono del candado
-              togglePassword.innerHTML = type === 'password' ? '&#x1f512;&#xfe0e;' : '&#x1f513;&#xfe0e;';
-            });
-          }
-        },
-        willOpen: () => {
-          showRegisterMessage.value = true;
-          const loginFormLinks = DID('LoginFormLinksSweetAlert2');
-          const loginLinks = DID(dll.value);
-
-          if (loginFormLinks && loginLinks) {
-            loginFormLinks.appendChild(loginLinks);
-          }
-        },
-        willClose: () => {
-          const anchorLinks = DID("anchorLoginLinks-configuration");
-          const loginLinks = DID(dll.value);
-
-          if (anchorLinks && loginLinks) {
-            anchorLinks.appendChild(loginLinks);
-          }
-        },
-        preConfirm: async () => {
-          const emailInput = _DOM('#email', Swal.getPopup()) as HTMLInputElement;
-          const passInput = _DOM('#pass', Swal.getPopup()) as HTMLInputElement;
-
-          if (!emailInput || !passInput) {
-            Swal.showValidationMessage('Error al obtener los campos del formulario');
-            return false;
-          }
-
-          const email = emailInput.value.toLowerCase().trim();
-          const pass = md5(passInput.value.trim()).toString();
-
-          const anchorLinks = DID("anchorLoginLinks-configuration");
-          const loginLinks = DID(dll.value);
-
-          if (anchorLinks && loginLinks) {
-            anchorLinks.appendChild(loginLinks);
-          }
-
-          let urlbase = getURLBase();
-          let data = { email, pass, fingerID: fingerID.value };
-
-          try {
-            const response = await axios.post(urlbase + '/' + (showRegisterMessage.value ? 'login' : 'register') + '/', data, {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-              },
-            });
-            if (response.data.result) {
-              const loginData = {
-                email,
-                token: response.data.token,
-                fingerID: fingerID.value,
-                logged: true
-              };
-
-              // Actualizar loginData en el store
-              store.loginData.value = loginData;
-              // Guardar en localStorage
-              localStorageService.setSubItem('loginData', loginData);
-
-              Swal.fire({
-                html: 'Has iniciado sesión correctamente',
-                icon: 'success'
-              });
-            } else {
-              Swal.fire({
-                title: 'ERROR',
-                html: response.data.error_msg,
-                icon: 'error'
-              });
-            }
-          } catch (error) {
-            Swal.fire({
-              title: 'ERROR',
-              html: 'Ha ocurrido un error al conectar con el servidor',
-              icon: 'error'
-            });
-          }
-        }
-      });
-    } else {
-      // Mostramos un swal de confirmación para cerrar la sesión
-      Swal.fire({
-        icon: 'question',
-        title: 'Atención',
-        html: 'Se procederá a cerrar su sesión.<br>¿Desea continuar?',
-        showConfirmButton: true,
-        confirmButtonText: 'Cerrar Sesión',
-        showCancelButton: true,
-        cancelButtonText: 'Cancelar',
-        target: document.getElementById("swallDestination"),
-        allowOutsideClick: false
-      }).then(result => {
-        if (result.isConfirmed) {
-          // Actualizar loginData en el store
-          store.loginData.value = { email: '', token: '', fingerID: '', logged: false };
-          // Guardar en localStorage
-          localStorageService.setSubItem('loginData', { email: '', token: '', fingerID: '', logged: false });
-
-          Swal.fire({
-            html: 'Has cerrado sesión correctamente',
-            icon: 'success'
-          });
-        }
-      });
-    }
-  }
-
-  const handleLastCheckedDeletionAttempt = (value: number) => {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      html: "Al menos una categoría debe permanecer visible",
-      confirmButtonText: 'Aceptar',
-      target: _DOM("#swallDestination") as HTMLElement,
-    });
+  const handleLastCheckedDeletionAttempt = (value: number): void => {
+    showError(
+      'Error',
+      "Al menos una categoría debe permanecer visible"
+    );
   };
 
-  const handleReset = () => {
-    Swal.fire({
-      title: 'Atención',
-      html: `
+  /**
+   * handleSync
+   * Función para sincronizar manualmente los datos con el servidor
+   */
+  const handleSync = async (): Promise<void> => {
+    if (!store.loginData.value.logged) {
+      showError(
+        'Error',
+        "Debes iniciar sesión para sincronizar datos"
+      );
+      return;
+    }
+
+    const loadingDialog = showLoading(
+      'Sincronizando',
+      'Sincronizando datos con el servidor...'
+    );
+
+    try {
+      const success = await syncWithServer();
+
+      if (success) {
+        showSuccess(
+          'Sincronización completada',
+          'Tus datos se han sincronizado correctamente'
+        );
+      } else {
+        showError(
+          'Error de sincronización',
+          'No se pudieron sincronizar los datos. Inténtalo de nuevo más tarde.'
+        );
+      }
+    } catch (error) {
+      console.error('Error en sincronización:', error);
+      showError(
+        'Error de sincronización',
+        'Ocurrió un error al sincronizar los datos. Inténtalo de nuevo más tarde.'
+      );
+    }
+  };
+
+  const handleReset = (): void => {
+    showConfirm(
+      'Atención',
+      `
         Se restablecerá la aplicación a los valores de fábrica.
         <br><br>
         Esto eliminará cualquier cambio que hayas hecho en las categorias así como todos los productos que hayas añadido.
         <br><br>
         <b>¡Esta acción no se puede deshacer!</b>
       `,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Restablecer',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33',
-      target: document.getElementById("swallDestination"),
-      preConfirm: () => {
+      'Restablecer',
+      'Cancelar',
+      () => {
         // Borrar localStorage
         localStorage.clear();
 
@@ -673,162 +362,11 @@
         store.resetToDefaults();
 
         // Mostrar mensaje de éxito
-        Swal.fire({
-          title: 'Aplicación restablecida',
-          text: 'La aplicación ha sido restablecida a los valores de fábrica',
-          icon: 'success',
-          target: document.getElementById("swallDestination")
-        });
+        showSuccess(
+          'Aplicación restablecida',
+          'La aplicación ha sido restablecida a los valores de fábrica'
+        );
       }
-    });
+    );
   };
 </script>
-<style scoped>
-.header-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-
-  .logo-text-container {
-    display: flex;
-    align-items: center;
-    max-width: 500px;
-    margin: 0 auto;
-    gap: 0;
-  }
-
-  .logo-container {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding-right: 0;
-    margin-right: 0;
-  }
-
-  .logo-container :deep(img) {
-    height: auto;
-    width: auto;
-    max-height: 70px;
-    display: block;
-  }
-
-  .text-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-left: -5px;
-    text-align: left;
-  }
-
-  .appName {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-
-  .author {
-    font-size: 0.6rem;
-    margin-top: -5px;
-    padding-left: 10px;
-  }
-
-  .configWithScroll{
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: 610px;
-  }
-
-  .my-container{
-    max-height: 9rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-bottom: .625rem;
-    border: 3px solid #555;
-    user-select: none;
-    padding-top: 10px;
-    min-width: 19.3rem;
-  }
-
-  .my-container .my-checkbox .Toggle{
-    padding-left: 0px !important;
-  }
-
-  .my-container.withScroll{
-    border-right-width: 0;
-  }
-
-  /* Estilos para el toggle de contraseña */
-  .input-group {
-    position: relative;
-    display: flex;
-    width: 100%;
-  }
-
-  .password-input {
-    width: 100%;
-  }
-
-  .input-group-append {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .input-group-text {
-    cursor: pointer;
-    padding: 0 10px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    background-color: #e9ecef;
-    border-left: 1px solid #ced4da;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-
-  .ghost {
-    opacity: 0.5;
-    background: #c8ebfb;
-  }
-
-  .list-group {
-    min-height: 20px;
-  }
-
-  .drag-handle {
-    color: #6c757d;
-    width: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .cursor-move {
-    cursor: move;
-  }
-
-  .grip-icon {
-    display: inline-block;
-    width: 16px;
-    height: 12px;
-    position: relative;
-  }
-
-  .grip-icon::before, .grip-icon::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #6c757d;
-  }
-
-  .grip-icon::before {
-    top: 0;
-    box-shadow: 0 5px 0 #6c757d, 0 10px 0 #6c757d;
-  }
-</style>

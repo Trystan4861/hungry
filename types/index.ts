@@ -6,6 +6,7 @@ export interface Producto {
   selected: boolean;
   done: boolean;
   amount: number;
+  timestamp?: number;
 }
 
 export interface Categoria {
@@ -13,6 +14,7 @@ export interface Categoria {
   text: string;
   bgColor: string;
   visible: boolean;
+  timestamp?: number;
 }
 
 export interface Supermercado {
@@ -21,6 +23,7 @@ export interface Supermercado {
   logo: string;
   visible: boolean;
   order: number;
+  timestamp?: number;
 }
 
 export interface LoginData {

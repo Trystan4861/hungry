@@ -14,7 +14,7 @@
         class="danger bold clearList"
         text="Limpiar Lista"
         :styleButton="{width: anchoBotonLimpiarLista,borderRadius:'0px'}"
-        @click="clearList" />
+        @click="handleClearList" />
       </div>
     </div>
     <div
@@ -68,6 +68,7 @@
 <script setup lang="ts">
   import { ref, computed, watch, onMounted, nextTick } from 'vue';
   import { myStore } from "~/composables/useStore";
+  import { useSync } from "~/composables/useSync";
   import { localStorageService } from "~/localStorageService";
   import { _DOM } from "~/utils";
   import Swal from 'sweetalert2';
@@ -88,6 +89,7 @@
 
 
   const store = myStore();
+  const { toggleDone, clearList } = useSync();
 
   // Usar una referencia reactiva que se actualizará automáticamente
   const productsData = ref<Producto[]>(store.sortedByCategory.value);
@@ -202,7 +204,7 @@
 
   onMounted(() => setTimeout(recalculateAnchoBotonLimpiarLista, lastClickTimeout));
 
-  const handleShoplistClick = (item: Producto, value: boolean): void => {
+  const handleShoplistClick = async (item: Producto, value: boolean): Promise<void> => {
     // Check if we're already processing a click or if not enough time has passed
     if (isProcessingClick.value || Date.now() - lastClick.value < lastClickTimeout) {
       return; // Ignore this click
@@ -214,30 +216,24 @@
     // Update lastClick time
     lastClick.value = Date.now();
 
-    // Process the click - usar updateProduct del store para actualizar el estado done
-    const producto = store.findProducto(item.id);
-    if (producto) {
-      // Crear una copia de todos los productos
-      const newProductos = [...store.productos.value];
-      // Encontrar el producto en la copia y actualizarlo
-      const index = newProductos.findIndex(p => p.id === item.id);
-      if (index !== -1) {
-        newProductos[index] = {
-          ...newProductos[index],
-          done: value
-        };
-        // Actualizar todos los productos usando la función centralizada
-        store.updateProductos(newProductos);
+    try {
+      // Usar el servicio de sincronización para actualizar el estado done
+      const producto = store.findProducto(item.id);
+      if (producto) {
+        // Actualizar el producto localmente y en el servidor
+        await toggleDone(item.id);
       }
+    } catch (error) {
+      console.error('Error al actualizar estado de producto:', error);
+    } finally {
+      // Reset processing flag after lastClickTimeout ms
+      setTimeout(() => {
+        isProcessingClick.value = false;
+      }, lastClickTimeout);
     }
-
-    // Reset processing flag after lastClickTimeout ms
-    setTimeout(() => {
-      isProcessingClick.value = false;
-    }, lastClickTimeout);
   };
 
-  const clearList = (): void => {
+  const handleClearList = async (): Promise<void> => {
     const selectedProducts = store.productos.value.filter((item: Producto) => item.selected);
     const auxClearList = selectedProducts.some((item: Producto) => item.done) &&
                          !selectedProducts.every((item: Producto) => item.done);
@@ -257,13 +253,35 @@
       showDenyButton: auxClearList,
       buttonsStyling: false,
       target: _DOM("#swallDestination") as HTMLElement,
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isDenied) {
         // Limpiar solo los productos comprados
-        store.clearList(true);
+        try {
+          await clearList(true);
+        } catch (error) {
+          console.error('Error al limpiar productos comprados:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.',
+            confirmButtonText: 'Aceptar',
+            target: _DOM("#swallDestination") as HTMLElement,
+          });
+        }
       } else if (result.isConfirmed) {
         // Limpiar todos los productos seleccionados
-        store.clearList(false);
+        try {
+          await clearList(false);
+        } catch (error) {
+          console.error('Error al limpiar todos los productos:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.',
+            confirmButtonText: 'Aceptar',
+            target: _DOM("#swallDestination") as HTMLElement,
+          });
+        }
       }
     });
   };

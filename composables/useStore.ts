@@ -44,10 +44,12 @@ export const myStore = () => {
       defaultTabActive: defaultTabActive.value,
       alturaDisponible: alturaDisponible.value,
       fullScreen: fullScreen.value,
-      loginData: loginData.value,
+      // No incluimos loginData en los datos a sincronizar
       categorias: categorias.value,
       supermercados: supermercados.value,
       productos: productos.value,
+      // Añadimos timestamp para comparaciones de sincronización
+      lastChangeTimestamp: Date.now()
     };
 
     return data;
@@ -56,7 +58,19 @@ export const myStore = () => {
   const importData = (data: ImportData) => {
     try {
       // Importamos los datos a las variables reactivas
-      if (data.loginData) loginData.value = data.loginData;
+      // Verificar si el usuario está logueado y si los datos son del mismo usuario
+      if (data.loginData) {
+        // Si estamos logueados y los datos son del mismo usuario, mantenemos los datos de login actuales
+        if (loginData.value.logged &&
+            data.loginData.email === loginData.value.email) {
+          // No hacemos nada, mantenemos los datos de login actuales
+          console.log('Manteniendo datos de login actuales para el mismo usuario');
+        } else {
+          // Si no estamos logueados o los datos son de otro usuario, usamos los datos importados
+          loginData.value = data.loginData;
+        }
+      }
+
       if (data.categorias) categorias.value = data.categorias;
       if (data.supermercados) supermercados.value = data.supermercados;
       if (data.productos) {
