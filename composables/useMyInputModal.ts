@@ -1,4 +1,4 @@
-import { ref, markRaw, createApp, defineComponent, h } from 'vue';
+import { ref, createApp, defineComponent, h } from 'vue';
 import MyInputModal from '~/components/MyInputModal.vue';
 
 /**

@@ -66,3 +66,9 @@ export interface NotifyItem {
   text: string;
   data?: NotifyItemData;
 }
+
+export interface MySelectOption {
+  id: number;
+  text: string;
+  [key: string]: any;
+}

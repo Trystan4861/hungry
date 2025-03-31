@@ -66,44 +66,46 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { ref, computed, watch, onMounted, nextTick } from 'vue';
+  /**
+   * Cart.vue
+   * Componente para gestionar la lista de la compra
+   * Permite ver y gestionar los productos seleccionados, filtrados por supermercado
+   * y marcar/desmarcar productos como comprados
+   */
+
+  // ===== IMPORTACIONES =====
+  import { ref, computed, watch, onMounted } from 'vue';
   import { myStore } from "~/composables/useStore";
   import { _DOM } from "~/utils";
-  import { showErrorAlert as showError, showConfirm } from "~/utils/sweetalert";
+  import { createCopy } from "~/utils/array";
+  import { showErrorAlert as showError } from "~/utils/sweetalert";
   import Swal from 'sweetalert2';
-  import type { Producto, Supermercado, Categoria } from '~/types';
+  import type { Producto, Supermercado, Categoria, MySelectOption } from '~/types';
 
-  // Definición de la interfaz para el componente MySelect
-  interface MySelectOption {
-    id: number;
-    text: string;
-    [key: string]: any;
-  }
-
-  interface MySelectComponent {
-    selectedOption: MySelectOption;
-  }
-
+  // ===== CONSTANTES =====
   const lastClickTimeout = 400;
-
-
   const store = myStore();
 
-  // Usar una referencia reactiva que se actualizará automáticamente
+  // ===== ESTADO REACTIVO =====
+  // Referencias reactivas principales
   const productsData = ref<Producto[]>(store.sortedByCategory.value);
   const categoriesData = ref<Categoria[]>(store.categorias.value);
+  const lastClick = ref(Date.now());
+  const isProcessingClick = ref(false);
+  const anchoBotonLimpiarLista = ref('100px');
 
-  // Función para crear una copia de un array
-  const createCopy = <T>(arr: T[]): T[] => JSON.parse(JSON.stringify(arr));
+  // ===== GESTIÓN DE SUPERMERCADOS =====
+  // Filtrado de supermercados
+  const supermercadosVisibles = computed(() =>
+    store.supermercados.value.filter((i: Supermercado) => i.visible)
+  );
 
-  // Función para encontrar el índice de un elemento por su ID
-  const findIndexById = (id: number, arr: Array<{id: number}>): number =>
-    arr.findIndex((item) => item.id === id);
-
-  const supermarketAtShoppingList = ref<MySelectComponent | null>(null);
-  const supermercadosVisibles = computed(() => store.supermercados.value.filter((i: Supermercado) => i.visible));
-
-  // Función para filtrar supermercados
+  /**
+   * filterSupermercados
+   * Filtra los supermercados visibles, excluyendo el supermercado genérico (id=0)
+   * cuando hay más de un supermercado
+   * @returns Array de supermercados filtrados
+   */
   const filterSupermercados = (): Supermercado[] => {
     let aux = createCopy(supermercadosVisibles.value);
     if (aux.length > 1) {
@@ -113,25 +115,26 @@
   };
 
   const supermercadosAMostrar = computed(() => filterSupermercados());
-
-  // Mantener el supermercado seleccionado en un ref para evitar cambios no deseados
   const selectedSupermarket = ref<MySelectOption>(supermercadosAMostrar.value[0]);
-
   const id_supermercado = computed(() => selectedSupermarket.value?.id ?? 0);
   const supermercado = computed(() => selectedSupermarket.value?.text ?? 'Cualquier Supermercado');
 
-  // Handle supermarket change from dropdown
+  /**
+   * handleSupermarketChange
+   * Maneja el cambio de supermercado seleccionado
+   * @param option Opción seleccionada en el dropdown
+   */
   const handleSupermarketChange = (option: MySelectOption) => {
-    // Actualizar el supermercado seleccionado
     selectedSupermarket.value = option;
   };
 
-
-
+  // ===== FILTRADO DE PRODUCTOS =====
+  // Productos seleccionados (en la lista de la compra)
   const productosSeleccionados = computed(() =>
     productsData.value.filter((item: Producto) => item.selected)
   );
 
+  // Contadores para la interfaz
   const amount2Buy = computed(() =>
     productosSeleccionados.value.filter((i: Producto) => !i.done).length
   );
@@ -139,9 +142,6 @@
   const amountBuyed = computed(() =>
     productosSeleccionados.value.length - amount2Buy.value
   );
-
-  const lastClick = ref(Date.now());
-  const isProcessingClick = ref(false);
 
   const AmountInThisSupermarket = computed(() =>
     productosSeleccionados.value.filter((item: Producto) =>
@@ -155,9 +155,7 @@
     amount2Buy.value - AmountInThisSupermarket.value
   );
 
-  const anchoBotonLimpiarLista = ref('100px');
-
-  // Lista de productos del supermercado actual (incluye los de "cualquier supermercado")
+  // Listas filtradas para la interfaz
   const productosEnSupermercadoActual = computed(() =>
     productosSeleccionados.value.filter((item: Producto) =>
       (item.id_supermercado === id_supermercado.value || item.id_supermercado === 0)
@@ -165,7 +163,6 @@
     )
   );
 
-  // Lista de productos de otros supermercados
   const productosEnOtrosSupermercados = computed(() =>
     productosSeleccionados.value.filter((item: Producto) =>
       item.id_supermercado !== id_supermercado.value
@@ -174,11 +171,15 @@
     )
   );
 
-  // Lista de productos comprados
   const productosComprados = computed(() =>
     productosSeleccionados.value.filter((item: Producto) => item.done)
   );
 
+  // ===== GESTIÓN DE LA INTERFAZ =====
+  /**
+   * recalculateAnchoBotonLimpiarLista
+   * Recalcula el ancho del botón "Limpiar Lista" para que coincida con el ancho del último elemento nav
+   */
   const recalculateAnchoBotonLimpiarLista = (): void => {
     const element = _DOM(".nav-item:last-child");
     if (element && element.getClientRects && element.getClientRects()[0]) {
@@ -188,30 +189,34 @@
     }
   };
 
+  // Configuración de eventos
   if (typeof window !== 'undefined') {
     window.addEventListener('resize', () => setTimeout(recalculateAnchoBotonLimpiarLista, 50));
   }
 
   onMounted(() => setTimeout(recalculateAnchoBotonLimpiarLista, lastClickTimeout));
 
+  // ===== MANEJADORES DE EVENTOS =====
+  /**
+   * handleShoplistClick
+   * Maneja el clic en un producto para marcarlo/desmarcarlo como comprado
+   * @param item Producto sobre el que se ha hecho clic
+   * @param value Nuevo valor para el estado "done" del producto
+   */
   const handleShoplistClick = (item: Producto, value: boolean): void => {
-    // Check if we're already processing a click or if not enough time has passed
+    // Evitar procesamiento múltiple de clics
     if (isProcessingClick.value || Date.now() - lastClick.value < lastClickTimeout) {
-      return; // Ignore this click
+      return;
     }
 
-    // Set processing flag to true
     isProcessingClick.value = true;
-
-    // Update lastClick time
     lastClick.value = Date.now();
 
     try {
-      // Usar el store para actualizar el estado done
+      // Actualizar el estado del producto
       const producto = store.findProducto(item.id);
       if (producto) {
-        // Actualizar el producto localmente con el valor recibido del evento
-        // En lugar de toggle, usamos el valor exacto que viene del componente
+        // Actualizar con el valor exacto recibido del evento
         producto.done = value;
 
         // Guardar los cambios en el store
@@ -223,13 +228,18 @@
     } catch (error) {
       console.error('Error al actualizar estado de producto:', error);
     } finally {
-      // Reset processing flag after lastClickTimeout ms
+      // Restablecer flag después del timeout
       setTimeout(() => {
         isProcessingClick.value = false;
       }, lastClickTimeout);
     }
   };
 
+  /**
+   * handleClearList
+   * Maneja el clic en el botón "Limpiar Lista"
+   * Muestra un diálogo de confirmación y limpia la lista según la opción seleccionada
+   */
   const handleClearList = (): void => {
     const selectedProducts = store.productos.value.filter((item: Producto) => item.selected);
     const auxClearList = selectedProducts.some((item: Producto) => item.done) &&
@@ -275,10 +285,8 @@
     });
   };
 
-  // Ya no necesitamos la función setProductsData ni el watcher
-  // porque todas las actualizaciones se hacen a través del store
-
-  // Sincronizar con el store - usar sortedByCategory para mantener la coherencia
+  // ===== WATCHERS =====
+  // Sincronizar con el store
   watch(() => store.sortedByCategory.value, (newData: Producto[]) => {
     // Actualizar siempre para asegurar que la vista se refresca
     productsData.value = [...newData];
