@@ -351,14 +351,9 @@
 
       // Construir mensaje con las diferencias
       const diffMessage = `
-        <p>Se han encontrado diferencias entre tus datos locales y los del servidor:</p>
-        <ul>
-          <li>Productos: ${differences.productos.local} (local) vs ${differences.productos.server} (servidor)</li>
-          <li>Categorías: ${differences.categorias.local} (local) vs ${differences.categorias.server} (servidor)</li>
-          <li>Supermercados: ${differences.supermercados.local} (local) vs ${differences.supermercados.server} (servidor)</li>
-        </ul>
-        <p>${serverNewer ? 'Los datos del servidor son más recientes.' : 'Tus datos locales son más recientes.'}</p>
-        <p>¿Qué deseas hacer?</p>
+        <p>Se han encontrado diferencias entre tus datos locales y los del servidor,
+        <b>${serverNewer ? 'los datos del servidor' : 'tus datos locales'} son más recientes.</b></p>
+        <p><h3>¿Qué deseas hacer?</h3></p>
       `;
 
       const result = await Swal.fire({
@@ -367,8 +362,8 @@
         icon: 'question',
         showCancelButton: true,
         showDenyButton: true,
-        confirmButtonText: 'Botón A',
-        denyButtonText: 'Botón B',
+        confirmButtonText: 'Enviar Locales',
+        denyButtonText: 'Recibir Remotos',
         cancelButtonText: 'Cancelar'
       });
 
@@ -395,9 +390,9 @@
       'Atención',
       `
         Se restablecerá la aplicación a los valores de fábrica.
-        <br><br>
+        <br /><br />
         Esto eliminará cualquier cambio que hayas hecho en las categorias así como todos los productos que hayas añadido.
-        <br><br>
+        <br /><br />
         <b>¡Esta acción no se puede deshacer!</b>
       `,
       'Restablecer',
