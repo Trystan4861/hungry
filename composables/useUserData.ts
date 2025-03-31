@@ -3,6 +3,7 @@ import type { Ref } from 'vue';
 import { myStore } from '~/composables/useStore';
 import { apiService } from '~/services/apiService';
 import type { ImportData } from '~/types';
+import { formatToMySQLTimestamp } from '~/utils/dateUtils';
 
 /**
  * useUserData
@@ -49,7 +50,7 @@ export function useUserData() {
         const formattedData: ImportData = {
           // Añadir propiedades necesarias
           appName: 'Hungry!',
-          lastChangeTimestamp: new Date().toISOString().slice(0, 19).replace('T', ' '), // Formato YYYY-MM-DD HH:MM:SS
+          lastChangeTimestamp: formatToMySQLTimestamp(), // Utiliza la función de utilidad
           loginData: store.loginData.value,
 
           // Transformar categorías si es necesario
@@ -75,7 +76,7 @@ export function useUserData() {
             id: number;
             text: string;
             logo: string;
-            timestamp?: number;
+            timestamp?: string; // Cambiado a string
           }) => ({
             id: sup.id,
             text: sup.text,

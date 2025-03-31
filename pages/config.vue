@@ -86,12 +86,11 @@
                   <span>Hay <b>{{ store.productos.value.length }}</b> productos dados de alta</span>
                 </div>
                 <div class="col-12 mt-2">
-                  <span>Ejecutar en pantalla completa</span>
                   <MyCheckbox
                     :value="fullScreen?1:0"
                     :checked="fullScreen"
                     :styled="true"
-                    :label="fullScreen ? 'Sí' : 'No'"
+                    :label="fullScreen ? 'Ejecutar a pantalla completa' : 'No ejecutar a pantalla completa'"
                     @checked-value="handleFullscreenChange"
                   />
                 </div>
@@ -147,7 +146,7 @@
           />
           <div class="text-center mt-1 small">
             <span v-if="lastSyncTime">
-              Última sincronización: {{ new Date(lastSyncTime).toLocaleString() }}
+              Última sincronización: {{ formatFechaConLeadingZero(lastSyncTime) }}
             </span>
             <span v-else>
               No se ha sincronizado aún
@@ -169,7 +168,6 @@
   import type { Tab } from '~/types';
   import { myStore } from '~/composables/useStore';
   import { ref, watch } from 'vue';
-  import Swal from 'sweetalert2'
   import { _DOM, DID } from '~/utils/dom'
   // Importar package.json para obtener la versión automáticamente
   // @ts-ignore - Ignoramos el error de TypeScript para la importación de JSON
@@ -184,9 +182,10 @@
   import { useDraggable } from '~/composables/useDraggable';
   import { useFormChanges } from '~/composables/useFormChanges';
   import { handleImport as importFile, handleExport as exportFile } from '~/utils/fileHandlers';
-  import { showConfirm, showErrorSwal as showError, showSuccess, showLoading } from '~/utils/sweetalert';
+  import { showConfirm, showErrorSwal as showError, showSuccess } from '~/utils/sweetalert';
   import { useSync } from '~/composables/useSync';
-  import { apiService } from '~/services/apiService';
+  import { formatFechaConLeadingZero } from '~/utils/dateUtils';
+  import { handleLastCheckedDeletionAttempt, handleSync as syncHandler } from '~/utils/configHandlers';
 
   interface Change2Save {
     categoriasVisibles: boolean;
@@ -227,6 +226,8 @@
 
   // Usar composable de fingerprint
   const { fingerID } = useFingerprint();
+
+
 
   // Inicializar el composable de sincronización
   const {
@@ -294,95 +295,19 @@
   // Usar composable de autenticación
   const { showRegisterMessage, dll, handleForgetPass, handleRegister, handleLogin } = useAuth();
 
-  const handleLastCheckedDeletionAttempt = (value: number): void => {
-    showError(
-      'Error',
-      "Al menos una categoría debe permanecer visible"
-    );
-  };
+  // Usar la función de utilidad para manejar el intento de eliminación de la última categoría
 
   /**
    * handleSync
    * Función para sincronizar manualmente los datos con el servidor
-   * Primero obtiene los datos del servidor, compara con los locales
-   * y muestra opciones al usuario
    */
   const handleSync = async (): Promise<void> => {
-    // Verificar si el usuario está autenticado
-    if (!store.loginData.value.logged) {
-      showError(
-        'Error',
-        "Debes iniciar sesión para sincronizar datos"
-      );
-      return;
-    }
-
     // Importar el composable useUserData
     const { useUserData } = await import('~/composables/useUserData');
     const { fetchUserData, compareData } = useUserData();
 
-    // Mostrar diálogo de carga
-    const loadingDialog = showLoading(
-      'Obteniendo datos',
-      'Obteniendo datos del servidor...'
-    );
-
-    try {
-      // Obtener datos del servidor
-      const serverData = await fetchUserData();
-
-      // Cerrar diálogo de carga
-      Swal.close();
-
-      // Comparar datos del servidor con datos locales
-      const comparison = compareData(serverData);
-
-      if (!comparison.hasChanges) {
-        // Si no hay diferencias, mostrar mensaje
-        showSuccess(
-          'Sincronización completada',
-          'Tus datos ya están sincronizados con el servidor'
-        );
-        return;
-      }
-
-      // Si hay diferencias, mostrar diálogo para que el usuario decida
-      const { serverNewer, differences } = comparison;
-
-      // Construir mensaje con las diferencias
-      const diffMessage = `
-        <p>Se han encontrado diferencias entre tus datos locales y los del servidor,
-        <b>${serverNewer ? 'los datos del servidor' : 'tus datos locales'} son más recientes.</b></p>
-        <p><h3>¿Qué deseas hacer?</h3></p>
-      `;
-
-      const result = await Swal.fire({
-        title: 'Sincronización de datos',
-        html: diffMessage,
-        icon: 'question',
-        showCancelButton: true,
-        showDenyButton: true,
-        confirmButtonText: 'Enviar Locales',
-        denyButtonText: 'Recibir Remotos',
-        cancelButtonText: 'Cancelar'
-      });
-
-      if (result.isConfirmed) {
-        // El usuario pulsó el botón A
-        console.log('Usuario pulsó el botón A');
-      } else if (result.isDenied) {
-        // El usuario pulsó el botón B
-        console.log('Usuario pulsó el botón B');
-      }
-
-    } catch (error) {
-      console.error('Error en sincronización:', error);
-      Swal.close();
-      showError(
-        'Error de sincronización',
-        'Ocurrió un error al obtener los datos del servidor. Inténtalo de nuevo más tarde.'
-      );
-    }
+    // Usar la función de utilidad para manejar la sincronización
+    await syncHandler(store, fetchUserData, compareData, syncWithServer);
   };
 
   const handleReset = (): void => {
