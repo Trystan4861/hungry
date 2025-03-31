@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref } from 'vue';
 import MyInput from './MyInput.vue';
 
 const props = defineProps({
