@@ -27,6 +27,7 @@ import type { Categoria, Supermercado } from "~/types";
 import { myStore } from "~/composables/useStore";
 import { showErrorAlert as showError } from "~/utils/sweetalert";
 import { notify } from "@kyvg/vue3-notification";
+import { useMyInputModal } from "~/composables/useMyInputModal";
 
 const store = myStore();
 const category = ref<Categoria>(store.categorias.value[0]);
@@ -40,11 +41,48 @@ const handleUpdateValue = (value: string) => {
 const handleCategorySelected = (selectedCategory: Categoria) => {
   category.value = selectedCategory;
 };
-const handleCategoryLongClick = (category: Categoria) => {
-  /**
-   * TODO:
-   * - Abrir modal con formulario para editar categoría.
-   */
+/**
+ * handleCategoryLongClick
+ * Función que muestra un modal para editar el nombre de una categoría
+ * @param {Categoria} categoria - La categoría seleccionada para editar
+ */
+const handleCategoryLongClick = async (categoria: Categoria) => {
+  // Usar el composable useMyInputModal para mostrar un modal con un campo de texto personalizado
+  const { showModal } = useMyInputModal();
+
+  const result = await showModal(
+    categoria.text,
+    categoria.text,
+    'Introduzca el nuevo nombre de la categoría',
+    'Aceptar',
+    'Cancelar'
+  );
+
+  if (result.confirmed) {
+    const nuevoNombre = result.value.trim();
+
+    // Verificar si el nombre ha cambiado
+    if (nuevoNombre === categoria.text) {
+      // No se ha modificado el nombre, mostrar notificación
+      notify({
+        group: "app",
+        text: `No se realizaron cambios en la categoría "${categoria.text}"`,
+        type: "info",
+        duration: 3000
+      });
+    } else {
+      // Actualizar la categoría usando el store
+      store.updateCategoria(categoria.id, nuevoNombre);
+
+      // Mostrar notificación de éxito
+      notify({
+        group: "app",
+        text: `Categoría renombrada de "${categoria.text}" a "${nuevoNombre}"`,
+        type: "success",
+        duration: 3000
+      });
+    }
+  }
 };
 
 const handleKeyPressedEnter = () => {

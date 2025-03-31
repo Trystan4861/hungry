@@ -109,3 +109,38 @@ export const showWarning = (title: string, message: string) => {
     target: _DOM(DEFAULT_TARGET) as HTMLElement,
   });
 };
+
+/**
+ * showInputPrompt
+ * Muestra un diálogo con un campo de texto para que el usuario introduzca información
+ * @param title Título del diálogo
+ * @param inputValue Valor inicial del campo de texto
+ * @param placeholder Texto de ayuda para el campo de texto
+ * @param confirmText Texto del botón de confirmación
+ * @param cancelText Texto del botón de cancelación
+ * @returns Promise que se resuelve con el resultado del diálogo
+ */
+export const showInputPrompt = (
+  title: string,
+  inputValue: string = '',
+  placeholder: string = '',
+  confirmText: string = 'Aceptar',
+  cancelText: string = 'Cancelar'
+) => {
+  return Swal.fire({
+    title: title,
+    input: 'text',
+    inputValue: inputValue,
+    inputPlaceholder: placeholder,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    target: _DOM(DEFAULT_TARGET) as HTMLElement,
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Debe introducir un valor';
+      }
+      return null;
+    }
+  });
+};
