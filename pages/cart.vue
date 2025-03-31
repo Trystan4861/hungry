@@ -210,8 +210,15 @@
       // Usar el store para actualizar el estado done
       const producto = store.findProducto(item.id);
       if (producto) {
-        // Actualizar el producto localmente
-        store.toggleDone(item.id);
+        // Actualizar el producto localmente con el valor recibido del evento
+        // En lugar de toggle, usamos el valor exacto que viene del componente
+        producto.done = value;
+
+        // Guardar los cambios en el store
+        store.updateProduct(item.id, { done: value });
+
+        // Forzar actualización de la vista
+        productsData.value = [...store.sortedByCategory.value];
       }
     } catch (error) {
       console.error('Error al actualizar estado de producto:', error);
@@ -248,6 +255,8 @@
         // Limpiar solo los productos comprados
         try {
           store.clearList(true);
+          // Forzar actualización de la vista
+          productsData.value = [...store.sortedByCategory.value];
         } catch (error) {
           console.error('Error al limpiar productos comprados:', error);
           showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
@@ -256,6 +265,8 @@
         // Limpiar todos los productos seleccionados
         try {
           store.clearList(false);
+          // Forzar actualización de la vista
+          productsData.value = [...store.sortedByCategory.value];
         } catch (error) {
           console.error('Error al limpiar todos los productos:', error);
           showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
@@ -269,14 +280,13 @@
 
   // Sincronizar con el store - usar sortedByCategory para mantener la coherencia
   watch(() => store.sortedByCategory.value, (newData: Producto[]) => {
-    if (JSON.stringify(productsData.value) !== JSON.stringify(newData)) {
-      productsData.value = newData;
-    }
-  });
+    // Actualizar siempre para asegurar que la vista se refresca
+    productsData.value = [...newData];
+  }, { deep: true });
 
   watch(() => store.categorias.value, (newData: Categoria[]) => {
-    categoriesData.value = newData;
-  });
+    categoriesData.value = [...newData];
+  }, { deep: true });
 </script>
 <style scoped>
 .shoppingList{
