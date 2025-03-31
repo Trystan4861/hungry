@@ -59,6 +59,7 @@ export interface ImportData {
 export interface NotifyItemData {
   onClick?: () => void;
   buttonText?: string;
+  buttonClass?: string;
   progressBarDuration?: number;
 }
 export interface NotifyItem {

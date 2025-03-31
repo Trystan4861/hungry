@@ -144,3 +144,52 @@ export const showInputPrompt = (
     }
   });
 };
+
+/**
+ * showConfirmWithOptions
+ * Muestra un diálogo de confirmación con múltiples opciones utilizando SweetAlert2
+ * @param title Título del diálogo
+ * @param message Mensaje del diálogo
+ * @param options Opciones de configuración para el diálogo
+ * @returns Promise que se resuelve con el resultado del diálogo
+ */
+export const showConfirmWithOptions = (
+  title: string,
+  message: string,
+  options: {
+    showDenyButton?: boolean;
+    confirmButtonText?: string;
+    denyButtonText?: string;
+    cancelButtonText?: string;
+    customClass?: {
+      confirmButton?: string;
+      denyButton?: string;
+      cancelButton?: string;
+    };
+  } = {}
+) => {
+  const {
+    showDenyButton = false,
+    confirmButtonText = 'Aceptar',
+    denyButtonText = 'Opción alternativa',
+    cancelButtonText = 'Cancelar',
+    customClass = {
+      confirmButton: 'btn btn-primary me-2',
+      denyButton: 'btn btn-warning me-2',
+      cancelButton: 'btn btn-secondary'
+    }
+  } = options;
+
+  return Swal.fire({
+    title: title,
+    text: message,
+    showCancelButton: true,
+    confirmButtonText: confirmButtonText,
+    denyButtonText: denyButtonText,
+    cancelButtonText: cancelButtonText,
+    customClass: customClass,
+    showDenyButton: showDenyButton,
+    buttonsStyling: false,
+    target: _DOM(DEFAULT_TARGET) as HTMLElement
+  });
+};

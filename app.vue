@@ -47,7 +47,9 @@
               <div class="notification-content">{{ item.text }}</div>
             </div>
             <div class="col-6 text-end">
-              <div class="btn btn-primary btn-sm notification-button cursor-pointer" @click="(item.data as NotifyItemData)?.onClick">
+              <div class="btn btn-sm notification-button cursor-pointer"
+                   :class="(item.data as NotifyItemData)?.buttonClass || 'btn-primary'"
+                   @click="(item.data as NotifyItemData)?.onClick">
                 {{ (item.data as NotifyItemData)?.buttonText }}
               </div>
             </div>
