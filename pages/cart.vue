@@ -68,9 +68,8 @@
 <script setup lang="ts">
   import { ref, computed, watch, onMounted, nextTick } from 'vue';
   import { myStore } from "~/composables/useStore";
-  import { useSync } from "~/composables/useSync";
-  import { localStorageService } from "~/localStorageService";
   import { _DOM } from "~/utils";
+  import { showErrorAlert as showError, showConfirm } from "~/utils/sweetalert";
   import Swal from 'sweetalert2';
   import type { Producto, Supermercado, Categoria } from '~/types';
 
@@ -89,7 +88,6 @@
 
 
   const store = myStore();
-  const { toggleDone, clearList } = useSync();
 
   // Usar una referencia reactiva que se actualizará automáticamente
   const productsData = ref<Producto[]>(store.sortedByCategory.value);
@@ -117,21 +115,13 @@
   const supermercadosAMostrar = computed(() => filterSupermercados());
 
   // Mantener el supermercado seleccionado en un ref para evitar cambios no deseados
-  const selectedSupermarket = ref(supermercadosAMostrar.value[0]);
+  const selectedSupermarket = ref<MySelectOption>(supermercadosAMostrar.value[0]);
 
   const id_supermercado = computed(() => selectedSupermarket.value?.id ?? 0);
   const supermercado = computed(() => selectedSupermarket.value?.text ?? 'Cualquier Supermercado');
 
-  // Watch for changes in the selected supermarket
-  watch(() => id_supermercado.value, (newValue) => {
-    console.log("Supermercado cambiado a:", newValue);
-    // Esto activará un recálculo de las propiedades computadas
-    // que dependen de id_supermercado
-  });
-
   // Handle supermarket change from dropdown
-  const handleSupermarketChange = (option: Supermercado) => {
-    console.log("Supermercado seleccionado:", option);
+  const handleSupermarketChange = (option: MySelectOption) => {
     // Actualizar el supermercado seleccionado
     selectedSupermarket.value = option;
   };
@@ -204,7 +194,7 @@
 
   onMounted(() => setTimeout(recalculateAnchoBotonLimpiarLista, lastClickTimeout));
 
-  const handleShoplistClick = async (item: Producto, value: boolean): Promise<void> => {
+  const handleShoplistClick = (item: Producto, value: boolean): void => {
     // Check if we're already processing a click or if not enough time has passed
     if (isProcessingClick.value || Date.now() - lastClick.value < lastClickTimeout) {
       return; // Ignore this click
@@ -217,11 +207,11 @@
     lastClick.value = Date.now();
 
     try {
-      // Usar el servicio de sincronización para actualizar el estado done
+      // Usar el store para actualizar el estado done
       const producto = store.findProducto(item.id);
       if (producto) {
-        // Actualizar el producto localmente y en el servidor
-        await toggleDone(item.id);
+        // Actualizar el producto localmente
+        store.toggleDone(item.id);
       }
     } catch (error) {
       console.error('Error al actualizar estado de producto:', error);
@@ -233,7 +223,7 @@
     }
   };
 
-  const handleClearList = async (): Promise<void> => {
+  const handleClearList = (): void => {
     const selectedProducts = store.productos.value.filter((item: Producto) => item.selected);
     const auxClearList = selectedProducts.some((item: Producto) => item.done) &&
                          !selectedProducts.every((item: Producto) => item.done);
@@ -253,34 +243,22 @@
       showDenyButton: auxClearList,
       buttonsStyling: false,
       target: _DOM("#swallDestination") as HTMLElement,
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isDenied) {
         // Limpiar solo los productos comprados
         try {
-          await clearList(true);
+          store.clearList(true);
         } catch (error) {
           console.error('Error al limpiar productos comprados:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.',
-            confirmButtonText: 'Aceptar',
-            target: _DOM("#swallDestination") as HTMLElement,
-          });
+          showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
         }
       } else if (result.isConfirmed) {
         // Limpiar todos los productos seleccionados
         try {
-          await clearList(false);
+          store.clearList(false);
         } catch (error) {
           console.error('Error al limpiar todos los productos:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.',
-            confirmButtonText: 'Aceptar',
-            target: _DOM("#swallDestination") as HTMLElement,
-          });
+          showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
         }
       }
     });

@@ -1,7 +1,7 @@
 <template>
   <div class="m-3">
     <MyCategoriesList @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
-    <MySelect class="my-select mt-4" v-model="supermercado" :selected="supermercado" :options="store.supermercados.value" @select="handleSupermercadoSelected" />
+    <MySelect class="my-select mt-4" :selected="supermercado" :options="store.supermercados.value" @select="handleSupermercadoSelected" />
     <MyInput
     class="mb-4"
     v-model="name"
@@ -25,12 +25,10 @@
 import { ref } from "vue";
 import type { Categoria, Supermercado } from "~/types";
 import { myStore } from "~/composables/useStore";
-import { useSync } from "~/composables/useSync";
-import Swal from "sweetalert2";
+import { showErrorAlert as showError } from "~/utils/sweetalert";
 import { notify } from "@kyvg/vue3-notification";
 
 const store = myStore();
-const { addProducto } = useSync();
 const category = ref<Categoria>(store.categorias.value[0]);
 const supermercado = ref<Supermercado>(store.supermercados.value[0]);
 const name = ref("");
@@ -43,7 +41,10 @@ const handleCategorySelected = (selectedCategory: Categoria) => {
   category.value = selectedCategory;
 };
 const handleCategoryLongClick = (category: Categoria) => {
-  console.log("Long click on category" + category.text)
+  /**
+   * TODO:
+   * - Abrir modal con formulario para editar categoría.
+   */
 };
 
 const handleKeyPressedEnter = () => {
@@ -56,15 +57,9 @@ const handleSupermercadoSelected = (selectedSupermercado: Supermercado) => {
   supermercado.value = selectedSupermercado;
 };
 
-const handleAdd = async () => {
+const handleAdd = () => {
   if (name.value==''){
-    Swal.fire({
-      icon:'error',
-      title:'Error',
-      text:'Debes introducir un nombre para el nuevo producto',
-      confirmButtonText:'Aceptar',
-      target: _DOM("#swallDestination") as HTMLElement,
-    })
+    showError('Error', 'Debes introducir un nombre para el nuevo producto');
     return;
   }
 
@@ -73,40 +68,24 @@ const handleAdd = async () => {
   isAdding.value = true;
 
   try {
-    // Usar el servicio de sincronización para añadir el producto
-    const productId = await addProducto(
+    // Usar el store para añadir el producto
+    store.addProduct(
       name.value,
       category.value.id,
       supermercado.value.id
     );
 
-    if (productId !== null) {
-      notify({
-        group: "app",
-        text: `Producto «${name.value}» añadido correctamente en ${category.value.text} para poder comprarlo en ${supermercado.value.text}`,
-        type: "success",
-        duration: 3000
-      });
+    notify({
+      group: "app",
+      text: `Producto «${name.value}» añadido correctamente en ${category.value.text} para poder comprarlo en ${supermercado.value.text}`,
+      type: "success",
+      duration: 3000
+    });
 
-      name.value = '';
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo añadir el producto. Inténtalo de nuevo.',
-        confirmButtonText: 'Aceptar',
-        target: _DOM("#swallDestination") as HTMLElement,
-      });
-    }
+    name.value = '';
   } catch (error) {
     console.error('Error al añadir producto:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un error al añadir el producto. Inténtalo de nuevo.',
-      confirmButtonText: 'Aceptar',
-      target: _DOM("#swallDestination") as HTMLElement,
-    });
+    showError('Error', 'Ocurrió un error al añadir el producto. Inténtalo de nuevo.');
   } finally {
     isAdding.value = false;
   }
