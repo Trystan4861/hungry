@@ -107,6 +107,14 @@ export function useAuth() {
             Swal.showValidationMessage('Error al obtener los campos del formulario');
             return false;
           }
+          
+          const $pattern = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/";
+
+          if (!passInput.value.match($pattern)) {
+            Swal.showValidationMessage(`La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una minúscula y un número`);
+            return false;
+          }
+
 
           const email = emailInput.value.toLowerCase().trim();
           const pass = md5(passInput.value.trim()).toString();
