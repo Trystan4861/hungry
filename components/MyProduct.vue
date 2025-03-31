@@ -89,7 +89,6 @@ function handleTap() {
   if (isDragging.value) return;
   if (!props.product.selected) {
     emit('update:selected', true);
-    console.log("emito update amount en handleTap");
     emit('update:amount', 1);
   }
 }
@@ -120,25 +119,21 @@ function handleCategoryClick() {
     }
     else {
       emit('update:selected', false);
-      console.log("emito update amount en handleCategoryClick"+1);
       emit('update:amount', 1);
     }
   }
   else {
     emit('update:selected', true);
-    console.log("emito update amount en handleCategoryClick"+1 );
     emit('update:amount', 1);
   }
 }
 
 function incrementAmount() {
-  console.log("emito update amount en incrementAmount"+props.product.amount+1);
   emit('update:amount', props.product.amount + 1);
 }
 
 function decrementAmount() {
   if (props.product.amount > 1) {
-    console.log("emito update amount en decrementAmount: " + (props.product.amount > 1 ? props.product.amount - 1 : 1));
     emit('update:amount', props.product.amount - 1);
   } else {
     emit('update:selected', false);

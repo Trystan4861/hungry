@@ -64,7 +64,6 @@ export const myStore = () => {
         if (loginData.value.logged &&
             data.loginData.email === loginData.value.email) {
           // No hacemos nada, mantenemos los datos de login actuales
-          console.log('Manteniendo datos de login actuales para el mismo usuario');
         } else {
           // Si no estamos logueados o los datos son de otro usuario, usamos los datos importados
           loginData.value = data.loginData;
@@ -435,13 +434,6 @@ export const myStore = () => {
 
     // Guardar en localStorage
     saveDataToLocalStorage();
-
-    // Forzar la actualización de las vistas que dependen de estos datos
-    // Esto es importante para asegurar que todas las vistas se actualicen
-    // cuando cambian los productos
-    nextTick(() => {
-      console.log('Productos actualizados en el store');
-    });
   };
 
   const appName = useState<string>('appName', () => 'Hungry!');

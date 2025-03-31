@@ -120,7 +120,6 @@ class ApiService {
   ): void {
     this.pendingRequests.push({ method, endpoint, data, resolve, reject });
     this.savePendingRequests();
-    console.log(`Solicitud ${method} ${endpoint} añadida a la cola de pendientes`);
   }
 
   /**
@@ -164,7 +163,6 @@ class ApiService {
    */
   private handleOnline(): void {
     this.isOnline = true;
-    console.log('Conexión recuperada. Procesando solicitudes pendientes...');
     this.processPendingRequests();
   }
 
@@ -174,7 +172,6 @@ class ApiService {
    */
   private handleOffline(): void {
     this.isOnline = false;
-    console.log('Conexión perdida. Las solicitudes se guardarán para reintentarlas más tarde.');
   }
 
   /**
@@ -183,8 +180,6 @@ class ApiService {
    */
   private async processPendingRequests(): Promise<void> {
     if (!this.isOnline || this.pendingRequests.length === 0) return;
-
-    console.log(`Procesando ${this.pendingRequests.length} solicitudes pendientes...`);
 
     const requests = [...this.pendingRequests];
     this.pendingRequests = [];
@@ -207,7 +202,6 @@ class ApiService {
         }
         if (response) {
           resolve(response.data);
-          console.log(`Solicitud ${method} ${endpoint} procesada con éxito`);
         } else {
           reject(new Error(`No se pudo procesar la solicitud ${method} ${endpoint}`));
         }
