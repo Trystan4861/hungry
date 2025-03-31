@@ -4,7 +4,8 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-const uri = 'https://ik.imagekit.io/trystan4861/hungry/';
+const uri = 'https://ik.imagekit.io/hzuwkjlsb/SVGs/';
+
 
 interface Props {
   image: string ;
