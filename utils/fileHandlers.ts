@@ -1,11 +1,9 @@
-import Swal from 'sweetalert2';
 import { _DOM } from '~/utils/dom';
 import { myStore } from '~/composables/useStore';
-import { showSuccess, showErrorSwal as showError } from '~/utils/sweetalert';
+import { showSuccess, showErrorSwal as showError, showImportOptions } from '~/utils/sweetalert';
 import type { LoginData, ImportData } from '~/types';
 
-// Destino por defecto para todos los diálogos de SweetAlert2
-const DEFAULT_TARGET = "#swallDestination";
+
 
 /**
  * handleImport
@@ -72,17 +70,9 @@ export const handleImport = async (options: {
         }
 
         // Preguntar al usuario qué desea importar
-        const result = await Swal.fire({
-          icon: 'question',
-          title: '¿Qué deseas importar?',
-          html: '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?',
-          showCancelButton: true,
-          confirmButtonText: 'Completo',
-          cancelButtonText: 'Cancelar',
-          denyButtonText: 'Solo datos',
-          showDenyButton: true,
-          target: _DOM(DEFAULT_TARGET) as HTMLElement
-        });
+        const result = await showImportOptions(
+          '¿Deseas importar el archivo de configuración completo o sólo productos, categorías y supermercados?'
+        );
 
         if (result.isConfirmed) {
           // Importar configuración completa

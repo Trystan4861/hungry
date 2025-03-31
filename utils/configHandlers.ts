@@ -1,6 +1,5 @@
 import { myStore } from '~/composables/useStore';
-import { showErrorSwal as showError, showLoading, showSuccess } from '~/utils/sweetalert';
-import Swal from 'sweetalert2';
+import { showErrorSwal as showError, showLoading, showSuccess, closeSwal, showSyncConfirm, showSyncSuccess } from '~/utils/sweetalert';
 import type { ImportData } from '~/types';
 
 /**
@@ -58,7 +57,7 @@ export const handleSync = async (
     const serverData = await fetchUserData();
 
     // Cerrar diálogo de carga
-    Swal.close();
+    closeSwal();
 
     // Comparar datos del servidor con datos locales
     const comparison = compareData(serverData);
@@ -82,25 +81,15 @@ export const handleSync = async (
       <p><h3>¿Qué deseas hacer?</h3></p>
     `;
 
-    const result = await Swal.fire({
-      title: 'Sincronización de datos',
-      html: diffMessage,
-      icon: 'question',
-      showCancelButton: true,
-      showDenyButton: true,
-      confirmButtonText: 'Enviar Locales',
-      denyButtonText: 'Recibir Remotos',
-      cancelButtonText: 'Cancelar'
-    });
+    const result = await showSyncConfirm(diffMessage);
 
     if (result.isConfirmed) {
       // Enviar datos locales al servidor
       const syncResult = await syncWithServer();
       if (syncResult) {
-        Swal.fire(
+        showSyncSuccess(
           'Sincronizado',
-          'Tus datos se han enviado al servidor correctamente',
-          'success'
+          'Tus datos se han enviado al servidor correctamente'
         );
       } else {
         showError(
@@ -111,15 +100,14 @@ export const handleSync = async (
     } else if (result.isDenied) {
       // Usar datos del servidor
       store.importData(serverData);
-      Swal.fire(
+      showSyncSuccess(
         'Sincronizado',
-        'Se han cargado los datos del servidor',
-        'success'
+        'Se han cargado los datos del servidor'
       );
     }
   } catch (error) {
     console.error('Error en sincronización:', error);
-    Swal.close();
+    closeSwal();
     showError(
       'Error de sincronización',
       'Ocurrió un error al obtener los datos del servidor. Inténtalo de nuevo más tarde.'
