@@ -28,7 +28,7 @@ export function useSync(): {
   // Obtener la instancia del store
   const store = myStore();
   const isSyncing = ref(false);
-  const lastSyncTime = ref<number | null>(null);
+  const lastSyncTime = ref<number | null>(store.lastSyncTimestamp.value || null);
   const syncStatus = ref<'idle' | 'syncing' | 'success' | 'error'>('idle');
 
   /**
@@ -72,6 +72,7 @@ export function useSync(): {
 
         // Actualizar estado de sincronización
         lastSyncTime.value = Date.now();
+        store.updateLastSyncTimestamp();
         syncStatus.value = 'success';
         return true;
       } else {

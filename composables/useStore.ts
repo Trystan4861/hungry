@@ -16,7 +16,7 @@ export const myStore = () => {
     "#5d6f19", "#2b6f18", "#1f8448", "#196f70", "#183c6e", "#2c186f",
     "#5e186e", "#6e1952"
   ];
-
+  const lastSyncTimestamp = useState<number | null>('lastSyncTimestamp', () => Date.now());
   const productos = useState<Producto[]>('productos', () => []);
   const supermercados = useState<Supermercado[]>('supermercados', () => [
     { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible: true, order: 0 },
@@ -216,6 +216,7 @@ export const myStore = () => {
     localStorageService.setSubItem('loginData', loginData.value);
     localStorageService.setSubItem('defaultTabActive', defaultTabActive.value);
     localStorageService.setSubItem('fullScreen', fullScreen.value);
+    localStorageService.setSubItem('lastSyncTimestamp', lastSyncTimestamp.value);
   };
 
   const addProduct = (name: string,category_id:number,supermarket_id:number) => {
@@ -231,6 +232,11 @@ export const myStore = () => {
     productos.value.push(newItem);
     saveDataToLocalStorage();
   };
+
+  const updateLastSyncTimestamp = () => {
+    lastSyncTimestamp.value = Date.now();
+    saveDataToLocalStorage();
+  }
 
   const updateProduct = (id: number, newData: Partial<Producto>) => {
     const producto = findProducto(id);
@@ -460,7 +466,8 @@ export const myStore = () => {
       { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2 },
       { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3 },
     ];
-
+    // establecemos lastSyncTimestamp a null para que se sincronice al siguiente cambio
+    lastSyncTimestamp.value = null;
     // Restablecer categorías a los valores por defecto
     categorias.value = Array.from({ length: 20 }, (_, i) => ({
       id: i,
@@ -483,6 +490,7 @@ export const myStore = () => {
     localStorageService.setSubItem('loginData', loginData.value);
     localStorageService.setSubItem('defaultTabActive', defaultTabActive.value);
     localStorageService.setSubItem('fullScreen', fullScreen.value);
+    localStorageService.setSubItem('lastSyncTimestamp', lastSyncTimestamp.value);
   };
 
   loadDataFromLocalStorage();
@@ -500,6 +508,8 @@ export const myStore = () => {
     tabs,
     bgColors,
     ignoreDrag,
+    lastSyncTimestamp,
+    updateLastSyncTimestamp,
     findProducto,
     findSupermercado,
     findCategoria,
