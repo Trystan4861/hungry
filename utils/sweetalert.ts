@@ -4,36 +4,38 @@ import { _DOM } from '~/utils/dom';
 // Destino por defecto para todos los diálogos de SweetAlert2
 const DEFAULT_TARGET = "#swallDestination";
 
-/**
- * showErrorAlert
- * Muestra un mensaje de error utilizando SweetAlert2
- * @param title Título del mensaje de error
- * @param message Mensaje de error
- */
-export const showErrorAlert = (title: string, message: string) => {
-  Swal.fire({
-    icon: 'error',
-    title: title,
-    html: message,
-    confirmButtonText: 'Aceptar',
-    target: _DOM(DEFAULT_TARGET) as HTMLElement,
-  });
+// Tipo para las opciones comunes de SweetAlert2
+type SwalBaseOptions = {
+  title?: string;
+  html?: string;
+  text?: string;
+  icon?: 'success' | 'error' | 'warning' | 'info' | 'question';
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+  showCancelButton?: boolean;
+  timer?: number;
+  timerProgressBar?: boolean;
+  allowOutsideClick?: boolean;
+  [key: string]: any;
 };
 
-// Renombramos la función para evitar conflictos con #app/composables/error
-export const showErrorSwal = showErrorAlert;
-
 /**
- * showSuccess
- * Muestra un mensaje de éxito utilizando SweetAlert2
- * @param title Título del mensaje de éxito
- * @param message Mensaje de éxito
+ * showAlert
+ * Función genérica para mostrar alertas utilizando SweetAlert2
+ * @param icon Icono a mostrar ('success', 'error', 'warning', 'info', 'question')
+ * @param title Título del mensaje
+ * @param message Mensaje a mostrar
  * @param timer Tiempo en milisegundos que se mostrará el mensaje (0 para no ocultar automáticamente)
  */
-export const showSuccess = (title: string, message: string, timer: number = 2000) => {
+export const showAlert = (
+  icon: 'success' | 'error' | 'warning' | 'info' | 'question',
+  title: string,
+  message: string,
+  timer: number = 0
+) => {
   Swal.fire({
-    icon: 'success',
-    title: title,
+    icon,
+    title,
     html: message,
     confirmButtonText: 'Aceptar',
     target: _DOM(DEFAULT_TARGET) as HTMLElement,
@@ -41,6 +43,12 @@ export const showSuccess = (title: string, message: string, timer: number = 2000
     timerProgressBar: timer > 0
   });
 };
+
+// Funciones de alerta básicas
+export const showErrorAlert = (title: string, message: string) => showAlert('error', title, message);
+export const showErrorSwal = showErrorAlert; // Alias para evitar conflictos
+export const showSuccess = (title: string, message: string, timer: number = 2000) => showAlert('success', title, message, timer);
+export const showWarning = (title: string, message: string) => showAlert('warning', title, message);
 
 /**
  * showConfirm
@@ -60,7 +68,7 @@ export const showConfirm = (
 ) => {
   Swal.fire({
     icon: 'question',
-    title: title,
+    title,
     html: message,
     showConfirmButton: true,
     confirmButtonText: confirmText,
@@ -84,29 +92,13 @@ export const showConfirm = (
  */
 export const showLoading = (title: string, message: string) => {
   return Swal.fire({
-    title: title,
+    title,
     html: message,
     allowOutsideClick: false,
     didOpen: () => {
       Swal.showLoading();
     },
     target: _DOM(DEFAULT_TARGET) as HTMLElement
-  });
-};
-
-/**
- * showWarning
- * Muestra un mensaje de advertencia utilizando SweetAlert2
- * @param title Título del mensaje de advertencia
- * @param message Mensaje de advertencia
- */
-export const showWarning = (title: string, message: string) => {
-  Swal.fire({
-    icon: 'warning',
-    title: title,
-    html: message,
-    confirmButtonText: 'Aceptar',
-    target: _DOM(DEFAULT_TARGET) as HTMLElement,
   });
 };
 
@@ -128,20 +120,15 @@ export const showInputPrompt = (
   cancelText: string = 'Cancelar'
 ) => {
   return Swal.fire({
-    title: title,
+    title,
     input: 'text',
-    inputValue: inputValue,
+    inputValue,
     inputPlaceholder: placeholder,
     showCancelButton: true,
     confirmButtonText: confirmText,
     cancelButtonText: cancelText,
     target: _DOM(DEFAULT_TARGET) as HTMLElement,
-    inputValidator: (value) => {
-      if (!value) {
-        return 'Debe introducir un valor';
-      }
-      return null;
-    }
+    inputValidator: (value) => !value ? 'Debe introducir un valor' : null
   });
 };
 
@@ -181,18 +168,78 @@ export const showConfirmWithOptions = (
   } = options;
 
   return Swal.fire({
-    title: title,
+    title,
     text: message,
     showCancelButton: true,
-    confirmButtonText: confirmButtonText,
-    denyButtonText: denyButtonText,
-    cancelButtonText: cancelButtonText,
-    customClass: customClass,
-    showDenyButton: showDenyButton,
+    confirmButtonText,
+    denyButtonText,
+    cancelButtonText,
+    customClass,
+    showDenyButton,
     buttonsStyling: false,
     target: _DOM(DEFAULT_TARGET) as HTMLElement
   });
 };
+
+/**
+ * showOptionsDialog
+ * Función genérica para mostrar diálogos con múltiples opciones
+ * @param title Título del diálogo
+ * @param message Mensaje HTML a mostrar
+ * @param options Opciones adicionales para el diálogo
+ * @returns Promise que se resuelve con el resultado del diálogo
+ */
+export const showOptionsDialog = (
+  title: string,
+  message: string,
+  options: {
+    icon?: 'success' | 'error' | 'warning' | 'info' | 'question';
+    confirmButtonText?: string;
+    denyButtonText?: string;
+    cancelButtonText?: string;
+    showDenyButton?: boolean;
+  } = {}
+) => {
+  const {
+    icon = 'question',
+    confirmButtonText = 'Aceptar',
+    denyButtonText = 'Opción alternativa',
+    cancelButtonText = 'Cancelar',
+    showDenyButton = true
+  } = options;
+
+  return Swal.fire({
+    title,
+    html: message,
+    icon,
+    showCancelButton: true,
+    showDenyButton,
+    confirmButtonText,
+    denyButtonText,
+    cancelButtonText,
+    target: _DOM(DEFAULT_TARGET) as HTMLElement
+  });
+};
+
+// Funciones específicas que utilizan showOptionsDialog
+export const showSyncConfirm = (message: string) =>
+  showOptionsDialog('Sincronización de datos', message, {
+    confirmButtonText: 'Enviar Locales',
+    denyButtonText: 'Recibir Remotos'
+  });
+
+export const showImportOptions = (html: string) =>
+  showOptionsDialog('¿Qué deseas importar?', html, {
+    confirmButtonText: 'Completo',
+    denyButtonText: 'Solo datos'
+  });
+
+export const showSyncSuccess = (title: string, message: string) =>
+  showSuccess(title, message, 0);
+
+export const showLogoutConfirm = (confirmCallback: () => void) =>
+  showConfirm('Atención', 'Se procederá a cerrar su sesión.<br>¿Desea continuar?',
+    'Cerrar Sesión', 'Cancelar', confirmCallback);
 
 /**
  * showLoginForm
@@ -222,7 +269,7 @@ export const showLoginForm = (
   } = options;
 
   return Swal.fire({
-    title: title,
+    title,
     html: `
     <input id="email" class="swal2-input" placeholder="Correo electrónico" autocomplete="off">
     <div class="input-group">
@@ -235,13 +282,13 @@ export const showLoginForm = (
     `,
     focusConfirm: false,
     showCancelButton: true,
-    cancelButtonText: cancelButtonText,
-    confirmButtonText: confirmButtonText,
+    cancelButtonText,
+    confirmButtonText,
     target: _DOM(DEFAULT_TARGET) as HTMLElement,
     didOpen: () => {
       // Añadir funcionalidad para mostrar/ocultar contraseña
-      const togglePassword = _DOM('.toggle-password', Swal.getPopup());
-      const passInput = _DOM('#pass', Swal.getPopup()) as HTMLInputElement;
+      const togglePassword = _DOM('.toggle-password', getSwalPopup());
+      const passInput = _DOM('#pass', getSwalPopup()) as HTMLInputElement;
 
       if (togglePassword && passInput) {
         togglePassword.addEventListener('click', () => {
@@ -260,107 +307,7 @@ export const showLoginForm = (
   });
 };
 
-/**
- * showLogoutConfirm
- * Muestra un diálogo de confirmación para cerrar sesión
- * @param confirmCallback Función a ejecutar si se confirma el cierre de sesión
- */
-export const showLogoutConfirm = (confirmCallback: () => void) => {
-  Swal.fire({
-    icon: 'question',
-    title: 'Atención',
-    html: 'Se procederá a cerrar su sesión.<br>¿Desea continuar?',
-    showConfirmButton: true,
-    confirmButtonText: 'Cerrar Sesión',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-    target: _DOM(DEFAULT_TARGET) as HTMLElement,
-    allowOutsideClick: false
-  }).then(result => {
-    if (result.isConfirmed) {
-      confirmCallback();
-    }
-  });
-};
-
-/**
- * showValidationMessage
- * Muestra un mensaje de validación en un diálogo de SweetAlert2 abierto
- * @param message Mensaje de validación a mostrar
- */
-export const showValidationMessage = (message: string) => {
-  Swal.showValidationMessage(message);
-};
-
-/**
- * getSwalPopup
- * Obtiene el elemento popup de SweetAlert2 actualmente abierto
- * @returns Elemento HTML del popup
- */
-export const getSwalPopup = () => {
-  return Swal.getPopup();
-};
-
-/**
- * closeSwal
- * Cierra el diálogo de SweetAlert2 actualmente abierto
- */
-export const closeSwal = () => {
-  Swal.close();
-};
-
-/**
- * showSyncConfirm
- * Muestra un diálogo de confirmación para sincronización de datos
- * @param message Mensaje HTML a mostrar en el diálogo
- * @returns Promise que se resuelve con el resultado del diálogo
- */
-export const showSyncConfirm = (message: string) => {
-  return Swal.fire({
-    title: 'Sincronización de datos',
-    html: message,
-    icon: 'question',
-    showCancelButton: true,
-    showDenyButton: true,
-    confirmButtonText: 'Enviar Locales',
-    denyButtonText: 'Recibir Remotos',
-    cancelButtonText: 'Cancelar',
-    target: _DOM(DEFAULT_TARGET) as HTMLElement
-  });
-};
-
-/**
- * showSyncSuccess
- * Muestra un mensaje de éxito para la sincronización de datos
- * @param title Título del mensaje
- * @param message Mensaje a mostrar
- */
-export const showSyncSuccess = (title: string, message: string) => {
-  Swal.fire({
-    icon: 'success',
-    title: title,
-    html: message,
-    confirmButtonText: 'Aceptar',
-    target: _DOM(DEFAULT_TARGET) as HTMLElement
-  });
-};
-
-/**
- * showImportOptions
- * Muestra un diálogo para seleccionar opciones de importación
- * @param html Contenido HTML del diálogo
- * @returns Promise que se resuelve con el resultado del diálogo
- */
-export const showImportOptions = (html: string) => {
-  return Swal.fire({
-    icon: 'question',
-    title: '¿Qué deseas importar?',
-    html: html,
-    showCancelButton: true,
-    confirmButtonText: 'Completo',
-    cancelButtonText: 'Cancelar',
-    denyButtonText: 'Solo datos',
-    showDenyButton: true,
-    target: _DOM(DEFAULT_TARGET) as HTMLElement
-  });
-};
+// Funciones utilitarias simples
+export const showValidationMessage = (message: string) => Swal.showValidationMessage(message);
+export const getSwalPopup = () => Swal.getPopup();
+export const closeSwal = () => Swal.close();
