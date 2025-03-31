@@ -6,7 +6,7 @@ export interface Producto {
   selected: boolean;
   done: boolean;
   amount: number;
-  timestamp?: number;
+  timestamp?: string; // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
 }
 
 export interface Categoria {
@@ -14,7 +14,7 @@ export interface Categoria {
   text: string;
   bgColor: string;
   visible: boolean;
-  timestamp?: number;
+  timestamp?: string; // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
 }
 
 export interface Supermercado {
@@ -23,7 +23,7 @@ export interface Supermercado {
   logo: string;
   visible: boolean;
   order: number;
-  timestamp?: number;
+  timestamp?: string; // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
 }
 
 export interface LoginData {
@@ -48,8 +48,8 @@ export interface ImportData {
   alturaDisponible?: number;
   fullScreen?: boolean;
   canClickProducts?: boolean;
-  lastChangeTimestamp?: number;
-  lastLoginTimestamp?: number;
+  lastChangeTimestamp?: string; // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
+  lastLoginTimestamp?: string; // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
   loginData: LoginData;
   supermercados?: Supermercado[];
   categorias?: Categoria[];

@@ -49,7 +49,7 @@ export function useUserData() {
         const formattedData: ImportData = {
           // Añadir propiedades necesarias
           appName: 'Hungry!',
-          lastChangeTimestamp: Date.now(),
+          lastChangeTimestamp: new Date().toISOString().slice(0, 19).replace('T', ' '), // Formato YYYY-MM-DD HH:MM:SS
           loginData: store.loginData.value,
 
           // Transformar categorías si es necesario
@@ -58,7 +58,7 @@ export function useUserData() {
             text: string;
             bgColor: string;
             visible: number;
-            timestamp?: number;
+            timestamp?: string; // Cambiado a string
           }) => ({
             id: cat.id_categoria,
             text: cat.text,
