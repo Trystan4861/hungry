@@ -13,7 +13,7 @@
           <MyImage :image="tab.logo"/>
         </div>
         <DevOnly>
-          <div to="/dev" class="nav-item nav-link" @click="currentPage = 'dev'">
+          <div to="/test" class="nav-item nav-link" @click="currentPage = 'dev'">
             <MyImage image="hungry.svg"/>
           </div>
         </DevOnly>
@@ -82,7 +82,7 @@ const componentsMap = tabsData.reduce((acc, tab) => {
   acc[tab.page] = defineAsyncComponent(() => import(`~/pages/${tab.page}.vue`));
   return acc;
 }, {} as Record<string, ReturnType<typeof defineAsyncComponent>>);
-componentsMap.dev = defineAsyncComponent(() => import(`~/pages/dev.vue`));
+componentsMap.dev = defineAsyncComponent(() => import(`~/pages/test.vue`));
 
 useSeoMeta({
   description: 'Lista de la compra realizada en Nuxt',
