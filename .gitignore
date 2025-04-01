@@ -27,3 +27,4 @@ logs
 hungry.json
 *.bak
 .vscode
+/docs

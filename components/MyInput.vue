@@ -8,7 +8,7 @@
       :id="inputID"
       :placeholder="placeholder"
       :maxlength="realMaxLenght"
-
+      autocomplete="off"
       @keydown="handleKeyDown"
       @keyup="hadleKeyUp"
       @blur="handleBlur">
@@ -19,6 +19,7 @@
 <script lang="ts" setup>
   import { ref, watch, onMounted } from 'vue';
   import { generateID } from '~/utils';
+  import { myStore } from '~/composables/useStore';
   const props         = defineProps({
     modelValue:       { type: String,   default: ''                     },
     placeholder:      { type: String,   default: 'Añade elementos aquí' },

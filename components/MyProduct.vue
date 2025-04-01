@@ -38,8 +38,7 @@
         <div
           v-if="showEdit && !props.product.selected"
           class="edit"
-          @mousedown="handleEditClick"
-          @mouseup="clearEditTimeout"
+          @click.stop="emitEdit"
         >
           ✏️
         </div>
@@ -59,7 +58,6 @@ const props = defineProps({
   product: { type: Object as () => Producto, required: true },
   canBeDone: { type: Boolean, default: false },
   showEdit: { type: Boolean, default: true },
-  editLongClickTimeOut: { type: Number, default: 2000 },
 });
 
 // Emits
@@ -75,7 +73,6 @@ const store = myStore();
 
 // Estado local
 const isDragging = ref(false);
-const editLongClickTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 
 // Computed
 const categoryColor = computed(() =>
@@ -89,28 +86,13 @@ function handleTap() {
   if (isDragging.value) return;
   if (!props.product.selected) {
     emit('update:selected', true);
-    console.log("emito update amount en handleTap");
     emit('update:amount', 1);
   }
 }
 
 function emitEdit() {
   emit('click:edit', props.product);
-  clearEditTimeout();
-}
-function clearEditTimeout() {
-  if (editLongClickTimeout.value) {
-    clearTimeout(editLongClickTimeout.value);
-    editLongClickTimeout.value = null;
-  }
-}
 
-function handleEditClick() {
-  if (editLongClickTimeout.value) {
-    clearEditTimeout();
-  } else {
-    editLongClickTimeout.value = setTimeout(() => emitEdit(), props.editLongClickTimeOut);
-  }
 }
 
 function handleCategoryClick() {
@@ -120,25 +102,21 @@ function handleCategoryClick() {
     }
     else {
       emit('update:selected', false);
-      console.log("emito update amount en handleCategoryClick"+1);
       emit('update:amount', 1);
     }
   }
   else {
     emit('update:selected', true);
-    console.log("emito update amount en handleCategoryClick"+1 );
     emit('update:amount', 1);
   }
 }
 
 function incrementAmount() {
-  console.log("emito update amount en incrementAmount"+props.product.amount+1);
   emit('update:amount', props.product.amount + 1);
 }
 
 function decrementAmount() {
   if (props.product.amount > 1) {
-    console.log("emito update amount en decrementAmount: " + (props.product.amount > 1 ? props.product.amount - 1 : 1));
     emit('update:amount', props.product.amount - 1);
   } else {
     emit('update:selected', false);

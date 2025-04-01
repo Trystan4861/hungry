@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -21,13 +21,15 @@
     "@fingerprintjs/fingerprintjs": "^4.6.1",
     "@kyvg/vue3-notification": "^3.4.1",
     "@vite-pwa/nuxt": "^0.10.6",
+    "@vueuse/core": "^13.0.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "md5": "^2.3.0",
     "nuxt": "^3.16.0",
     "sweetalert2": "^11.17.2",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/md5": "^2.3.5"

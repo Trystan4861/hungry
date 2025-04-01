@@ -11,6 +11,83 @@
     overflow:             hidden;
     padding:              0;
   }
+  .nav-item
+{
+  min-width:                    25%;
+  width:                        100%;
+  cursor:                       pointer;
+  padding:                      0;
+}
+.nav-item:nth-child(2).router-link-exact-active .MyImage,
+
+.nav-item:nth-child(5).router-link-exact-active .MyImage,
+
+.nav-item:first-child.router-link-exact-active .MyImage{
+  filter:                       grayscale(1) brightness(100) invert(1);
+}
+
+.nav-tabs .nav-item.router-link-exact-active{
+  background-color:           #e6e6e6;
+  color:                      black;
+  border:                       0;
+}
+.nav-tabs .nav-item{
+  background-color:           #585858;
+  color:                      white;
+  display:                      flex;
+  height:                       100%;
+  justify-content:              center;
+  min-width:                    3.4375rem;
+}
+.nav-tabs{
+  --bs-nav-tabs-border-color: #585858;
+  justify-content:              space-between;
+  height:                       3.125rem;
+  display:                      flex;
+  flex-direction:               row;
+  width:                       100%;
+  user-select:                  none;
+  gap:                        2px;
+}
+.nav-item:first-child {
+  max-width:                    3.75rem;
+}
+
+.tab-pane {
+  flex-grow:                    1;
+  overflow-y:                   auto;
+}
+.tab-content {
+  flex-grow:                    1;
+  display:                      flex;
+  flex-direction:               column;
+  background-color:           #222;
+}
+main{
+    border-radius: 0 0 10px 10px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 98vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 10px;
+  color: white;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  margin-left: 1px;
+}
+nav a:hover {
+  background: gray;
+}
   div:where(.swal2-container) hr {
     margin:               .5rem auto !important;
     text-align:           center;
@@ -44,6 +121,7 @@
     flex-direction:       column;
     flex-grow:            1;
     min-width:            19.3rem;
+    height: calc(100dvh - 15px);
   }
   .appBrand {
     width:                60px;
@@ -89,7 +167,8 @@
   .revision {
     position: fixed;
     right: 15px;
-    top: 0px;
+    bottom: 0px;
+    font-size: small;
   }
   .bold {
     --bs-btn-font-weight: bold !important;
@@ -138,3 +217,21 @@
     max-height: 100vh;
     overflow-y: auto;
   }
+  .nav-tabs .nav-link.active {
+    background-color: #e6e6e6;
+    color: #000;
+    border: 0;
+}
+.nav-item.active:nth-child(1) .MyImage,
+.nav-item.active:nth-child(2) .MyImage,
+.nav-item.active:nth-child(5) .MyImage {
+  filter: grayscale(1) brightness(100) invert(1);
+}
+
+.tab-content {
+  overflow: hidden;
+  min-width: 21rem;
+  width: 100%;
+  height: calc(100dvh - 100px);
+  padding-bottom: 7px;
+}
