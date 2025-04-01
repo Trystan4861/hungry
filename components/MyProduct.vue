@@ -38,8 +38,7 @@
         <div
           v-if="showEdit && !props.product.selected"
           class="edit"
-          @mousedown="handleEditClick"
-          @mouseup="clearEditTimeout"
+          @click.stop="emitEdit"
         >
           ✏️
         </div>
@@ -59,7 +58,6 @@ const props = defineProps({
   product: { type: Object as () => Producto, required: true },
   canBeDone: { type: Boolean, default: false },
   showEdit: { type: Boolean, default: true },
-  editLongClickTimeOut: { type: Number, default: 2000 },
 });
 
 // Emits
@@ -75,7 +73,6 @@ const store = myStore();
 
 // Estado local
 const isDragging = ref(false);
-const editLongClickTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 
 // Computed
 const categoryColor = computed(() =>
@@ -95,21 +92,7 @@ function handleTap() {
 
 function emitEdit() {
   emit('click:edit', props.product);
-  clearEditTimeout();
-}
-function clearEditTimeout() {
-  if (editLongClickTimeout.value) {
-    clearTimeout(editLongClickTimeout.value);
-    editLongClickTimeout.value = null;
-  }
-}
 
-function handleEditClick() {
-  if (editLongClickTimeout.value) {
-    clearEditTimeout();
-  } else {
-    editLongClickTimeout.value = setTimeout(() => emitEdit(), props.editLongClickTimeOut);
-  }
 }
 
 function handleCategoryClick() {

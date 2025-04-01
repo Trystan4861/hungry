@@ -28,6 +28,7 @@
         :showEdit="showEdit"
         @update:selected="handleUpdateSelected"
         @update:amount="handleUpdateAmount"
+        @click:edit="handleEdit"
       />
     </div>
   </div>
@@ -51,7 +52,10 @@ const props = defineProps({
     validator: (value: string) => ['a2z', 'category'].includes(value)
   }
 });
-
+const emit = defineEmits(["edit"]);
+const handleEdit = (product: Producto) => {
+  emit("edit", product);
+};
 const store = myStore();
 const showFinder = ref(false);
 const idInput = "finder";
