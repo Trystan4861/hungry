@@ -1,0 +1,14 @@
+.my-input input {
+  width:          100%;
+  height:         3.125rem;
+  border:         .125rem solid sandybrown;
+}
+.my-input input:focus-visible {
+  outline:        0;
+}
+.my-input .cross
+{
+  left:           -23px;
+  position:       relative;
+  cursor:         pointer;
+}

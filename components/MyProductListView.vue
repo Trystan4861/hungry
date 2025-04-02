@@ -41,6 +41,7 @@ import MyProductList from "~/components/MyProductList.vue";
 import type { Producto } from "~/types";
 import { ref, computed, watch, onMounted } from "vue";
 import { normalizeText } from "~/utils/text";
+import '~/css/components/MyProductListView.css';
 
 const props = defineProps({
   // Tipo de ordenación: 'a2z' (alfabético) o 'category' (por categoría)
@@ -175,56 +176,4 @@ const updateTooltip = () => {
 };
 </script>
 
-<style scoped>
-.selected {
-  font-weight: bold;
-  color: #42b983;
-}
 
-.withScroll {
-  --height: 88vh;
-  --height-modifier: 50px;
-  overflow-y: auto;
-  height: calc(var(--height) - var(--height-modifier));
-  margin-top: 10px;
-}
-
-.letraActual {
-  display: none;
-  position: fixed;
-  bottom: 50%;
-  left: 100%;
-  margin-left: -30px;
-  background-color: #ccc;
-  color: #333;
-  font-weight: bold;
-  width: 10vmin;
-  height: 10vmin;
-  justify-content: center;
-  align-items: center;
-  translate: -100%;
-  border-radius: 1cap;
-  -webkit-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-  -moz-box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-  box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.75);
-  transition: all 1s ease;
-  z-index: 1000;
-}
-
-.letraActual:after {
-  content: '';
-  position: absolute;
-  right: -10px;
-  border-style: solid;
-  border-width: 10px 0 10px 14px;
-  border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #ccc;
-}
-
-.letraActual span {
-  font-size: 1.5625rem;
-}
-
-.active.show {
-  display: flex;
-}
-</style>

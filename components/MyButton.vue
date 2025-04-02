@@ -6,9 +6,8 @@
 </template>
 
 <script lang="ts" setup>
-
-
 import type { CSSProperties } from 'vue';
+import '~/css/components/MyButton.css';
 
 interface Props {
 text: string;
@@ -27,12 +26,4 @@ disabled:     { type: Boolean,  default: false},
 });
 const emit = defineEmits(['click']);
 </script>
-
-<style scoped>
-button {
-    height:   3.125rem;
-    padding:  0;
-    width:    100%;
-}
-</style>
 

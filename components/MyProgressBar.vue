@@ -6,6 +6,7 @@
 
 <script lang="ts" setup>
     import { computed, ref, watch, onMounted } from "vue";
+    import '~/css/components/MyProgressBar.css';
 
     interface Props {
         duration?: number;
@@ -68,9 +69,3 @@
     });
 </script>
 
-<style scoped>
-.ProgressBar-container {
-    width: 100%;
-    background-color: #e0e0de;
-}
-</style>

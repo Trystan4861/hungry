@@ -4,6 +4,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
+import '~/css/components/MyImage.css';
 const uri = 'https://ik.imagekit.io/hzuwkjlsb/SVGs/';
 
 
@@ -25,10 +26,3 @@ const imageSource = computed<string>((): string => typeof props.image === 'strin
 </script>
 
 
-<style scoped>
-.MyImage {
-  width: 50px;
-  height: 50px;
-  background-size: 50px;
-}
-</style>

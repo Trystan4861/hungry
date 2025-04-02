@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-flex w-100">
+  <div class="my-input d-inline-flex w-100">
     <input
       type="text"
       v-model="inputValue"
@@ -20,6 +20,7 @@
   import { ref, watch, onMounted } from 'vue';
   import { generateID } from '~/utils';
   import { myStore } from '~/composables/useStore';
+  import '~/css/components/MyInput.css';
   const props         = defineProps({
     modelValue:       { type: String,   default: ''                     },
     placeholder:      { type: String,   default: 'Añade elementos aquí' },
@@ -77,19 +78,4 @@
   defineExpose({inputValue})
 </script>
 
-<style scoped>
-  input {
-    width:          100%;
-    height:         3.125rem;
-    border:         .125rem solid sandybrown;
-  }
-  input:focus-visible {
-    outline:        0;
-  }
-  .cross
-  {
-    left:           -23px;
-    position:       relative;
-    cursor:         pointer;
-  }
-</style>
+

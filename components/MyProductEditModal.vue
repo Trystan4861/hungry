@@ -5,14 +5,12 @@
         <h5 class="modal-title">{{ title }}</h5>
       </div>
       <div class="modal-body">
-        <!-- Selector de categoría -->
         <div>
           <MyCategoriesList
             @categorySelected="handleCategorySelected"
             :selected="selectedCategoryIndex"
           />
         </div>
-        <!-- Selector de supermercado -->
         <div>
           <MySelect
             :options="supermercados"
@@ -51,6 +49,7 @@ import MySelect from './MySelect.vue';
 import MyCategoriesList from './MyCategoriesList.vue';
 import { myStore } from '~/composables/useStore';
 import type { Producto, Categoria, Supermercado } from '~/types';
+import '~/css/components/MyProductEditModal.css';
 
 const store = myStore();
 
@@ -115,68 +114,3 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.my-product-edit-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1050;
-}
-
-.modal-content {
-  background-color: white;
-  border-radius: 0.3rem;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.modal-title {
-  font-size: 1.25rem;
-  margin: 0;
-  font-weight: bold;
-  color: #000;
-  text-align: center;
-  width: 100%;
-}
-
-.modal-body {
-  padding: 1rem;
-}
-
-.modal-footer {
-  padding: 1rem;
-}
-
-.form-label {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-.btn-close {
-  background: transparent;
-  border: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  opacity: 0.5;
-  cursor: pointer;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="my-categories-wrapper">
+  <div class="my-categories">
     <div class="leftShadow myShadow"></div>
     <div class="rightShadow myShadow"></div>
     <div class="my-categories-list-container" ref="containerRef" @scroll="handleScroll">
@@ -23,6 +23,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { myStore } from '~/composables/useStore';
 import type { Categoria } from '~/types';
+import '~/css/components/MyCategoriesList.css';
 
 const props = defineProps({
   selected: { type: Number, default: 0 }
@@ -140,71 +141,4 @@ defineExpose({seleccionarCategoria,selected})
 
 </script>
 
-<style scoped>
-.my-categories-wrapper {
-  position: relative;
-  background-color: #585858;
-  background-image: url('~/assets/img/box-shadow-bg.png');
-  height: 6.875rem;
-}
 
-.myShadow {
-  position: absolute;
-  user-select: none;
-  z-index: 100;
-  width: 25px;
-  clip-path: border-box;
-  height: 6.625rem;
-}
-
-.leftShadow {
-  background-image: url('~/assets/img/box-shadow-left.png');
-  background-position: right;
-}
-
-.rightShadow {
-  background-image: url('~/assets/img/box-shadow-right.png');
-  background-position: left;
-  right: 0;
-}
-
-.my-categories-list-container {
-  align-items: center;
-  display: flex;
-  height: 6.875rem;
-  overflow-x: scroll;
-  scroll-snap-type: x proximity;
-}
-
-.my-categories-list-container:hover {
-  height: 7.28rem;
-}
-.my-categories-list-container:hover::-webkit-scrollbar             { height: 10px;}
-
-.my-categories-list {
-  display: flex;
-  position: relative;
-}
-.not-my-categories-list-container::before {
-  content: ' ';
-  display: block;
-  width: var(--ancho-after, 0%);
-  height: 106px;
-  background: rgba(0,0,0,0.07);
-  position: absolute;
-  box-shadow: inset 0em 0px 2em 1px rgba(0, 0, 0, 1);
-  z-index: 1;
-}
-.swal .myShadow {
-  top: 0px;
-  z-index: 1;
-}
-.swal .leftShadow {
-    left: 29px;
-    top: 95px;
-}
-.swal .rightShadow {
-  right: 19px;
-  top: 95px;
-}
-</style>

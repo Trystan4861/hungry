@@ -35,6 +35,7 @@
   <script setup>
   import MyImage from '~/components/MyImage.vue';
   import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+  import '~/css/components/MyTab.css';
 
   const props = defineProps({
     tabs: { type: Array, required: true },
@@ -79,59 +80,4 @@
   const emit = defineEmits(['tabChanged']);
   </script>
 
-  <style scoped>
-  .my-tab {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    user-select: none;
-  }
-  .tab-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 18.125rem;
-  }
-  .tab-pane {
-    flex-grow: 1;
-    overflow-y: auto;
-  }
-  li.nav-item:first-child {
-    max-width: 3.75rem;
-  }
-  .nav-tabs {
-    --bs-nav-tabs-border-color: #585858;
-    justify-content: space-between;
-    height: 3.125rem;
-  }
-  .nav-tabs .nav-link {
-    background-color: #585858;
-    color: white;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    min-width: 3.4375rem;
-  }
-  .nav-tabs .nav-link.active {
-    background-color: #e6e6e6;
-    color: black;
-    border: 0;
-  }
-  .nav-item:nth-child(2) .nav-link.active .MyImage,
-  .nav-item:nth-child(5) .nav-link.active .MyImage,
-  .nav-item:first-child .nav-link.active .MyImage {
-    filter: grayscale(1) brightness(100) invert(1);
-  }
-  .nav-item .nav-link .MyImage {
-    margin: 0 !important;
-  }
-  span.nav-link {
-    min-width: 25%;
-    width: 100%;
-    cursor: pointer;
-    padding: 0;
-  }
-  .logo {
-    width: 3.125rem;
-  }
-  </style>
+  

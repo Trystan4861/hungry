@@ -52,6 +52,7 @@ import { ref, computed } from 'vue';
 import { myStore } from '~/composables/useStore';
 import type { Producto } from '~/types';
 import { parseEmoji } from '~/utils';
+import '~/css/components/MyProduct.css';
 
 // Props
 const props = defineProps({
@@ -128,81 +129,3 @@ function handleDoneClick() {
 }
 </script>
 
-<style scoped>
-.iconos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconos div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  width: 1.5625rem;
-  height: 1.5625rem;
-  margin: 0 0.25rem;
-}
-
-.productCategory {
-  height: 1.5625rem;
-  width: 1.5625rem;
-  margin-top: 1px;
-  position: relative;
-
-}
-
-.my-product {
-  cursor: pointer;
-  display: flex;
-  height: 1.875rem;
-  margin-bottom: 1px;
-  user-select: none;
-  width: auto;
-}
-
-.product {
-  display: flex;
-  padding-left: 0.625rem;
-  width: 100%;
-  text-align: start;
-  align-items: center;
-}
-
-.selected {
-  font-weight: bold;
-}
-
-
-.productAmount {
-  min-width: 1.5rem;
-  text-align: center;
-}
-
-.productText {
-  flex: 1;
-  padding: 0.25rem 0;
-}
-
-.plus, .minus {
-  padding: 0 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rotate-45 {
-  transform: rotate(45deg);
-  transform-origin: center;
-}
-
-.emoji {
-  font-family: 'Noto Color Emoji', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
-}
-
-.done {
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-</style>

@@ -21,6 +21,7 @@ import { ref }  from 'vue';
 import MyProduct from './MyProduct.vue';
 // Importación relativa mientras se resuelve el problema con el alias
 import type { Producto } from '~/types';
+import '~/css/components/MyProductList.css';
 
 const props = defineProps({
   canBeDone:        { type: Boolean,  default:  false },
@@ -53,9 +54,4 @@ const handleUpdateDone = (product: Producto, value: boolean) => {
 </script>
 
 
-<style scoped>
-  .my-product-list {
-    margin-top:   1.25rem;
-    margin-left:  .625rem;
-  }
-</style>
+

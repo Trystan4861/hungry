@@ -32,6 +32,7 @@
 
   <script lang="ts" setup>
   import { computed, ref, watch } from 'vue';
+  import '~/css/components/MyCheckbox.css';
 
   const props=defineProps({
     value:          { type: [String, Number], required: true    },
@@ -103,116 +104,4 @@
   });
   </script>
 
-  <style scoped>
-  .cursor-pointer *{
-    cursor:             pointer;
-  }
-  label {
-    padding-left:       .625rem;
-    padding-top:        0rem;
-  }
-  input[type=checkbox]
-  {
-    margin-left:        .625rem;
-  }
-  .Toggle {
-    align-items:        center;
-    cursor:             pointer;
-    display:            flex;
-    flex-wrap:          nowrap;
-    gap:                1ch;
-    position:           relative;
-  }
 
-  .Toggle__input {
-    height:             100%;
-    position:           absolute;
-    opacity:            0;
-    width:              100%;
-  }
-
-  .Toggle__display {
-    --diameter:         1.8em;
-    --offset:           0.25em;
-    align-items:        center;
-    box-sizing:         content-box;
-    border:             0.1em solid rgb(0 0 0 / 0.2);
-    border-radius:      100vw;
-    display:            inline-flex;
-    height:             calc(var(--diameter) + var(--offset) * 2);
-    justify-content:    space-around;
-    position:           relative;
-    transition:         250ms;
-    width:              calc(var(--diameter) * 2 + var(--offset) * 2);
-  }
-
-  .Toggle__display::before {
-    background-color: white;
-    border:             0.1em solid rgb(0 0 0 / 0.2);
-    border-radius:      50%;
-    box-sizing:         border-box;
-    content:            "";
-    height:             var(--diameter);
-    left:               var(--offset);
-    position:           absolute;
-    top:                50%;
-    transform:          translate(0, -50%);
-    transition:         inherit;
-    width:              var(--diameter);
-    will-change:        transform;
-    z-index:            2;
-  }
-
-
-  .Toggle:focus                               .Toggle__display,
-  .Toggle:focus:not(:focus-visible)           .Toggle__display,
-  .Toggle__input:focus +                      .Toggle__display,
-  .Toggle__input:focus:not(:focus-visible) +  .Toggle__display {
-    outline:            1px dotted #212121;
-    outline:            1px auto -webkit-focus-ring-color;
-    outline-offset:     2px;
-  }
-
-  .Toggle:focus,
-  .Toggle:focus:not(:focus-visible)           .Toggle__display,
-  .Toggle__input:focus,
-  .Toggle__input:focus:not(:focus-visible) +  .Toggle__display {
-    outline: 0;
-  }
-
-              .Toggle__input:checked  +       .Toggle__display::before,
-  [dir="rtl"] .Toggle__input:checked  +       .Toggle__display::before {
-    transform:          translateX(100%) translateY(-50%);
-  }
-
-  .Toggle[disabled]                           .Toggle__display,
-  .Toggle__input:disabled +                   .Toggle__display {
-    cursor:             not-allowed;
-    filter:             grayscale(40%);
-    opacity:            0.6;
-  }
-
-  [dir="rtl"]                                 .Toggle__display::before {
-    left:               auto;
-    right:              var(--offset);
-  }
-
-  [dir="rtl"] .Toggle__input:checked +        .Toggle__display::before {
-    transform:          translateX(-100%) translateY(-50%);
-  }
-
-  .Toggle__icon {
-    color:              inherit;
-    display:            inline-block;
-    fill:               currentcolor;
-    font-size:          calc(var(--diameter) / 2);
-    height:             1em;
-    overflow:           hidden;
-    vertical-align:     middle;
-    width:              1em;
-  }
-
-  *,*::before,*::after {
-    box-sizing:         border-box;
-  }
-  </style>

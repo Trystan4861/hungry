@@ -61,7 +61,7 @@
 }
 
 .my-container{
-  max-height: 9rem;
+  max-height: 8rem;
   overflow-y: auto;
   overflow-x: hidden;
   margin-bottom: .625rem;

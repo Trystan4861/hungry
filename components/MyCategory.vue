@@ -11,6 +11,7 @@
 
   <script lang="ts" setup>
     import { ref, watch } from 'vue';
+    import '~/css/components/MyCategory.css';
 
     interface Props {
       text:             string;
@@ -53,43 +54,3 @@
     watch(()=>props.isActive,newValue=>{esActivo.value=newValue; (!newValue && longPressTimeout && clearTimeout(longPressTimeout))})
   </script>
 
-  <style scoped>
-  .my-category-container {
-    background-color: #bcb9b9;
-    margin-inline-end:  .125rem;
-    padding:            .625rem;
-    width:              fit-content;
-  }
-  .my-category {
-    border:             .0625rem solid black;
-    cursor:             pointer;
-    height:             5rem;
-    overflow:           visible;
-    padding:            1.25rem;
-    position:           relative;
-    width:              5rem;
-  }
-  .category-title {
-    background-color: rgba(0, 0, 0, 0.5);
-    color:            #fff;
-    display:            none;
-    left:               50%;
-    max-width:          18.75rem;
-    overflow:           visible ;
-    padding:            .625rem;
-    position:           absolute;
-    top:                50%;
-    transform:          translate(-50%, -50%);
-    user-select:        none;
-    white-space:        nowrap;
-    z-index:            1000;
-    text-align:         center;
-  }
-  .category-title.active {
-    display:            block;
-  }
-  .selected {
-    background-color: #fff;
-    box-shadow:         0 0 .3125rem #000;
-  }
-  </style>
