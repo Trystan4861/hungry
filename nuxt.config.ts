@@ -48,7 +48,6 @@ export default defineNuxtConfig({
   css: [
     'bootstrap/dist/css/bootstrap.min.css', // Agrega Bootstrap
     '~/css/app.vue.css',  // CSS global de la aplicación
-    '~/css/config.vue.css', // CSS específico para la página de configuración
     '~/css/common.css', // Archivo SCSS común
   ],
   build: {
