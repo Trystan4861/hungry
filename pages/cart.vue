@@ -2,16 +2,16 @@
   <div v-show="hayProductosSeleccionados">
     <div class="me-0 d-flex filaAcciones">
       <MySelect
-        v-show="hayMultiplesSupermercados"
+        v-if="hayMultiplesSupermercados"
         class="flex-grow-1"
         ref="supermarketAtShoppingList"
-        :options="supermercadosAMostrar"
-        :selected="selectedSupermarket"
+        :options="supermercados"
+        :selected="supermercados[0]"
         @select="handleSupermarketChange"
       />
       <div
-        v-show="!hayMultiplesSupermercados"
-        class="shoppingList"
+        v-else
+        class="supermarketsAltLabel"
       >
         LISTA DE LA COMPRA
       </div>
@@ -32,6 +32,7 @@
     <div
       v-show="hayProductosSeleccionados"
       class="text-end mt-2 me-2"
+      :class="{ 'text-center': !hayMultiplesSupermercados }"
     >
       {{ amount2Buy }} producto{{ pluralizar(amount2Buy) }} por comprar
     </div>
@@ -64,19 +65,12 @@
     </div>
 
     <!-- Productos de otros supermercados -->
-    <div v-show="mostrarProductosOtrosSupermercados">
+    <div v-show="mostrarProductosOtrosSupermercados || supermercados.length ==0">
       <div
         class="w-100 text-center"
         v-if="hayMultiplesSupermercadosMostrados"
       >
         Puedes comprar en otros Supermercados: {{ AmountInOtherSupermarkets }} producto{{ pluralizar(AmountInOtherSupermarkets) }}
-        <hr />
-      </div>
-      <div
-        class="w-100 text-center"
-        v-else
-      >
-        En Supermercados ocultos: {{ AmountInOtherSupermarkets }} producto{{ pluralizar(AmountInOtherSupermarkets) }}
         <hr />
       </div>
       <MyProductList
@@ -148,30 +142,23 @@
   // ===== GESTIÓN DE SUPERMERCADOS =====
   // Propiedades computadas para mejorar la legibilidad del template
   const hayProductosSeleccionados = computed(() => productosSeleccionados.value.length > 0);
-  const hayMultiplesSupermercados = computed(() => supermercadosVisibles.value.length > 1);
-  const hayMultiplesSupermercadosMostrados = computed(() => supermercadosAMostrar.value.length > 1);
+  const hayMultiplesSupermercados = computed(() => supermercados.value.length > 1);
+  const hayMultiplesSupermercadosMostrados = computed(() => supermercados.value.length > 1);
   const mostrarProductosOtrosSupermercados = computed(() =>
     AmountInOtherSupermarkets.value > 0 && hayMultiplesSupermercados.value
   );
 
-  // Filtrado de supermercados
-  const supermercadosVisibles = computed(() =>
-    store.supermercados.value.filter((i: Supermercado) => i.visible)
-  );
-
-  /**
+    /**
    * Filtra los supermercados visibles, excluyendo el supermercado genérico (id=0)
-   * cuando hay más de un supermercado
+   * cuando hay más de un supermercado y los muestra ordenados por campo order
    */
-  const supermercadosAMostrar = computed(() => {
+  const supermercados = computed(() => {
     // Evitamos la copia profunda innecesaria usando filter directamente
-    if (supermercadosVisibles.value.length > 1) {
-      return supermercadosVisibles.value.filter((i: Supermercado) => i.id !== 0);
-    }
-    return supermercadosVisibles.value;
+    let supermercadosVisibles=store.supermercados.value.filter((i: Supermercado) => i.visible)
+    return supermercadosVisibles.filter((i: Supermercado) => i.id !== 0);
   });
 
-  const selectedSupermarket = ref<MySelectOption>(supermercadosAMostrar.value[0]);
+  const selectedSupermarket = ref<MySelectOption>(supermercados.value[0]);
   const id_supermercado = computed(() => selectedSupermarket.value?.id ?? 0);
   const supermercado = computed(() => selectedSupermarket.value?.text ?? 'Cualquier Supermercado');
 
@@ -291,8 +278,7 @@
 
         // Si el producto se marcó como comprado, mostrar notificación con opción para deshacer
         if (value) {
-          // Duración de la notificación en milisegundos (5 segundos)
-          const notificationDuration = 5000;
+          const notificationDuration = 500;
 
           // Crear un ID único para la notificación
           const notificationId = Date.now();
@@ -424,19 +410,3 @@
     categoriesData.value = [...newData];
   });
 </script>
-<style scoped>
-.shoppingList{
-  background-color: #333;
-  flex-grow: 1;
-  text-align: center;
-  height: 3.125rem;
-  align-content: center;
-}
-.filaAcciones{
-  align-items: center;
-}
-.listaCompra
-{
-  overflow-y: auto;
-}
-</style>

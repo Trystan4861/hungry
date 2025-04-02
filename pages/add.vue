@@ -1,7 +1,7 @@
 <template>
   <div class="m-3">
     <MyCategoriesList @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
-    <MySelect class="my-select mt-4" :selected="supermercado" :options="store.supermercados.value" @select="handleSupermercadoSelected" />
+    <MySelect class="my-select mt-4" :selected="supermercado" :options="supermercadosVisibles" @select="handleSupermercadoSelected" />
     <MyInput
     class="mb-4"
     v-model="name"
@@ -34,6 +34,10 @@ const category = ref<Categoria>(store.categorias.value[0]);
 const supermercado = ref<Supermercado>(store.supermercados.value[0]);
 const name = ref("");
 const isAdding = ref(false);
+
+const supermercadosVisibles = computed(() =>
+    store.supermercados.value.filter((i: Supermercado) => i.visible)
+  );
 
 const handleUpdateValue = (value: string) => {
   name.value = value;

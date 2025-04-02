@@ -174,7 +174,7 @@
   import * as packageJson from '../package.json'
 
   // Importar estilos específicos para este componente
-  import '~/css/config.vue.css'
+  import '~/css/pages/config.vue.css'
 
   // Importar composables y utilidades
   import { useAuth } from '~/composables/useAuth';

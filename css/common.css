@@ -1,3 +1,10 @@
 button.swal2-styled {
     width: auto;
 }
+.supermarketsAltLabel{
+    background-color: #333;
+    flex-grow: 1;
+    text-align: center;
+    height: 3.125rem;
+    align-content: center;
+  }
