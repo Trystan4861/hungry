@@ -301,7 +301,6 @@
           notify({
             id: notificationId,
             group: "buttons",
-            title: "Producto marcado como comprado",
             text: `${item.text} ha sido marcado como comprado`,
             duration: notificationDuration,
             data: {
