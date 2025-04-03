@@ -57,7 +57,7 @@
 .configWithScroll{
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 610px;
+  max-height: calc(100dvh - 155px);
 }
 
 .my-container{

@@ -53,15 +53,17 @@
   max-width:                    3.75rem;
 }
 
-.tab-pane {
-  flex-grow:                    1;
-  overflow-y:                   auto;
-}
 .tab-content {
   flex-grow:                    1;
   display:                      flex;
   flex-direction:               column;
   background-color:           #222;
+  max-height: 100vh;
+  overflow: hidden;
+  min-width: 21rem;
+  width: 100%;
+  height: calc(100dvh - 100px);
+  padding-bottom: 7px;
 }
 main{
     border-radius: 0 0 10px 10px;
@@ -70,8 +72,9 @@ main{
   display: flex;
   flex-direction: column;
   height: 98vh;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
-
 header {
   display: flex;
   justify-content: space-around;
@@ -213,10 +216,7 @@ nav a:hover {
   .no-select:focus-visible {
     user-select: none;
   }
-  .tab-content{
-    max-height: 100vh;
-    overflow-y: auto;
-  }
+
   .nav-tabs .nav-link.active {
     background-color: #e6e6e6;
     color: #000;
@@ -228,10 +228,44 @@ nav a:hover {
   filter: grayscale(1) brightness(100) invert(1);
 }
 
-.tab-content {
-  overflow: hidden;
-  min-width: 21rem;
+
+.listaCompra
+{
+  max-height: calc(100dvh - 140px);
+  overflow-y: scroll;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   width: 100%;
-  height: calc(100dvh - 100px);
-  padding-bottom: 7px;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.notification-progress-bar{
+  width: calc(100% + 20px);
+  position: relative;
+  bottom: -10px;
+  left: -10px;
 }

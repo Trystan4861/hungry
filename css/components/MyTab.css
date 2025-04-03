@@ -9,10 +9,12 @@
   display: flex;
   flex-direction: column;
   min-width: 18.125rem;
+  overflow: hidden;
+
 }
 .tab-pane {
-  flex-grow: 1;
   overflow-y: auto;
+  flex-grow: 1;
 }
 li.nav-item:first-child {
   max-width: 3.75rem;
