@@ -1,4 +1,5 @@
 <template>
+  <!-- Cabecera con selector de supermercado y botón de limpiar lista -->
   <div v-show="hayProductosSeleccionados">
     <div class="me-0 d-flex filaAcciones">
       <MySelect
@@ -6,15 +7,10 @@
         class="flex-grow-1"
         ref="supermarketAtShoppingList"
         :options="supermercados"
-        :selected="supermercados[0]"
+        :selected="selectedSupermarket"
         @select="handleSupermarketChange"
       />
-      <div
-        v-else
-        class="supermarketsAltLabel"
-      >
-        LISTA DE LA COMPRA
-      </div>
+      <div v-else class="supermarketsAltLabel">LISTA DE LA COMPRA</div>
       <MyButton
         class="danger bold clearList"
         text="Limpiar Lista"
@@ -24,6 +20,7 @@
     </div>
   </div>
 
+  <!-- Contenedor principal de la lista de compra -->
   <div
     class="rounded-bottom listaCompra"
     :class="{ 'h-100': !hayProductosSeleccionados }"
@@ -38,10 +35,7 @@
     </div>
 
     <!-- Mensaje cuando la lista está vacía -->
-    <div
-      v-show="!hayProductosSeleccionados"
-      class="h-100"
-    >
+    <div v-show="!hayProductosSeleccionados" class="h-100">
       <div class="d-flex justify-content-center align-items-center h-100">
         <h2 class="text-uppercase text-center">La lista de la compra está vacía</h2>
       </div>
@@ -65,12 +59,9 @@
     </div>
 
     <!-- Productos de otros supermercados -->
-    <div v-show="mostrarProductosOtrosSupermercados || supermercados.length ==0">
-      <div
-        class="w-100 text-center"
-        v-if="hayMultiplesSupermercadosMostrados"
-      >
-        Puedes comprar en otros Supermercados: {{ AmountInOtherSupermarkets }} producto{{ pluralizar(AmountInOtherSupermarkets) }}
+    <div v-show="mostrarProductosOtrosSupermercados">
+      <div class="w-100 text-center">
+        Puedes comprar en otros supermercados {{ AmountInOtherSupermarkets }} producto{{ pluralizar(AmountInOtherSupermarkets) }}
         <hr />
       </div>
       <MyProductList
@@ -123,14 +114,12 @@
   const store = myStore();
 
   // ===== ESTADO REACTIVO =====
-  // Referencias reactivas principales
   const productsData = ref<Producto[]>(store.sortedByCategory.value);
   const categoriesData = ref<Categoria[]>(store.categorias.value);
   const lastClick = ref(Date.now());
   const isProcessingClick = ref(false);
   const anchoBotonLimpiarLista = ref('100px');
 
-  // ===== UTILIDADES =====
   /**
    * pluralizar
    * Devuelve 's' si el número es distinto de 1, o cadena vacía si es 1
@@ -140,76 +129,107 @@
   const pluralizar = (num: number): string => num !== 1 ? 's' : '';
 
   // ===== GESTIÓN DE SUPERMERCADOS =====
-  // Propiedades computadas para mejorar la legibilidad del template
-  const hayProductosSeleccionados = computed(() => productosSeleccionados.value.length > 0);
-  const hayMultiplesSupermercados = computed(() => supermercados.value.length > 1);
-  const hayMultiplesSupermercadosMostrados = computed(() => supermercados.value.length > 1);
-  const mostrarProductosOtrosSupermercados = computed(() =>
-    AmountInOtherSupermarkets.value > 0 && hayMultiplesSupermercados.value
+  /**
+   * Filtra los supermercados visibles, excluyendo el supermercado genérico (id=0)
+   */
+  const supermercados = computed(() =>
+    store.supermercados.value
+      .filter((i: Supermercado) => i.visible && i.id !== 0)
   );
 
-    /**
-   * Filtra los supermercados visibles, excluyendo el supermercado genérico (id=0)
-   * cuando hay más de un supermercado y los muestra ordenados por campo order
-   */
-  const supermercados = computed(() => {
-    // Evitamos la copia profunda innecesaria usando filter directamente
-    let supermercadosVisibles=store.supermercados.value.filter((i: Supermercado) => i.visible)
-    return supermercadosVisibles.filter((i: Supermercado) => i.id !== 0);
-  });
+  // Valor por defecto para cuando no hay supermercados seleccionados
+  const defaultSupermarket: MySelectOption = { id: 0, text: 'Cualquier Supermercado' };
 
-  const selectedSupermarket = ref<MySelectOption>(supermercados.value[0]);
+  const selectedSupermarket = ref<MySelectOption>(defaultSupermarket);
   const id_supermercado = computed(() => selectedSupermarket.value?.id ?? 0);
   const supermercado = computed(() => selectedSupermarket.value?.text ?? 'Cualquier Supermercado');
 
-  /**
-   * Maneja el cambio de supermercado seleccionado
-   * @param option Opción seleccionada en el dropdown
-   */
-  const handleSupermarketChange = (option: MySelectOption): void => {
-    selectedSupermarket.value = option;
-  };
+  // Inicializar el supermercado seleccionado cuando cambia la lista de supermercados
+  watch(() => supermercados.value, (newSupermercados) => {
+    // Si hay supermercados visibles, seleccionar el primero
+    if (newSupermercados.length > 0) {
+      // Verificar si el supermercado actualmente seleccionado sigue siendo visible
+      const currentId = selectedSupermarket.value?.id;
+      const currentIsVisible = newSupermercados.some(s => s.id === currentId);
+
+      // Si el supermercado actual ya no es visible, seleccionar el primero de la lista
+      if (!currentIsVisible) {
+        selectedSupermarket.value = newSupermercados[0];
+      }
+    } else {
+      // Si no hay supermercados visibles, usar el supermercado genérico
+      selectedSupermarket.value = defaultSupermarket;
+    }
+  }, { immediate: true });
 
   // ===== FILTRADO DE PRODUCTOS =====
-  // Productos seleccionados (en la lista de la compra)
+  // Productos seleccionados y contadores
   const productosSeleccionados = computed(() =>
     productsData.value.filter((item: Producto) => item.selected)
   );
 
-  // Productos por comprar (no marcados como comprados)
   const productosPorComprar = computed(() =>
     productosSeleccionados.value.filter((item: Producto) => !item.done)
   );
 
-  // Contadores para la interfaz
   const amount2Buy = computed(() => productosPorComprar.value.length);
   const amountBuyed = computed(() => productosSeleccionados.value.length - amount2Buy.value);
 
-  // Productos del supermercado actual
+  // Productos por supermercado
   const productosEnSupermercadoActual = computed(() =>
-    productosPorComprar.value.filter((item: Producto) =>
-      item.id_supermercado === id_supermercado.value || item.id_supermercado === 0
-    )
+    productosPorComprar.value.filter((item: Producto) => {
+      // Obtener el supermercado del producto
+      const supermercadoProducto = store.findSupermercado(item.id_supermercado);
+
+      // Si el supermercado está oculto o no existe, tratar como supermercado genérico
+      const esSupermercadoOculto = !supermercadoProducto || !supermercadoProducto.visible;
+
+      // Mostrar en el supermercado actual si:
+      // 1. El producto es del supermercado actual
+      // 2. El producto es del supermercado genérico (id=0)
+      // 3. El supermercado del producto está oculto (tratarlo como genérico)
+      return item.id_supermercado === id_supermercado.value ||
+             item.id_supermercado === 0 ||
+             esSupermercadoOculto;
+    })
   );
 
-  const AmountInThisSupermarket = computed(() => productosEnSupermercadoActual.value.length);
-
-  // Productos de otros supermercados
   const productosEnOtrosSupermercados = computed(() =>
-    productosPorComprar.value.filter((item: Producto) =>
-      item.id_supermercado !== id_supermercado.value && item.id_supermercado !== 0
-    )
+    productosPorComprar.value.filter((item: Producto) => {
+      // Obtener el supermercado del producto
+      const supermercadoProducto = store.findSupermercado(item.id_supermercado);
+
+      // Si el supermercado está oculto o no existe, tratar como supermercado genérico
+      const esSupermercadoOculto = !supermercadoProducto || !supermercadoProducto.visible;
+
+      // Mostrar en otros supermercados solo si:
+      // 1. El producto NO es del supermercado actual
+      // 2. El producto NO es del supermercado genérico (id=0)
+      // 3. El supermercado del producto está visible
+      return item.id_supermercado !== id_supermercado.value &&
+             item.id_supermercado !== 0 &&
+             !esSupermercadoOculto;
+    })
   );
 
-  const AmountInOtherSupermarkets = computed(() => productosEnOtrosSupermercados.value.length);
-
-  // Productos ya comprados
   const productosComprados = computed(() =>
     productosSeleccionados.value.filter((item: Producto) => item.done)
   );
 
+  // Contadores para la interfaz
+  const AmountInThisSupermarket = computed(() => productosEnSupermercadoActual.value.length);
+  const AmountInOtherSupermarkets = computed(() => productosEnOtrosSupermercados.value.length);
+
+  // Flags para la interfaz
+  const hayProductosSeleccionados = computed(() => productosSeleccionados.value.length > 0);
+  const hayMultiplesSupermercados = computed(() => supermercados.value.length > 1);
+  const mostrarProductosOtrosSupermercados = computed(() =>
+    AmountInOtherSupermarkets.value > 0 && id_supermercado.value > 0
+  );
+
   // ===== GESTIÓN DE LA INTERFAZ =====
   /**
+   * recalculateAnchoBotonLimpiarLista
    * Recalcula el ancho del botón "Limpiar Lista" para que coincida con el ancho del último elemento nav
    */
   const recalculateAnchoBotonLimpiarLista = (): void => {
@@ -224,41 +244,34 @@
   // Manejador del evento resize con debounce
   let resizeTimeout: number | null = null;
   const handleResize = (): void => {
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout);
-    }
+    if (resizeTimeout) clearTimeout(resizeTimeout);
     resizeTimeout = window.setTimeout(recalculateAnchoBotonLimpiarLista, 50);
   };
 
-  // Configuración de eventos
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', handleResize);
-  }
-
-  onMounted(() => {
-    setTimeout(recalculateAnchoBotonLimpiarLista, lastClickTimeout);
-  });
-
-  onUnmounted(() => {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', handleResize);
-    }
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout);
-    }
-  });
-
   // ===== MANEJADORES DE EVENTOS =====
   /**
+   * handleSupermarketChange
+   * Maneja el cambio de supermercado seleccionado
+   * @param option Opción seleccionada en el dropdown
+   */
+  const handleSupermarketChange = (option: MySelectOption): void => {
+    // Asignar la nueva opción seleccionada
+    selectedSupermarket.value = option;
+
+    // Forzar actualización de las listas de productos
+    // Esto es necesario para que los computed se recalculen
+    productsData.value = [...store.sortedByCategory.value];
+  };
+
+  /**
+   * handleShoplistClick
    * Maneja el clic en un producto para marcarlo/desmarcarlo como comprado
    * @param item Producto sobre el que se ha hecho clic
    * @param value Nuevo valor para el estado "done" del producto
    */
   const handleShoplistClick = (item: Producto, value: boolean): void => {
     // Evitar procesamiento múltiple de clics
-    if (isProcessingClick.value || Date.now() - lastClick.value < lastClickTimeout) {
-      return;
-    }
+    if (isProcessingClick.value || Date.now() - lastClick.value < lastClickTimeout) return;
 
     isProcessingClick.value = true;
     lastClick.value = Date.now();
@@ -267,23 +280,15 @@
       // Actualizar el estado del producto
       const producto = store.findProducto(item.id);
       if (producto) {
-        // Actualizar con el valor exacto recibido del evento
         producto.done = value;
-
-        // Guardar los cambios en el store
         store.updateProduct(item.id, { done: value });
-
-        // Forzar actualización de la vista
         productsData.value = [...store.sortedByCategory.value];
 
-        // Si el producto se marcó como comprado, mostrar notificación con opción para deshacer
+        // Mostrar notificación solo si el producto se marcó como comprado
         if (value) {
           const notificationDuration = 500;
-
-          // Crear un ID único para la notificación
           const notificationId = Date.now();
 
-          // Mostrar notificación con botón para deshacer
           notify({
             id: notificationId,
             group: "buttons",
@@ -291,17 +296,14 @@
             duration: notificationDuration,
             data: {
               buttonText: "Deshacer",
-              buttonClass: "btn-danger", // Clase para el botón (fondo rojo)
+              buttonClass: "btn-danger",
               onClick: () => {
-                // Deshacer la acción (marcar como no comprado)
                 const productoActualizado = store.findProducto(item.id);
                 if (productoActualizado) {
                   productoActualizado.done = false;
                   store.updateProduct(item.id, { done: false });
                   productsData.value = [...store.sortedByCategory.value];
                 }
-
-                // Cerrar la notificación
                 notify.close(notificationId);
               },
               progressBarDuration: notificationDuration
@@ -312,28 +314,20 @@
     } catch (error) {
       console.error('Error al actualizar estado de producto:', error);
     } finally {
-      // Restablecer flag después del timeout
-      setTimeout(() => {
-        isProcessingClick.value = false;
-      }, lastClickTimeout);
+      setTimeout(() => { isProcessingClick.value = false; }, lastClickTimeout);
     }
   };
 
   /**
+   * handleClearList
    * Maneja el clic en el botón "Limpiar Lista"
    * Muestra un diálogo de confirmación y limpia la lista según la opción seleccionada
-   * Incluye un paso adicional de verificación solo cuando se eliminarán productos sin comprar
    */
   const handleClearList = async (): Promise<void> => {
     const selectedProducts = store.productos.value.filter((item: Producto) => item.selected);
-    const hayProductosCompradosYPendientes =
-      selectedProducts.some((item: Producto) => item.done) &&
-      !selectedProducts.every((item: Producto) => item.done);
-
-    // Número total de productos en la lista
-    const totalProductos = selectedProducts.length;
     const productosComprados = selectedProducts.filter(item => item.done).length;
-    const productosPendientes = totalProductos - productosComprados;
+    const productosPendientes = selectedProducts.length - productosComprados;
+    const hayProductosCompradosYPendientes = productosComprados > 0 && productosPendientes > 0;
 
     // Primer diálogo de confirmación
     const result = await showConfirmWithOptions(
@@ -354,51 +348,57 @@
       }
     );
 
-    // Si el usuario elige eliminar solo los productos comprados
-    if (result.isDenied) {
-      // No se requiere confirmación adicional para eliminar productos ya comprados
-      try {
+    try {
+      // Eliminar solo productos comprados
+      if (result.isDenied) {
         store.clearList(true);
-        // Forzar actualización de la vista
         productsData.value = [...store.sortedByCategory.value];
-      } catch (error) {
-        console.error('Error al limpiar productos comprados:', error);
-        showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
       }
-    }
-    // Si el usuario elige eliminar todos los productos
-    else if (result.isConfirmed) {
-      // Verificación adicional solo si hay productos sin comprar
-      if (productosPendientes > 0) {
-        const confirmacionAdicional = await showConfirmWithOptions(
-          'Confirmar eliminación',
-          `¿Está seguro de eliminar ${productosPendientes} producto${pluralizar(productosPendientes)} sin comprar?`,
-          {
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            customClass: {
-              confirmButton: 'btn btn-danger me-2',
-              cancelButton: 'btn btn-success',
+      // Eliminar todos los productos
+      else if (result.isConfirmed) {
+        // Verificación adicional solo si hay productos sin comprar
+        if (productosPendientes > 0) {
+          const confirmacionAdicional = await showConfirmWithOptions(
+            'Confirmar eliminación',
+            `¿Está seguro de eliminar ${productosPendientes} producto${pluralizar(productosPendientes)} sin comprar?`,
+            {
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'Cancelar',
+              customClass: {
+                confirmButton: 'btn btn-danger me-2',
+                cancelButton: 'btn btn-success',
+              }
             }
-          }
-        );
+          );
 
-        if (!confirmacionAdicional.isConfirmed) {
-          return; // Cancelar la operación si el usuario no confirma
+          if (!confirmacionAdicional.isConfirmed) return;
         }
-      }
 
-      // Limpiar todos los productos seleccionados
-      try {
         store.clearList(false);
-        // Forzar actualización de la vista
         productsData.value = [...store.sortedByCategory.value];
-      } catch (error) {
-        console.error('Error al limpiar todos los productos:', error);
-        showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
       }
+    } catch (error) {
+      console.error('Error al limpiar la lista:', error);
+      showError('Error', 'Ocurrió un error al limpiar la lista. Inténtalo de nuevo.');
     }
   };
+
+  // ===== CICLO DE VIDA Y EVENTOS =====
+  // Configuración de eventos
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleResize);
+  }
+
+  onMounted(() => {
+    setTimeout(recalculateAnchoBotonLimpiarLista, lastClickTimeout);
+  });
+
+  onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', handleResize);
+    }
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+  });
 
   // ===== WATCHERS =====
   // Sincronizar con el store

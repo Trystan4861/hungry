@@ -203,7 +203,7 @@
   const fullScreen = ref<boolean>(store.fullScreen.value);
   const tabselected = ref<Tab>(store.tabs[defaultTabActive.value]);
   // Usar el composable useFormChanges para gestionar los cambios
-  const { changes: changes2Save, markAsChanged, hasChanges, resetChanges, saveChanges } = useFormChanges({
+  const { changes: changes2Save, markAsChanged, saveChanges } = useFormChanges({
     categoriasVisibles: false,
     supermarketsVisible: false,
     defaultTabActive: false,
@@ -219,7 +219,7 @@
   } = useDraggable(store.supermercados.value, {
     fixedFirstItem: true,
     onOrderChange: (newItems) => {
-      store.supermercados.value = newItems;
+      // Solo marcar como cambiado, no actualizar el store todavía
       markAsChanged('supermarketsVisible');
     }
   });
@@ -281,15 +281,32 @@
 
   const handleSave = (): void => {
     // Definir las funciones de guardado para cada campo
+    if(supermarketsVisibles.value.length === 2)
+    {
+      showError("Error", "No se puede seleccionar sólo un supermercado.<br />Por favor, aumente o elimine su selección.");
+      return;
+    }
+
     const saveCallbacks = {
       categoriasVisibles: () => store.updateCategorias(categoriasVisibles.value),
-      supermarketsVisible: () => store.updateSupermercados(supermarketsVisibles.value),
+      supermarketsVisible: () => {
+        // Actualizar la visibilidad en los elementos ordenados
+        supermercadosOrdenados.value.forEach(item => {
+          item.visible = supermarketsVisibles.value.includes(item.id);
+        });
+
+        // Actualizar el store con los elementos ordenados y con la visibilidad actualizada
+        store.updateSupermercadosOrder(supermercadosOrdenados.value);
+      },
       defaultTabActive: () => store.setDefaultTabActive(defaultTabActive.value),
       fullScreen: () => store.setFullScreen(fullScreen.value)
     };
 
     // Usar el método saveChanges del composable useFormChanges
     saveChanges(saveCallbacks);
+
+    // Mostrar mensaje de éxito
+    showSuccess("Cambios guardados", "Los cambios han sido guardados correctamente");
   }
 
   // Usar composable de autenticación

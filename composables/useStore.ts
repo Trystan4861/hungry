@@ -24,6 +24,8 @@ export const myStore = () => {
     { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2 },
     { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3 },
    ]);
+
+
   const loginData = useState<LoginData>('loginData', () => ({ email: '', token: '', fingerID: '', logged: false }));
   const categorias = useState<Categoria[]>('categorias', () => Array.from({ length: 20 }, (_, i) => ({
     id: i,
@@ -36,7 +38,32 @@ export const myStore = () => {
   const findSupermercado = (id: number) => supermercados.value.find(m => m.id === id);
   const findCategoria = (id: number) => categorias.value.find(c => c.id === id);
 
+  /**
+   * sortSupermercadosByOrder
+   * Ordena los supermercados según su propiedad 'order'
+   * @returns {Supermercado[]} Array ordenado de supermercados
+   */
+  const sortSupermercadosByOrder = () => {
+    // Crear una copia ordenada de los supermercados
+    const ordenados = [...supermercados.value].sort((a, b) => {
+      // El supermercado genérico (id=0) siempre va primero
+      if (a.id === 0) return -1;
+      if (b.id === 0) return 1;
+      // Ordenar el resto por la propiedad 'order'
+      return a.order - b.order;
+    });
+
+    // Actualizar el array de supermercados con la versión ordenada
+    supermercados.value = ordenados;
+
+    // Devolver el array ordenado para facilitar su uso en otros contextos
+    return ordenados;
+  };
+
   const exportData = () => {
+    // Ordenar los supermercados por la propiedad 'order' antes de exportarlos
+    sortSupermercadosByOrder();
+
     // Recopilamos todos los datos en un único objeto
     const data = {
       appName: appName.value,
@@ -71,7 +98,11 @@ export const myStore = () => {
       }
 
       if (data.categorias) categorias.value = data.categorias;
-      if (data.supermercados) supermercados.value = data.supermercados;
+      if (data.supermercados) {
+        supermercados.value = data.supermercados;
+        // Ordenar los supermercados por la propiedad 'order'
+        sortSupermercadosByOrder();
+      }
       if (data.productos) {
         // Usar updateProductos en lugar de asignar directamente
         updateProductos(data.productos);
@@ -150,6 +181,8 @@ export const myStore = () => {
         );
         if (validSupermercados.length === storedSupermercados.length) {
           supermercados.value = storedSupermercados;
+          // Ordenar los supermercados por la propiedad 'order'
+          sortSupermercadosByOrder();
         } else {
           console.warn('Algunos supermercados en localStorage no tienen el formato correcto');
         }
@@ -209,6 +242,9 @@ export const myStore = () => {
   };
 
   const saveDataToLocalStorage = () => {
+    // Ordenar los supermercados por la propiedad 'order' antes de guardarlos
+    sortSupermercadosByOrder();
+
     localStorageService.setSubItem('productos', productos.value);
     localStorageService.setSubItem('supermercados', supermercados.value);
     localStorageService.setSubItem('categorias', categorias.value);
@@ -363,6 +399,20 @@ export const myStore = () => {
       .sort((a, b) => a.id_categoria - b.id_categoria || a.text.localeCompare(b.text));
   });
 
+  /**
+   * supermercadosOrdenados
+   * Devuelve los supermercados ordenados por la propiedad 'order'
+   */
+  const supermercadosOrdenados = computed(() => {
+    return [...supermercados.value].sort((a, b) => {
+      // El supermercado genérico (id=0) siempre va primero
+      if (a.id === 0) return -1;
+      if (b.id === 0) return 1;
+      // Ordenar el resto por la propiedad 'order'
+      return a.order - b.order;
+    });
+  });
+
   const purchased = computed(() => {
     // Obtener IDs de categorías visibles
     const visibleCategoriaIds = categorias.value
@@ -387,6 +437,10 @@ export const myStore = () => {
   const addMarket = (market: Supermercado) => {
     const maxOrder = supermercados.value.length;
     supermercados.value.push({ ...market, order: maxOrder });
+
+    // Ordenar los supermercados por la propiedad 'order'
+    sortSupermercadosByOrder();
+
     saveDataToLocalStorage();
   };
 
@@ -398,10 +452,21 @@ export const myStore = () => {
     }
   };
 
+  /**
+   * updateSupermercados
+   * Actualiza la visibilidad de los supermercados y mantiene su orden
+   * @param visibleSupermercadoIds IDs de los supermercados que deben estar visibles
+   */
   const updateSupermercados = (visibleSupermercadoIds: number[]) => {
+    // Actualizar la visibilidad de los supermercados
     supermercados.value.forEach(supermercado => {
       supermercado.visible = visibleSupermercadoIds.includes(supermercado.id);
     });
+
+    // Ordenar los supermercados por la propiedad 'order'
+    sortSupermercadosByOrder();
+
+    // Guardar en localStorage
     saveDataToLocalStorage();
   };
 
@@ -415,7 +480,30 @@ export const myStore = () => {
 
     const targetMarket = supermercados.value[swapIndex];
     [currentMarket.order, targetMarket.order] = [targetMarket.order, currentMarket.order];
-    supermercados.value.sort((a, b) => a.order - b.order);
+
+    // Ordenar los supermercados por la propiedad 'order'
+    sortSupermercadosByOrder();
+
+    saveDataToLocalStorage();
+  };
+
+  /**
+   * updateSupermercadosOrder
+   * Actualiza el orden y visibilidad de los supermercados según el array proporcionado
+   * @param newSupermercados Array de supermercados con el nuevo orden y visibilidad
+   */
+  const updateSupermercadosOrder = (newSupermercados: Supermercado[]) => {
+    // Actualizar el orden de cada supermercado según su posición en el array
+    newSupermercados.forEach((item, index) => {
+      if (item.id !== 0) { // No cambiar el orden del supermercado genérico (id=0)
+        item.order = index;
+      }
+    });
+
+    // Actualizar el array de supermercados en el store
+    supermercados.value = [...newSupermercados];
+
+    // Guardar en localStorage
     saveDataToLocalStorage();
   };
 
@@ -458,6 +546,9 @@ export const myStore = () => {
       { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2 },
       { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3 },
     ];
+
+    // Ordenar los supermercados por la propiedad 'order'
+    sortSupermercadosByOrder();
     // establecemos lastSyncTimestamp a null para que se sincronice al siguiente cambio
     lastSyncTimestamp.value = null;
     // Restablecer categorías a los valores por defecto
@@ -487,6 +578,9 @@ export const myStore = () => {
 
   loadDataFromLocalStorage();
 
+  // Asegurarse de que los supermercados estén ordenados al iniciar la aplicación
+  sortSupermercadosByOrder();
+
   return {
     appName,
     defaultTabActive,
@@ -510,6 +604,7 @@ export const myStore = () => {
     updateCategoria,
     updateCategorias,
     updateSupermercados,
+    updateSupermercadosOrder, // Nuevo método para actualizar el orden de los supermercados
     setVisibleCategoria,
     setAmount,
     toggleSelected,

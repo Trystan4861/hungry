@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import type { Ref } from 'vue';
 
 /**
@@ -72,22 +72,19 @@ export function useDraggable<T extends { id: number }>(
    */
   const checkMove = (evt: DraggableEvent): boolean => {
     if (fixedFirstItem) {
-      // No permitir mover elementos a la posición 0 (antes del primer elemento)
-      if (evt.draggedContext.element.id === 0 || evt.relatedContext.index === 0) {
+      // No permitir mover el elemento con id=0
+      if (evt.draggedContext.element.id === 0) {
+        return false;
+      }
+
+      // No permitir mover elementos a la posición del elemento con id=0
+      const firstItemIndex = orderedItems.value.findIndex(item => item.id === 0);
+      if (evt.relatedContext.index === firstItemIndex) {
         return false;
       }
     }
     return true;
   };
-
-  // Observar cambios en los elementos iniciales
-  watch(
-    () => [...initialItems], // Crear una copia para asegurar que se detecten los cambios
-    (newItems) => {
-      orderedItems.value = [...newItems];
-    },
-    { deep: true }
-  );
 
   return {
     orderedItems,
