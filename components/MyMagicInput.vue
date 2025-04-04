@@ -19,26 +19,24 @@
     </span>
 
 
-    <!-- Teclado virtual -->
     <div v-if="showKeyboard" class="virtual-keyboard-container">
       <div class="keyboard-close-container">
         <span class="keyboard-close" @click="closeKeyboard">✖</span>
       </div>
 
-      <!-- Teclado normal -->
       <div v-if="activeTab === 'keyboard'" class="keyboard-layout">
-        <!-- Renderizado dinámico de filas y teclas -->
         <div
           v-for="(row, rowIndex) in keyboardLayout.rows"
           :key="rowIndex"
           class="keyboard-row"
           :id="row.id"
+          :data-position="row.position || 'end'"
         >
           <template v-for="(key, keyIndex) in row.keys" :key="`${rowIndex}-${keyIndex}`">
-            <!-- Tecla normal o multi-carácter -->
             <div
               v-if="!key.type || key.type === 'normal'"
               class="key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               :class="{ 'multi-char': key.special && key.special.length > 0 }"
               @click.stop="key.main && addChar(key.main)"
               @touchstart.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyTouchStart($event, key.main, key.special) : handleKeyTouchStart($event, key.main))"
@@ -49,60 +47,60 @@
               <span class="main-char">
                 {{ key.upper && (shiftActive || shiftLocked) ? key.upper : (key.main || '') }}
               </span>
-              <span v-if="key.special && key.special.length > 0" class="alt-char top-right">
-                {{ Array.isArray(key.special) ? key.special.join(' ') : key.special }}
+              <span v-if="key.special && key.special.length > 0" class="alt-char">
+                {{ key.super?? (Array.isArray(key.special) ? key.special.join(' ') : key.special) }}
               </span>
             </div>
 
-            <!-- Tecla de mayúsculas -->
             <div
               v-else-if="key.type === 'shift'"
               class="key mayus-key shift-key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               @click="toggleShift"
               :class="{ 'shift-active': shiftActive, 'shift-locked': shiftLocked }"
             >
             </div>
 
-            <!-- Tecla especial (backspace, enter, etc.) -->
             <div
               v-else-if="key.type === 'special'"
               class="key special-key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               @click="backspace"
             >
               {{ key.text }}
             </div>
 
-            <!-- Tecla de símbolos -->
             <div
               v-else-if="key.type === 'symbol'"
               class="key symbol-key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               @click="showNumericKeyboard"
             >
               {{ key.text }}
             </div>
 
-            <!-- Tecla de emojis -->
             <div
               v-else-if="key.type === 'emoji'"
               class="key emoji-key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               @click="activeTab = 'emojis'"
             >
               {{ key.text }}
             </div>
 
-            <!-- Tecla de espacio -->
             <div
               v-else-if="key.type === 'space'"
               class="key space-key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               @click="addChar(' ')"
             >
               {{ key.text }}
             </div>
 
-            <!-- Tecla de enter -->
             <div
               v-else-if="key.type === 'enter'"
               class="key enter-key"
+              :style="key.position ? { 'align-items': key.position } : {}"
               @click="handleEnter"
             >
               <span class="enter-arrow">{{ key.text }}</span>
@@ -112,7 +110,6 @@
 
       </div>
 
-      <!-- Panel de emojis -->
       <div v-if="activeTab === 'emojis'" class="emoji-panel">
         <div class="emoji-categories">
           <div
@@ -138,7 +135,6 @@
       </div>
     </div>
 
-    <!-- Layer para teclas especiales (se muestra con longpress) -->
     <teleport to="body">
       <div v-if="showSpecialKeysLayer" class="special-keys-layer"
            :style="{
@@ -252,6 +248,7 @@
       // Primera fila (números)
       {
         id: 'keyboard-numbers',
+        position: 'center',
         keys: [
           { main: '1', special: [] },
           { main: '2', special: [] },
@@ -268,60 +265,64 @@
       // Segunda fila (QWERTY)
       {
         id: 'keyboard-qwerty',
+        position: 'end', // Valor por defecto
         keys: [
           { main: 'q', upper: 'Q', special: ['\\'] },
           { main: 'w', upper: 'W', special: ['^'] },
-          { main: 'e', upper: 'E', special: ['é', '~'] },
+          { main: 'e', upper: 'E', special: ['é', '~'], super: '~' },
           { main: 'r', upper: 'R', special: ['|'] },
           { main: 't', upper: 'T', special: ['['] },
           { main: 'y', upper: 'Y', special: [']'] },
-          { main: 'u', upper: 'U', special: ['ú', 'ü'] },
-          { main: 'i', upper: 'I', special: ['í'] },
-          { main: 'o', upper: 'O', special: ['º', 'ó'] },
+          { main: 'u', upper: 'U', special: ['ú', '<', 'ü'], super: '<' },
+          { main: 'i', upper: 'I', special: ['í', '>'], super: '>' },
+          { main: 'o', upper: 'O', special: ['º', '{', 'ó'], super: '{' },
           { main: 'p', upper: 'P', special: ['}'] }
         ]
       },
       // Tercera fila (ASDFG)
       {
         id: 'keyboard-asdfg',
+        position: 'end', // Valor por defecto
         keys: [
-          { main: 'a', upper: 'A', special: [] },
-          { main: 's', upper: 'S', special: [] },
-          { main: 'd', upper: 'D', special: [] },
-          { main: 'f', upper: 'F', special: [] },
-          { main: 'g', upper: 'G', special: [] },
-          { main: 'h', upper: 'H', special: [] },
-          { main: 'j', upper: 'J', special: [] },
-          { main: 'k', upper: 'K', special: [] },
-          { main: 'l', upper: 'L', special: [] },
-          { main: 'ñ', upper: 'Ñ', special: [] }
+          { main: 'a', upper: 'A', special: ['@', 'á', 'ª'], super: '@' },
+          { main: 's', upper: 'S', special: ['#'] },
+          { main: 'd', upper: 'D', special: ['&'] },
+          { main: 'f', upper: 'F', special: ['*'] },
+          { main: 'g', upper: 'G', special: ['-'] },
+          { main: 'h', upper: 'H', special: ['+'] },
+          { main: 'j', upper: 'J', special: ['='] },
+          { main: 'k', upper: 'K', special: ['('] },
+          { main: 'l', upper: 'L', special: [')'] },
+          { main: 'ñ', upper: 'Ñ', special: ['%'] }
         ]
       },
       // Cuarta fila (ZXCVB)
       {
         id: 'keyboard-zxcvb',
+        position: 'end', // Valor por defecto
         keys: [
-          { type: 'shift', action: 'toggleShift' },
-          { main: 'z', upper: 'Z', special: [] },
-          { main: 'x', upper: 'X', special: [] },
-          { main: 'c', upper: 'C', special: [] },
-          { main: 'v', upper: 'V', special: [] },
-          { main: 'b', upper: 'B', special: [] },
-          { main: 'n', upper: 'N', special: [] },
-          { main: 'm', upper: 'M', special: [] },
-          { type: 'special', text: '⌫', action: 'backspace' }
+          { type: 'shift', action: 'toggleShift', position:'center' },
+          { main: 'z', upper: 'Z', special: ['_'] },
+          { main: 'x', upper: 'X', special: ['$','¢','€','¥','£'], super: '€'},
+          { main: 'c', upper: 'C', special: ['"'] },
+          { main: 'v', upper: 'V', special: ["'"] },
+          { main: 'b', upper: 'B', special: [':'] },
+          { main: 'n', upper: 'N', special: [';'] },
+          { main: 'm', upper: 'M', special: ['/'] },
+          { type: 'special', text: '⌫', action: 'backspace', position: 'center' }
         ]
       },
       // Quinta fila (barra espaciadora y teclas especiales)
       {
         id: 'keyboard-space-bar',
+        position: 'center', // Valor por defecto
         keys: [
           { type: 'symbol', text: '123', action: 'showNumericKeyboard' },
           { type: 'emoji', text: '😊', action: 'showEmojis' },
           { main: ',', special: [] },
           { type: 'space', text: 'Espacio', action: 'space' },
-          { main: '.', special: [] },
-          { type: 'enter', text: '↵', action: 'handleEnter' }
+          { main: '.', special: ['!','¿','¡',',','.','?'], super:',¡¿' },
+          { type: 'enter', text: '↵', action: 'handleEnter', position: 'center' }
         ]
       }
     ]
@@ -343,7 +344,9 @@
   interface KeyboardKey {
     main?: string;
     upper?: string;
+    position?: 'center' | 'end' | 'start';
     special?: string | string[];
+    super?: string;
     type?: 'normal' | 'shift' | 'special' | 'symbol' | 'emoji' | 'space' | 'enter';
     text?: string;
     action?: string;
@@ -351,6 +354,7 @@
 
   interface KeyboardRow {
     id: string;
+    position?: 'center' | 'end' | 'start';
     keys: KeyboardKey[];
   }
 
@@ -559,11 +563,6 @@
         } else if (leftPosition + layerWidthValue > window.innerWidth - 10) {
           leftPosition = window.innerWidth - layerWidthValue - 10;
         }
-
-        // Log para depuración
-        console.log('Elemento tecla:', keyElement);
-        console.log('Rect de la tecla:', keyRect);
-        console.log('Posicionando layer en:', 'top:', topPosition, 'left:', leftPosition);
 
         // Actualizar las variables de posición del layer
         layerTop.value = `${topPosition}px`;
