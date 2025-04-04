@@ -2,7 +2,8 @@
   <div class="m-3">
     <MyCategoriesList @categorySelected="handleCategorySelected" @categoryLongClick="handleCategoryLongClick"/>
     <MySelect class="my-select mt-4" :selected="supermercado" :options="supermercadosVisibles" @select="handleSupermercadoSelected" />
-    <MyInput
+    <component
+    :is="inputComponent"
     class="mb-4"
     v-model="name"
     :placeholder="'Introduzca el nombre del producto'"
@@ -22,19 +23,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import type { Categoria, Supermercado } from "~/types";
 import { myStore } from "~/composables/useStore";
 import { showErrorAlert as showError } from "~/utils/sweetalert";
 import { notify } from "@kyvg/vue3-notification";
 import { useMyInputModal } from "~/composables/useMyInputModal";
+import { isMobileDevice } from "~/utils/device";
 
 const store = myStore();
 const category = ref<Categoria>(store.categorias.value[0]);
 const supermercado = ref<Supermercado>(store.supermercados.value[0]);
 const name = ref("");
 const isAdding = ref(false);
+const isMobile = ref(false);
 
+onMounted(() => {
+  // Establecer el valor inicial
+  isMobile.value = isMobileDevice();
+
+  // Agregar listener para cambios en el tamaño de la ventana
+  window.addEventListener('resize', () => {
+    isMobile.value = isMobileDevice();
+  });
+});
+
+const inputComponent = computed(() =>
+  isMobile.value ? 'MyMagicInput' : 'MyInput'
+);
 const supermercadosVisibles = computed(() =>
     store.supermercados.value.filter((i: Supermercado) => i.visible)
   );
