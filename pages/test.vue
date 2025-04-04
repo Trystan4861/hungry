@@ -2,4 +2,6 @@
     <div class="text-center">
       <h1>TEST</h1>
     </div>
-  </template>
+    <MyMagicInput />
+
+</template>

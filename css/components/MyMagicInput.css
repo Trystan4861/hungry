@@ -1,0 +1,663 @@
+/* Estilos para MyMagicInput */
+.my-magic-input {
+  position: relative;
+  width: 100%;
+}
+
+.magic-input-field {
+  width: 100%;
+  height: 3.125rem;
+  border: .125rem solid sandybrown;
+  padding: 0.5rem;
+  cursor: text !important; /* Forzar cursor de texto siempre */
+  background-color: white;
+  color: #333; /* Color de texto oscuro para contraste */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.magic-input-field:focus-visible {
+  outline: 0;
+}
+
+.magic-input-field .placeholder {
+  color: #999;
+}
+
+.magic-input-field .input-text {
+  color: #333;
+  cursor: text !important; /* Forzar cursor de texto siempre */
+}
+
+.my-magic-input .cross {
+  left: -23px;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Teclado virtual */
+.virtual-keyboard-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f0f0f0;
+  border-top: 1px solid #ccc;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  color: #333; /* Aseguramos texto oscuro para contraste */
+}
+
+.keyboard-close-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+  background-color: #e0e0e0;
+  border-bottom: 1px solid #ccc;
+}
+
+.keyboard-close {
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #333;
+  padding: 0.2rem 0.5rem;
+}
+
+/* Diseño del teclado */
+.keyboard-layout {
+  padding: 0.5rem;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  position: relative; /* Para posicionar la tecla Enter */
+}
+
+.keyboard-row:last-child {
+  margin-bottom: 0;
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: white;
+  color: #333; /* Color de texto oscuro para contraste */
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* Estilos para teclas con múltiples caracteres */
+.multi-char {
+  position: relative;
+}
+
+.multi-char .main-char {
+  font-size: 1rem;
+}
+
+.multi-char .alt-char {
+  position: absolute;
+  font-size: 0.6rem;
+  color: #666;
+}
+
+.multi-char .alt-char.top-right {
+  top: 0.2rem;
+  right: 0.2rem;
+}
+
+.alt-key.alt-active {
+  background-color: #ffd700;
+  border-color: #e6c200;
+  color: #000;
+  font-weight: bold;
+}
+
+.key:last-child {
+  margin-right: 0;
+}
+
+.key:active {
+  background-color: #e0e0e0;
+  transform: translateY(1px);
+}
+
+.special-key {
+  width: 3.5rem;
+  font-size: 1.2rem;
+  background-color: #e8e8e8;
+}
+
+/* Estilos para la tecla de mayúsculas */
+.shift-key {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estado normal: flecha hacia arriba ⇧ */
+.shift-key::before {
+  content: "⇧";
+  font-size: 1.2rem;
+  display: block;
+  color: #333;
+}
+
+/* Estado activo: flecha con doble punta ⇫ */
+.shift-active {
+  background-color: #d0d0ff;
+  border-color: #8080ff;
+}
+
+.shift-active::before {
+  content: "⇫";
+  color: #333;
+}
+
+/* Estado bloqueado: flecha hacia arriba desde barra ↥ */
+.shift-locked {
+  background-color: #a0a0ff;
+  border-color: #6060ff;
+}
+
+.shift-locked::before {
+  content: "↥";
+  color: #000;
+  font-weight: bold;
+}
+
+.space-key {
+  width: 10rem;
+  font-size: 0.9rem;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.enter-key {
+  width: 4rem;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 0.9rem;
+}
+
+/* Estilo para la flecha de la tecla Enter */
+.enter-arrow {
+  font-size: 1.5rem;
+  transform: rotate(0deg); /* Ajustar rotación si es necesario */
+  position: relative;
+  top: 0.5rem; /* Ajustar posición vertical */
+  left: 0.3rem; /* Ajustar posición horizontal */
+}
+
+/* Estilo para la tecla Enter con forma de L girada 180 grados (┘) */
+.enter-key.l-shape {
+  position: absolute;
+  top: 5.5rem; /* Posición desde la parte superior para alinear con la segunda y tercera fila */
+  right: 0.5rem;
+  width: 3rem;
+  height: 5.25rem; /* Altura de dos teclas + espacio entre ellas */
+  border-radius: 0.25rem;
+  z-index: 10; /* Mayor z-index para que esté por encima de otras teclas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Forma de L girada 180 grados con bocado en esquina inferior izquierda */
+  clip-path: polygon(
+    0 0,           /* Esquina superior izquierda */
+    100% 0,        /* Esquina superior derecha */
+    100% 100%,     /* Esquina inferior derecha */
+    20% 100%,      /* Punto inferior derecho del bocado (20% de anchura) */
+    20% 40%,       /* Punto superior derecho del bocado (60% de altura desde abajo) */
+    0 40%          /* Punto superior izquierdo del bocado */
+  );
+}
+
+.emoji-key {
+  font-size: 1.2rem;
+  background-color: #f8f8f8;
+}
+
+.symbol-key {
+  font-size: 0.9rem;
+  background-color: #e8e8e8;
+  font-weight: bold;
+}
+
+/* Clase para ocultar elementos pero mantener su espacio */
+.hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.symbols-row {
+  background-color: #f0f0f0;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Panel de emojis */
+.emoji-panel {
+  height: 15rem;
+  overflow-y: auto;
+  background-color: #f8f8f8;
+  color: #333;
+}
+
+.emoji-categories {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem;
+  background-color: #e8e8e8;
+  border-bottom: 1px solid #ccc;
+}
+
+.emoji-category {
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: #333;
+}
+
+.emoji-category.active {
+  background-color: #ddd;
+  color: #000;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f8f8;
+}
+
+.emoji-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  height: 2.5rem;
+  background-color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+  color: inherit; /* Los emojis mantienen su color */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.emoji-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Estilos para emoji */
+.emoji {
+  font-family: 'Noto Color Emoji', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+  color: inherit; /* Los emojis mantienen su color original */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .key {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9rem;
+  }
+
+  .special-key {
+    width: 3rem;
+  }
+
+  .mayus-key {
+    width: 6.5rem;
+  }
+
+  .enter-arrow {
+    font-size: 1.3rem;
+    top: 0.4rem;
+    left: 0.15rem;
+  }
+
+  /* Ajustes para la tecla de mayúsculas en pantallas medianas */
+  .shift-key::before,
+  .shift-active::before,
+  .shift-locked::before {
+    font-size: 1.1rem;
+  }
+
+  .space-key {
+    width: 20rem;
+    margin-inline: 10px;
+  }
+
+  .enter-key {
+    width: 3rem;
+    height: 4.5rem;
+    position: absolute;
+    right: 7px;
+  }
+
+  div#keyboard-qwerty {
+    width: fit-content;
+    padding-left: 10px;
+  }
+
+  div#keyboard-asdfg {
+    width: fit-content;
+    padding-left: 20px;
+  }
+
+  div#keyboard-zxcvb {
+    width: fit-content;
+  }
+
+  .multi-char .main-char {
+    font-size: 0.9rem;
+  }
+
+  .multi-char .alt-char {
+    font-size: 0.5rem;
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .key {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.8rem;
+    margin-right: 0.15rem;
+  }
+
+  .special-key {
+    width: 2.5rem;
+  }
+
+  .space-key {
+    width: 6rem;
+  }
+
+  .enter-key {
+    width: 3rem;
+  }
+
+  .enter-arrow {
+    font-size: 1.1rem;
+    top: 0.3rem;
+    left: 0.1rem;
+  }
+
+  /* Ajustes para la tecla de mayúsculas en pantallas pequeñas */
+  .shift-key::before,
+  .shift-active::before,
+  .shift-locked::before {
+    font-size: 1rem;
+  }
+
+  .multi-char .main-char {
+    font-size: 0.8rem;
+  }
+
+  .multi-char .alt-char {
+    font-size: 0.45rem;
+    top: 0.15rem;
+    right: 0.15rem;
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Ocultar la tecla enter para pantallas pequeñas por defecto */
+.small-screen-enter {
+  display: none;
+}
+
+/* Pantallas muy pequeñas (móviles) */
+@media (max-width: 360px) {
+  .key {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.75rem;
+    margin-right: 0.1rem;
+  }
+
+  .special-key {
+    width: 2.2rem;
+  }
+
+  .space-key {
+    width: 5rem;
+  }
+
+  /* Ajustes para la tecla de mayúsculas en pantallas muy pequeñas */
+  .shift-key::before,
+  .shift-active::before,
+  .shift-locked::before {
+    font-size: 0.9rem;
+  }
+
+  /* Ocultar la tecla enter con forma de L original */
+  .enter-key.l-shape {
+    display: none;
+  }
+
+  /* Mostrar la tecla enter en la última fila */
+  .small-screen-enter {
+    display: flex;
+    background-color: #4CAF50;
+    color: white;
+    width: 2.5rem;
+    height: 1.6rem;
+  }
+
+  /* Mostrar la tecla enter en la última fila */
+  #keyboard-space-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .multi-char .main-char {
+    font-size: 0.7rem;
+  }
+
+  .multi-char .alt-char {
+    font-size: 0.4rem;
+    top: 0.1rem;
+    right: 0.1rem;
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Asegurar que todas las teclas sean visibles */
+  .keyboard-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+/* Ajustes específicos para la tecla enter en diferentes resoluciones */
+/* Pantallas grandes (>=769px) */
+@media (min-width: 769px) {
+  .enter-key.l-shape {
+    top: 5.5rem; /* Alinear con las filas 2 y 3 */
+    right: 0.5rem;
+    width: 3rem;
+    height: 5.25rem;
+  }
+}
+
+/* Pantallas entre 517px y 768px */
+@media (min-width: 517px) and (max-width: 768px) {
+  .enter-key.l-shape {
+    top: 5.5rem; /* Alinear con las filas 2 y 3 */
+    right: 0.5rem;
+    width: 3rem;
+    height: 4.5rem;
+  }
+}
+
+/* Pantallas entre 481px y 516px */
+@media (min-width: 481px) and (max-width: 516px) {
+  .enter-key.l-shape {
+    top: 5.5rem; /* Alinear con las filas 2 y 3 */
+    right: 0.4rem;
+    width: 2.5rem;
+    height: 4.25rem;
+  }
+}
+
+/* Pantallas entre 361px y 480px */
+@media (min-width: 361px) and (max-width: 480px) {
+  .enter-key.l-shape {
+    width: 2.2rem;
+    height: 4rem; /* Ajustar para dos teclas más pequeñas */
+    right: 0.35rem;
+    top: 5.5rem; /* Alinear con las filas 2 y 3 */
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.placeholder {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #999;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  cursor: text !important; /* Forzar cursor de texto siempre */
+}
+
+.keyboard-active {
+  border-color: #2196F3 !important;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
+  cursor: text !important; /* Mantener el cursor de texto cuando el teclado está activo */
+}
+
+/* Estilos para el cursor (caret) */
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: #000;
+  vertical-align: middle;
+  margin: 0 -1px;
+  animation: blink 1s infinite;
+  position: relative;
+}
+
+/* Estilos específicos para el cursor dentro del placeholder */
+.placeholder .caret {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Estilos para el layer de teclas especiales */
+.special-keys-layer {
+  position: fixed; /* Aseguramos que esté posicionado respecto a la ventana */
+  z-index: 9999; /* Valor alto para asegurar que esté por encima de todo */
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 8px 8px 8px 8px; /* Padding igual en todos los lados */
+  backdrop-filter: blur(5px); /* Efecto de desenfoque para el fondo */
+  -webkit-backdrop-filter: blur(5px);
+  animation: popIn 0.2s ease-out; /* Animación de aparición */
+  transform-origin: bottom center;
+}
+
+/* Animación para la aparición del layer */
+@keyframes popIn {
+  0% {
+    transform: translateY(10px) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.special-keys-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.special-option-key {
+  min-width: 40px;
+  height: 40px;
+  margin: 0 4px 0 4px; /* Margen igual a izquierda y derecha */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out forwards;
+  animation-delay: calc(var(--index, 0) * 0.05s);
+  opacity: 0;
+}
+
+.special-option-key.active {
+  background-color: #e0e0e0;
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: #2196F3;
+}
+
+.special-option-key:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Animación para la aparición de las teclas especiales */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

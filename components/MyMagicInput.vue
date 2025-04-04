@@ -1,0 +1,898 @@
+<template>
+  <div class="my-magic-input d-inline-flex w-100">
+    <div
+      class="magic-input-field"
+      ref="inputFieldRef"
+      @click="handleFieldClick"
+      :style="props.style"
+      :class="[props.class, { 'keyboard-active': showKeyboard }]"
+      :id="inputID"
+    >
+      <span v-if="!inputValue" class="placeholder" @click="handlePlaceholderClick($event)">
+        {{ placeholder }}
+        <span v-if="showCaret" class="caret"></span>
+      </span>
+      <span v-else class="input-text" @click="handleTextClick($event)" v-html="textWithCaret"></span>
+    </div>
+    <span class="cross" @click="handleCrossClick" v-show="showCross || showEmpty">
+      {{ (showCross && showEmpty) ? (inputValue != '' ? crossEmptyText : crossCloseText) : (showCross ? crossCloseText : crossEmptyText) }}
+    </span>
+
+
+    <!-- Teclado virtual -->
+    <div v-if="showKeyboard" class="virtual-keyboard-container">
+      <div class="keyboard-close-container">
+        <span class="keyboard-close" @click="closeKeyboard">✖</span>
+      </div>
+
+      <!-- Teclado normal -->
+      <div v-if="activeTab === 'keyboard'" class="keyboard-layout">
+        <!-- Renderizado dinámico de filas y teclas -->
+        <div
+          v-for="(row, rowIndex) in keyboardLayout.rows"
+          :key="rowIndex"
+          class="keyboard-row"
+          :id="row.id"
+        >
+          <template v-for="(key, keyIndex) in row.keys" :key="`${rowIndex}-${keyIndex}`">
+            <!-- Tecla normal o multi-carácter -->
+            <div
+              v-if="!key.type || key.type === 'normal'"
+              class="key"
+              :class="{ 'multi-char': key.special && key.special.length > 0 }"
+              @click.stop="key.main && addChar(key.main)"
+              @touchstart.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyTouchStart($event, key.main, key.special) : handleKeyTouchStart($event, key.main))"
+              @touchend.stop.prevent="handleKeyTouchEnd"
+              @mousedown.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyMouseDown($event, key.main, key.special) : handleKeyMouseDown($event, key.main))"
+              @mouseup.stop="handleKeyMouseUp"
+            >
+              <span class="main-char">
+                {{ key.upper && (shiftActive || shiftLocked) ? key.upper : (key.main || '') }}
+              </span>
+              <span v-if="key.special && key.special.length > 0" class="alt-char top-right">
+                {{ Array.isArray(key.special) ? key.special.join(' ') : key.special }}
+              </span>
+            </div>
+
+            <!-- Tecla de mayúsculas -->
+            <div
+              v-else-if="key.type === 'shift'"
+              class="key mayus-key shift-key"
+              @click="toggleShift"
+              :class="{ 'shift-active': shiftActive, 'shift-locked': shiftLocked }"
+            >
+            </div>
+
+            <!-- Tecla especial (backspace, enter, etc.) -->
+            <div
+              v-else-if="key.type === 'special'"
+              class="key special-key"
+              @click="backspace"
+            >
+              {{ key.text }}
+            </div>
+
+            <!-- Tecla de símbolos -->
+            <div
+              v-else-if="key.type === 'symbol'"
+              class="key symbol-key"
+              @click="showNumericKeyboard"
+            >
+              {{ key.text }}
+            </div>
+
+            <!-- Tecla de emojis -->
+            <div
+              v-else-if="key.type === 'emoji'"
+              class="key emoji-key"
+              @click="activeTab = 'emojis'"
+            >
+              {{ key.text }}
+            </div>
+
+            <!-- Tecla de espacio -->
+            <div
+              v-else-if="key.type === 'space'"
+              class="key space-key"
+              @click="addChar(' ')"
+            >
+              {{ key.text }}
+            </div>
+
+            <!-- Tecla de enter -->
+            <div
+              v-else-if="key.type === 'enter'"
+              class="key enter-key"
+              @click="handleEnter"
+            >
+              <span class="enter-arrow">{{ key.text }}</span>
+            </div>
+          </template>
+        </div>
+
+      </div>
+
+      <!-- Panel de emojis -->
+      <div v-if="activeTab === 'emojis'" class="emoji-panel">
+        <div class="emoji-categories">
+          <div
+            v-for="(category, index) in emojiCategories"
+            :key="index"
+            class="emoji-category"
+            :class="{ active: activeEmojiCategory === index }"
+            @click="activeEmojiCategory = index"
+          >
+            {{ category.icon }}
+          </div>
+        </div>
+        <div class="emoji-grid">
+          <div
+            v-for="emoji in emojiCategories[activeEmojiCategory].emojis"
+            :key="emoji"
+            class="emoji-item"
+            @click="addChar(emoji)"
+          >
+            {{ emoji }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layer para teclas especiales (se muestra con longpress) -->
+    <teleport to="body">
+      <div v-if="showSpecialKeysLayer" class="special-keys-layer"
+           :style="{
+             position: 'fixed',
+             top: layerTop,
+             left: layerLeft,
+             width: layerWidth,
+             zIndex: '9999'
+           }"
+           @mouseleave="handleSpecialKeysLayerLeave"
+           @mouseup="handleSpecialKeysLayerMouseUp">
+        <div class="special-keys-container">
+          <div
+            v-for="(key, index) in specialKeysOptions"
+            :key="index"
+            class="key special-option-key"
+            :class="{ 'active': currentSpecialKeyIndex === index }"
+            :style="{ '--index': index }"
+            @mouseenter="currentSpecialKeyIndex = index"
+            @click="selectSpecialKey(key, $event)"
+          >
+            {{ key }}
+          </div>
+        </div>
+      </div>
+    </teleport>
+  </div>
+</template>
+
+<script lang="ts" setup>
+  import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
+  import type { PropType } from 'vue';
+  import { generateID } from '~/utils';
+  import { parseEmoji } from '~/utils';
+  import { myStore } from '~/composables/useStore';
+  import '~/css/components/MyMagicInput.css';
+
+  const props = defineProps({
+    modelValue:       { type: String,   default: ''                     },
+    placeholder:      { type: String,   default: 'Añade elementos aquí' },
+    autoFocus:        { type: Boolean,  default: false                  },
+    maxLength:        { type: Number,   default: Infinity               },
+    defaultMaxLength: { type: Boolean,  default: false                  },
+    showCross:        { type: Boolean,  default: false                  },
+    showEmpty:        { type: Boolean,  default: false                  },
+    class:            { type: String,                                   },
+    style:            { type: String,                                   },
+    crossEmptyText:   { type: String,   default: '🗑'                   },
+    crossCloseText:   { type: String,   default: '❌'                   },
+    id:               { type: String,   default: null                   },
+    customKeyboard:   { type: Object as PropType<KeyboardLayout>,   default: null }
+  });
+
+  const store = myStore();
+  const inputValue = ref(props.modelValue);
+  const id = generateID();
+  const inputID = props.id ?? `magic-input-${id}`;
+  const inputFieldRef = ref<HTMLElement | null>(null);
+  const showKeyboard = ref(false);
+  const activeTab = ref('keyboard');
+  const shiftActive = ref(true); // Por defecto activado para comenzar con mayúscula
+  const shiftLocked = ref(false);
+  const lastShiftClick = ref(0);
+  const activeEmojiCategory = ref(0);
+
+  // Variables para el layer de teclas especiales
+  const showSpecialKeysLayer = ref(false);
+  const specialKeysOptions = ref<string[]>([]);
+  // Definimos una interfaz para los estilos CSS
+  interface CSSStyles {
+    position?: string;
+    top?: string;
+    left?: string;
+    width?: string;
+    zIndex?: string;
+    [key: string]: string | undefined;
+  }
+
+  // Definimos una interfaz para las coordenadas del evento
+  interface EventCoordinates {
+    x: number;
+    y: number;
+    keyRect?: DOMRect | null;
+  }
+
+  // Variables para almacenar las coordenadas del layer
+  const layerTop = ref('0px');
+  const layerLeft = ref('0px');
+  const layerWidth = ref('auto');
+
+  // Ya no necesitamos el computed property, usamos directamente las variables ref
+  const longPressTimer = ref<number | null>(null);
+  const currentSpecialKeyIndex = ref(-1);
+  const currentKey = ref('');
+
+  // Variables para el control del cursor (caret)
+  const caretPosition = ref(0); // Posición del cursor en el texto
+  const showCaret = ref(false); // Controla la visibilidad del cursor
+  const caretBlinkInterval = ref<number | null>(null); // Intervalo para el parpadeo del cursor
+
+  const realMaxLenght = ref(props.maxLength);
+
+  if (props.defaultMaxLength) realMaxLenght.value = store.maxLenght.value;
+
+  /**
+   * defaultKeyboardLayout - Define la estructura predeterminada del teclado
+   * Contiene la definición de todas las filas y teclas del teclado virtual
+   */
+  const defaultKeyboardLayout: KeyboardLayout = {
+    rows: [
+      // Primera fila (números)
+      {
+        id: 'keyboard-numbers',
+        keys: [
+          { main: '1', special: [] },
+          { main: '2', special: [] },
+          { main: '3', special: [] },
+          { main: '4', special: [] },
+          { main: '5', special: [] },
+          { main: '6', special: [] },
+          { main: '7', special: [] },
+          { main: '8', special: [] },
+          { main: '9', special: [] },
+          { main: '0', special: [] }
+        ]
+      },
+      // Segunda fila (QWERTY)
+      {
+        id: 'keyboard-qwerty',
+        keys: [
+          { main: 'q', upper: 'Q', special: ['\\'] },
+          { main: 'w', upper: 'W', special: ['^'] },
+          { main: 'e', upper: 'E', special: ['é', '~'] },
+          { main: 'r', upper: 'R', special: ['|'] },
+          { main: 't', upper: 'T', special: ['['] },
+          { main: 'y', upper: 'Y', special: [']'] },
+          { main: 'u', upper: 'U', special: ['ú', 'ü'] },
+          { main: 'i', upper: 'I', special: ['í'] },
+          { main: 'o', upper: 'O', special: ['º', 'ó'] },
+          { main: 'p', upper: 'P', special: ['}'] }
+        ]
+      },
+      // Tercera fila (ASDFG)
+      {
+        id: 'keyboard-asdfg',
+        keys: [
+          { main: 'a', upper: 'A', special: [] },
+          { main: 's', upper: 'S', special: [] },
+          { main: 'd', upper: 'D', special: [] },
+          { main: 'f', upper: 'F', special: [] },
+          { main: 'g', upper: 'G', special: [] },
+          { main: 'h', upper: 'H', special: [] },
+          { main: 'j', upper: 'J', special: [] },
+          { main: 'k', upper: 'K', special: [] },
+          { main: 'l', upper: 'L', special: [] },
+          { main: 'ñ', upper: 'Ñ', special: [] }
+        ]
+      },
+      // Cuarta fila (ZXCVB)
+      {
+        id: 'keyboard-zxcvb',
+        keys: [
+          { type: 'shift', action: 'toggleShift' },
+          { main: 'z', upper: 'Z', special: [] },
+          { main: 'x', upper: 'X', special: [] },
+          { main: 'c', upper: 'C', special: [] },
+          { main: 'v', upper: 'V', special: [] },
+          { main: 'b', upper: 'B', special: [] },
+          { main: 'n', upper: 'N', special: [] },
+          { main: 'm', upper: 'M', special: [] },
+          { type: 'special', text: '⌫', action: 'backspace' }
+        ]
+      },
+      // Quinta fila (barra espaciadora y teclas especiales)
+      {
+        id: 'keyboard-space-bar',
+        keys: [
+          { type: 'symbol', text: '123', action: 'showNumericKeyboard' },
+          { type: 'emoji', text: '😊', action: 'showEmojis' },
+          { main: ',', special: [] },
+          { type: 'space', text: 'Espacio', action: 'space' },
+          { main: '.', special: [] },
+          { type: 'enter', text: '↵', action: 'handleEnter' }
+        ]
+      }
+    ]
+  };
+
+  // Usar el teclado personalizado si se proporciona, o el predeterminado si no
+  const keyboardLayout = ref<KeyboardLayout>(props.customKeyboard || defaultKeyboardLayout);
+
+  // Observar cambios en la propiedad customKeyboard
+  watch(() => props.customKeyboard, (newKeyboard: KeyboardLayout | null) => {
+    if (newKeyboard) {
+      keyboardLayout.value = newKeyboard;
+    } else {
+      keyboardLayout.value = defaultKeyboardLayout;
+    }
+  });
+
+  // Definición de interfaces para el teclado
+  interface KeyboardKey {
+    main?: string;
+    upper?: string;
+    special?: string | string[];
+    type?: 'normal' | 'shift' | 'special' | 'symbol' | 'emoji' | 'space' | 'enter';
+    text?: string;
+    action?: string;
+  }
+
+  interface KeyboardRow {
+    id: string;
+    keys: KeyboardKey[];
+  }
+
+  interface KeyboardLayout {
+    rows: KeyboardRow[];
+  }
+
+  /**
+   * createKeyboardLayout - Función auxiliar para crear un teclado personalizado
+   * @param customLayout - Objeto con la configuración personalizada del teclado
+   * @returns Objeto con la configuración completa del teclado
+   *
+   * Esta función se expone para que pueda ser utilizada desde fuera del componente
+   * para facilitar la creación de teclados personalizados.
+   */
+  const createKeyboardLayout = (customLayout: Partial<KeyboardLayout>): KeyboardLayout => {
+    // Si se proporciona un objeto completo, devolverlo tal cual
+    if (customLayout && customLayout.rows) {
+      return customLayout as KeyboardLayout;
+    }
+
+    // Si no, crear un objeto basado en el teclado predeterminado
+    return {
+      ...defaultKeyboardLayout,
+      ...customLayout
+    } as KeyboardLayout;
+  };
+
+  // La función createKeyboardLayout estará disponible para ser utilizada desde fuera
+
+  // Categorías de emojis
+  const emojiCategories = [
+    {
+      icon: '😊',
+      name: 'Caras',
+      emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳']
+    },
+    {
+      icon: '👍',
+      name: 'Gestos',
+      emojis: ['👍', '👎', '👌', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇', '☝️', '👋', '🤚', '🖐️', '✋', '🖖', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️']
+    },
+    {
+      icon: '❤️',
+      name: 'Símbolos',
+      emojis: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️', '✝️', '☪️', '🕉️', '☸️', '✡️', '🔯', '🕎', '☯️', '☦️', '🛐', '⛎', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+    },
+    {
+      icon: '🍔',
+      name: 'Comida',
+      emojis: ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌶️', '🌽', '🥕', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🧈', '🥞', '🧇', '🥓', '🥩', '🍗', '🍖', '🦴', '🌭', '🍔', '🍟', '🍕', '🥪', '🥙', '🧆', '🌮', '🌯', '🥗', '🥘', '🥫', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱', '🥟', '🦪', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🥮', '🍢', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🌰', '🥜', '🍯', '🥛', '🍼', '☕', '🍵', '🧃', '🥤', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾', '🧊']
+    },
+    {
+      icon: '🚗',
+      name: 'Transporte',
+      emojis: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵', '🏍️', '🛺', '🚨', '🚔', '🚍', '🚘', '🚖', '🚡', '🚠', '🚟', '🚃', '🚋', '🚞', '🚝', '🚄', '🚅', '🚈', '🚂', '🚆', '🚇', '🚊', '🚉', '✈️', '🛫', '🛬', '🛩️', '💺', '🛰️', '🚀', '🛸', '🚁', '🛶', '⛵', '🚤', '🛥️', '🛳️', '⛴️', '🚢', '⚓', '⛽', '🚧', '🚦', '🚥', '🚏', '🗺️', '🗿', '🗽', '🗼', '🏰', '🏯', '🏟️', '🎡', '🎢', '🎠', '⛲', '⛱️', '🏖️', '🏝️', '🏜️', '🌋', '⛰️', '🏔️', '🗻', '🏕️', '⛺', '🏠', '🏡', '🏘️', '🏚️', '🏗️', '🏭', '🏢', '🏬', '🏣', '🏤', '🏥', '🏦', '🏨', '🏪', '🏫', '🏩', '💒', '🏛️', '⛪', '🕌', '🕍', '🛕', '🕋', '⛩️', '🛤️', '🛣️', '🗾', '🎑', '🏞️', '🌅', '🌄', '🌠', '🎇', '🎆', '🌇', '🌆', '🏙️', '🌃', '🌌', '🌉', '🌁']
+    }
+  ];
+
+  /**
+   * addChar - Añade un carácter al input teniendo en cuenta la tecla de mayúsculas
+   * @param char - Carácter a añadir
+   */
+  const addChar = (char?: string) => {
+    if (!char || inputValue.value.length >= realMaxLenght.value) return;
+
+    let finalChar = char;
+
+    // Si shift está activo o bloqueado y es una letra, convertir a mayúscula
+    if ((shiftActive.value || shiftLocked.value) && finalChar.length === 1 && finalChar.match(/[a-zñ]/i)) {
+      finalChar = finalChar.toUpperCase();
+    }
+
+    // Si shift está activo pero no bloqueado, desactivarlo después de usar
+    if (shiftActive.value && !shiftLocked.value) {
+      shiftActive.value = false;
+    }
+
+    // Insertar el carácter en la posición del cursor
+    const textBefore = inputValue.value.substring(0, caretPosition.value);
+    const textAfter = inputValue.value.substring(caretPosition.value);
+    inputValue.value = textBefore + finalChar + textAfter;
+
+    // Avanzar la posición del cursor
+    caretPosition.value += finalChar.length;
+
+    // Reactivar el cursor para evitar que desaparezca durante la escritura
+    activateCaret(true);
+  };
+
+  /**
+   * backspace - Borra el carácter a la izquierda del cursor
+   */
+  const backspace = () => {
+    // Si el cursor no está al principio, borrar el carácter a la izquierda
+    if (caretPosition.value > 0) {
+      const textBefore = inputValue.value.substring(0, caretPosition.value - 1);
+      const textAfter = inputValue.value.substring(caretPosition.value);
+      inputValue.value = textBefore + textAfter;
+
+      // Retroceder la posición del cursor
+      caretPosition.value--;
+
+      // Reactivar el cursor
+      activateCaret(true);
+    }
+  };
+
+  /**
+   * toggleShift - Maneja el cambio de estado de la tecla de mayúsculas
+   * Ciclo de estados: normal -> seleccionada -> bloqueada -> normal
+   * Si está seleccionada, al pulsar otra tecla se deseleccionará
+   * Si está bloqueada, solo se puede desbloquear haciendo clic en la tecla
+   */
+  const toggleShift = () => {
+    // Si está bloqueada, al hacer clic se desactiva completamente
+    if (shiftLocked.value) {
+      shiftLocked.value = false;
+      shiftActive.value = false;
+    }
+    // Si está activa pero no bloqueada, al hacer clic se bloquea
+    else if (shiftActive.value) {
+      shiftLocked.value = true;
+      shiftActive.value = false;
+    }
+    // Si no está ni activa ni bloqueada, al hacer clic se activa
+    else {
+      shiftActive.value = true;
+    }
+  };
+
+  /**
+   * closeKeyboard - Cierra el teclado virtual y desactiva el cursor
+   */
+  const closeKeyboard = () => {
+    showKeyboard.value = false;
+    deactivateCaret();
+  };
+
+  // Función para manejar la tecla Enter
+  const handleEnter = () => {
+    emit('keyPressed:enter');
+    closeKeyboard();
+  };
+
+  // Esta función ha sido eliminada ya que no se usa más la tecla Alt
+
+  /**
+   * handleKeyPress - Maneja el inicio de un toque o clic largo en una tecla
+   * @param event - El evento de toque o clic
+   * @param key - La tecla principal que se está tocando
+   * @param specialChars - Caracteres especiales asociados a la tecla
+   */
+  const handleKeyPress = (event: Event, key: string, specialChars?: string | string[]) => {
+    // Guardar la tecla actual
+    currentKey.value = key;
+
+    // Si no hay caracteres especiales, no hacer nada más
+    if (!specialChars) return;
+
+    // Iniciar el temporizador para detectar un toque/clic largo
+    longPressTimer.value = window.setTimeout(() => {
+      try {
+        // Obtener el elemento que recibió el evento
+        const element = event.target as HTMLElement;
+        if (!element) {
+          console.error('No se pudo obtener el elemento del evento');
+          return;
+        }
+
+        // Buscar el elemento de la tecla (puede ser el propio elemento o un ancestro)
+        const keyElement = element.closest('.key');
+        if (!keyElement) {
+          console.error('No se pudo encontrar el elemento de la tecla');
+          return;
+        }
+
+        // Obtener las coordenadas del elemento de la tecla
+        const keyRect = keyElement.getBoundingClientRect();
+
+        // Configurar las opciones de teclas especiales
+        if (Array.isArray(specialChars)) {
+          specialKeysOptions.value = specialChars;
+        } else {
+          specialKeysOptions.value = [specialChars];
+        }
+
+        // Calcular el ancho del layer basado en el número de teclas especiales
+        const layerWidthValue = specialKeysOptions.value.length * 50; // 50px por tecla aproximadamente
+        const layerHeight = 40; // Altura aproximada del layer en píxeles
+
+        // Calcular la posición exacta del layer (centrado sobre la tecla)
+        // Subimos 10 píxeles la posición vertical para mejorar la visibilidad
+        let topPosition = keyRect.top - 10;
+        let leftPosition = keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2);
+
+        // Asegurarnos de que el layer no se salga de la pantalla
+        if (topPosition < 10) {
+          topPosition = 10;
+        } else if (topPosition + layerHeight > window.innerHeight - 10) {
+          topPosition = window.innerHeight - layerHeight - 10;
+        }
+
+        if (leftPosition < 10) {
+          leftPosition = 10;
+        } else if (leftPosition + layerWidthValue > window.innerWidth - 10) {
+          leftPosition = window.innerWidth - layerWidthValue - 10;
+        }
+
+        // Log para depuración
+        console.log('Elemento tecla:', keyElement);
+        console.log('Rect de la tecla:', keyRect);
+        console.log('Posicionando layer en:', 'top:', topPosition, 'left:', leftPosition);
+
+        // Actualizar las variables de posición del layer
+        layerTop.value = `${topPosition}px`;
+        layerLeft.value = `${leftPosition}px`;
+        layerWidth.value = `${layerWidthValue}px`;
+
+        // Mostrar el layer
+        showSpecialKeysLayer.value = true;
+
+        // Inicializar el índice de la tecla seleccionada
+        currentSpecialKeyIndex.value = -1;
+      } catch (error) {
+        console.error('Error al posicionar el layer:', error);
+      }
+    }, 500); // 500ms para considerar un toque/clic largo
+  };
+
+  /**
+   * handleKeyTouchStart - Maneja el inicio de un toque largo en una tecla (para dispositivos táctiles)
+   * @param event - El evento de toque
+   * @param key - La tecla principal que se está tocando
+   * @param specialChars - Caracteres especiales asociados a la tecla
+   */
+  const handleKeyTouchStart = (event: TouchEvent, key: string, specialChars?: string | string[]) => {
+    handleKeyPress(event, key, specialChars);
+  };
+
+  /**
+   * handleKeyMouseDown - Maneja el inicio de un clic largo en una tecla (para dispositivos no táctiles)
+   * @param event - El evento de clic
+   * @param key - La tecla principal que se está tocando
+   * @param specialChars - Caracteres especiales asociados a la tecla
+   */
+  const handleKeyMouseDown = (event: MouseEvent, key: string, specialChars?: string | string[]) => {
+    handleKeyPress(event, key, specialChars);
+  };
+
+  /**
+   * handleKeyRelease - Maneja el fin de un toque o clic en una tecla
+   */
+  const handleKeyRelease = () => {
+    // Limpiar el temporizador si existe
+    if (longPressTimer.value !== null) {
+      window.clearTimeout(longPressTimer.value);
+      longPressTimer.value = null;
+    }
+
+    // Si el layer está visible y se ha seleccionado una tecla especial, no hacer nada
+    // ya que la selección se maneja en selectSpecialKey
+    if (showSpecialKeysLayer.value && currentSpecialKeyIndex.value >= 0) {
+      return;
+    }
+
+    // Si el layer está visible pero no se ha seleccionado ninguna tecla,
+    // ocultar el layer sin hacer nada más
+    if (showSpecialKeysLayer.value) {
+      showSpecialKeysLayer.value = false;
+      return;
+    }
+  };
+
+  /**
+   * handleKeyTouchEnd - Maneja el fin de un toque en una tecla (para dispositivos táctiles)
+   */
+  const handleKeyTouchEnd = () => {
+    handleKeyRelease();
+  };
+
+  /**
+   * handleKeyMouseUp - Maneja el fin de un clic en una tecla (para dispositivos no táctiles)
+   */
+  const handleKeyMouseUp = () => {
+    handleKeyRelease();
+  };
+
+  /**
+   * handleSpecialKeysLayerLeave - Maneja cuando el ratón sale del layer de teclas especiales
+   */
+  const handleSpecialKeysLayerLeave = () => {
+    // Si se ha seleccionado una tecla, usarla
+    if (currentSpecialKeyIndex.value >= 0) {
+      selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+    }
+
+    // Ocultar el layer
+    showSpecialKeysLayer.value = false;
+  };
+
+  /**
+   * handleSpecialKeysLayerMouseUp - Maneja cuando se suelta el botón del ratón sobre el layer
+   */
+  const handleSpecialKeysLayerMouseUp = () => {
+    // Si se ha seleccionado una tecla, usarla
+    if (currentSpecialKeyIndex.value >= 0) {
+      selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+    }
+
+    // Ocultar el layer
+    showSpecialKeysLayer.value = false;
+  };
+
+  /**
+   * selectSpecialKey - Selecciona una tecla especial del layer
+   * @param key - La tecla especial seleccionada
+   * @param event - El evento que desencadenó la selección (opcional)
+   */
+  const selectSpecialKey = (key: string, event?: Event) => {
+    // Detener la propagación del evento si existe
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // Añadir el carácter seleccionado
+    addChar(key);
+
+    // Ocultar el layer
+    showSpecialKeysLayer.value = false;
+  };
+
+  /**
+   * showNumericKeyboard - Cambia a la disposición numérica del teclado
+   * (Esta función se implementará en una fase posterior)
+   */
+  const showNumericKeyboard = () => {
+    // Por ahora solo mostramos un mensaje en consola
+    console.log('Cambio a teclado numérico (pendiente de implementar)');
+  };
+
+  // Función para manejar el clic en la cruz
+  const handleCrossClick = () => {
+    if (inputValue.value != '' && props.showEmpty) {
+      inputValue.value = '';
+      focusInput();
+    } else {
+      emit('crossClick');
+    }
+  };
+
+  /**
+   * handleFieldClick - Maneja el clic en el campo de entrada
+   * Muestra el teclado y activa el cursor inmediatamente
+   */
+  const handleFieldClick = (event: MouseEvent) => {
+    showKeyboard.value = true;
+
+    // Activar el cursor inmediatamente
+    activateCaret(true);
+
+    // Si el clic fue directamente en el campo (no en el texto),
+    // mover el cursor al final del texto (o al inicio si no hay texto)
+    if (event.target === inputFieldRef.value) {
+      caretPosition.value = inputValue.value.length;
+    }
+  };
+
+  /**
+   * handlePlaceholderClick - Maneja el clic en el placeholder
+   * @param {MouseEvent} event - El evento de clic
+   */
+  const handlePlaceholderClick = (event: MouseEvent) => {
+    // Mostrar el teclado
+    showKeyboard.value = true;
+
+    // Activar el cursor
+    activateCaret(true);
+
+    // Posicionar el cursor al inicio (posición 0)
+    caretPosition.value = 0;
+  };
+
+  /**
+   * handleTextClick - Maneja el clic en el texto para posicionar el cursor
+   * @param {MouseEvent} event - El evento de clic
+   */
+  const handleTextClick = (event: MouseEvent) => {
+    // Mostrar el teclado
+    showKeyboard.value = true;
+
+    // Activar el cursor
+    activateCaret(true);
+
+    // Calcular la posición aproximada del cursor basada en el clic
+    const textElement = event.currentTarget as HTMLElement;
+    const rect = textElement.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+
+    // Obtener el texto sin HTML
+    const plainText = inputValue.value;
+
+    // Calcular la posición aproximada basada en la proporción del ancho
+    let approximatePosition = Math.round((clickX / rect.width) * plainText.length);
+
+    // Asegurarse de que la posición esté dentro de los límites
+    approximatePosition = Math.max(0, Math.min(approximatePosition, plainText.length));
+
+    // Establecer la posición del cursor
+    caretPosition.value = approximatePosition;
+  };
+
+  /**
+   * activateCaret - Activa el cursor y configura su parpadeo
+   * @param {boolean} immediate - Si es true, el cursor se muestra inmediatamente sin parpadeo inicial
+   */
+  const activateCaret = (immediate = true) => {
+    // Mostrar el cursor inmediatamente si se solicita
+    showCaret.value = immediate;
+
+    // Limpiar cualquier intervalo existente
+    if (caretBlinkInterval.value !== null) {
+      window.clearInterval(caretBlinkInterval.value);
+    }
+
+    // Configurar el parpadeo del cursor
+    caretBlinkInterval.value = window.setInterval(() => {
+      showCaret.value = !showCaret.value;
+    }, 500); // Parpadeo cada 500ms
+  };
+
+  /**
+   * deactivateCaret - Desactiva el cursor y detiene su parpadeo
+   */
+  const deactivateCaret = () => {
+    showCaret.value = false;
+
+    if (caretBlinkInterval.value !== null) {
+      window.clearInterval(caretBlinkInterval.value);
+      caretBlinkInterval.value = null;
+    }
+  };
+
+  // Función para enfocar el input
+  const focusInput = () => {
+    if (props.autoFocus && inputFieldRef.value) {
+      inputFieldRef.value.focus();
+      showKeyboard.value = true;
+      activateCaret(true);
+      caretPosition.value = inputValue.value.length; // Cursor al final
+    }
+  };
+
+  // Valor parseado con emojis
+  const parsedValue = computed(() => parseEmoji(inputValue.value));
+
+  // Texto con el cursor (caret) insertado en la posición correcta
+  const textWithCaret = computed(() => {
+    // Si no hay texto, este computed no se usa (se maneja en el template)
+    if (!inputValue.value) return '';
+
+    const valueToUse = parseEmoji(inputValue.value);
+
+    // Si no se debe mostrar el cursor, devolver el texto tal cual
+    if (!showCaret.value) return valueToUse;
+
+    // Si el cursor está al final del texto
+    if (caretPosition.value >= inputValue.value.length) {
+      // El cursor va al final
+      return valueToUse + '<span class="caret"></span>';
+    }
+
+    // Si el cursor está en medio del texto
+    let currentPos = 0;
+    let inTag = false;
+    let result = '';
+
+    // Recorrer el texto caracter por caracter
+    for (let i = 0; i < valueToUse.length; i++) {
+      const char = valueToUse[i];
+
+      // Si encontramos un tag HTML, lo procesamos completo
+      if (char === '<') {
+        inTag = true;
+        result += char;
+        continue;
+      }
+
+      if (inTag) {
+        result += char;
+        if (char === '>') inTag = false;
+        continue;
+      }
+
+      // Si no estamos en un tag y estamos en la posición del cursor
+      if (!inTag && currentPos === caretPosition.value) {
+        result += '<span class="caret"></span>' + char;
+        currentPos++;
+      } else {
+        result += char;
+        currentPos++;
+      }
+    }
+
+    return result;
+  });
+
+  // Observadores
+  watch(() => props.modelValue, newValue => inputValue.value = newValue);
+  watch(inputValue, newValue => emit('updateValue', newValue));
+
+  // Eventos del ciclo de vida
+  onMounted(() => {
+    setTimeout(() => focusInput(), 100);
+
+    // Activar mayúsculas por defecto cuando no hay texto
+    watch(inputValue, (newValue) => {
+      if (newValue === '') {
+        shiftActive.value = true;
+      }
+    }, { immediate: true });
+  });
+
+  // Limpiar el intervalo del cursor cuando el componente se desmonte
+  onUnmounted(() => {
+    if (caretBlinkInterval.value !== null) {
+      window.clearInterval(caretBlinkInterval.value);
+    }
+
+    // Limpiar el temporizador de longpress si existe
+    if (longPressTimer.value !== null) {
+      window.clearTimeout(longPressTimer.value);
+    }
+  });
+
+  // Definir emisiones
+  const emit = defineEmits(['updateValue', 'keyPressed:enter', 'blur', 'click', 'crossClick']);
+
+  // Exponer variables y funciones
+  defineExpose({
+    inputValue,
+    createKeyboardLayout
+  });
+</script>
