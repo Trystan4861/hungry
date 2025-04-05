@@ -40,7 +40,7 @@
               :class="{ 'multi-char': key.special && key.special.length > 0 }"
               @click.stop="key.main && addChar(key.main)"
               @touchstart.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyTouchStart($event, key.main, key.special) : handleKeyTouchStart($event, key.main))"
-              @touchend.stop.prevent="handleKeyTouchEnd"
+              @touchend.stop.prevent="handleKeyTouchEnd(); !showSpecialKeysLayer && key.main && addChar(key.main)"
               @mousedown.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyMouseDown($event, key.main, key.special) : handleKeyMouseDown($event, key.main))"
               @mouseup.stop="handleKeyMouseUp"
             >
@@ -57,6 +57,7 @@
               class="key mayus-key shift-key"
               :style="key.position ? { 'align-items': key.position } : {}"
               @click="toggleShift"
+              @touchend.stop="toggleShift"
               :class="{ 'shift-active': shiftActive, 'shift-locked': shiftLocked }"
             >
             </div>
@@ -66,6 +67,7 @@
               class="key special-key"
               :style="key.position ? { 'align-items': key.position } : {}"
               @click="backspace"
+              @touchend.stop="backspace"
             >
               {{ key.text }}
             </div>
@@ -75,6 +77,7 @@
               class="key symbol-key"
               :style="key.position ? { 'align-items': key.position } : {}"
               @click="showNumericKeyboard"
+              @touchend.stop="showNumericKeyboard"
             >
               {{ key.text }}
             </div>
@@ -84,6 +87,7 @@
               class="key emoji-key"
               :style="key.position ? { 'align-items': key.position } : {}"
               @click="activeTab = 'emojis'"
+              @touchend.stop="activeTab = 'emojis'"
             >
               {{ key.text }}
             </div>
@@ -93,6 +97,7 @@
               class="key space-key"
               :style="key.position ? { 'align-items': key.position } : {}"
               @click="addChar(' ')"
+              @touchend.stop="addChar(' ')"
             >
               {{ key.text }}
             </div>
@@ -102,6 +107,7 @@
               class="key enter-key"
               :style="key.position ? { 'align-items': key.position } : {}"
               @click="handleEnter"
+              @touchend.stop="handleEnter"
             >
               <span class="enter-arrow">{{ key.text }}</span>
             </div>
@@ -153,6 +159,8 @@
             class="key special-option-key"
             :class="{ 'active': currentSpecialKeyIndex === index }"
             :style="{ '--index': index }"
+            :data-index="index"
+            :data-key="key"
             @mouseenter="currentSpecialKeyIndex = index"
             @click="selectSpecialKey(key, $event)"
           >
@@ -610,16 +618,9 @@
       longPressTimer.value = null;
     }
 
-    // Si el layer está visible y se ha seleccionado una tecla especial, no hacer nada
-    // ya que la selección se maneja en selectSpecialKey
-    if (showSpecialKeysLayer.value && currentSpecialKeyIndex.value >= 0) {
-      return;
-    }
-
-    // Si el layer está visible pero no se ha seleccionado ninguna tecla,
-    // ocultar el layer sin hacer nada más
+    // Si el layer está visible, no hacer nada más
+    // La selección de teclas especiales se maneja en sus propios manejadores
     if (showSpecialKeysLayer.value) {
-      showSpecialKeysLayer.value = false;
       return;
     }
   };
@@ -628,6 +629,13 @@
    * handleKeyTouchEnd - Maneja el fin de un toque en una tecla (para dispositivos táctiles)
    */
   const handleKeyTouchEnd = () => {
+    // Si el layer de teclas especiales está visible, no hacer nada
+    // para evitar que se añada el carácter normal
+    if (showSpecialKeysLayer.value) {
+      return;
+    }
+
+    // Si no hay layer visible, proceder normalmente
     handleKeyRelease();
   };
 
@@ -665,6 +673,175 @@
   };
 
   /**
+   * handleSpecialLayerTouchMove - Maneja el movimiento táctil sobre el layer de teclas especiales
+   * @param event - El evento de movimiento táctil
+   */
+  const handleSpecialLayerTouchMove = (event: TouchEvent) => {
+    // Solo procesar si el layer está visible
+    if (!showSpecialKeysLayer.value) return;
+
+    // Asegurarnos de que el evento no se propague y no cause desplazamiento
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Obtener las coordenadas del toque
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    // Obtener el elemento que está bajo el dedo
+    const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elementUnderTouch) return;
+
+    // Buscar si el elemento o alguno de sus padres es una tecla especial
+    const keyElement = elementUnderTouch.closest('.special-option-key');
+    if (!keyElement) return;
+
+    try {
+      // Obtener el índice directamente del atributo de datos
+      const keyIndex = parseInt(keyElement.getAttribute('data-index') || '-1');
+
+      // Si no podemos obtener el índice del atributo, intentar calcularlo
+      if (keyIndex === -1) {
+        const container = keyElement.parentElement;
+        if (!container) return;
+
+        const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
+        const calculatedIndex = allKeys.indexOf(keyElement as Element);
+
+        if (calculatedIndex >= 0) {
+          // Actualizar el índice de la tecla seleccionada
+          currentSpecialKeyIndex.value = calculatedIndex;
+
+          // Forzar una actualización visual aplicando la clase activa directamente
+          allKeys.forEach((key, idx) => {
+            if (idx === calculatedIndex) {
+              key.classList.add('active');
+            } else {
+              key.classList.remove('active');
+            }
+          });
+        }
+      } else {
+        // Usar el índice del atributo
+        currentSpecialKeyIndex.value = keyIndex;
+
+        // Obtener todos los elementos de teclas especiales para actualizar las clases
+        const container = keyElement.parentElement;
+        if (container) {
+          const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
+          allKeys.forEach((key, idx) => {
+            if (idx === keyIndex) {
+              key.classList.add('active');
+            } else {
+              key.classList.remove('active');
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error al procesar el movimiento táctil:', error);
+    }
+  };
+
+  /**
+   * handleSpecialKeysLayerTouchEnd - Maneja cuando se levanta el dedo del layer de teclas especiales
+   * @param event - El evento de fin de toque
+   */
+  const handleSpecialKeysLayerTouchEnd = (event: TouchEvent) => {
+    // Solo procesar si el layer está visible
+    if (!showSpecialKeysLayer.value) return;
+
+    // Prevenir comportamientos predeterminados
+    event.preventDefault();
+    event.stopPropagation();
+
+    try {
+      // Si hay una tecla seleccionada, usarla
+      if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+        const selectedKey = specialKeysOptions.value[currentSpecialKeyIndex.value];
+        selectSpecialKey(selectedKey);
+        return;
+      }
+
+      // Si no hay tecla seleccionada, intentar detectar la tecla bajo el dedo
+      const touch = event.changedTouches[0];
+      if (!touch) {
+        showSpecialKeysLayer.value = false;
+        return;
+      }
+
+      // Obtener el elemento que está bajo el dedo al levantar
+      const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (!elementUnderTouch) {
+        showSpecialKeysLayer.value = false;
+        return;
+      }
+
+      // Buscar si el elemento o alguno de sus padres es una tecla especial
+      const keyElement = elementUnderTouch.closest('.special-option-key');
+      if (!keyElement) {
+        // Si no hay tecla bajo el dedo, cerrar el layer
+        showSpecialKeysLayer.value = false;
+        return;
+      }
+
+      // Obtener el texto de la tecla directamente del elemento
+      const keyText = keyElement.textContent?.trim();
+      if (keyText) {
+        // Usar la tecla encontrada
+        selectSpecialKey(keyText);
+      } else {
+        // Si no podemos obtener el texto, intentar usar el índice
+        const container = keyElement.parentElement;
+        if (container) {
+          const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
+          const keyIndex = allKeys.indexOf(keyElement as Element);
+          if (keyIndex >= 0 && keyIndex < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[keyIndex]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+        } else {
+          showSpecialKeysLayer.value = false;
+        }
+      }
+    } catch (error) {
+      console.error('Error al procesar el fin del toque:', error);
+      showSpecialKeysLayer.value = false;
+    }
+  };
+
+  /**
+   * handleSpecialKeyTouchMove - Maneja el movimiento táctil sobre las teclas especiales
+   * @param event - El evento de movimiento táctil
+   * @param index - El índice de la tecla sobre la que se está moviendo
+   */
+  const handleSpecialKeyTouchMove = (event: TouchEvent, index: number) => {
+    // Prevenir el comportamiento predeterminado para evitar el desplazamiento
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Obtener el elemento tocado
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    // Encontrar el elemento que está bajo el dedo
+    const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elementUnderTouch) return;
+
+    // Buscar el elemento de tecla especial más cercano
+    const keyElement = elementUnderTouch.closest('.special-option-key');
+    if (!keyElement) return;
+
+    // Obtener el índice de la tecla desde la posición en el contenedor
+    const keyIndex = Array.from(keyElement.parentElement?.children || []).indexOf(keyElement as Element);
+    if (keyIndex >= 0) {
+      // Actualizar el índice de la tecla seleccionada
+      currentSpecialKeyIndex.value = keyIndex;
+    }
+  };
+
+  /**
    * selectSpecialKey - Selecciona una tecla especial del layer
    * @param key - La tecla especial seleccionada
    * @param event - El evento que desencadenó la selección (opcional)
@@ -676,11 +853,18 @@
       event.stopPropagation();
     }
 
-    // Añadir el carácter seleccionado
-    addChar(key);
+    try {
+      // Añadir el carácter seleccionado
+      addChar(key);
+    } catch (error) {
+      console.error('Error al añadir el carácter especial:', error);
+    } finally {
+      // Siempre ocultar el layer al final
+      showSpecialKeysLayer.value = false;
 
-    // Ocultar el layer
-    showSpecialKeysLayer.value = false;
+      // Limpiar el índice de la tecla seleccionada
+      currentSpecialKeyIndex.value = -1;
+    }
   };
 
   /**
@@ -862,6 +1046,19 @@
   watch(() => props.modelValue, newValue => inputValue.value = newValue);
   watch(inputValue, newValue => emit('updateValue', newValue));
 
+  // Función para manejar eventos táctiles globales
+  const handleGlobalTouchMove = (event: TouchEvent) => {
+    if (showSpecialKeysLayer.value) {
+      handleSpecialLayerTouchMove(event);
+    }
+  };
+
+  const handleGlobalTouchEnd = (event: TouchEvent) => {
+    if (showSpecialKeysLayer.value) {
+      handleSpecialKeysLayerTouchEnd(event);
+    }
+  };
+
   // Eventos del ciclo de vida
   onMounted(() => {
     setTimeout(() => focusInput(), 100);
@@ -872,6 +1069,10 @@
         shiftActive.value = true;
       }
     }, { immediate: true });
+
+    // Añadir manejadores de eventos táctiles globales
+    document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+    document.addEventListener('touchend', handleGlobalTouchEnd, { passive: false });
   });
 
   // Limpiar el intervalo del cursor cuando el componente se desmonte
@@ -884,6 +1085,10 @@
     if (longPressTimer.value !== null) {
       window.clearTimeout(longPressTimer.value);
     }
+
+    // Eliminar manejadores de eventos táctiles globales
+    document.removeEventListener('touchmove', handleGlobalTouchMove);
+    document.removeEventListener('touchend', handleGlobalTouchEnd);
   });
 
   // Definir emisiones

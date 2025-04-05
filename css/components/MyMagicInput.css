@@ -55,14 +55,13 @@
 .keyboard-close-container {
   display: flex;
   justify-content: flex-end;
-  padding: 0.5rem 1rem;
   background-color: #e0e0e0;
   border-bottom: 1px solid #ccc;
 }
 
 .keyboard-close {
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: .7rem;
   color: #333;
   padding: 0.2rem 0.5rem;
 }
@@ -213,33 +212,9 @@
 /* Estilo para la flecha de la tecla Enter */
 .enter-arrow {
   font-size: 1.5rem;
-  position: relative;
-  bottom: 3px;
 }
 
 /* Estilo para la tecla Enter con forma de L girada 180 grados (┘) */
-.enter-key.l-shape {
-  position: absolute;
-  top: 5.5rem; /* Posición desde la parte superior para alinear con la segunda y tercera fila */
-  right: 0.5rem;
-  width: 3rem;
-  height: 5.25rem; /* Altura de dos teclas + espacio entre ellas */
-  border-radius: 0.25rem;
-  z-index: 10; /* Mayor z-index para que esté por encima de otras teclas */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Forma de L girada 180 grados con bocado en esquina inferior izquierda */
-  clip-path: polygon(
-    0 0,           /* Esquina superior izquierda */
-    100% 0,        /* Esquina superior derecha */
-    100% 100%,     /* Esquina inferior derecha */
-    20% 100%,      /* Punto inferior derecho del bocado (20% de anchura) */
-    20% 40%,       /* Punto superior derecho del bocado (60% de altura desde abajo) */
-    0 40%          /* Punto superior izquierdo del bocado */
-  );
-}
-
 .emoji-key {
   font-size: 1.2rem;
   background-color: #f8f8f8;
@@ -359,26 +334,6 @@
     margin-inline: 10px;
   }
 
-  .enter-key {
-    width: 3rem;
-    height: 4.5rem;
-    position: absolute;
-    right: 7px;
-  }
-
-  div#keyboard-qwerty {
-    width: fit-content;
-    padding-left: 10px;
-  }
-
-  div#keyboard-asdfg {
-    width: fit-content;
-    padding-left: 20px;
-  }
-
-  div#keyboard-zxcvb {
-    width: fit-content;
-  }
 
   .multi-char .main-char {
     font-size: 0.9rem;
@@ -452,7 +407,6 @@
     width: 1.6rem;
     height: 1.6rem;
     font-size: 0.75rem;
-    margin-right: 0.1rem;
   }
 
   .special-key {
@@ -460,7 +414,8 @@
   }
 
   .space-key {
-    width: 5rem;
+    width: 8rem;
+    margin-left: 0px;
   }
 
   /* Ajustes para la tecla de mayúsculas en pantallas muy pequeñas */
@@ -488,7 +443,7 @@
   #keyboard-space-bar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .multi-char .main-char {
@@ -508,7 +463,7 @@
   /* Asegurar que todas las teclas sean visibles */
   .keyboard-row {
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
   }
 }
 
@@ -643,10 +598,12 @@
   animation: fadeIn 0.3s ease-out forwards;
   animation-delay: calc(var(--index, 0) * 0.05s);
   opacity: 0;
+  color:#000;
 }
 
 .special-option-key.active {
   background-color: #e0e0e0;
+  color:#000;
   transform: scale(1.1);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-color: #2196F3;
