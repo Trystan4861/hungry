@@ -9,7 +9,7 @@
       :id="inputID"
     >
       <span v-if="!inputValue" class="placeholder" @click="handlePlaceholderClick($event)">
-        {{ placeholder }}
+        {{ props.placeholder }}
         <span v-if="showCaret" class="caret"></span>
       </span>
       <span v-else class="input-text" @click="handleTextClick($event)" v-html="textWithCaret"></span>
@@ -21,7 +21,7 @@
 
     <div v-if="showKeyboard" class="virtual-keyboard-container">
       <div class="keyboard-close-container">
-        <span class="keyboard-close" @click="closeKeyboard">✖</span>
+        <span class="keyboard-close" @click.stop="closeKeyboard" @touchend.stop="closeKeyboard">✖</span>
       </div>
 
       <div v-if="activeTab === 'keyboard'" class="keyboard-layout">
@@ -56,7 +56,7 @@
               v-else-if="key.type === 'shift'"
               class="key mayus-key shift-key"
               :style="key.position ? { 'align-items': key.position } : {}"
-              @click="toggleShift"
+              @click.stop="toggleShift"
               @touchend.stop="toggleShift"
               :class="{ 'shift-active': shiftActive, 'shift-locked': shiftLocked }"
             >
@@ -66,8 +66,8 @@
               v-else-if="key.type === 'special'"
               class="key special-key"
               :style="key.position ? { 'align-items': key.position } : {}"
-              @click="backspace"
-              @touchend.stop="backspace"
+              @click.stop="backspace"
+              @touchend.stop.prevent="handleBackspaceTouchEnd"
             >
               {{ key.text }}
             </div>
@@ -76,7 +76,7 @@
               v-else-if="key.type === 'symbol'"
               class="key symbol-key"
               :style="key.position ? { 'align-items': key.position } : {}"
-              @click="showNumericKeyboard"
+              @click.stop="showNumericKeyboard"
               @touchend.stop="showNumericKeyboard"
             >
               {{ key.text }}
@@ -86,7 +86,7 @@
               v-else-if="key.type === 'emoji'"
               class="key emoji-key"
               :style="key.position ? { 'align-items': key.position } : {}"
-              @click="activeTab = 'emojis'"
+              @click.stop="activeTab = 'emojis'"
               @touchend.stop="activeTab = 'emojis'"
             >
               {{ key.text }}
@@ -96,7 +96,7 @@
               v-else-if="key.type === 'space'"
               class="key space-key"
               :style="key.position ? { 'align-items': key.position } : {}"
-              @click="addChar(' ')"
+              @click.stop="addChar(' ')"
               @touchend.stop="addChar(' ')"
             >
               {{ key.text }}
@@ -106,7 +106,7 @@
               v-else-if="key.type === 'enter'"
               class="key enter-key"
               :style="key.position ? { 'align-items': key.position } : {}"
-              @click="handleEnter"
+              @click.stop="handleEnter"
               @touchend.stop="handleEnter"
             >
               <span class="enter-arrow">{{ key.text }}</span>
@@ -124,12 +124,13 @@
               :key="index"
               class="emoji-category"
               :class="{ active: activeEmojiCategory === index }"
-              @click="activeEmojiCategory = index"
+              @click.stop="activeEmojiCategory = index"
+              @touchend.stop="activeEmojiCategory = index"
             >
               {{ category.icon }}
             </div>
           </div>
-          <div class="keyboard-toggle-btn" @click="activeTab = 'keyboard'">
+          <div class="keyboard-toggle-btn" @click.stop="activeTab = 'keyboard'" @touchend.stop="activeTab = 'keyboard'">
             ABC
           </div>
         </div>
@@ -138,7 +139,8 @@
             v-for="emoji in emojiCategories[activeEmojiCategory].emojis"
             :key="emoji"
             class="emoji-item"
-            @click="addChar(emoji)"
+            @click.stop="addChar(emoji)"
+            @touchend.stop.prevent="handleEmojiTouchEnd(emoji)"
           >
             {{ emoji }}
           </div>
@@ -158,7 +160,7 @@
            @mouseleave="handleSpecialKeysLayerLeave"
            @mouseup="handleSpecialKeysLayerMouseUp"
            @touchend="handleSpecialKeysLayerTouchEnd"
-           @touchmove="handleSpecialLayerTouchMove">
+           @touchmove.prevent="handleSpecialLayerTouchMove">
         <div class="special-keys-container">
           <div
             v-for="(key, index) in specialKeysOptions"
@@ -188,6 +190,10 @@
   import { myStore } from '~/composables/useStore';
   import '~/css/components/MyMagicInput.css';
 
+  // Importar layouts
+  import qwertyLayout from '~/assets/osk/qwerty.layout.json';
+  import emojiLayoutData from '~/assets/osk/emoji.layout.json';
+
   const props = defineProps({
     modelValue:       { type: String,   default: ''                     },
     placeholder:      { type: String,   default: 'Añade elementos aquí' },
@@ -204,6 +210,7 @@
     customKeyboard:   { type: Object as PropType<KeyboardLayout>,   default: null }
   });
 
+  const emit = defineEmits(['updateValue', 'keyPressed:enter', 'blur', 'click', 'crossClick']);
   const store = myStore();
   const inputValue = ref(props.modelValue);
   const id = generateID();
@@ -241,92 +248,21 @@
   if (props.defaultMaxLength) realMaxLenght.value = store.maxLenght.value;
 
   /**
-   * defaultKeyboardLayout - Define la estructura predeterminada del teclado
+   * defaultKeyboardLayout - Usa la estructura predeterminada del teclado desde el archivo JSON importado
    * Contiene la definición de todas las filas y teclas del teclado virtual
    */
   const defaultKeyboardLayout: KeyboardLayout = {
-    rows: [
-      // Primera fila (números)
-      {
-        id: 'keyboard-numbers',
-        position: 'center',
-        keys: [
-          { main: '1', special: [] },
-          { main: '2', special: [] },
-          { main: '3', special: [] },
-          { main: '4', special: [] },
-          { main: '5', special: [] },
-          { main: '6', special: [] },
-          { main: '7', special: [] },
-          { main: '8', special: [] },
-          { main: '9', special: [] },
-          { main: '0', special: [] }
-        ]
-      },
-      // Segunda fila (QWERTY)
-      {
-        id: 'keyboard-qwerty',
-        position: 'end', // Valor por defecto
-        keys: [
-          { main: 'q', upper: 'Q', special: ['\\'] },
-          { main: 'w', upper: 'W', special: ['^'] },
-          { main: 'e', upper: 'E', special: ['é', '~'], super: '~' },
-          { main: 'r', upper: 'R', special: ['|'] },
-          { main: 't', upper: 'T', special: ['['] },
-          { main: 'y', upper: 'Y', special: [']'] },
-          { main: 'u', upper: 'U', special: ['ú', '<', 'ü'], super: '<' },
-          { main: 'i', upper: 'I', special: ['í', '>'], super: '>' },
-          { main: 'o', upper: 'O', special: ['º', '{', 'ó'], super: '{' },
-          { main: 'p', upper: 'P', special: ['}'] }
-        ]
-      },
-      // Tercera fila (ASDFG)
-      {
-        id: 'keyboard-asdfg',
-        position: 'end', // Valor por defecto
-        keys: [
-          { main: 'a', upper: 'A', special: ['@', 'á', 'ª'], super: '@' },
-          { main: 's', upper: 'S', special: ['#'] },
-          { main: 'd', upper: 'D', special: ['&'] },
-          { main: 'f', upper: 'F', special: ['*'] },
-          { main: 'g', upper: 'G', special: ['-'] },
-          { main: 'h', upper: 'H', special: ['+'] },
-          { main: 'j', upper: 'J', special: ['='] },
-          { main: 'k', upper: 'K', special: ['('] },
-          { main: 'l', upper: 'L', special: [')'] },
-          { main: 'ñ', upper: 'Ñ', special: ['%'] }
-        ]
-      },
-      // Cuarta fila (ZXCVB)
-      {
-        id: 'keyboard-zxcvb',
-        position: 'end', // Valor por defecto
-        keys: [
-          { type: 'shift', action: 'toggleShift', position:'center' },
-          { main: 'z', upper: 'Z', special: ['_'] },
-          { main: 'x', upper: 'X', special: ['$','¢','€','¥','£'], super: '€'},
-          { main: 'c', upper: 'C', special: ['"'] },
-          { main: 'v', upper: 'V', special: ["'"] },
-          { main: 'b', upper: 'B', special: [':'] },
-          { main: 'n', upper: 'N', special: [';'] },
-          { main: 'm', upper: 'M', special: ['/'] },
-          { type: 'special', text: '⌫', action: 'backspace', position: 'center' }
-        ]
-      },
-      // Quinta fila (barra espaciadora y teclas especiales)
-      {
-        id: 'keyboard-space-bar',
-        position: 'center', // Valor por defecto
-        keys: [
-          { type: 'symbol', text: '123', action: 'showNumericKeyboard' },
-          { type: 'emoji', text: '😊', action: 'showEmojis' },
-          { main: ',', special: [] },
-          { type: 'space', text: 'Espacio', action: 'space' },
-          { main: '.', special: ['!','¿','¡',',','.','?'], super:',¡¿' },
-          { type: 'enter', text: '↵', action: 'handleEnter', position: 'center' }
-        ]
-      }
-    ]
+    rows: qwertyLayout.rows.map(row => ({
+      ...row,
+      position: row.position as 'center' | 'end' | 'start' | undefined,
+      keys: row.keys.map(key => ({
+        ...key,
+        position: key.position as 'center' | 'end' | 'start' | undefined,
+        type: (['normal', 'shift', 'special', 'symbol', 'emoji', 'space', 'enter'] as const).includes(key.type as any)
+          ? key.type as 'normal' | 'shift' | 'special' | 'symbol' | 'emoji' | 'space' | 'enter'
+          : undefined
+      }))
+    }))
   };
 
   // Usar el teclado personalizado si se proporciona, o el predeterminado si no
@@ -386,34 +322,8 @@
 
   // La función createKeyboardLayout estará disponible para ser utilizada desde fuera
 
-  // Categorías de emojis
-  const emojiCategories = [
-    {
-      icon: '😊',
-      name: 'Caras',
-      emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳']
-    },
-    {
-      icon: '👍',
-      name: 'Gestos',
-      emojis: ['👍', '👎', '👌', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇', '☝️', '👋', '🤚', '🖐️', '✋', '🖖', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️']
-    },
-    {
-      icon: '❤️',
-      name: 'Símbolos',
-      emojis: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️', '✝️', '☪️', '🕉️', '☸️', '✡️', '🔯', '🕎', '☯️', '☦️', '🛐', '⛎', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
-    },
-    {
-      icon: '🍔',
-      name: 'Comida',
-      emojis: ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌶️', '🌽', '🥕', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🧈', '🥞', '🧇', '🥓', '🥩', '🍗', '🍖', '🦴', '🌭', '🍔', '🍟', '🍕', '🥪', '🥙', '🧆', '🌮', '🌯', '🥗', '🥘', '🥫', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱', '🥟', '🦪', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🥮', '🍢', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🌰', '🥜', '🍯', '🥛', '🍼', '☕', '🍵', '🧃', '🥤', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾', '🧊']
-    },
-    {
-      icon: '🚗',
-      name: 'Transporte',
-      emojis: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵', '🏍️', '🛺', '🚨', '🚔', '🚍', '🚘', '🚖', '🚡', '🚠', '🚟', '🚃', '🚋', '🚞', '🚝', '🚄', '🚅', '🚈', '🚂', '🚆', '🚇', '🚊', '🚉', '✈️', '🛫', '🛬', '🛩️', '💺', '🛰️', '🚀', '🛸', '🚁', '🛶', '⛵', '🚤', '🛥️', '🛳️', '⛴️', '🚢', '⚓', '⛽', '🚧', '🚦', '🚥', '🚏', '🗺️', '🗿', '🗽', '🗼', '🏰', '🏯', '🏟️', '🎡', '🎢', '🎠', '⛲', '⛱️', '🏖️', '🏝️', '🏜️', '🌋', '⛰️', '🏔️', '🗻', '🏕️', '⛺', '🏠', '🏡', '🏘️', '🏚️', '🏗️', '🏭', '🏢', '🏬', '🏣', '🏤', '🏥', '🏦', '🏨', '🏪', '🏫', '🏩', '💒', '🏛️', '⛪', '🕌', '🕍', '🛕', '🕋', '⛩️', '🛤️', '🛣️', '🗾', '🎑', '🏞️', '🌅', '🌄', '🌠', '🎇', '🎆', '🌇', '🌆', '🏙️', '🌃', '🌌', '🌉', '🌁']
-    }
-  ];
+  // Usar las categorías de emojis importadas
+  const emojiCategories = emojiLayoutData.categories;
 
   /**
    * addChar - Añade un carácter al input teniendo en cuenta la tecla de mayúsculas
@@ -448,20 +358,60 @@
 
   /**
    * backspace - Borra el carácter a la izquierda del cursor
+   * Maneja correctamente los emojis que son caracteres de 2 bytes
    */
   const backspace = () => {
     // Si el cursor no está al principio, borrar el carácter a la izquierda
     if (caretPosition.value > 0) {
-      const textBefore = inputValue.value.substring(0, caretPosition.value - 1);
+      // Obtener el texto antes del cursor
+      const textBefore = inputValue.value.substring(0, caretPosition.value);
       const textAfter = inputValue.value.substring(caretPosition.value);
-      inputValue.value = textBefore + textAfter;
+
+      // Verificar si el último carácter es parte de un emoji
+      // Los emojis suelen estar en el rango de surrogate pairs (U+D800 a U+DFFF)
+      let charsToDelete = 1;
+
+      // Si estamos en posición de borrar al menos un carácter
+      if (caretPosition.value >= 1) {
+        const lastChar = textBefore.charAt(textBefore.length - 1);
+        const secondLastChar = caretPosition.value >= 2 ? textBefore.charAt(textBefore.length - 2) : '';
+
+        // Verificar si es un emoji (surrogate pair)
+        const isHighSurrogate = secondLastChar && secondLastChar.charCodeAt(0) >= 0xD800 && secondLastChar.charCodeAt(0) <= 0xDBFF;
+        const isLowSurrogate = lastChar.charCodeAt(0) >= 0xDC00 && lastChar.charCodeAt(0) <= 0xDFFF;
+
+        // Si es un emoji completo (surrogate pair), borrar 2 caracteres
+        if (isHighSurrogate && isLowSurrogate) {
+          charsToDelete = 2;
+        }
+      }
+
+      // Borrar la cantidad correcta de caracteres
+      const newTextBefore = textBefore.substring(0, textBefore.length - charsToDelete);
+      inputValue.value = newTextBefore + textAfter;
 
       // Retroceder la posición del cursor
-      caretPosition.value--;
+      caretPosition.value -= charsToDelete;
 
       // Reactivar el cursor
       activateCaret(true);
     }
+  };
+
+  /**
+   * handleBackspaceTouchEnd - Maneja el evento táctil para la tecla de retroceso
+   * Evita la duplicación en dispositivos móviles
+   */
+  const handleBackspaceTouchEnd = (event: TouchEvent) => {
+    // Verificamos si estamos en un dispositivo móvil (táctil)
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Si es un dispositivo táctil, ejecutamos backspace directamente
+    // El evento click posterior será ignorado por el .stop en el template
+    if (isTouchDevice) {
+      backspace();
+    }
+    // Si no es un dispositivo táctil, no hacemos nada y dejamos que el evento click lo maneje
   };
 
   /**
@@ -495,13 +445,53 @@
     deactivateCaret();
   };
 
-  // Función para manejar la tecla Enter
+  /**
+   * handleEnter - Maneja la pulsación de la tecla Enter
+   * Emite un evento para notificar que se ha pulsado Enter
+   * y cierra el teclado
+   */
   const handleEnter = () => {
     emit('keyPressed:enter');
     closeKeyboard();
   };
 
-  // Esta función ha sido eliminada ya que no se usa más la tecla Alt
+  /**
+   * handleKeyRelease - Maneja el fin de un toque o clic en una tecla
+   * Limpia el temporizador de pulsación larga si existe
+   */
+  const handleKeyRelease = () => {
+    // Limpiar el temporizador si existe
+    if (longPressTimer.value !== null) {
+      window.clearTimeout(longPressTimer.value);
+      longPressTimer.value = null;
+    }
+
+    // Si el layer está visible, no hacer nada más
+    // La selección de teclas especiales se maneja en sus propios manejadores
+    if (showSpecialKeysLayer.value) {
+      return;
+    }
+  };
+
+  /**
+   * handleKeyTouchStart - Maneja el inicio de un toque largo en una tecla (para dispositivos táctiles)
+   * @param event - El evento de toque
+   * @param key - La tecla principal que se está tocando
+   * @param specialChars - Caracteres especiales asociados a la tecla
+   */
+  const handleKeyTouchStart = (event: TouchEvent, key: string, specialChars?: string | string[]) => {
+    handleKeyPress(event, key, specialChars);
+  };
+
+  /**
+   * handleKeyMouseDown - Maneja el inicio de un clic largo en una tecla (para dispositivos no táctiles)
+   * @param event - El evento de clic
+   * @param key - La tecla principal que se está tocando
+   * @param specialChars - Caracteres especiales asociados a la tecla
+   */
+  const handleKeyMouseDown = (event: MouseEvent, key: string, specialChars?: string | string[]) => {
+    handleKeyPress(event, key, specialChars);
+  };
 
   /**
    * handleKeyPress - Maneja el inicio de un toque o clic largo en una tecla
@@ -510,22 +500,21 @@
    * @param specialChars - Caracteres especiales asociados a la tecla
    */
   const handleKeyPress = (event: Event, key: string, specialChars?: string | string[]) => {
-    // Guardar la tecla actual
+    // Guardar la tecla actual para usarla en el evento de liberación
     currentKey.value = key;
 
-    // Reiniciar la variable que indica si el dedo ha salido del layer
-    fingerLeftLayer.value = false;
+    // Si la tecla no tiene caracteres especiales, no hacer nada más
+    if (!specialChars || (Array.isArray(specialChars) && specialChars.length === 0)) {
+      return;
+    }
 
-    // Si no hay caracteres especiales, no hacer nada más
-    if (!specialChars) return;
-
-    // Iniciar el temporizador para detectar un toque/clic largo
+    // Configurar un temporizador para detectar un toque/clic largo
     longPressTimer.value = window.setTimeout(() => {
       try {
-        // Obtener el elemento que recibió el evento
+        // Obtener el elemento que desencadenó el evento
         const element = event.target as HTMLElement;
         if (!element) {
-          console.error('No se pudo obtener el elemento del evento');
+          console.error('No se pudo obtener el elemento que desencadenó el evento');
           return;
         }
 
@@ -584,42 +573,7 @@
     }, 500); // 500ms para considerar un toque/clic largo
   };
 
-  /**
-   * handleKeyTouchStart - Maneja el inicio de un toque largo en una tecla (para dispositivos táctiles)
-   * @param event - El evento de toque
-   * @param key - La tecla principal que se está tocando
-   * @param specialChars - Caracteres especiales asociados a la tecla
-   */
-  const handleKeyTouchStart = (event: TouchEvent, key: string, specialChars?: string | string[]) => {
-    handleKeyPress(event, key, specialChars);
-  };
-
-  /**
-   * handleKeyMouseDown - Maneja el inicio de un clic largo en una tecla (para dispositivos no táctiles)
-   * @param event - El evento de clic
-   * @param key - La tecla principal que se está tocando
-   * @param specialChars - Caracteres especiales asociados a la tecla
-   */
-  const handleKeyMouseDown = (event: MouseEvent, key: string, specialChars?: string | string[]) => {
-    handleKeyPress(event, key, specialChars);
-  };
-
-  /**
-   * handleKeyRelease - Maneja el fin de un toque o clic en una tecla
-   */
-  const handleKeyRelease = () => {
-    // Limpiar el temporizador si existe
-    if (longPressTimer.value !== null) {
-      window.clearTimeout(longPressTimer.value);
-      longPressTimer.value = null;
-    }
-
-    // Si el layer está visible, no hacer nada más
-    // La selección de teclas especiales se maneja en sus propios manejadores
-    if (showSpecialKeysLayer.value) {
-      return;
-    }
-  };
+  // Esta función ha sido eliminada ya que no se usa más la tecla Alt
 
   /**
    * handleKeyTouchEnd - Maneja el fin de un toque en una tecla (para dispositivos táctiles)
@@ -761,10 +715,8 @@
     // Si no hay layer visible, proceder normalmente
     handleKeyRelease();
 
-    // Añadir el carácter normal si no se ha seleccionado una tecla especial
-    if (currentKey.value) {
-      addChar(currentKey.value);
-    }
+    // Ya no añadimos el carácter aquí, se maneja en el evento click de cada tecla
+    // Esto evita la duplicación de caracteres en dispositivos de escritorio
   };
 
   /**
@@ -817,93 +769,7 @@
     }
   };
 
-  /**
-   * handleSpecialLayerTouchMove - Maneja el movimiento táctil sobre el layer de teclas especiales
-   * @param event - El evento de movimiento táctil
-   */
-  const handleSpecialLayerTouchMove = (event: TouchEvent) => {
-    // Solo procesar si el layer está visible
-    if (!showSpecialKeysLayer.value) return;
-
-    // Asegurarnos de que el evento no se propague y no cause desplazamiento
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Obtener las coordenadas del toque
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    // Obtener el elemento que está bajo el dedo
-    const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (!elementUnderTouch) return;
-
-    // Verificar si el dedo está dentro del layer
-    const layerElement = document.querySelector('.special-keys-layer');
-    if (!layerElement) return;
-
-    // Comprobar si el elemento tocado está dentro del layer
-    const isInsideLayer = layerElement.contains(elementUnderTouch) || elementUnderTouch === layerElement;
-
-    // Si el dedo ha salido del layer, marcar la variable y ocultar el layer
-    if (!isInsideLayer) {
-      fingerLeftLayer.value = true;
-      showSpecialKeysLayer.value = false;
-      return;
-    }
-
-    // Si el dedo vuelve a entrar en el layer después de haber salido, no hacer nada
-    if (fingerLeftLayer.value) return;
-
-    // Buscar si el elemento o alguno de sus padres es una tecla especial
-    const keyElement = elementUnderTouch.closest('.special-option-key');
-    if (!keyElement) return;
-
-    try {
-      // Obtener el índice directamente del atributo de datos
-      const keyIndex = parseInt(keyElement.getAttribute('data-index') || '-1');
-
-      // Si no podemos obtener el índice del atributo, intentar calcularlo
-      if (keyIndex === -1) {
-        const container = keyElement.parentElement;
-        if (!container) return;
-
-        const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
-        const calculatedIndex = allKeys.indexOf(keyElement as Element);
-
-        if (calculatedIndex >= 0) {
-          // Actualizar el índice de la tecla seleccionada
-          currentSpecialKeyIndex.value = calculatedIndex;
-
-          // Forzar una actualización visual aplicando la clase activa directamente
-          allKeys.forEach((key, idx) => {
-            if (idx === calculatedIndex) {
-              key.classList.add('active');
-            } else {
-              key.classList.remove('active');
-            }
-          });
-        }
-      } else {
-        // Usar el índice del atributo
-        currentSpecialKeyIndex.value = keyIndex;
-
-        // Obtener todos los elementos de teclas especiales para actualizar las clases
-        const container = keyElement.parentElement;
-        if (container) {
-          const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
-          allKeys.forEach((key, idx) => {
-            if (idx === keyIndex) {
-              key.classList.add('active');
-            } else {
-              key.classList.remove('active');
-            }
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error al procesar el movimiento táctil:', error);
-    }
-  };
+  // La función handleSpecialLayerTouchMove ya está definida más adelante en el código
 
   /**
    * handleSpecialKeysLayerTouchEnd - Maneja cuando se levanta el dedo del layer de teclas especiales
@@ -1090,9 +956,11 @@
 
   /**
    * showNumericKeyboard - Cambia a la disposición numérica del teclado
+   * Esta función es un placeholder para una futura implementación
+   * Por ahora, simplemente muestra un mensaje en la consola
    */
   const showNumericKeyboard = () => {
-    // Función mínima para mantener la funcionalidad actual
+    console.log('Función showNumericKeyboard: Esta funcionalidad será implementada en futuras versiones');
   };
 
   // Función para manejar el clic en la cruz
@@ -1232,6 +1100,92 @@
   watch(() => props.modelValue, newValue => inputValue.value = newValue);
   watch(inputValue, newValue => emit('updateValue', newValue));
 
+  /**
+   * handleEmojiTouchEnd - Maneja el evento táctil para los emojis en dispositivos móviles
+   * Evita la duplicación de pulsaciones que ocurre cuando se disparan tanto click como touchend
+   * @param emoji - El emoji seleccionado
+   */
+  const handleEmojiTouchEnd = (emoji: string) => {
+    // En dispositivos móviles, el evento touchend también dispara un evento click
+    // Para evitar la duplicación, usamos una variable para controlar si ya se procesó el emoji
+
+    // Verificamos si estamos en un dispositivo móvil (táctil)
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Si es un dispositivo táctil, añadimos el emoji directamente
+    // El evento click posterior será ignorado por el .stop en el template
+    if (isTouchDevice) {
+      addChar(emoji);
+    }
+    // Si no es un dispositivo táctil, no hacemos nada y dejamos que el evento click lo maneje
+  };
+
+  /**
+   * handleSpecialLayerTouchMove - Maneja el movimiento táctil sobre el layer de teclas especiales
+   * @param event - El evento de movimiento táctil
+   */
+  const handleSpecialLayerTouchMove = (event: TouchEvent) => {
+    // Solo procesar si el layer está visible
+    if (!showSpecialKeysLayer.value) return;
+
+    // Asegurarnos de que el evento no se propague y no cause desplazamiento
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Obtener las coordenadas del toque
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    // Obtener el elemento que está bajo el dedo
+    const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elementUnderTouch) return;
+
+    // Verificar si el dedo está dentro del layer
+    const layerElement = document.querySelector('.special-keys-layer');
+    if (!layerElement) return;
+
+    // Comprobar si el elemento tocado está dentro del layer
+    const isInsideLayer = layerElement.contains(elementUnderTouch) || elementUnderTouch === layerElement;
+
+    // Si el dedo ha salido del layer, marcar la variable y ocultar el layer
+    if (!isInsideLayer) {
+      fingerLeftLayer.value = true;
+      showSpecialKeysLayer.value = false;
+      return;
+    }
+
+    // Si el dedo vuelve a entrar en el layer después de haber salido, no hacer nada
+    if (fingerLeftLayer.value) return;
+
+    // Buscar si el elemento o alguno de sus padres es una tecla especial
+    const keyElement = elementUnderTouch.closest('.special-option-key');
+    if (!keyElement) return;
+
+    try {
+      // Obtener el índice directamente del atributo de datos
+      const keyIndex = parseInt(keyElement.getAttribute('data-index') || '-1');
+
+      // Si no podemos obtener el índice del atributo, intentar calcularlo
+      if (keyIndex === -1) {
+        const container = keyElement.parentElement;
+        if (!container) return;
+
+        const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
+        const calculatedIndex = allKeys.indexOf(keyElement as Element);
+
+        if (calculatedIndex >= 0) {
+          // Actualizar el índice de la tecla seleccionada
+          currentSpecialKeyIndex.value = calculatedIndex;
+        }
+      } else {
+        // Usar el índice del atributo
+        currentSpecialKeyIndex.value = keyIndex;
+      }
+    } catch (error) {
+      console.error('Error al procesar el movimiento táctil:', error);
+    }
+  };
+
   // Función para manejar eventos táctiles globales
   const handleGlobalTouchMove = (event: TouchEvent) => {
     if (showSpecialKeysLayer.value) {
@@ -1343,8 +1297,7 @@
     document.removeEventListener('touchend', handleGlobalTouchEnd);
   });
 
-  // Definir emisiones
-  const emit = defineEmits(['updateValue', 'keyPressed:enter', 'blur', 'click', 'crossClick']);
+  // Las emisiones ya están definidas al inicio del script
 
   // Exponer variables y funciones
   defineExpose({
