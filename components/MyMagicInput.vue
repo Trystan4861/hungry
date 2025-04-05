@@ -42,7 +42,7 @@
               @touchstart.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyTouchStart($event, key.main, key.special) : handleKeyTouchStart($event, key.main))"
               @touchend.stop.prevent="handleKeyTouchEnd($event)"
               @mousedown.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyMouseDown($event, key.main, key.special) : handleKeyMouseDown($event, key.main))"
-              @mouseup.stop="handleKeyMouseUp"
+              @mouseup.stop="handleKeyMouseUp($event)"
             >
               <span class="main-char">
                 {{ key.upper && (shiftActive || shiftLocked) ? key.upper : (key.main || '') }}
@@ -737,35 +737,96 @@
 
   /**
    * handleKeyMouseUp - Maneja el fin de un clic en una tecla (para dispositivos no táctiles)
+   * @param event - El evento de ratón
    */
-  const handleKeyMouseUp = () => {
+  const handleKeyMouseUp = (event: MouseEvent) => {
+    // Si el ratón ha salido del layer, no seleccionar ninguna tecla
+    if (fingerLeftLayer.value) {
+      // Reiniciar la variable para el próximo uso
+      fingerLeftLayer.value = false;
+
+      // Limpiar el temporizador si existe
+      if (longPressTimer.value !== null) {
+        window.clearTimeout(longPressTimer.value);
+        longPressTimer.value = null;
+      }
+
+      return;
+    }
+
+    // Si el layer de teclas especiales está visible, verificar si el ratón está dentro del layer
+    if (showSpecialKeysLayer.value) {
+      const layerElement = document.querySelector('.special-keys-layer');
+      if (layerElement) {
+        const elementUnderMouse = document.elementFromPoint(event.clientX, event.clientY);
+        if (elementUnderMouse && (layerElement.contains(elementUnderMouse) || elementUnderMouse === layerElement)) {
+          // Si el ratón está dentro del layer, dejar que el evento mouseup del layer maneje la selección
+          return;
+        }
+      }
+
+      // Si el ratón no está dentro del layer, ocultar el layer sin seleccionar ninguna tecla
+      showSpecialKeysLayer.value = false;
+      return;
+    }
+
+    // Si no hay layer visible, proceder normalmente
     handleKeyRelease();
+
+    // Añadir el carácter normal si no se ha seleccionado una tecla especial
+    if (currentKey.value) {
+      addChar(currentKey.value);
+    }
   };
 
   /**
    * handleSpecialKeysLayerLeave - Maneja cuando el ratón sale del layer de teclas especiales
    */
   const handleSpecialKeysLayerLeave = () => {
-    // Si se ha seleccionado una tecla, usarla
-    if (currentSpecialKeyIndex.value >= 0) {
-      selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-    }
+    // Marcar que el ratón ha salido del layer
+    fingerLeftLayer.value = true;
 
-    // Ocultar el layer
+    // Ocultar el layer sin seleccionar ninguna tecla
     showSpecialKeysLayer.value = false;
   };
 
   /**
    * handleSpecialKeysLayerMouseUp - Maneja cuando se suelta el botón del ratón sobre el layer
+   * @param event - El evento de ratón
    */
-  const handleSpecialKeysLayerMouseUp = () => {
-    // Si se ha seleccionado una tecla, usarla
-    if (currentSpecialKeyIndex.value >= 0) {
-      selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+  const handleSpecialKeysLayerMouseUp = (event: MouseEvent) => {
+    // Si el ratón ha salido del layer, no seleccionar ninguna tecla
+    if (fingerLeftLayer.value) {
+      // Reiniciar la variable para el próximo uso
+      fingerLeftLayer.value = false;
+
+      // Limpiar el temporizador si existe
+      if (longPressTimer.value !== null) {
+        window.clearTimeout(longPressTimer.value);
+        longPressTimer.value = null;
+      }
+
+      return;
     }
 
-    // Ocultar el layer
-    showSpecialKeysLayer.value = false;
+    // Verificar si el elemento está dentro del layer
+    const layerElement = document.querySelector('.special-keys-layer');
+    if (layerElement) {
+      const elementUnderMouse = document.elementFromPoint(event.clientX, event.clientY);
+      if (elementUnderMouse && !layerElement.contains(elementUnderMouse) && elementUnderMouse !== layerElement) {
+        // Si el elemento no está dentro del layer, no seleccionar ninguna tecla
+        showSpecialKeysLayer.value = false;
+        return;
+      }
+    }
+
+    // Si se ha seleccionado una tecla, usarla
+    if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+      selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+    } else {
+      // Si no hay tecla seleccionada, simplemente ocultar el layer
+      showSpecialKeysLayer.value = false;
+    }
   };
 
   /**
