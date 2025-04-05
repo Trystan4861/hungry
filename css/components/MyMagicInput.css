@@ -227,46 +227,84 @@
   overflow-y: auto;
   background-color: #f8f8f8;
   color: #333;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .emoji-panel-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
   background-color: #e8e8e8;
   border-bottom: 1px solid #ccc;
-  padding-right: 0.5rem;
+  width: 100%;
+  padding: 0.25rem;
+  /* Aseguramos que los elementos hijos se muestren en el orden correcto */
+  flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .emoji-categories {
   display: flex;
-  flex: 1;
-  justify-content: space-around;
-  padding: 0.5rem;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding: 0.25rem;
+  order: 1; /* Asegura que aparezca después del botón ABC */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: calc(100% - 70px); /* Espacio para el botón ABC */
 }
 
 .emoji-category {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
+  padding: 0.1rem;
   border-radius: 0.25rem;
   color: #333;
+  margin: 0 0.1rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .emoji-category.active {
-  background-color: #ddd;
+  background-color: #e0e0e0;
   color: #000;
+  border-color: #aaa;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Botón ABC para volver al teclado */
 .keyboard-toggle-btn {
   background-color: #4CAF50;
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: background-color 0.2s, transform 0.1s;
+  /* Posicionamiento específico */
+  order: -1; /* Asegura que aparezca primero */
+  margin-right: 0.25rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Aseguramos que el botón ABC aparezca al principio en la barra de categorías */
+.emoji-panel-header .keyboard-toggle-btn {
+  order: -1;
 }
 
 .keyboard-toggle-btn:hover {
@@ -280,18 +318,22 @@
 
 .emoji-grid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(12, 2.5rem);
+  gap: 0.25rem;
   padding: 0.5rem;
   background-color: #f8f8f8;
+  max-width: 100%;
+  overflow-x: auto;
+  justify-content: center;
 }
 
 .emoji-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
+  width: 2.5rem;
   height: 2.5rem;
   background-color: white;
   border-radius: 0.25rem;
@@ -316,6 +358,19 @@
     width: 2rem;
     height: 2rem;
     font-size: 0.9rem;
+  }
+
+  .emoji-item {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+
+  .emoji-category {
+    font-size: 1.1rem;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0.1rem;
   }
 
   .special-key {
@@ -354,12 +409,13 @@
   }
 
   .emoji-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(10, 2rem);
   }
 
   .keyboard-toggle-btn {
-    padding: 0.4rem 0.8rem;
+    padding: 0.2rem 0.4rem;
     font-size: 0.9rem;
+    height: 2rem;
   }
 }
 
@@ -369,6 +425,20 @@
     height: 1.8rem;
     font-size: 0.8rem;
     margin-right: 0.15rem;
+  }
+
+  .emoji-item {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.9rem;
+  }
+
+  .emoji-category {
+    font-size: 1rem;
+    min-width: 1.8rem;
+    height: 1.8rem;
+    padding: 0.1rem;
+    margin: 0 0.05rem;
   }
 
   .special-key {
@@ -407,12 +477,13 @@
   }
 
   .emoji-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(8, 1.8rem);
   }
 
   .keyboard-toggle-btn {
-    padding: 0.3rem 0.6rem;
+    padding: 0.15rem 0.3rem;
     font-size: 0.8rem;
+    height: 1.8rem;
   }
 }
 
@@ -427,6 +498,20 @@
     width: 1.6rem;
     height: 1.6rem;
     font-size: 0.75rem;
+  }
+
+  .emoji-item {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.8rem;
+  }
+
+  .emoji-category {
+    font-size: 0.9rem;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    padding: 0.05rem;
+    margin: 0 0.05rem;
   }
 
   .special-key {
@@ -477,12 +562,13 @@
   }
 
   .emoji-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1.6rem);
   }
 
   .keyboard-toggle-btn {
-    padding: 0.25rem 0.5rem;
+    padding: 0.1rem 0.25rem;
     font-size: 0.75rem;
+    height: 1.6rem;
   }
 
   /* Asegurar que todas las teclas sean visibles */
