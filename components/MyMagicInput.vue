@@ -40,7 +40,7 @@
               :class="{ 'multi-char': key.special && key.special.length > 0 }"
               @click.stop="key.main && addChar(key.main)"
               @touchstart.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyTouchStart($event, key.main, key.special) : handleKeyTouchStart($event, key.main))"
-              @touchend.stop.prevent="handleKeyTouchEnd(); !showSpecialKeysLayer && key.main && addChar(key.main)"
+              @touchend.stop.prevent="handleKeyTouchEnd($event)"
               @mousedown.stop.prevent="key.main && (key.special && key.special.length > 0 ? handleKeyMouseDown($event, key.main, key.special) : handleKeyMouseDown($event, key.main))"
               @mouseup.stop="handleKeyMouseUp"
             >
@@ -151,7 +151,9 @@
              zIndex: '9999'
            }"
            @mouseleave="handleSpecialKeysLayerLeave"
-           @mouseup="handleSpecialKeysLayerMouseUp">
+           @mouseup="handleSpecialKeysLayerMouseUp"
+           @touchend="handleSpecialKeysLayerTouchEnd"
+           @touchmove="handleSpecialLayerTouchMove">
         <div class="special-keys-container">
           <div
             v-for="(key, index) in specialKeysOptions"
@@ -163,6 +165,8 @@
             :data-key="key"
             @mouseenter="currentSpecialKeyIndex = index"
             @click="selectSpecialKey(key, $event)"
+            @touchstart.prevent="currentSpecialKeyIndex = index"
+            @touchend.prevent="selectSpecialKey(key, $event)"
           >
             {{ key }}
           </div>
@@ -627,16 +631,94 @@
 
   /**
    * handleKeyTouchEnd - Maneja el fin de un toque en una tecla (para dispositivos táctiles)
+   * @param event - El evento de fin de toque
    */
-  const handleKeyTouchEnd = () => {
-    // Si el layer de teclas especiales está visible, no hacer nada
-    // para evitar que se añada el carácter normal
+  const handleKeyTouchEnd = (event: TouchEvent) => {
+    // Si el layer de teclas especiales está visible, seleccionar la tecla especial bajo el dedo
     if (showSpecialKeysLayer.value) {
+      try {
+        // Obtener las coordenadas del toque
+        const touch = event.changedTouches[0];
+        if (!touch) {
+          // Si no hay información de toque, usar la primera tecla especial disponible o la seleccionada
+          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+          } else if (specialKeysOptions.value.length > 0) {
+            selectSpecialKey(specialKeysOptions.value[0]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+          return;
+        }
+
+        // Obtener el elemento que está bajo el dedo al levantar
+        const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!elementUnderTouch) {
+          // Si no hay elemento bajo el dedo, usar la tecla seleccionada o la primera disponible
+          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+          } else if (specialKeysOptions.value.length > 0) {
+            selectSpecialKey(specialKeysOptions.value[0]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+          return;
+        }
+
+        // Buscar si el elemento o alguno de sus padres es una tecla especial
+        const keyElement = elementUnderTouch.closest('.special-option-key');
+        if (keyElement) {
+          // Obtener el texto de la tecla directamente del elemento
+          const keyText = keyElement.textContent?.trim();
+          if (keyText) {
+            // Usar la tecla encontrada
+            selectSpecialKey(keyText);
+          } else {
+            // Si no podemos obtener el texto, intentar usar el índice
+            const keyIndex = parseInt(keyElement.getAttribute('data-index') || '-1');
+            if (keyIndex >= 0 && keyIndex < specialKeysOptions.value.length) {
+              selectSpecialKey(specialKeysOptions.value[keyIndex]);
+            } else if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+              // Si no podemos determinar el índice, usar la tecla seleccionada
+              selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+            } else if (specialKeysOptions.value.length > 0) {
+              // Si no hay tecla seleccionada, usar la primera disponible
+              selectSpecialKey(specialKeysOptions.value[0]);
+            } else {
+              showSpecialKeysLayer.value = false;
+            }
+          }
+        } else {
+          // Si no hay tecla bajo el dedo, usar la tecla seleccionada o la primera disponible
+          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+          } else if (specialKeysOptions.value.length > 0) {
+            selectSpecialKey(specialKeysOptions.value[0]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+        }
+      } catch (error) {
+        console.error('Error al procesar el fin del toque en la tecla:', error);
+        // En caso de error, intentar usar la tecla seleccionada o la primera disponible
+        if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+          selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+        } else if (specialKeysOptions.value.length > 0) {
+          selectSpecialKey(specialKeysOptions.value[0]);
+        } else {
+          showSpecialKeysLayer.value = false;
+        }
+      }
       return;
     }
 
     // Si no hay layer visible, proceder normalmente
     handleKeyRelease();
+
+    // Añadir el carácter normal si no se ha seleccionado una tecla especial
+    if (currentKey.value) {
+      addChar(currentKey.value);
+    }
   };
 
   /**
@@ -766,22 +848,70 @@
       // Si no hay tecla seleccionada, intentar detectar la tecla bajo el dedo
       const touch = event.changedTouches[0];
       if (!touch) {
-        showSpecialKeysLayer.value = false;
+        // Si no hay información de toque, usar la primera tecla especial disponible
+        if (specialKeysOptions.value.length > 0) {
+          selectSpecialKey(specialKeysOptions.value[0]);
+        } else {
+          showSpecialKeysLayer.value = false;
+        }
         return;
       }
 
       // Obtener el elemento que está bajo el dedo al levantar
       const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
       if (!elementUnderTouch) {
-        showSpecialKeysLayer.value = false;
+        // Si no hay elemento bajo el dedo, usar la primera tecla especial disponible
+        if (specialKeysOptions.value.length > 0) {
+          selectSpecialKey(specialKeysOptions.value[0]);
+        } else {
+          showSpecialKeysLayer.value = false;
+        }
         return;
       }
 
       // Buscar si el elemento o alguno de sus padres es una tecla especial
       const keyElement = elementUnderTouch.closest('.special-option-key');
       if (!keyElement) {
-        // Si no hay tecla bajo el dedo, cerrar el layer
-        showSpecialKeysLayer.value = false;
+        // Si no hay tecla bajo el dedo, buscar la tecla más cercana a las coordenadas del toque
+        const specialKeysContainer = document.querySelector('.special-keys-container');
+        if (specialKeysContainer) {
+          const allKeys = Array.from(specialKeysContainer.querySelectorAll('.special-option-key'));
+
+          // Si hay teclas disponibles, seleccionar la primera por defecto
+          if (allKeys.length > 0) {
+            let closestKey = allKeys[0];
+            let closestDistance = Number.MAX_VALUE;
+
+            // Buscar la tecla más cercana a las coordenadas del toque
+            allKeys.forEach((key) => {
+              const rect = key.getBoundingClientRect();
+              const keyX = rect.left + rect.width / 2;
+              const keyY = rect.top + rect.height / 2;
+              const distance = Math.sqrt(
+                Math.pow(touch.clientX - keyX, 2) + Math.pow(touch.clientY - keyY, 2)
+              );
+
+              if (distance < closestDistance) {
+                closestDistance = distance;
+                closestKey = key;
+              }
+            });
+
+            // Obtener el texto de la tecla más cercana
+            const keyText = closestKey.textContent?.trim();
+            if (keyText) {
+              selectSpecialKey(keyText);
+              return;
+            }
+          }
+        }
+
+        // Si todo lo demás falla, usar la primera tecla especial disponible
+        if (specialKeysOptions.value.length > 0) {
+          selectSpecialKey(specialKeysOptions.value[0]);
+        } else {
+          showSpecialKeysLayer.value = false;
+        }
         return;
       }
 
@@ -798,16 +928,27 @@
           const keyIndex = allKeys.indexOf(keyElement as Element);
           if (keyIndex >= 0 && keyIndex < specialKeysOptions.value.length) {
             selectSpecialKey(specialKeysOptions.value[keyIndex]);
+          } else if (specialKeysOptions.value.length > 0) {
+            // Si no podemos determinar el índice, usar la primera tecla disponible
+            selectSpecialKey(specialKeysOptions.value[0]);
           } else {
             showSpecialKeysLayer.value = false;
           }
+        } else if (specialKeysOptions.value.length > 0) {
+          // Si no hay contenedor, usar la primera tecla disponible
+          selectSpecialKey(specialKeysOptions.value[0]);
         } else {
           showSpecialKeysLayer.value = false;
         }
       }
     } catch (error) {
       console.error('Error al procesar el fin del toque:', error);
-      showSpecialKeysLayer.value = false;
+      // En caso de error, intentar usar la primera tecla disponible
+      if (specialKeysOptions.value.length > 0) {
+        selectSpecialKey(specialKeysOptions.value[0]);
+      } else {
+        showSpecialKeysLayer.value = false;
+      }
     }
   };
 
@@ -1055,7 +1196,80 @@
 
   const handleGlobalTouchEnd = (event: TouchEvent) => {
     if (showSpecialKeysLayer.value) {
-      handleSpecialKeysLayerTouchEnd(event);
+      // Usar la misma lógica que en handleKeyTouchEnd para seleccionar la tecla especial
+      try {
+        // Obtener las coordenadas del toque
+        const touch = event.changedTouches[0];
+        if (!touch) {
+          // Si no hay información de toque, usar la tecla seleccionada o la primera disponible
+          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+          } else if (specialKeysOptions.value.length > 0) {
+            selectSpecialKey(specialKeysOptions.value[0]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+          return;
+        }
+
+        // Obtener el elemento que está bajo el dedo al levantar
+        const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!elementUnderTouch) {
+          // Si no hay elemento bajo el dedo, usar la tecla seleccionada o la primera disponible
+          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+          } else if (specialKeysOptions.value.length > 0) {
+            selectSpecialKey(specialKeysOptions.value[0]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+          return;
+        }
+
+        // Buscar si el elemento o alguno de sus padres es una tecla especial
+        const keyElement = elementUnderTouch.closest('.special-option-key');
+        if (keyElement) {
+          // Obtener el texto de la tecla directamente del elemento
+          const keyText = keyElement.textContent?.trim();
+          if (keyText) {
+            // Usar la tecla encontrada
+            selectSpecialKey(keyText);
+          } else {
+            // Si no podemos obtener el texto, intentar usar el índice
+            const keyIndex = parseInt(keyElement.getAttribute('data-index') || '-1');
+            if (keyIndex >= 0 && keyIndex < specialKeysOptions.value.length) {
+              selectSpecialKey(specialKeysOptions.value[keyIndex]);
+            } else if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+              // Si no podemos determinar el índice, usar la tecla seleccionada
+              selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+            } else if (specialKeysOptions.value.length > 0) {
+              // Si no hay tecla seleccionada, usar la primera disponible
+              selectSpecialKey(specialKeysOptions.value[0]);
+            } else {
+              showSpecialKeysLayer.value = false;
+            }
+          }
+        } else {
+          // Si no hay tecla bajo el dedo, usar la tecla seleccionada o la primera disponible
+          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+          } else if (specialKeysOptions.value.length > 0) {
+            selectSpecialKey(specialKeysOptions.value[0]);
+          } else {
+            showSpecialKeysLayer.value = false;
+          }
+        }
+      } catch (error) {
+        console.error('Error al procesar el fin del toque global:', error);
+        // En caso de error, intentar usar la tecla seleccionada o la primera disponible
+        if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
+          selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
+        } else if (specialKeysOptions.value.length > 0) {
+          selectSpecialKey(specialKeysOptions.value[0]);
+        } else {
+          showSpecialKeysLayer.value = false;
+        }
+      }
     }
   };
 
