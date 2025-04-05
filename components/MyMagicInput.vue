@@ -215,6 +215,7 @@
   // Variables para el layer de teclas especiales
   const showSpecialKeysLayer = ref(false);
   const specialKeysOptions = ref<string[]>([]);
+  const fingerLeftLayer = ref(false); // Indica si el dedo ha salido del layer
   // Definimos una interfaz para los estilos CSS
   interface CSSStyles {
     position?: string;
@@ -524,6 +525,9 @@
     // Guardar la tecla actual
     currentKey.value = key;
 
+    // Reiniciar la variable que indica si el dedo ha salido del layer
+    fingerLeftLayer.value = false;
+
     // Si no hay caracteres especiales, no hacer nada más
     if (!specialChars) return;
 
@@ -634,6 +638,20 @@
    * @param event - El evento de fin de toque
    */
   const handleKeyTouchEnd = (event: TouchEvent) => {
+    // Si el dedo ha salido del layer, no seleccionar ninguna tecla
+    if (fingerLeftLayer.value) {
+      // Reiniciar la variable para el próximo uso
+      fingerLeftLayer.value = false;
+
+      // Limpiar el temporizador si existe
+      if (longPressTimer.value !== null) {
+        window.clearTimeout(longPressTimer.value);
+        longPressTimer.value = null;
+      }
+
+      return;
+    }
+
     // Si el layer de teclas especiales está visible, seleccionar la tecla especial bajo el dedo
     if (showSpecialKeysLayer.value) {
       try {
@@ -665,6 +683,14 @@
           return;
         }
 
+        // Verificar si el elemento está dentro del layer
+        const layerElement = document.querySelector('.special-keys-layer');
+        if (layerElement && !layerElement.contains(elementUnderTouch) && elementUnderTouch !== layerElement) {
+          // Si el elemento no está dentro del layer, no seleccionar ninguna tecla
+          showSpecialKeysLayer.value = false;
+          return;
+        }
+
         // Buscar si el elemento o alguno de sus padres es una tecla especial
         const keyElement = elementUnderTouch.closest('.special-option-key');
         if (keyElement) {
@@ -689,25 +715,13 @@
             }
           }
         } else {
-          // Si no hay tecla bajo el dedo, usar la tecla seleccionada o la primera disponible
-          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-          } else if (specialKeysOptions.value.length > 0) {
-            selectSpecialKey(specialKeysOptions.value[0]);
-          } else {
-            showSpecialKeysLayer.value = false;
-          }
+          // Si no hay tecla bajo el dedo, no seleccionar ninguna tecla
+          showSpecialKeysLayer.value = false;
         }
       } catch (error) {
         console.error('Error al procesar el fin del toque en la tecla:', error);
-        // En caso de error, intentar usar la tecla seleccionada o la primera disponible
-        if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-          selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-        } else if (specialKeysOptions.value.length > 0) {
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
+        // En caso de error, no seleccionar ninguna tecla
+        showSpecialKeysLayer.value = false;
       }
       return;
     }
@@ -773,6 +787,23 @@
     // Obtener el elemento que está bajo el dedo
     const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
     if (!elementUnderTouch) return;
+
+    // Verificar si el dedo está dentro del layer
+    const layerElement = document.querySelector('.special-keys-layer');
+    if (!layerElement) return;
+
+    // Comprobar si el elemento tocado está dentro del layer
+    const isInsideLayer = layerElement.contains(elementUnderTouch) || elementUnderTouch === layerElement;
+
+    // Si el dedo ha salido del layer, marcar la variable y ocultar el layer
+    if (!isInsideLayer) {
+      fingerLeftLayer.value = true;
+      showSpecialKeysLayer.value = false;
+      return;
+    }
+
+    // Si el dedo vuelve a entrar en el layer después de haber salido, no hacer nada
+    if (fingerLeftLayer.value) return;
 
     // Buscar si el elemento o alguno de sus padres es una tecla especial
     const keyElement = elementUnderTouch.closest('.special-option-key');
@@ -1195,34 +1226,44 @@
   };
 
   const handleGlobalTouchEnd = (event: TouchEvent) => {
+    // Si el dedo ha salido del layer, no seleccionar ninguna tecla
+    if (fingerLeftLayer.value) {
+      // Reiniciar la variable para el próximo uso
+      fingerLeftLayer.value = false;
+
+      // Limpiar el temporizador si existe
+      if (longPressTimer.value !== null) {
+        window.clearTimeout(longPressTimer.value);
+        longPressTimer.value = null;
+      }
+
+      return;
+    }
+
     if (showSpecialKeysLayer.value) {
       // Usar la misma lógica que en handleKeyTouchEnd para seleccionar la tecla especial
       try {
         // Obtener las coordenadas del toque
         const touch = event.changedTouches[0];
         if (!touch) {
-          // Si no hay información de toque, usar la tecla seleccionada o la primera disponible
-          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-          } else if (specialKeysOptions.value.length > 0) {
-            selectSpecialKey(specialKeysOptions.value[0]);
-          } else {
-            showSpecialKeysLayer.value = false;
-          }
+          // Si no hay información de toque, no seleccionar ninguna tecla
+          showSpecialKeysLayer.value = false;
           return;
         }
 
         // Obtener el elemento que está bajo el dedo al levantar
         const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
         if (!elementUnderTouch) {
-          // Si no hay elemento bajo el dedo, usar la tecla seleccionada o la primera disponible
-          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-          } else if (specialKeysOptions.value.length > 0) {
-            selectSpecialKey(specialKeysOptions.value[0]);
-          } else {
-            showSpecialKeysLayer.value = false;
-          }
+          // Si no hay elemento bajo el dedo, no seleccionar ninguna tecla
+          showSpecialKeysLayer.value = false;
+          return;
+        }
+
+        // Verificar si el elemento está dentro del layer
+        const layerElement = document.querySelector('.special-keys-layer');
+        if (layerElement && !layerElement.contains(elementUnderTouch) && elementUnderTouch !== layerElement) {
+          // Si el elemento no está dentro del layer, no seleccionar ninguna tecla
+          showSpecialKeysLayer.value = false;
           return;
         }
 
@@ -1239,36 +1280,19 @@
             const keyIndex = parseInt(keyElement.getAttribute('data-index') || '-1');
             if (keyIndex >= 0 && keyIndex < specialKeysOptions.value.length) {
               selectSpecialKey(specialKeysOptions.value[keyIndex]);
-            } else if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-              // Si no podemos determinar el índice, usar la tecla seleccionada
-              selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-            } else if (specialKeysOptions.value.length > 0) {
-              // Si no hay tecla seleccionada, usar la primera disponible
-              selectSpecialKey(specialKeysOptions.value[0]);
             } else {
+              // Si no podemos determinar el índice, no seleccionar ninguna tecla
               showSpecialKeysLayer.value = false;
             }
           }
         } else {
-          // Si no hay tecla bajo el dedo, usar la tecla seleccionada o la primera disponible
-          if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-            selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-          } else if (specialKeysOptions.value.length > 0) {
-            selectSpecialKey(specialKeysOptions.value[0]);
-          } else {
-            showSpecialKeysLayer.value = false;
-          }
+          // Si no hay tecla bajo el dedo, no seleccionar ninguna tecla
+          showSpecialKeysLayer.value = false;
         }
       } catch (error) {
         console.error('Error al procesar el fin del toque global:', error);
-        // En caso de error, intentar usar la tecla seleccionada o la primera disponible
-        if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-          selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-        } else if (specialKeysOptions.value.length > 0) {
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
+        // En caso de error, no seleccionar ninguna tecla
+        showSpecialKeysLayer.value = false;
       }
     }
   };
