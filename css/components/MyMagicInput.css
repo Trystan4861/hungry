@@ -128,17 +128,6 @@
   top: 0.2rem;
 }
 
-.multi-char .alt-char.top-right {
-  right: 0.2rem;
-}
-
-.alt-key.alt-active {
-  background-color: #ffd700;
-  border-color: #e6c200;
-  color: #000;
-  font-weight: bold;
-}
-
 .key:last-child {
   margin-right: 0;
 }
@@ -232,13 +221,6 @@
   pointer-events: none;
 }
 
-.symbols-row {
-  background-color: #f0f0f0;
-  padding-top: 0.3rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid #ddd;
-}
-
 /* Panel de emojis */
 .emoji-panel {
   height: 15rem;
@@ -247,12 +229,20 @@
   color: #333;
 }
 
-.emoji-categories {
+.emoji-panel-header {
   display: flex;
-  justify-content: space-around;
-  padding: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
   background-color: #e8e8e8;
   border-bottom: 1px solid #ccc;
+  padding-right: 0.5rem;
+}
+
+.emoji-categories {
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+  padding: 0.5rem;
 }
 
 .emoji-category {
@@ -266,6 +256,26 @@
 .emoji-category.active {
   background-color: #ddd;
   color: #000;
+}
+
+.keyboard-toggle-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.keyboard-toggle-btn:hover {
+  background-color: #45a049;
+}
+
+.keyboard-toggle-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
 }
 
 .emoji-grid {
@@ -346,6 +356,11 @@
   .emoji-grid {
     grid-template-columns: repeat(6, 1fr);
   }
+
+  .keyboard-toggle-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -393,6 +408,11 @@
 
   .emoji-grid {
     grid-template-columns: repeat(5, 1fr);
+  }
+
+  .keyboard-toggle-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -460,6 +480,11 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
+  .keyboard-toggle-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
   /* Asegurar que todas las teclas sean visibles */
   .keyboard-row {
     flex-wrap: wrap;
@@ -508,9 +533,7 @@
   }
 }
 
-.hidden {
-  visibility: hidden;
-}
+
 
 .placeholder {
   background-color: rgba(255, 255, 255, 0.3);

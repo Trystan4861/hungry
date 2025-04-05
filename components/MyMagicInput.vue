@@ -117,15 +117,20 @@
       </div>
 
       <div v-if="activeTab === 'emojis'" class="emoji-panel">
-        <div class="emoji-categories">
-          <div
-            v-for="(category, index) in emojiCategories"
-            :key="index"
-            class="emoji-category"
-            :class="{ active: activeEmojiCategory === index }"
-            @click="activeEmojiCategory = index"
-          >
-            {{ category.icon }}
+        <div class="emoji-panel-header">
+          <div class="emoji-categories">
+            <div
+              v-for="(category, index) in emojiCategories"
+              :key="index"
+              class="emoji-category"
+              :class="{ active: activeEmojiCategory === index }"
+              @click="activeEmojiCategory = index"
+            >
+              {{ category.icon }}
+            </div>
+          </div>
+          <div class="keyboard-toggle-btn" @click="activeTab = 'keyboard'">
+            ABC
           </div>
         </div>
         <div class="emoji-grid">
@@ -180,7 +185,6 @@
   import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
   import type { PropType } from 'vue';
   import { generateID } from '~/utils';
-  import { parseEmoji } from '~/utils';
   import { myStore } from '~/composables/useStore';
   import '~/css/components/MyMagicInput.css';
 
@@ -216,22 +220,6 @@
   const showSpecialKeysLayer = ref(false);
   const specialKeysOptions = ref<string[]>([]);
   const fingerLeftLayer = ref(false); // Indica si el dedo ha salido del layer
-  // Definimos una interfaz para los estilos CSS
-  interface CSSStyles {
-    position?: string;
-    top?: string;
-    left?: string;
-    width?: string;
-    zIndex?: string;
-    [key: string]: string | undefined;
-  }
-
-  // Definimos una interfaz para las coordenadas del evento
-  interface EventCoordinates {
-    x: number;
-    y: number;
-    keyRect?: DOMRect | null;
-  }
 
   // Variables para almacenar las coordenadas del layer
   const layerTop = ref('0px');
@@ -1102,11 +1090,9 @@
 
   /**
    * showNumericKeyboard - Cambia a la disposición numérica del teclado
-   * (Esta función se implementará en una fase posterior)
    */
   const showNumericKeyboard = () => {
-    // Por ahora solo mostramos un mensaje en consola
-    console.log('Cambio a teclado numérico (pendiente de implementar)');
+    // Función mínima para mantener la funcionalidad actual
   };
 
   // Función para manejar el clic en la cruz
@@ -1221,58 +1207,25 @@
     }
   };
 
-  // Valor parseado con emojis
-  const parsedValue = computed(() => parseEmoji(inputValue.value));
-
   // Texto con el cursor (caret) insertado en la posición correcta
   const textWithCaret = computed(() => {
     // Si no hay texto, este computed no se usa (se maneja en el template)
     if (!inputValue.value) return '';
 
-    const valueToUse = parseEmoji(inputValue.value);
-
     // Si no se debe mostrar el cursor, devolver el texto tal cual
-    if (!showCaret.value) return valueToUse;
+    if (!showCaret.value) return inputValue.value;
 
     // Si el cursor está al final del texto
     if (caretPosition.value >= inputValue.value.length) {
       // El cursor va al final
-      return valueToUse + '<span class="caret"></span>';
+      return inputValue.value + '<span class="caret"></span>';
     }
 
     // Si el cursor está en medio del texto
-    let currentPos = 0;
-    let inTag = false;
-    let result = '';
+    const textBefore = inputValue.value.substring(0, caretPosition.value);
+    const textAfter = inputValue.value.substring(caretPosition.value);
 
-    // Recorrer el texto caracter por caracter
-    for (let i = 0; i < valueToUse.length; i++) {
-      const char = valueToUse[i];
-
-      // Si encontramos un tag HTML, lo procesamos completo
-      if (char === '<') {
-        inTag = true;
-        result += char;
-        continue;
-      }
-
-      if (inTag) {
-        result += char;
-        if (char === '>') inTag = false;
-        continue;
-      }
-
-      // Si no estamos en un tag y estamos en la posición del cursor
-      if (!inTag && currentPos === caretPosition.value) {
-        result += '<span class="caret"></span>' + char;
-        currentPos++;
-      } else {
-        result += char;
-        currentPos++;
-      }
-    }
-
-    return result;
+    return textBefore + '<span class="caret"></span>' + textAfter;
   });
 
   // Observadores
