@@ -364,36 +364,28 @@
    * @param key - La tecla o tipo de tecla presionada
    */
   const handleKeyPress = (key: string) => {
-    // Si es una tecla normal, añadir el carácter
-    if (key && typeof key === 'string') {
-      // Si es un tipo de tecla especial, manejarla según su tipo
-      switch (key) {
-        case 'shift':
-          toggleShift();
-          break;
-        case 'backspace': // Tecla de retroceso
-          backspace();
-          break;
-        case 'special': // Tecla especial (mantener por compatibilidad)
-          backspace();
-          break;
-        case 'symbol': // 123 (teclado numérico)
-          showNumericKeyboard();
-          break;
-        case 'emoji': // Emoji
-          activeTab.value = 'emojis';
-          break;
-        case 'space': // Espacio
-          addChar(' ');
-          break;
-        case 'enter': // Enter
-          handleEnter();
-          break;
-        default:
-          // Si no es un tipo especial, añadir el carácter
-          addChar(key);
-          break;
-      }
+    switch (key) {
+      case 'shift':
+        toggleShift();
+        break;
+      case 'backspace':
+        backspace();
+        break;
+      case 'symbol':
+        activeTab.value = 'keyboard';
+        break;
+      case 'emoji':
+        activeTab.value = 'emojis';
+        break;
+      case 'space':
+        addChar(' ');
+        break;
+      case 'enter':
+        handleEnter();
+        break;
+      default:
+        // Si no es una tecla especial, añadir el carácter
+        addChar(key);
     }
   };
 

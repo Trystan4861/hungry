@@ -171,8 +171,16 @@ const text = computed(() => props.keyData.text || '');
 const handleClick = (event: MouseEvent) => {
   event.stopPropagation();
   
-  if (!props.keyData.main) return;
-  emit('keypress', props.keyData.main);
+  // Si es una tecla especial, emitir su tipo directamente
+  if (props.keyData.type && props.keyData.type !== 'normal') {
+    emit('keypress', props.keyData.type);
+    return;
+  }
+
+  // Para teclas normales, emitir el carácter principal
+  if (props.keyData.main) {
+    emit('keypress', props.keyData.main);
+  }
 };
 
 /**
