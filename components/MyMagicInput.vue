@@ -448,27 +448,13 @@
           specialKeysOptions.value = [specialChars];
         }
 
-        // Calcular el ancho del layer basado en el número de teclas especiales y su tamaño teniendo en cuenta las distintas resoluciones
-        // recordar que en pantallas pequeñas las teclas son más pequeñas
-
-        // Calculamos el ancho máximo permitido para el layer
-        // y lo ajustamos a un tamaño razonable para evitar que se salga de la pantalla
-        // y que se vea bien en pantallas pequeñas
-        // El ancho máximo es el número de teclas especiales multiplicado por 50px (ancho aproximado de cada tecla)
-        // y luego ajustarlo para que no sea mayor que el ancho de la ventana menos 20px (margen)
-        const maxWidth = window.innerWidth - 20;
-        const adjustedWidth = Math.min(parseInt(layerWidth.value), maxWidth);
-
-        // Establecer el ancho calculado como valor de la variable ref
-        layerWidth.value = `${adjustedWidth}px`;
-
-        const layerWidthValue = specialKeysOptions.value.length * (keyRect.width +6); // Ancho real de la tecla
+        const layerWidthValue = ref(specialKeysOptions.value.length * (keyRect.width +5)); // Ancho real de la tecla
         const layerHeight = keyRect.height; // Altura real de la tecla
 
         // Calcular la posición exacta del layer (centrado sobre la tecla)
         // Subimos 10 píxeles la posición vertical para mejorar la visibilidad
-        let topPosition = keyRect.top - 10;
-        let leftPosition = keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2);
+        let topPosition = keyRect.top - 30;
+        let leftPosition = keyRect.left + (keyRect.width / 2) - (layerWidthValue.value / 2);
 
         // Asegurarnos de que el layer no se salga de la pantalla
         if (topPosition < 10) {
@@ -479,14 +465,13 @@
 
         if (leftPosition < 10) {
           leftPosition = 10;
-        } else if (leftPosition + layerWidthValue > window.innerWidth - 10) {
-          leftPosition = window.innerWidth - layerWidthValue - 10;
+        } else if (leftPosition + layerWidthValue.value > window.innerWidth - 10) {
+          leftPosition = window.innerWidth - layerWidthValue.value - 10;
         }
 
         // Actualizar las variables de posición del layer
-        layerTop.value = `${topPosition}px`;
+        layerTop.value = `${topPosition+5}px`;
         layerLeft.value = `${leftPosition}px`;
-        layerWidth.value = `${layerWidthValue}px`;
 
         // Mostrar el layer
         showSpecialKeysLayer.value = true;
