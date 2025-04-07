@@ -52,7 +52,7 @@
       "id": "keyboard-zxcvb",
       "position": "end",
       "keys": [
-        { "type": "shift", "action": "toggleShift", "position": "center" },
+        { "type": "shift", "position": "center" },
         { "main": "z", "upper": "Z", "special": ["_"] },
         { "main": "x", "upper": "X", "special": ["$", "¢", "€", "¥", "£"], "super": "€" },
         { "main": "c", "upper": "C", "special": ["\""] },
@@ -60,19 +60,19 @@
         { "main": "b", "upper": "B", "special": [":"] },
         { "main": "n", "upper": "N", "special": [";"] },
         { "main": "m", "upper": "M", "special": ["/"] },
-        { "type": "special", "text": "⌫", "action": "backspace", "position": "center" }
+        { "type": "backspace",  "position": "center" }
       ]
     },
     {
       "id": "keyboard-space-bar",
       "position": "center",
       "keys": [
-        { "type": "symbol", "text": "123", "action": "showNumericKeyboard" },
-        { "type": "emoji", "text": "😊", "action": "showEmojis" },
+        { "type": "symbol", "text": "123" },
+        { "type": "emoji", "text": "😊" },
         { "main": ",", "special": [] },
-        { "type": "space", "text": "Espacio", "action": "space" },
+        { "type": "space", "text": "Espacio" },
         { "main": ".", "special": ["!", "¿", "¡", ",", ".", "?"], "super": ",¡¿" },
-        { "type": "enter", "text": "↵", "action": "handleEnter", "position": "center" }
+        { "type": "enter", "text": "↵", "position": "center" }
       ]
     }
   ]

@@ -203,6 +203,20 @@
   font-size: 1.5rem;
 }
 
+/* Estilo para la tecla de retroceso (backspace) */
+.backspace-key {
+  width: 3.5rem;
+  background-color: #f44336;
+  color: white;
+  font-size: 0.9rem;
+  /* justify-content se hereda de .key y se ajusta según data-position */
+}
+
+/* Estilo para el icono de la tecla de retroceso */
+.backspace-icon {
+  font-size: .75rem;
+}
+
 /* Estilo para la tecla Enter con forma de L girada 180 grados (┘) */
 .emoji-key {
   font-size: 1.2rem;
@@ -718,8 +732,12 @@
   border-color: #2196F3;
 }
 
-.special-option-key:hover {
+.special-option-key:hover, :not(.enter-key).hovered {
   background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.enter-key.hovered {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
