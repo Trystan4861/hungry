@@ -190,7 +190,10 @@ const handleClick = (event: MouseEvent) => {
 const handleTouchStart = (event: TouchEvent) => {
   if (!props.keyData.main) return;
   
-  emit('mousedown', event, props.keyData.main, props.keyData.special);
+  // Solo emitir mousedown si hay caracteres especiales
+  if (hasSpecialChars.value) {
+    emit('mousedown', event, props.keyData.main, props.keyData.special);
+  }
 };
 
 /**
@@ -201,8 +204,12 @@ const handleTouchEnd = (event: TouchEvent) => {
   event.preventDefault();
   event.stopPropagation();
 
-  // Solo emitir el evento mouseup, el padre decidirá qué hacer
-  emit('mouseup', event);
+  // Si la tecla es especial o es una tecla normal sin caracteres especiales, emular click
+  if ((props.keyData.type && props.keyData.type !== 'normal') || !hasSpecialChars.value) {
+    handleClick(new MouseEvent('click'));
+  } else {
+    emit('mouseup', event);
+  }
 };
 
 /**
