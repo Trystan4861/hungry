@@ -67,7 +67,7 @@
       "id": "keyboard-space-bar",
       "position": "center",
       "keys": [
-        { "type": "symbol", "text": "123" },
+        { "type": "numeric", "text": "123" },
         { "type": "emoji", "text": "😊" },
         { "main": ",", "special": [] },
         { "type": "space", "text": " " },

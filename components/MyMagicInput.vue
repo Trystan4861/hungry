@@ -4,7 +4,7 @@
       class="magic-input-field"
       ref="inputFieldRef"
       @click="handleFieldClick"
-      :style="props.style"
+      :style="computedStyle"
       :class="[props.class, { 'keyboard-active': showKeyboard }]"
       :id="inputID"
     >
@@ -34,7 +34,7 @@
             <MyKey
                 :keyData="{
                 ...key,
-                type: 'type' in key ? key.type as 'symbol' | 'shift' | 'normal' | 'punctuation' | 'backspace' | 'special' | 'emoji' | 'space' | 'enter' | 'letters' | undefined : undefined,
+                type: 'type' in key ? key.type as 'numeric' | 'shift' | 'normal' | 'punctuation' | 'backspace' | 'special' | 'emoji' | 'space' | 'enter' | 'letters' | undefined : undefined,
                 position: ('position' in key ? key.position : undefined) as 'center' | 'end' | 'start' | undefined
                 }"
               :shiftActive="shiftActive"
@@ -123,12 +123,22 @@
     showCross:        { type: Boolean,  default: false                  },
     showEmpty:        { type: Boolean,  default: false                  },
     class:            { type: String,                                   },
-    style:            { type: String,                                   },
+    style:            { type: [String, Object]                          },
     crossEmptyText:   { type: String,   default: '🗑'                   },
     crossCloseText:   { type: String,   default: '❌'                   },
     id:               { type: String,   default: null                   },
     customKeyboard:   { type: Object as PropType<KeyboardLayout>,   default: null },
     keyboardType:     { type: String,   default: 'qwerty'               }
+  });
+
+  const computedStyle = computed(() => {
+    if (typeof props.style === 'string') return props.style;
+    if (typeof props.style === 'object') {
+      return Object.entries(props.style)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('; ');
+    }
+    return '';
   });
 
   const splitter = new Graphemer();
@@ -344,7 +354,13 @@
       case 'backspace':
         backspace();
         break;
-      case 'symbol':
+      case 'tab':
+        addChar('\t');
+        break;
+      case 'capslock':
+        shiftActive.value = !shiftActive.value;
+        break;
+      case 'numeric':
         activeKeyboardLayout.value = 'numeric';
         break;
       case 'punctuation':

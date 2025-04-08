@@ -19,31 +19,29 @@
       "id": "keyboard-row-2",
       "position": "center",
       "keys": [
-        { "main": "@" },
-        { "main": "#" },
-        { "main": "€", "special": ["£","¥","$","¢"], "super": " " },
-        { "main": "&" },
-        { "main": "_" },
-        { "main": "-", "special": ["¯","—","–"], "super":" " },
-        { "main": "(", "special": ["{","<","["], "super": " " },
-        { "main": ")", "special": ["}",">","]"], "super": " " },
-        { "main": "=", "special": ["≈","≠"], "super": " " },
-        { "main": "%", "special": ["‰"], "super": " " }
+        { "type": "tab", "text": "⇥" },
+        { "main": "[" },
+        { "main": "]" },
+        { "main": "{" },
+        { "main": "}" },
+        { "main": "<" },
+        { "main": ">" },
+        { "main": "^" },
+        { "main": "¡" }
       ]
     },
     {
       "id": "keyboard-row-3",
       "position": "center",
       "keys": [
-        { "type": "punctuation", "text": "{&=", "position": "center" },
-        { "main": "\"", "special":["„","“","«","»","”"], "super": " " },
-        { "main": "*", "special": ["×"], "super": " " },
-        { "main": "'", "special": ["ʼ","‹","‡","`","†","›"], "super": " " },
-        { "main": ":", "special": [";"], "super": " " },
-        { "main": "/", "special": ["÷","\\"], "super":" " },
-        { "main": "!", "special": ["¡"], "super": " " },
-        { "main": "?", "special": ["¿"], "super": " " },
-        { "main": "+", "special": ["±"], "super": " " },
+        { "type": "numeric", "text": "123", "position": "center" },
+        { "main": "`" },
+        { "main": ";" },
+        { "main": "÷" },
+        { "main": "\\" },
+        { "main": "|" },
+        { "main": "¦" },
+        { "main": "¬" },
         { "type": "backspace",  "position": "center" }
       ]
     },
@@ -52,9 +50,11 @@
       "position": "center",
       "keys": [
         { "type": "letters", "text": "abc" },
-        { "main": "," },
-        { "type": "space", "text": " " },
-        { "main": ".", "special": ["•","…"], "super": " " },
+        { "type": "space", "text": "└───┘" },
+        { "main": "×" },
+        { "main": "§" },
+        { "main": "¶" },
+        { "main": "°" },
         { "type": "enter", "text": "↵", "position": "center" }
       ]
     }

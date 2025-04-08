@@ -54,7 +54,7 @@
       "keys": [
         { "type": "letters", "text": "abc" },
         { "main": "," },
-        { "type": "space", "text": " " },
+        { "type": "space", "text": "└───┘" },
         { "main": ".", "special": ["•","…"], "super": " " },
         { "type": "enter", "text": "↵", "position": "center" }
       ]

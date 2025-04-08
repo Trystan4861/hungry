@@ -64,7 +64,7 @@ const keyTypeClass = computed(() => {
     'shift': 'shift-key',
     'special': 'special-key',
     'punctuation': 'punctuation-key',
-    'symbol': 'symbol-key',
+    'numeric': 'numeric-key',
     'emoji': 'emoji-key',
     'space': 'space-key',
     'enter': 'enter-key',

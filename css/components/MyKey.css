@@ -6,6 +6,7 @@
   --accent-color: #007bff;
   --accent-active-color: #0056b3;
 }
+
 .key.emoji-item .main-char{
   font-family: 'Noto Color Emoji', 'Segoe UI Emoji', sans-serif;
 }
@@ -34,8 +35,22 @@
   font-size: 0.9em;
 }
 
+.multi-char {
+  position: relative;
+}
 
-.symbol-key {
+.multi-char .main-char {
+  font-size: 1rem;
+}
+
+.multi-char .alt-char {
+  position: absolute;
+  font-size: 0.6rem;
+  color: #666;
+  top: 0.01rem;
+}
+
+.numeric-key {
   font-size: 0.9rem;
   font-weight: bold;
 }
@@ -54,7 +69,7 @@
 
 /* Teclas especiales */
 .key.shift-key,
-.key.symbol-key,
+.key.numeric-key,
 .key.emoji-key {
   width: calc(var(--key-size) * 1.5);
   height: var(--key-size);
@@ -63,6 +78,7 @@
 .key.space-key {
   width: calc(var(--key-size) * 4.5);
   height: var(--key-size);
+  justify-content: flex-end;
 }
 
 .key.enter-key {
@@ -118,4 +134,38 @@
   background-color: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
   transition: all 0.2s ease;
+}
+
+
+
+@media (min-width: 769px) {
+  :root{
+    --key-size: 2.5rem;
+  }
+}
+@media (max-width: 768px) {
+  :root{
+    --key-size: 2rem;
+  }
+}
+@media (max-width: 480px) {
+  :root{
+    --key-size: 1.8rem;
+  }
+}
+@media (max-width: 360px) {
+  :root{
+    --key-size: 1.5rem;
+  }
+  .key {
+    font-size: 0.6rem !important;
+  }
+}
+@media (max-width: 320px) {
+  :root{
+    --key-size: 1rem;
+  }
+  .key {
+    font-size: 0.4rem !important;
+  }
 }

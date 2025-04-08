@@ -2,7 +2,7 @@
 .my-magic-input {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 }
 
@@ -95,7 +95,7 @@
 }
 
 .my-magic-input .cross {
-  left: -23px;
+  left: -35px;
   position: relative;
   cursor: pointer;
 }
@@ -158,20 +158,7 @@
 }
 
 /* Estilos para teclas con múltiples caracteres */
-.multi-char {
-  position: relative;
-}
 
-.multi-char .main-char {
-  font-size: 1rem;
-}
-
-.multi-char .alt-char {
-  position: absolute;
-  font-size: 0.6rem;
-  color: #666;
-  top: 0.2rem;
-}
 
 .key:last-child {
   margin-right: 0;
@@ -409,17 +396,11 @@
 /* Responsive */
 /* Responsive */
 @media (min-width: 769px) {
-    :root{
-      --key-size: 2.5rem;
-    }
   .key {
     font-size: 1.2rem;
   }
 }
 @media (max-width: 768px) {
-    :root{
-      --key-size: 2rem;
-    }
   .key {
     font-size: 0.9rem;
   }
@@ -463,15 +444,6 @@
     margin-inline: 10px;
   }
 
-
-  .multi-char .main-char {
-    font-size: 0.9rem;
-  }
-
-  .multi-char .alt-char {
-    font-size: 0.5rem;
-  }
-
   .emoji-grid {
     grid-template-columns: repeat(10, 2rem);
   }
@@ -484,9 +456,6 @@
 }
 
 @media (max-width: 480px) {
-    :root{
-      --key-size: 1.8rem;
-    }
   .key {
     font-size: 0.8rem;
     margin-right: 0.15rem;
@@ -531,16 +500,6 @@
     font-size: 1rem;
   }
 
-  .multi-char .main-char {
-    font-size: 0.8rem;
-  }
-
-  .multi-char .alt-char {
-    font-size: 0.45rem;
-    top: 0.15rem;
-    right: 0.15rem;
-  }
-
   .emoji-grid {
     grid-template-columns: repeat(8, 1.8rem);
   }
@@ -559,9 +518,6 @@
 
 /* Pantallas muy pequeñas (móviles) */
 @media (max-width: 360px) {
-    :root{
-      --key-size: 1.6rem;
-    }
   .key {
     font-size: 0.75rem;
   }
@@ -615,16 +571,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .multi-char .main-char {
-    font-size: 0.7rem;
-  }
-
-  .multi-char .alt-char {
-    font-size: 0.4rem;
-    top: 0.1rem;
-    right: 0.1rem;
   }
 
   .emoji-grid {

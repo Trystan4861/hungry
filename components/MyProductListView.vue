@@ -6,11 +6,12 @@
     <div class="d-flex justify-content-between">
       <div class="text-start mt-2">
         <MyButton v-if="!showFinder" class="none" @click="toggleFinder">&#x1f50d;</MyButton>
-        <MyInput
+        <component
           v-else
+          :is="inputComponent"
           :id="idInput"
           class="border-0 ms-2"
-          :style="'height: 24px;'"
+          style="height: 24px; width: 160px;"
           :showCross="true"
           :showEmpty="true"
           :autoFocus="true"
@@ -18,7 +19,7 @@
           v-model="finder"
           @updateValue="handleUpdateValue"
           @crossClick="toggleFinder"
-          placeholder="Buscar producto"></MyInput>
+          placeholder="Buscar producto"></component>
       </div>
       <div class="text-end me-2 mt-2" @click="toggleFinder">{{ selectedProductsCount }} producto{{ pluralize(selectedProductsCount) }} seleccionado{{ pluralize(selectedProductsCount) }}</div>
     </div>
@@ -42,6 +43,13 @@ import type { Producto } from "~/types";
 import { ref, computed, watch, onMounted } from "vue";
 import { normalizeText } from "~/utils/text";
 import '~/css/components/MyProductListView.css';
+import { isMobileDevice } from "~/utils/device";
+
+const isMobile = ref(false);
+
+const inputComponent = computed(() =>
+  isMobile.value ? 'MyMagicInput' : 'MyInput'
+);
 
 const props = defineProps({
   // Tipo de ordenación: 'a2z' (alfabético) o 'category' (por categoría)
@@ -82,6 +90,12 @@ const productos = computed(() => {
 
 // Inicializar la lista filtrada con todos los productos
 onMounted(() => {
+  isMobile.value = isMobileDevice();
+
+  // Agregar listener para cambios en el tamaño de la ventana
+  window.addEventListener('resize', () => {
+    isMobile.value = isMobileDevice();
+  });
   filteredList.value = [...productos.value];
   // Configurar el evento de scroll para actualizar la letra actual solo si showLetraActual es true
   if (props.showLetraActual && withScrollRef.value) {
