@@ -1,7 +1,68 @@
 /* Estilos para MyMagicInput */
 .my-magic-input {
-  position: relative;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-area {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 1em;
+  resize: vertical;
+  outline: none;
+}
+
+.input-area:focus {
+  border-color: var(--accent-color);
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: var(--keyboard-bg);
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background-color: var(--tab-bg);
+  color: var(--tab-color);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tab.active {
+  background-color: var(--tab-active-bg);
+  color: var(--tab-active-color);
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 8px;
+  padding: 8px;
 }
 
 .magic-input-field {
@@ -30,6 +91,7 @@
 .magic-input-field .input-text {
   color: #333;
   cursor: text !important; /* Forzar cursor de texto siempre */
+  font-family: 'Noto Color Emoji', 'Segoe UI Emoji', sans-serif;
 }
 
 .my-magic-input .cross {
@@ -44,7 +106,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #f0f0f0;
+  background-color: #fff;
   border-top: 1px solid #ccc;
   z-index: 1000;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -82,34 +144,17 @@
   margin-bottom: 0;
 }
 
-.key {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Por defecto centrado */
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: white;
-  color: #333; /* Color de texto oscuro para contraste */
-  border: 1px solid #ccc;
-  border-radius: 0.25rem;
-  margin-right: 0.25rem;
-  cursor: pointer;
-  font-size: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
 /* Alineación del texto dentro de las teclas según la propiedad position de la fila */
 .keyboard-row[data-position="start"] .key {
-  align-items: start;
+  justify-content: start;
 }
 
 .keyboard-row[data-position="center"] .key {
-  align-items: center;
+  justify-content: center;
 }
 
-.keyboard-row[data-position="end"] .key {
-  align-items: end;
+.keyboard-row[data-position="end"] :not(.shift-key):not(.backspace-key):not(.enter-key).key {
+  justify-content: end;
 }
 
 /* Estilos para teclas con múltiples caracteres */
@@ -367,10 +412,20 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+/* Responsive */
+@media (min-width: 769px) {
+    :root{
+      --key-size: 2.5rem;
+    }
   .key {
-    width: 2rem;
-    height: 2rem;
+    font-size: 1.2rem;
+  }
+}
+@media (max-width: 768px) {
+    :root{
+      --key-size: 2rem;
+    }
+  .key {
     font-size: 0.9rem;
   }
 
@@ -391,7 +446,7 @@
     width: 3rem;
   }
 
-  .mayus-key {
+  .shift-key {
     width: 6.5rem;
   }
 
@@ -434,9 +489,10 @@
 }
 
 @media (max-width: 480px) {
+    :root{
+      --key-size: 1.8rem;
+    }
   .key {
-    width: 1.8rem;
-    height: 1.8rem;
     font-size: 0.8rem;
     margin-right: 0.15rem;
   }
@@ -508,9 +564,10 @@
 
 /* Pantallas muy pequeñas (móviles) */
 @media (max-width: 360px) {
+    :root{
+      --key-size: 1.6rem;
+    }
   .key {
-    width: 1.6rem;
-    height: 1.6rem;
     font-size: 0.75rem;
   }
 
@@ -679,7 +736,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  padding: 8px 13px 8px 8px; /* Aumentamos el padding derecho en 5px */
+  padding: var(--keys-layer-padding); /* Aumentamos el padding derecho en 5px */
   backdrop-filter: blur(5px); /* Efecto de desenfoque para el fondo */
   -webkit-backdrop-filter: blur(5px);
   animation: popIn 0.2s ease-out; /* Animación de aparición */
@@ -698,11 +755,6 @@
   }
 }
 
-.special-keys-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
 
 .special-option-key {
   min-width: 40px;

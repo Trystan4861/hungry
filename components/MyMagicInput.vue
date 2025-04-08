@@ -82,29 +82,13 @@
     </div>
 
     <teleport to="body">
-      <div v-if="showSpecialKeysLayer"
-           class="special-keys-layer"
-           :style="{
-             position: 'fixed',
-             top: layerTop,
-             left: layerLeft,
-             width: layerWidth,
-             zIndex: '9999'
-           }">
-        <div class="special-keys-container"
-             @touchmove.prevent="handleTouchMove"
-             @touchend.prevent="handleTouchEnd">
-          <MyKey
-            v-for="(key, index) in specialKeysOptions"
-              :keyData="{main:key, type: 'normal'}"
-              @mousedown="handleKeyMouseDown"
-              @mouseup="handleKeyMouseUp"
-              @mouseenter="handleKeyMouseEnter"
-              @mouseleave="handleKeyMouseLeave"
-              @keypress="handleKeyPress"
-            />
-        </div>
-      </div>
+      <MyKeyLayer
+        v-model:show="showSpecialKeysLayer"
+        :special-keys="specialKeysOptions"
+        :parent="currentKeyElement || undefined"
+        @select="selectSpecialKey"
+        @mouseleave="handleSpecialKeysLayerLeave"
+      />
     </teleport>
   </div>
 </template>
@@ -116,11 +100,14 @@
   import { myStore } from '~/composables/useStore';
   import '~/css/components/MyMagicInput.css';
   import MyKey from '~/components/MyKey.vue';
+  import MyKeyLayer from './MyKeyLayer.vue';
   import type { KeyData, KeyboardRow, KeyboardLayout } from '@/types';
+  import Graphemer from 'graphemer';
 
   // Importar layouts
   import qwertyLayout from '~/assets/osk/qwerty.layout.json';
   import emojiLayoutData from '~/assets/osk/emoji.layout.json';
+
 
   const props = defineProps({
     modelValue:       { type: String,   default: ''                     },
@@ -137,6 +124,8 @@
     id:               { type: String,   default: null                   },
     customKeyboard:   { type: Object as PropType<KeyboardLayout>,   default: null }
   });
+
+  const splitter = new Graphemer();
 
   const emit = defineEmits(['updateValue', 'keyPressed:enter', 'blur', 'click', 'crossClick']);
   const store = myStore();
@@ -155,11 +144,7 @@
   const showSpecialKeysLayer = ref(false);
   const specialKeysOptions = ref<string[]>([]);
   const fingerLeftLayer = ref(false); // Indica si el dedo ha salido del layer
-
-  // Variables para almacenar las coordenadas del layer
-  const layerTop = ref('0px');
-  const layerLeft = ref('0px');
-  const layerWidth = ref('auto');
+  const currentKeyElement = ref<HTMLElement | null>(null); // Referencia a la tecla actual sobre la que se hace longclick
 
   // Ya no necesitamos el computed property, usamos directamente las variables ref
   const longPressTimer = ref<number | null>(null);
@@ -245,43 +230,21 @@
    * backspace - Borra el carácter a la izquierda del cursor
    * Maneja correctamente los emojis que son caracteres de 2 bytes
    */
-  const backspace = () => {
-    // Si el cursor no está al principio, borrar el carácter a la izquierda
-    if (caretPosition.value > 0) {
-      // Obtener el texto antes del cursor
-      const textBefore = inputValue.value.substring(0, caretPosition.value);
-      const textAfter = inputValue.value.substring(caretPosition.value);
+   const backspace = () => {
+  if (caretPosition.value > 0) {
+    const textBefore = inputValue.value.substring(0, caretPosition.value);
+    const textAfter = inputValue.value.substring(caretPosition.value);
 
-      // Verificar si el último carácter es parte de un emoji
-      // Los emojis suelen estar en el rango de surrogate pairs (U+D800 a U+DFFF)
-      let charsToDelete = 1;
+    const graphemes = splitter.splitGraphemes(textBefore);
+    graphemes.pop(); // borra el último carácter visual
 
-      // Si estamos en posición de borrar al menos un carácter
-      if (caretPosition.value >= 1) {
-        const lastChar = textBefore.charAt(textBefore.length - 1);
-        const secondLastChar = caretPosition.value >= 2 ? textBefore.charAt(textBefore.length - 2) : '';
+    const newTextBefore = graphemes.join('');
+    inputValue.value = newTextBefore + textAfter;
+    caretPosition.value = newTextBefore.length;
 
-        // Verificar si es un emoji (surrogate pair)
-        const isHighSurrogate = secondLastChar && secondLastChar.charCodeAt(0) >= 0xD800 && secondLastChar.charCodeAt(0) <= 0xDBFF;
-        const isLowSurrogate = lastChar.charCodeAt(0) >= 0xDC00 && lastChar.charCodeAt(0) <= 0xDFFF;
-
-        // Si es un emoji completo (surrogate pair), borrar 2 caracteres
-        if (isHighSurrogate && isLowSurrogate) {
-          charsToDelete = 2;
-        }
-      }
-
-      // Borrar la cantidad correcta de caracteres
-      const newTextBefore = textBefore.substring(0, textBefore.length - charsToDelete);
-      inputValue.value = newTextBefore + textAfter;
-
-      // Retroceder la posición del cursor
-      caretPosition.value -= charsToDelete;
-
-      // Reactivar el cursor
-      activateCaret(true);
-    }
-  };
+    activateCaret(true);
+  }
+};
 
   // La función handleBackspaceTouchEnd ha sido eliminada para unificar el comportamiento
 
@@ -351,12 +314,38 @@
    * @param key - La tecla principal que se está tocando
    * @param specialChars - Caracteres especiales asociados a la tecla
    */
-  const handleKeyMouseDown = (event: MouseEvent, key: string, specialChars?: string | string[]) => {
-    // Guardar la tecla actual para usarla en el evento de liberación
+  const handleKeyMouseDown = (event: MouseEvent, key?: string, specialChars?: string | string[]) => {
+    if (!key || !specialChars) return;
+    console.log("handleKeyMouseDown");
     currentKey.value = key;
 
-    // Llamar a la función común de manejo de pulsación de tecla
-    handleLongKeyPress(event, key, specialChars);
+    longPressTimer.value = window.setTimeout(() => {
+      let element = event.target as HTMLElement;
+      if (!element) return;
+      //si el elemento no es de tipo .key buscamos el padre más cercano que sea de tipo .key
+      if (!element.classList.contains('key')) {
+        const parentKeyElement = element.closest('.key') as HTMLElement;
+        if (parentKeyElement) {
+          element = parentKeyElement;
+        }
+      }
+
+      // Guardar la referencia a la tecla actual
+      currentKeyElement.value = element;
+
+      specialKeysOptions.value = Array.isArray(specialChars) ? specialChars : [specialChars];
+      const keyRect = element.getBoundingClientRect();
+      const layerWidthValue = specialKeysOptions.value.length * keyRect.width;
+
+      const layerHeight = keyRect.height;
+      const topPosition = keyRect.top - layerHeight - 10;
+      const leftPosition = Math.max(10, Math.min(
+        keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2),
+        window.innerWidth - layerWidthValue - 10
+      ));
+
+      showSpecialKeysLayer.value = true;
+    }, 500);
   };
 
   /**
@@ -364,6 +353,10 @@
    * @param key - La tecla o tipo de tecla presionada
    */
   const handleKeyPress = (key: string) => {
+      if (longPressTimer.value !== null) {
+        window.clearTimeout(longPressTimer.value);
+        longPressTimer.value = null;
+      }
     switch (key) {
       case 'shift':
         toggleShift();
@@ -461,9 +454,6 @@
           leftPosition = window.innerWidth - layerWidthValue.value - 10;
         }
 
-        // Actualizar las variables de posición del layer
-        layerTop.value = `${topPosition+5}px`;
-        layerLeft.value = `${leftPosition}px`;
 
         // Mostrar el layer
         showSpecialKeysLayer.value = true;
@@ -624,6 +614,9 @@
 
     // Ocultar el layer sin seleccionar ninguna tecla
     showSpecialKeysLayer.value = false;
+
+    // Limpiar la referencia a la tecla actual
+    currentKeyElement.value = null;
   };
 
   /**
@@ -863,6 +856,7 @@
    * @param key - La tecla especial seleccionada
    */
   const selectSpecialKey = (key: string) => {
+      console.log("selectSpecialKey", key);
     try {
       // Añadir el carácter seleccionado
       addChar(key);
@@ -874,6 +868,9 @@
 
       // Limpiar el índice de la tecla seleccionada
       currentSpecialKeyIndex.value = -1;
+
+      // Limpiar la referencia a la tecla actual
+      currentKeyElement.value = null;
     }
   };
 
@@ -984,7 +981,6 @@
 
     if (caretBlinkInterval.value !== null) {
       window.clearInterval(caretBlinkInterval.value);
-      caretBlinkInterval.value = null;
     }
   };
 
@@ -1223,35 +1219,73 @@
     }
   };
 
-  const handleTouchMove = (event: TouchEvent) => {
+  // Variables unificadas para eventos táctiles
+  const touchStartTime = ref(0);
+  const touchTimer = ref<number | null>(null);
+
+  const handleCharTouch = (event: TouchEvent, key?: string, specialChars?: string | string[]) => {
+    if (!key) return;
+
     event.preventDefault();
-    event.stopPropagation();
-
-    const touch = event.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (!element) return;
-
-    const keyElement = element.closest('.special-option-key');
-    if (keyElement) {
-      const index = parseInt(keyElement.getAttribute('data-index') || '-1');
-      if (index >= 0) {
-        currentSpecialKeyIndex.value = index;
-      }
-    }
-  };
-
-  const handleTouchEnd = (event: TouchEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (currentSpecialKeyIndex.value >= 0) {
-      const selectedKey = specialKeysOptions.value[currentSpecialKeyIndex.value];
-      if (selectedKey) {
-        selectSpecialKey(selectedKey);
-      }
-    }
+    touchStartTime.value = Date.now();
+    currentKey.value = key;
     showSpecialKeysLayer.value = false;
+
+    if (touchTimer.value !== null) {
+      clearTimeout(touchTimer.value);
+      touchTimer.value = null;
+    }
+
+    if (specialChars) {
+      const element = event.target as HTMLElement;
+      touchTimer.value = window.setTimeout(() => {
+        if (!element) return;
+
+        // Guardar la referencia a la tecla actual
+        currentKeyElement.value = element;
+
+        specialKeysOptions.value = Array.isArray(specialChars) ? specialChars : [specialChars];
+        const keyRect = element.getBoundingClientRect();
+        // Añadimos el padding y gap del contenedor
+        const layerWidthValue = (specialKeysOptions.value.length * keyRect.width) +
+                              ((specialKeysOptions.value.length - 1) * 8) + // gap entre teclas
+                              16; // padding del contenedor (8px * 2)
+
+        const topPosition = keyRect.top - keyRect.height - 10;
+        const leftPosition = Math.max(10, Math.min(
+          keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2),
+          window.innerWidth - layerWidthValue - 10
+        ));
+
+        showSpecialKeysLayer.value = true;
+      }, 500);
+    }
   };
+
+  const handleKeyTouchEnd = (event: TouchEvent) => {
+    event.preventDefault();
+    const touchDuration = Date.now() - touchStartTime.value;
+
+    if (touchTimer.value !== null) {
+      clearTimeout(touchTimer.value);
+      touchTimer.value = null;
+    }
+
+    if (!showSpecialKeysLayer.value && currentKey.value && touchDuration < 500) {
+      addChar(currentKey.value);
+    }
+
+    currentKey.value = '';
+  };
+
+  // Limpiar temporizador al desmontar
+  onUnmounted(() => {
+    if (touchTimer.value !== null) {
+      clearTimeout(touchTimer.value);
+      touchTimer.value = null;
+    }
+  });
+
 
   // Eventos del ciclo de vida
   onMounted(() => {
@@ -1291,62 +1325,4 @@
   defineExpose({
     inputValue
   });
-
-  const handleCharTouch = (event: TouchEvent, key?: string, specialChars?: string | string[]) => {
-    event.preventDefault();
-    if (!key || !specialChars) return;
-
-    currentKey.value = key;
-
-    longPressTimer.value = window.setTimeout(() => {
-      const element = event.target as HTMLElement;
-      if (!element) return;
-
-      // Configurar las opciones de teclas especiales
-      specialKeysOptions.value = Array.isArray(specialChars) ? specialChars : [specialChars];
-
-      // Obtener el ancho real de la tecla actual
-      const keyRect = element.getBoundingClientRect();
-      const layerWidthValue = specialKeysOptions.value.length * keyRect.width;
-
-      // Calcular posición
-      const layerHeight = keyRect.height;
-      const topPosition = keyRect.top - layerHeight - 10;
-      const leftPosition = Math.max(10, Math.min(
-        keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2),
-        window.innerWidth - layerWidthValue - 10
-      ));
-
-      // Actualizar posición del layer
-      layerTop.value = `${topPosition}px`;
-      layerLeft.value = `${leftPosition}px`;
-      layerWidth.value = `${layerWidthValue}px`;
-
-      // Mostrar layer
-      showSpecialKeysLayer.value = true;
-      currentSpecialKeyIndex.value = -1;
-    }, 500);
-  };
-
-  const handleKeyTouchEnd = (event: TouchEvent) => {
-    event.preventDefault();
-
-    // Si no se mostró el layer, añadir el carácter normal
-    if (!showSpecialKeysLayer.value && currentKey.value) {
-      addChar(currentKey.value);
-    }
-
-    // Limpiar estado
-    if (longPressTimer.value) {
-      clearTimeout(longPressTimer.value);
-      longPressTimer.value = null;
-    }
-    currentKey.value = '';
-  };
-
-  const handleSpecialKeySelect = (key: string) => {
-    addChar(key);
-    showSpecialKeysLayer.value = false;
-    currentSpecialKeyIndex.value = -1;
-  };
 </script>

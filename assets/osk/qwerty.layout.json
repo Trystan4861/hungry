@@ -70,7 +70,7 @@
         { "type": "symbol", "text": "123" },
         { "type": "emoji", "text": "😊" },
         { "main": ",", "special": [] },
-        { "type": "space", "text": "Espacio" },
+        { "type": "space", "text": " " },
         { "main": ".", "special": ["!", "¿", "¡", ",", ".", "?"], "super": ",¡¿" },
         { "type": "enter", "text": "↵", "position": "center" }
       ]

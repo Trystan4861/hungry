@@ -9,14 +9,12 @@
 
     :style="keyStyle"
     @click="handleClick"
-    @touchstart.stop.prevent="handleTouchStart"
-    @touchend.stop.prevent="handleTouchEnd"
     @mousedown.stop="handleMouseDown"
     @mouseup.stop="handleMouseUp"
     @mouseenter.stop="handleMouseEnter"
     @mouseleave.stop="handleMouseLeave"
-    @touchenter.stop.prevent="handleTouchEnter"
-    @touchleave.stop.prevent="handleTouchLeave"
+    @touchstart.stop.prevent="handleTouchStart"
+    @touchend.stop.prevent="handleTouchEnd"
   >
     <span v-if="showMainChar" class="main-char">
       {{ displayChar }}
@@ -33,7 +31,7 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import type { PropType } from 'vue';
 import type { KeyData } from '@/types';
-
+import '~/css/components/MyKey.css';
 /**
  * keyElement - Referencia al elemento div.key
  * Permite acceder al elemento DOM de la tecla actual desde cualquier parte del componente
@@ -61,55 +59,16 @@ const emit = defineEmits([
 const keyTypeClass = computed(() => {
   if (!props.keyData.type || props.keyData.type === 'normal')  return '';
   const typeMap: Record<string, string> = {
-    'shift': 'mayus-key shift-key',
+    'shift': 'shift-key',
     'special': 'special-key',
     'symbol': 'symbol-key',
     'emoji': 'emoji-key',
     'space': 'space-key',
-    'enter': 'enter-key'
+    'enter': 'enter-key',
+    'backspace': 'backspace-key',
   };
 
   return typeMap[props.keyData.type] || '';
-});
-
-onMounted(() => {
-    //añadimos un listener a la tecla actual para el evento touchmove para emular el evento touchenter y touchleave
-
-    if (keyElement.value) {
-        // Variable para rastrear si el dedo está dentro del elemento
-        let isInside = false;
-
-        keyElement.value.addEventListener('touchmove', (event: TouchEvent) => {
-            event.preventDefault();
-            const touch = event.touches[0];
-            const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-            const isTouchInside = keyElement.value?.contains(elementUnderTouch) || elementUnderTouch === keyElement.value;
-
-            // Manejar la clase 'hovered' para el efecto visual
-            if (isTouchInside) {
-                keyElement.value?.classList.add('hovered');
-                emit('mouseenter', event, props.keyData);
-            } else {
-                keyElement.value?.classList.remove('hovered');
-                emit('mouseleave', event, props.keyData);
-            }
-        }, { passive: false });
-
-        keyElement.value.addEventListener('touchend', () => {
-            keyElement.value?.classList.remove('hovered');
-        });
-
-        keyElement.value.addEventListener('touchcancel', () => {
-            keyElement.value?.classList.remove('hovered');
-        });
-    }
-});
-
-onBeforeUnmount(() => {
-    // Limpiar el listener cuando el componente se desmonte
-    if (keyElement.value) {
-        keyElement.value.removeEventListener('touchmove', () => {});
-    }
 });
 
 /**
@@ -170,7 +129,7 @@ const text = computed(() => props.keyData.text || '');
  */
 const handleClick = (event: MouseEvent) => {
   event.stopPropagation();
-  
+
   // Si es una tecla especial, emitir su tipo directamente
   if (props.keyData.type && props.keyData.type !== 'normal') {
     emit('keypress', props.keyData.type);
@@ -189,7 +148,7 @@ const handleClick = (event: MouseEvent) => {
  */
 const handleTouchStart = (event: TouchEvent) => {
   if (!props.keyData.main) return;
-  
+
   // Solo emitir mousedown si hay caracteres especiales
   if (hasSpecialChars.value) {
     emit('mousedown', event, props.keyData.main, props.keyData.special);
@@ -204,12 +163,17 @@ const handleTouchEnd = (event: TouchEvent) => {
   event.preventDefault();
   event.stopPropagation();
 
-  // Si la tecla es especial o es una tecla normal sin caracteres especiales, emular click
-  if ((props.keyData.type && props.keyData.type !== 'normal') || !hasSpecialChars.value) {
+  // Si hay un longpress timer activo, significa que estamos en proceso de mostrar caracteres especiales
+  const isLongPressActive = document.querySelector('.special-keys-layer');
+
+  // Si no hay layer de caracteres especiales visible, emitir click
+  if (!isLongPressActive) {
     handleClick(new MouseEvent('click'));
-  } else {
-    emit('mouseup', event);
+    return;
   }
+
+  // Si hay layer visible, emitir mouseup para que el padre maneje la selección
+  emit('mouseup', event);
 };
 
 /**
@@ -261,68 +225,4 @@ const handleMouseLeave = (event: MouseEvent) => {
   // Emitir el evento con información de la tecla
   emit('mouseleave', event, props.keyData);
 };
-
-/**
- * handleTouchEnter - Maneja cuando un dedo entra en la tecla en dispositivos táctiles
- * @param event - Evento de toque
- */
-const handleTouchEnter = (event: TouchEvent) => {
-  // Prevenir comportamiento por defecto y detener propagación
-  event.preventDefault();
-  event.stopPropagation();
-
-  // Emitir el evento con información de la tecla
-  emit('mouseenter', event, props.keyData);
-};
-
-/**
- * handleTouchLeave - Maneja cuando un dedo sale de la tecla en dispositivos táctiles
- * @param event - Evento de toque
- */
-const handleTouchLeave = (event: TouchEvent) => {
-  // Prevenir comportamiento por defecto y detener propagación
-  event.preventDefault();
-  event.stopPropagation();
-
-  // Emitir el evento con información de la tecla
-  emit('mouseleave', event, props.keyData);
-};
-
-
 </script>
-
-<style scoped>
-/* Estilos específicos para cuando se usa como emoji */
-.key.emoji-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.1s ease;
-}
-
-.key.emoji-item:active {
-  transform: scale(0.95);
-}
-
-/* Estilos específicos para cuando se usa como tecla especial */
-.key.special-option-key {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.1s ease;
-}
-
-.key.special-option-key:hover,
-.key.special-option-key.active,
-.key.special-option-key.hovered {
-  background-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-  transition: all 0.2s ease;
-}
-
-/* Estilos adicionales para el componente */
-</style>

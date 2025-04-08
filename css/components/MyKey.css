@@ -1,0 +1,112 @@
+:root {
+  --key-size: 2.5rem;
+  --key-bg: #f1f1f1;
+  --key-active-bg: #d0d0d0;
+  --key-color: #333;
+  --accent-color: #007bff;
+  --accent-active-color: #0056b3;
+}
+.key.emoji-item .main-char{
+  font-family: 'Noto Color Emoji', 'Segoe UI Emoji', sans-serif;
+}
+.key {
+  width: var(--key-size);
+  height: var(--key-size);
+  background-color: var(--key-bg);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  color: var(--key-color);
+}
+
+.key:active {
+  transform: scale(0.95);
+  background-color: var(--key-active-bg);
+}
+
+.key.multi-char {
+  font-size: 0.9em;
+}
+
+.key .main-char {
+  font-size: 1.2em;
+}
+
+.key .alt-char {
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+
+/* Teclas especiales */
+.key.shift-key,
+.key.symbol-key,
+.key.emoji-key {
+  width: calc(var(--key-size) * 1.5);
+  height: var(--key-size);
+}
+
+.key.space-key {
+  width: calc(var(--key-size) * 4.5);
+  height: var(--key-size);
+}
+
+.key.enter-key {
+  width: calc(var(--key-size) * 1.5);
+  height: var(--key-size);
+  background-color: var(--accent-color);
+}
+
+.key.enter-key:active {
+  background-color: var(--accent-active-color);
+}
+
+.enter-arrow {
+  font-size: 1.5em;
+  color: white;
+  position: relative;
+  top: -3px;
+}
+.backspace-key {
+  width: calc(var(--key-size) * 1.5);
+  height: var(--key-size);
+}
+.backspace-icon {
+  font-size: 1em;
+}
+
+.key.emoji-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s ease;
+}
+
+.key.emoji-item:active {
+  transform: scale(0.95);
+}
+
+/* Estilos específicos para cuando se usa como tecla especial */
+.key.special-option-key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.1s ease;
+}
+
+.key.special-option-key:hover,
+.key.special-option-key.active,
+.key.special-option-key.hovered {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
