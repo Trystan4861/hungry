@@ -751,3 +751,8 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+.virtual-keyboard-container
+{
+    min-width: 340px;
+}

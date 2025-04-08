@@ -161,6 +161,14 @@
     font-size: 0.6rem !important;
   }
 }
+@media (max-width: 348px) {
+  :root{
+    --key-size: 1.3rem;
+  }
+  .key {
+    font-size: 0.6rem !important;
+  }
+}
 @media (max-width: 320px) {
   :root{
     --key-size: 1rem;
