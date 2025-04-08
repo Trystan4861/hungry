@@ -83,7 +83,7 @@ export interface KeyData {
   position?: 'center' | 'end' | 'start';
   special?: string | string[];
   super?: string;
-  type?: 'normal' | 'backspace' | 'shift' | 'special' | 'symbol' | 'emoji' | 'space' | 'enter';
+  type?: 'normal' | 'punctuation' | 'backspace' | 'shift' | 'special' | 'symbol' | 'emoji' | 'space' | 'enter';
   text?: string;
   action?: string;
 }

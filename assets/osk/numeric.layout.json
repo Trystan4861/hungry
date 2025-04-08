@@ -1,0 +1,63 @@
+{
+  "rows": [
+    {
+      "id": "keyboard-row-1",
+      "position": "center",
+      "keys": [
+        { "main": "1", "special": ["¹","⅛","¼","⅓","½"], "super": " " },
+        { "main": "2", "special": ["⅔","²"], "super": " " },
+        { "main": "3", "special": ["¾","³","⅜"], "super": " " },
+        { "main": "4", "special": ["⁴"], "super":" " },
+        { "main": "5", "special": ["⅝","ⁿ"], "super":" " },
+        { "main": "6", "special": [] },
+        { "main": "7", "special": ["⅞"], "super":" " },
+        { "main": "8", "special": [] },
+        { "main": "9", "special": [] },
+        { "main": "0", "special": [] }
+      ]
+    },
+    {
+      "id": "keyboard-row-2",
+      "position": "center",
+      "keys": [
+        { "main": "@" },
+        { "main": "#" },
+        { "main": "€", "special": ["£","¥","$","¢"], "super": " " },
+        { "main": "&" },
+        { "main": "_" },
+        { "main": "-", "special": ["¯","—","–"], "super":" " },
+        { "main": "(", "special": ["{","<","["], "super": " " },
+        { "main": ")", "special": ["}",">","]"], "super": " " },
+        { "main": "=", "special": ["≈","≠"], "super": " " },
+        { "main": "%", "special": ["‰"], "super": " " }
+      ]
+    },
+    {
+      "id": "keyboard-row-3",
+      "position": "center",
+      "keys": [
+        { "type": "punctuation", "position": "center" },
+        { "main": "\"", "special":["„","“","«","»","”"], "super": " " },
+        { "main": "*", "special": ["×"], "super": " " },
+        { "main": "'", "special": ["ʼ","‹","‡","`","†","›"], "super": " " },
+        { "main": ":", "special": [";"], "super": " " },
+        { "main": "/", "special": ["÷","\\"], "super":" " },
+        { "main": "!", "special": ["¡"], "super": " " },
+        { "main": "?", "special": ["¿"], "super": " " },
+        { "main": "+", "special": ["±"], "super": " " },
+        { "type": "backspace",  "position": "center" }
+      ]
+    },
+    {
+      "id": "keyboard-row-4",
+      "position": "center",
+      "keys": [
+        { "type": "letters", "text": "abc" },
+        { "main": "," },
+        { "type": "space", "text": " " },
+        { "main": ".", "special": ["•","…"], "super": " " },
+        { "type": "enter", "text": "↵", "position": "center" }
+      ]
+    }
+  ]
+}
