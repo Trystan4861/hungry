@@ -34,8 +34,17 @@
   font-size: 0.9em;
 }
 
+
+.symbol-key {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
 .key .main-char {
   font-size: 1.2em;
+}
+.letters-key, .punctuation-key{
+  font-size: .8em;
 }
 
 .key .alt-char {

@@ -4,16 +4,15 @@
       "id": "keyboard-row-1",
       "position": "center",
       "keys": [
-        { "main": "1", "special": ["¹","⅛","¼","⅓","½"], "super": " " },
-        { "main": "2", "special": ["⅔","²"], "super": " " },
-        { "main": "3", "special": ["¾","³","⅜"], "super": " " },
-        { "main": "4", "special": ["⁴"], "super":" " },
-        { "main": "5", "special": ["⅝","ⁿ"], "super":" " },
-        { "main": "6", "special": [] },
-        { "main": "7", "special": ["⅞"], "super":" " },
-        { "main": "8", "special": [] },
-        { "main": "9", "special": [] },
-        { "main": "0", "special": [] }
+        { "main": "$", "special": ["€"], "super": " " },
+        { "main": "€" },
+        { "main": "¥" },
+        { "main": "¢" },
+        { "main": "©" },
+        { "main": "®" },
+        { "main": "™" },
+        { "main": "~" },
+        { "main": "¿" }
       ]
     },
     {

@@ -32,7 +32,11 @@
         >
           <template v-for="(key, keyIndex) in row.keys" :key="`${rowIndex}-${keyIndex}`">
             <MyKey
-              :keyData="key"
+                :keyData="{
+                ...key,
+                type: 'type' in key ? key.type as 'symbol' | 'shift' | 'normal' | 'punctuation' | 'backspace' | 'special' | 'emoji' | 'space' | 'enter' | 'letters' | undefined : undefined,
+                position: ('position' in key ? key.position : undefined) as 'center' | 'end' | 'start' | undefined
+                }"
               :shiftActive="shiftActive"
               :shiftLocked="shiftLocked"
               @mousedown="handleKeyMouseDown"
@@ -101,13 +105,14 @@
   import '~/css/components/MyMagicInput.css';
   import MyKey from '~/components/MyKey.vue';
   import MyKeyLayer from './MyKeyLayer.vue';
-  import type { KeyData, KeyboardRow, KeyboardLayout } from '@/types';
+  import type { KeyData,  KeyboardLayout } from '@/types';
   import Graphemer from 'graphemer';
 
   // Importar layouts
   import qwertyLayout from '~/assets/osk/qwerty.layout.json';
+  import numericLayout from '~/assets/osk/numeric.layout.json';
+  import punctuationLayout from '~/assets/osk/punctuation.layout.json';
   import emojiLayoutData from '~/assets/osk/emoji.layout.json';
-
 
   const props = defineProps({
     modelValue:       { type: String,   default: ''                     },
@@ -122,7 +127,8 @@
     crossEmptyText:   { type: String,   default: '🗑'                   },
     crossCloseText:   { type: String,   default: '❌'                   },
     id:               { type: String,   default: null                   },
-    customKeyboard:   { type: Object as PropType<KeyboardLayout>,   default: null }
+    customKeyboard:   { type: Object as PropType<KeyboardLayout>,   default: null },
+    keyboardType:     { type: String,   default: 'qwerty'               }
   });
 
   const splitter = new Graphemer();
@@ -137,7 +143,6 @@
   const activeTab = ref('keyboard');
   const shiftActive = ref(true); // Por defecto activado para comenzar con mayúscula
   const shiftLocked = ref(false);
-  const lastShiftClick = ref(0);
   const activeEmojiCategory = ref(0);
 
   // Variables para el layer de teclas especiales
@@ -160,33 +165,17 @@
 
   if (props.defaultMaxLength) realMaxLenght.value = store.maxLenght.value;
 
-  /**
-   * defaultKeyboardLayout - Usa la estructura predeterminada del teclado desde el archivo JSON importado
-   * Contiene la definición de todas las filas y teclas del teclado virtual
-   */
-  const defaultKeyboardLayout: KeyboardLayout = {
-    rows: qwertyLayout.rows.map(row => ({
-      ...row,
-      position: row.position as 'center' | 'end' | 'start' | undefined,
-      keys: row.keys.map(key => ({
-        ...key,
-        position: key.position as 'center' | 'end' | 'start' | undefined,
-        type: (['normal', 'shift', 'backspace', 'special', 'symbol', 'emoji', 'space', 'enter'] as const).includes(key.type as any)
-          ? key.type as 'normal' | 'shift' | 'backspace' | 'special' | 'symbol' | 'emoji' | 'space' | 'enter'
-          : undefined
-      }))
-    }))
-  };
-
   // Usar el teclado personalizado si se proporciona, o el predeterminado si no
-  const keyboardLayout = ref<KeyboardLayout>(props.customKeyboard || defaultKeyboardLayout);
+  const activeKeyboardLayout = ref('qwerty');
 
-  // Observar cambios en la propiedad customKeyboard
-  watch(() => props.customKeyboard, (newKeyboard: KeyboardLayout | null) => {
-    if (newKeyboard) {
-      keyboardLayout.value = newKeyboard;
-    } else {
-      keyboardLayout.value = defaultKeyboardLayout;
+  const keyboardLayout = computed(() => {
+    switch (activeKeyboardLayout.value) {
+      case 'numeric':
+        return numericLayout;
+      case 'punctuation':
+        return punctuationLayout;
+      default:
+        return qwertyLayout;
     }
   });
 
@@ -334,15 +323,6 @@
       currentKeyElement.value = element;
 
       specialKeysOptions.value = Array.isArray(specialChars) ? specialChars : [specialChars];
-      const keyRect = element.getBoundingClientRect();
-      const layerWidthValue = specialKeysOptions.value.length * keyRect.width;
-
-      const layerHeight = keyRect.height;
-      const topPosition = keyRect.top - layerHeight - 10;
-      const leftPosition = Math.max(10, Math.min(
-        keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2),
-        window.innerWidth - layerWidthValue - 10
-      ));
 
       showSpecialKeysLayer.value = true;
     }, 500);
@@ -365,7 +345,13 @@
         backspace();
         break;
       case 'symbol':
-        activeTab.value = 'keyboard';
+        activeKeyboardLayout.value = 'numeric';
+        break;
+      case 'punctuation':
+        activeKeyboardLayout.value = 'punctuation';
+        break;
+      case 'letters':
+        activeKeyboardLayout.value = 'qwerty';
         break;
       case 'emoji':
         activeTab.value = 'emojis';
@@ -380,95 +366,6 @@
         // Si no es una tecla especial, añadir el carácter
         addChar(key);
     }
-  };
-
-  /**
-   * handleLongKeyPress - Maneja el inicio de un toque o clic largo en una tecla
-   * @param event - El evento de toque o clic
-   * @param key - La tecla principal que se está tocando
-   * @param specialChars - Caracteres especiales asociados a la tecla
-   */
-  const handleLongKeyPress = (event: Event, key: string, specialChars?: string | string[]) => {
-    // Reiniciar el estado del layer
-    fingerLeftLayer.value = false;
-
-    // Si la tecla no tiene caracteres especiales, no hacer nada más
-    if (!specialChars || (Array.isArray(specialChars) && specialChars.length === 0)) {
-      return;
-    }
-
-    // Detectar si estamos en un dispositivo táctil
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    // Limpiar cualquier temporizador existente
-    if (longPressTimer.value !== null) {
-      window.clearTimeout(longPressTimer.value);
-      longPressTimer.value = null;
-    }
-
-    // Configurar un temporizador para detectar un toque/clic largo
-    longPressTimer.value = window.setTimeout(() => {
-      try {
-        // Obtener el elemento que desencadenó el evento
-        const element = event.target as HTMLElement;
-        if (!element) {
-          console.error('No se pudo obtener el elemento que desencadenó el evento');
-          return;
-        }
-
-        // Buscar el elemento de la tecla (puede ser el propio elemento o un ancestro)
-        const keyElement = element.closest('.key');
-        if (!keyElement) {
-          console.error('No se pudo encontrar el elemento de la tecla');
-          return;
-        }
-
-        // Obtener las coordenadas del elemento de la tecla
-        const keyRect = keyElement.getBoundingClientRect();
-
-        // Configurar las opciones de teclas especiales
-        if (Array.isArray(specialChars)) {
-          specialKeysOptions.value = specialChars;
-        } else {
-          specialKeysOptions.value = [specialChars];
-        }
-
-        const layerWidthValue = ref(specialKeysOptions.value.length * (keyRect.width +5)); // Ancho real de la tecla
-        const layerHeight = keyRect.height; // Altura real de la tecla
-
-        // Calcular la posición exacta del layer (centrado sobre la tecla)
-        // Subimos 10 píxeles la posición vertical para mejorar la visibilidad
-        let topPosition = keyRect.top - 30;
-        let leftPosition = keyRect.left + (keyRect.width / 2) - (layerWidthValue.value / 2);
-
-        // Asegurarnos de que el layer no se salga de la pantalla
-        if (topPosition < 10) {
-          topPosition = 10;
-        } else if (topPosition + layerHeight > window.innerHeight - 10) {
-          topPosition = window.innerHeight - layerHeight - 10;
-        }
-
-        if (leftPosition < 10) {
-          leftPosition = 10;
-        } else if (leftPosition + layerWidthValue.value > window.innerWidth - 10) {
-          leftPosition = window.innerWidth - layerWidthValue.value - 10;
-        }
-
-
-        // Mostrar el layer
-        showSpecialKeysLayer.value = true;
-
-        // Inicializar el índice de la tecla seleccionada
-        currentSpecialKeyIndex.value = -1;
-
-        // En dispositivos no táctiles, seleccionar la primera tecla por defecto
-        if (!isTouchDevice && specialKeysOptions.value.length > 0) {
-          currentSpecialKeyIndex.value = 0;
-        }
-      } catch (error) {
-        console.error('Error al posicionar el layer:', error);
-      }
-    }, 500); // 500ms para considerar un toque/clic largo
   };
 
   // Esta función ha sido eliminada ya que no se usa más la tecla Alt
@@ -619,236 +516,6 @@
     currentKeyElement.value = null;
   };
 
-  /**
-   * handleSpecialKeysLayerMouseUp - Maneja cuando se suelta el botón del ratón sobre el layer
-   * @param event - El evento de ratón
-   */
-  const handleSpecialKeysLayerMouseUp = (event: MouseEvent) => {
-    // Prevenir comportamientos predeterminados
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Si el ratón ha salido del layer, no seleccionar ninguna tecla
-    if (fingerLeftLayer.value) {
-      // Reiniciar la variable para el próximo uso
-      fingerLeftLayer.value = false;
-
-      // Limpiar el temporizador si existe
-      if (longPressTimer.value !== null) {
-        window.clearTimeout(longPressTimer.value);
-        longPressTimer.value = null;
-      }
-
-      // Ocultar el layer
-      showSpecialKeysLayer.value = false;
-      return;
-    }
-
-    // Verificar si el elemento está dentro del layer
-    const layerElement = document.querySelector('.special-keys-layer');
-    if (layerElement) {
-      // Verificar que clientX y clientY son números válidos
-      const clientX = event.clientX;
-      const clientY = event.clientY;
-
-      if (isNaN(clientX) || !isFinite(clientX) || isNaN(clientY) || !isFinite(clientY)) {
-        // Si las coordenadas no son válidas, simplemente ocultar el layer
-        showSpecialKeysLayer.value = false;
-        return;
-      }
-
-      try {
-        const elementUnderMouse = document.elementFromPoint(clientX, clientY);
-
-        // Si no hay elemento bajo el ratón o está fuera del layer
-        if (!elementUnderMouse || (!layerElement.contains(elementUnderMouse) && elementUnderMouse !== layerElement)) {
-          // Si el elemento no está dentro del layer, no seleccionar ninguna tecla
-          showSpecialKeysLayer.value = false;
-          return;
-        }
-
-        // Buscar si el elemento o alguno de sus padres es una tecla especial
-        const keyElement = elementUnderMouse.closest('.special-option-key');
-        if (keyElement) {
-          // Obtener el texto de la tecla directamente del elemento
-          const keyText = keyElement.textContent?.trim();
-          if (keyText) {
-            // Usar la tecla encontrada
-            selectSpecialKey(keyText);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Error al obtener el elemento bajo el ratón:', error);
-        // En caso de error, ocultar el layer
-        showSpecialKeysLayer.value = false;
-        return;
-      }
-    }
-
-    // Si se ha seleccionado una tecla, usarla
-    if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-      selectSpecialKey(specialKeysOptions.value[currentSpecialKeyIndex.value]);
-    } else {
-      // Si no hay tecla seleccionada, simplemente ocultar el layer
-      showSpecialKeysLayer.value = false;
-    }
-  };
-
-  // La función handleSpecialLayerTouchMove ya está definida más adelante en el código
-
-  /**
-   * handleSpecialKeysLayerTouchEnd - Maneja cuando se levanta el dedo del layer de teclas especiales
-   * @param event - El evento de fin de toque
-   */
-  const handleSpecialKeysLayerTouchEnd = (event: TouchEvent) => {
-    // Solo procesar si el layer está visible
-    if (!showSpecialKeysLayer.value) return;
-
-    // Prevenir comportamientos predeterminados
-    event.preventDefault();
-    event.stopPropagation();
-
-    try {
-      // Si hay una tecla seleccionada, usarla
-      if (currentSpecialKeyIndex.value >= 0 && currentSpecialKeyIndex.value < specialKeysOptions.value.length) {
-        const selectedKey = specialKeysOptions.value[currentSpecialKeyIndex.value];
-        selectSpecialKey(selectedKey);
-        return;
-      }
-
-      // Si no hay tecla seleccionada, intentar detectar la tecla bajo el dedo
-      const touch = event.changedTouches && event.changedTouches.length > 0 ? event.changedTouches[0] : null;
-      if (!touch) {
-        // Si no hay información de toque, usar la primera tecla especial disponible
-        if (specialKeysOptions.value.length > 0) {
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
-        return;
-      }
-
-      // Verificar que clientX y clientY son números válidos
-      const clientX = touch.clientX;
-      const clientY = touch.clientY;
-
-      if (isNaN(clientX) || !isFinite(clientX) || isNaN(clientY) || !isFinite(clientY)) {
-        // Si las coordenadas no son válidas, usar la primera tecla especial disponible
-        if (specialKeysOptions.value.length > 0) {
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
-        return;
-      }
-
-      let elementUnderTouch;
-      try {
-        // Obtener el elemento que está bajo el dedo al levantar
-        elementUnderTouch = document.elementFromPoint(clientX, clientY);
-        if (!elementUnderTouch) {
-          // Si no hay elemento bajo el dedo, usar la primera tecla especial disponible
-          if (specialKeysOptions.value.length > 0) {
-            selectSpecialKey(specialKeysOptions.value[0]);
-          } else {
-            showSpecialKeysLayer.value = false;
-          }
-          return;
-        }
-      } catch (error) {
-        console.error('Error al obtener el elemento bajo el dedo:', error);
-        // En caso de error, usar la primera tecla especial disponible
-        if (specialKeysOptions.value.length > 0) {
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
-        return;
-      }
-
-      // Buscar si el elemento o alguno de sus padres es una tecla especial
-      const keyElement = elementUnderTouch.closest('.special-option-key');
-      if (!keyElement) {
-        // Si no hay tecla bajo el dedo, buscar la tecla más cercana a las coordenadas del toque
-        const specialKeysContainer = document.querySelector('.special-keys-container');
-        if (specialKeysContainer) {
-          const allKeys = Array.from(specialKeysContainer.querySelectorAll('.special-option-key'));
-
-          // Si hay teclas disponibles, seleccionar la primera por defecto
-          if (allKeys.length > 0) {
-            let closestKey = allKeys[0];
-            let closestDistance = Number.MAX_VALUE;
-
-            // Buscar la tecla más cercana a las coordenadas del toque
-            allKeys.forEach((key) => {
-              const rect = key.getBoundingClientRect();
-              const keyX = rect.left + rect.width / 2;
-              const keyY = rect.top + rect.height / 2;
-              const distance = Math.sqrt(
-                Math.pow(touch.clientX - keyX, 2) + Math.pow(touch.clientY - keyY, 2)
-              );
-
-              if (distance < closestDistance) {
-                closestDistance = distance;
-                closestKey = key;
-              }
-            });
-
-            // Obtener el texto de la tecla más cercana
-            const keyText = closestKey.textContent?.trim();
-            if (keyText) {
-              selectSpecialKey(keyText);
-              return;
-            }
-          }
-        }
-
-        // Si todo lo demás falla, usar la primera tecla especial disponible
-        if (specialKeysOptions.value.length > 0) {
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
-        return;
-      }
-
-      // Obtener el texto de la tecla directamente del elemento
-      const keyText = keyElement.textContent?.trim();
-      if (keyText) {
-        // Usar la tecla encontrada
-        selectSpecialKey(keyText);
-      } else {
-        // Si no podemos obtener el texto, intentar usar el índice
-        const container = keyElement.parentElement;
-        if (container) {
-          const allKeys = Array.from(container.querySelectorAll('.special-option-key'));
-          const keyIndex = allKeys.indexOf(keyElement as Element);
-          if (keyIndex >= 0 && keyIndex < specialKeysOptions.value.length) {
-            selectSpecialKey(specialKeysOptions.value[keyIndex]);
-          } else if (specialKeysOptions.value.length > 0) {
-            // Si no podemos determinar el índice, usar la primera tecla disponible
-            selectSpecialKey(specialKeysOptions.value[0]);
-          } else {
-            showSpecialKeysLayer.value = false;
-          }
-        } else if (specialKeysOptions.value.length > 0) {
-          // Si no hay contenedor, usar la primera tecla disponible
-          selectSpecialKey(specialKeysOptions.value[0]);
-        } else {
-          showSpecialKeysLayer.value = false;
-        }
-      }
-    } catch (error) {
-      console.error('Error al procesar el fin del toque:', error);
-      // En caso de error, intentar usar la primera tecla disponible
-      if (specialKeysOptions.value.length > 0) {
-        selectSpecialKey(specialKeysOptions.value[0]);
-      } else {
-        showSpecialKeysLayer.value = false;
-      }
-    }
-  };
 
 
   /**
@@ -874,14 +541,6 @@
     }
   };
 
-  /**
-   * showNumericKeyboard - Cambia a la disposición numérica del teclado
-   * Esta función es un placeholder para una futura implementación
-   * Por ahora, simplemente muestra un mensaje en la consola
-   */
-  const showNumericKeyboard = () => {
-    console.log('Función showNumericKeyboard: Esta funcionalidad será implementada en futuras versiones');
-  };
 
   // Función para manejar el clic en la cruz
   const handleCrossClick = () => {
@@ -1102,43 +761,6 @@
     }
   };
 
-  /**
-   * handleSpecialKeyMouseEnter - Maneja cuando el cursor del mouse entra en una tecla especial
-   * @param key - La tecla especial sobre la que está el cursor
-   * @param event - El evento de ratón
-   */
-  const handleSpecialKeyMouseEnter = (key: string, event: MouseEvent) => {
-    // Si no hay un layer de teclas especiales visible, no hacer nada
-    if (!showSpecialKeysLayer.value) return;
-
-    // Verificar que key es una cadena válida
-    if (typeof key === 'string') {
-      // Buscar el índice de la tecla en las opciones disponibles
-      const keyIndex = specialKeysOptions.value.indexOf(key);
-      if (keyIndex >= 0) {
-        // Actualizar el índice de la tecla seleccionada
-        currentSpecialKeyIndex.value = keyIndex;
-      }
-    }
-  };
-
-  /**
-   * handleSpecialKeyMouseLeave - Maneja cuando el cursor del mouse sale de una tecla especial
-   * @param key - La tecla especial de la que sale el cursor
-   * @param event - El evento de ratón
-   */
-  const handleSpecialKeyMouseLeave = (key: string, event: MouseEvent) => {
-    // Si no hay un layer de teclas especiales visible, no hacer nada
-    if (!showSpecialKeysLayer.value) return;
-
-    // Verificar que key es una cadena válida
-    if (typeof key === 'string') {
-      // Aquí puedes implementar cualquier comportamiento específico cuando el cursor sale de una tecla especial
-      // Por ejemplo, restaurar el estilo, etc.
-    }
-  };
-
-
 
   // Función para manejar eventos táctiles globales
   const handleGlobalTouchMove = (event: TouchEvent) => {
@@ -1222,61 +844,6 @@
   // Variables unificadas para eventos táctiles
   const touchStartTime = ref(0);
   const touchTimer = ref<number | null>(null);
-
-  const handleCharTouch = (event: TouchEvent, key?: string, specialChars?: string | string[]) => {
-    if (!key) return;
-
-    event.preventDefault();
-    touchStartTime.value = Date.now();
-    currentKey.value = key;
-    showSpecialKeysLayer.value = false;
-
-    if (touchTimer.value !== null) {
-      clearTimeout(touchTimer.value);
-      touchTimer.value = null;
-    }
-
-    if (specialChars) {
-      const element = event.target as HTMLElement;
-      touchTimer.value = window.setTimeout(() => {
-        if (!element) return;
-
-        // Guardar la referencia a la tecla actual
-        currentKeyElement.value = element;
-
-        specialKeysOptions.value = Array.isArray(specialChars) ? specialChars : [specialChars];
-        const keyRect = element.getBoundingClientRect();
-        // Añadimos el padding y gap del contenedor
-        const layerWidthValue = (specialKeysOptions.value.length * keyRect.width) +
-                              ((specialKeysOptions.value.length - 1) * 8) + // gap entre teclas
-                              16; // padding del contenedor (8px * 2)
-
-        const topPosition = keyRect.top - keyRect.height - 10;
-        const leftPosition = Math.max(10, Math.min(
-          keyRect.left + (keyRect.width / 2) - (layerWidthValue / 2),
-          window.innerWidth - layerWidthValue - 10
-        ));
-
-        showSpecialKeysLayer.value = true;
-      }, 500);
-    }
-  };
-
-  const handleKeyTouchEnd = (event: TouchEvent) => {
-    event.preventDefault();
-    const touchDuration = Date.now() - touchStartTime.value;
-
-    if (touchTimer.value !== null) {
-      clearTimeout(touchTimer.value);
-      touchTimer.value = null;
-    }
-
-    if (!showSpecialKeysLayer.value && currentKey.value && touchDuration < 500) {
-      addChar(currentKey.value);
-    }
-
-    currentKey.value = '';
-  };
 
   // Limpiar temporizador al desmontar
   onUnmounted(() => {

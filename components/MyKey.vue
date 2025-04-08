@@ -19,7 +19,7 @@
     <span v-if="showMainChar" class="main-char">
       {{ displayChar }}
     </span>
-    <span v-if="hasSpecialChars" class="alt-char">
+    <span v-if="hasSpecialChars && superLength > 0" class="alt-char">
       {{ specialDisplay }}
     </span>
     <span v-if="props.keyData.type === 'enter'" class="enter-arrow">↵</span>
@@ -41,7 +41,9 @@ const keyElement = ref<HTMLDivElement | null>(null);
 const props = defineProps({
   keyData:      { type: Object as PropType<KeyData>,  required: true },
   shiftActive:  { type: Boolean,                      default: false },
-  shiftLocked:  { type: Boolean,                      default: false }
+  shiftLocked:  { type: Boolean,                      default: false },
+  backspaceIntervalTimeout: { type: Number,           default: 200 },
+
 });
 
 const emit = defineEmits([
@@ -61,14 +63,23 @@ const keyTypeClass = computed(() => {
   const typeMap: Record<string, string> = {
     'shift': 'shift-key',
     'special': 'special-key',
+    'punctuation': 'punctuation-key',
     'symbol': 'symbol-key',
     'emoji': 'emoji-key',
     'space': 'space-key',
     'enter': 'enter-key',
+    'letters': 'letters-key',
     'backspace': 'backspace-key',
   };
 
   return typeMap[props.keyData.type] || '';
+});
+
+const superLength = computed(() => {
+  if (props.keyData.super) {
+    return props.keyData.super.length;
+  }
+  return 1;
 });
 
 /**
@@ -82,9 +93,7 @@ const keyStyle = computed(() => (props.keyData.position)?{ 'align-items': props.
  * @returns Verdadero si la tecla tiene caracteres especiales
  */
 const hasSpecialChars = computed(() => {
-  return !!props.keyData.special &&
-         ((Array.isArray(props.keyData.special) && props.keyData.special.length > 0) ||
-          (!Array.isArray(props.keyData.special) && props.keyData.special.length > 0));
+  return !!props.keyData.special && props.keyData.special.length > 0;
 });
 
 /**
@@ -117,11 +126,33 @@ const isShiftActive = computed(() => props.keyData.type === 'shift' && props.shi
  */
 const isShiftLocked = computed(() => props.keyData.type === 'shift' && props.shiftLocked);
 
-/**
- * text - Obtiene el texto de la tecla
- * @returns Texto de la tecla
- */
-const text = computed(() => props.keyData.text || '');
+const backspacesAmount = ref<number>(0);
+const backspaceInterval = ref<number | null>(null);
+const backspaceIntervalTimeout = ref<number>(props.backspaceIntervalTimeout);
+
+const backspaceIntervalFunction = () => {
+  if (props.keyData.type === 'backspace') {
+    backspacesAmount.value++;
+    if ([3,5,7].includes(backspacesAmount.value)) backspaceIntervalTimeout.value = Math.max((backspaceIntervalTimeout.value - 50), 0) + 1;
+    emit('keypress', 'backspace');
+  }
+  startBackspaceRepeat();
+};
+
+const startBackspaceRepeat = () => {
+  if (props.keyData.type === 'backspace') {
+    backspaceInterval.value = window.setTimeout(backspaceIntervalFunction, backspaceIntervalTimeout.value);
+  }
+};
+
+const stopBackspaceRepeat = () => {
+  if (backspaceInterval.value !== null) {
+    window.clearTimeout(backspaceInterval.value);
+    backspaceInterval.value = null;
+  }
+  backspacesAmount.value = 0;
+  backspaceIntervalTimeout.value=props.backspaceIntervalTimeout;
+};
 
 /**
  * handleClick - Maneja el evento de clic en la tecla
@@ -147,6 +178,10 @@ const handleClick = (event: MouseEvent) => {
  * @param event - Evento de toque
  */
 const handleTouchStart = (event: TouchEvent) => {
+  if (props.keyData.type === 'backspace') {
+    startBackspaceRepeat();
+  }
+
   if (!props.keyData.main) return;
 
   // Solo emitir mousedown si hay caracteres especiales
@@ -162,6 +197,8 @@ const handleTouchStart = (event: TouchEvent) => {
 const handleTouchEnd = (event: TouchEvent) => {
   event.preventDefault();
   event.stopPropagation();
+
+  stopBackspaceRepeat();
 
   // Si hay un longpress timer activo, significa que estamos en proceso de mostrar caracteres especiales
   const isLongPressActive = document.querySelector('.special-keys-layer');
@@ -184,6 +221,10 @@ const handleMouseDown = (event: MouseEvent) => {
   // Detener la propagación para evitar comportamientos no deseados
   event.stopPropagation();
 
+  if (props.keyData.type === 'backspace') {
+    startBackspaceRepeat();
+  }
+
   if (!props.keyData.main) return;
 
   // Emitir el evento para todas las teclas, independientemente de si tienen caracteres especiales
@@ -199,6 +240,7 @@ const handleMouseDown = (event: MouseEvent) => {
  * @param event - Evento de ratón
  */
 const handleMouseUp = (event: MouseEvent) => {
+  stopBackspaceRepeat();
   emit('mouseup', event);
 };
 
@@ -225,4 +267,8 @@ const handleMouseLeave = (event: MouseEvent) => {
   // Emitir el evento con información de la tecla
   emit('mouseleave', event, props.keyData);
 };
+
+onBeforeUnmount(() => {
+  stopBackspaceRepeat();
+});
 </script>

@@ -268,11 +268,6 @@
   background-color: #f8f8f8;
 }
 
-.symbol-key {
-  font-size: 0.9rem;
-  background-color: #e8e8e8;
-  font-weight: bold;
-}
 
 /* Clase para ocultar elementos pero mantener su espacio */
 .hidden {
