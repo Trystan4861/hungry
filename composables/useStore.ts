@@ -1,6 +1,5 @@
 import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab } from '~/types';
 import { localStorageService } from '~/localStorageService'; // Import the localStorageService
-import { nextTick } from 'vue';
 
 export const myStore = () => {
   const tabs: Tab[] = [
@@ -19,10 +18,10 @@ export const myStore = () => {
   const lastSyncTimestamp = useState<number | null>('lastSyncTimestamp', () => Date.now());
   const productos = useState<Producto[]>('productos', () => []);
   const supermercados = useState<Supermercado[]>('supermercados', () => [
-    { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible: true, order: 0 },
-    { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible: true, order: 1 },
-    { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2 },
-    { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3 },
+    { id: 0, text: 'Cualquier Supermercado', logo: 'hungry.svg',        visible: true, order: 0, timestamp:"0000-00-00 00:00:00" },
+    { id: 1, text: 'Carrefour',              logo: 'carrefour.svg',     visible: true, order: 1, timestamp:"0000-00-00 00:00:00" },
+    { id: 2, text: 'Mercadona',              logo: 'mercadona.svg',     visible: true, order: 2, timestamp:"0000-00-00 00:00:00" },
+    { id: 3, text: 'La Carmela',             logo: 'super_carmela.svg', visible: true, order: 3, timestamp:"0000-00-00 00:00:00" },
    ]);
 
 
@@ -31,8 +30,12 @@ export const myStore = () => {
     id: i,
     text: `Categoría ${String(i).padStart(2, '0')}`,
     bgColor: bgColors[i],
-    visible: true
+    visible: true,
+    timestamp: "0000-00-00 00:00:00" // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
   })));
+
+  const birthday = "1980-05-21 16:25:00";
+  const now= computed(() => new Date().toLocaleString('sv-SE').replace('T', ' '))
 
   const findProducto = (id: number) => productos.value.find(p => p.id === id);
   const findSupermercado = (id: number) => supermercados.value.find(m => m.id === id);
@@ -97,13 +100,35 @@ export const myStore = () => {
         }
       }
 
-      if (data.categorias) categorias.value = data.categorias;
+      if (data.categorias) {
+          //si alguna de las categorias importadas no tiene timestamp, se lo añadimos con el valor defalt a dicha categoría
+          data.categorias.forEach((categoria: Categoria) => {
+            if (!categoria.timestamp) {
+              categoria.timestamp = birthday;
+            }
+          });
+
+        categorias.value = data.categorias;
+      }
       if (data.supermercados) {
+          //si algun supermercado importado no tiene timestamp, se lo añadimos con el valor defalt a dicho supermercado
+          data.supermercados.forEach((supermercado: Supermercado) => {
+            if (!supermercado.timestamp) {
+              supermercado.timestamp = birthday;
+            }
+          });
+
         supermercados.value = data.supermercados;
         // Ordenar los supermercados por la propiedad 'order'
         sortSupermercadosByOrder();
       }
       if (data.productos) {
+        //si algun producto importado no tiene timestamp, se lo añadimos con el valor defalt a dicho producto
+        data.productos.forEach((producto: Producto) => {
+          if (!producto.timestamp) {
+            producto.timestamp = birthday;
+          }
+        });
         // Usar updateProductos en lugar de asignar directamente
         updateProductos(data.productos);
         return true; // Salir temprano ya que updateProductos ya guarda en localStorage
@@ -328,7 +353,8 @@ export const myStore = () => {
             ...newProductos[index],
             selected: newSelected,
             // Si se está seleccionando, asegurarse de que done sea false
-            done: newSelected ? false : newProductos[index].done
+            done: newSelected ? false : newProductos[index].done,
+            timestamp: now.value
           };
 
           // Actualizar todos los productos usando la función centralizada
@@ -347,7 +373,8 @@ export const myStore = () => {
         if (index !== -1) {
           newProductos[index] = {
             ...newProductos[index],
-            done: !newProductos[index].done
+            done: !newProductos[index].done,
+            timestamp: now.value
           };
           // Actualizar todos los productos usando la función centralizada
           updateProductos(newProductos);
@@ -397,20 +424,6 @@ export const myStore = () => {
     return [...productos.value]
       .filter(producto => visibleCategoriaIds.includes(producto.id_categoria))
       .sort((a, b) => a.id_categoria - b.id_categoria || a.text.localeCompare(b.text));
-  });
-
-  /**
-   * supermercadosOrdenados
-   * Devuelve los supermercados ordenados por la propiedad 'order'
-   */
-  const supermercadosOrdenados = computed(() => {
-    return [...supermercados.value].sort((a, b) => {
-      // El supermercado genérico (id=0) siempre va primero
-      if (a.id === 0) return -1;
-      if (b.id === 0) return 1;
-      // Ordenar el resto por la propiedad 'order'
-      return a.order - b.order;
-    });
   });
 
   const purchased = computed(() => {
