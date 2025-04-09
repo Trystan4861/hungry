@@ -1,0 +1,17 @@
+:root{
+  --keys-layer-padding: 8px;
+}
+
+.special-keys-container {
+  justify-content: center;
+  width: 100%;
+    display: flex;
+    gap: 8px;
+    border-radius: 8px;
+  }
+
+
+  .key.active {
+    background: rgba(0, 0, 0, 0.1) !important;
+    transform: scale(1.05);
+  }

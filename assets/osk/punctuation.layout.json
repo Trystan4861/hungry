@@ -1,0 +1,62 @@
+{
+  "rows": [
+    {
+      "id": "keyboard-row-1",
+      "position": "center",
+      "keys": [
+        { "main": "$", "special": ["€"], "super": " " },
+        { "main": "€" },
+        { "main": "¥" },
+        { "main": "¢" },
+        { "main": "©" },
+        { "main": "®" },
+        { "main": "™" },
+        { "main": "~" },
+        { "main": "¿" }
+      ]
+    },
+    {
+      "id": "keyboard-row-2",
+      "position": "center",
+      "keys": [
+        { "type": "tab", "text": "⇥" },
+        { "main": "[" },
+        { "main": "]" },
+        { "main": "{" },
+        { "main": "}" },
+        { "main": "<" },
+        { "main": ">" },
+        { "main": "^" },
+        { "main": "¡" }
+      ]
+    },
+    {
+      "id": "keyboard-row-3",
+      "position": "center",
+      "keys": [
+        { "type": "numeric", "text": "123", "position": "center" },
+        { "main": "`" },
+        { "main": ";" },
+        { "main": "÷" },
+        { "main": "\\" },
+        { "main": "|" },
+        { "main": "¦" },
+        { "main": "¬" },
+        { "type": "backspace",  "position": "center" }
+      ]
+    },
+    {
+      "id": "keyboard-row-4",
+      "position": "center",
+      "keys": [
+        { "type": "letters", "text": "abc" },
+        { "type": "space", "text": "└───┘" },
+        { "main": "×" },
+        { "main": "§" },
+        { "main": "¶" },
+        { "main": "°" },
+        { "type": "enter", "text": "↵", "position": "center" }
+      ]
+    }
+  ]
+}

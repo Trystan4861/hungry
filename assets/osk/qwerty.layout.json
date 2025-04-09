@@ -1,0 +1,79 @@
+{
+  "rows": [
+    {
+      "id": "keyboard-numbers",
+      "position": "center",
+      "keys": [
+        { "main": "1", "special": [] },
+        { "main": "2", "special": [] },
+        { "main": "3", "special": [] },
+        { "main": "4", "special": [] },
+        { "main": "5", "special": [] },
+        { "main": "6", "special": [] },
+        { "main": "7", "special": [] },
+        { "main": "8", "special": [] },
+        { "main": "9", "special": [] },
+        { "main": "0", "special": [] }
+      ]
+    },
+    {
+      "id": "keyboard-qwerty",
+      "position": "end",
+      "keys": [
+        { "main": "q", "upper": "Q", "special": ["\\"] },
+        { "main": "w", "upper": "W", "special": ["^"] },
+        { "main": "e", "upper": "E", "special": ["é", "~"], "super": "~" },
+        { "main": "r", "upper": "R", "special": ["|"] },
+        { "main": "t", "upper": "T", "special": ["["] },
+        { "main": "y", "upper": "Y", "special": ["]"] },
+        { "main": "u", "upper": "U", "special": ["ú", "<", "ü"], "super": "<" },
+        { "main": "i", "upper": "I", "special": ["í", ">"], "super": ">" },
+        { "main": "o", "upper": "O", "special": ["º", "{", "ó"], "super": "{" },
+        { "main": "p", "upper": "P", "special": ["}"] }
+      ]
+    },
+    {
+      "id": "keyboard-asdfg",
+      "position": "end",
+      "keys": [
+        { "main": "a", "upper": "A", "special": ["@", "á", "ª"], "super": "@" },
+        { "main": "s", "upper": "S", "special": ["#"] },
+        { "main": "d", "upper": "D", "special": ["&"] },
+        { "main": "f", "upper": "F", "special": ["*"] },
+        { "main": "g", "upper": "G", "special": ["-"] },
+        { "main": "h", "upper": "H", "special": ["+"] },
+        { "main": "j", "upper": "J", "special": ["="] },
+        { "main": "k", "upper": "K", "special": ["("] },
+        { "main": "l", "upper": "L", "special": [")"] },
+        { "main": "ñ", "upper": "Ñ", "special": ["%"] }
+      ]
+    },
+    {
+      "id": "keyboard-zxcvb",
+      "position": "end",
+      "keys": [
+        { "type": "shift", "position": "center" },
+        { "main": "z", "upper": "Z", "special": ["_"] },
+        { "main": "x", "upper": "X", "special": ["$", "¢", "€", "¥", "£"], "super": "€" },
+        { "main": "c", "upper": "C", "special": ["\""] },
+        { "main": "v", "upper": "V", "special": ["'"] },
+        { "main": "b", "upper": "B", "special": [":"] },
+        { "main": "n", "upper": "N", "special": [";"] },
+        { "main": "m", "upper": "M", "special": ["/"] },
+        { "type": "backspace",  "position": "center" }
+      ]
+    },
+    {
+      "id": "keyboard-space-bar",
+      "position": "center",
+      "keys": [
+        { "type": "numeric", "text": "123" },
+        { "type": "emoji", "text": "😊" },
+        { "main": ",", "special": [] },
+        { "type": "space", "text": " " },
+        { "main": ".", "special": ["!", "¿", "¡", ",", ".", "?"], "super": ",¡¿" },
+        { "type": "enter", "text": "↵", "position": "center" }
+      ]
+    }
+  ]
+}

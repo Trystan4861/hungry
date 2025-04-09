@@ -24,6 +24,7 @@
     "@vueuse/core": "^13.0.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
+    "graphemer": "^1.4.0",
     "md5": "^2.3.0",
     "nuxt": "^3.16.0",
     "sweetalert2": "^11.17.2",
