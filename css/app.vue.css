@@ -49,6 +49,12 @@
   user-select:                  none;
   gap:                        2px;
 }
+
+.tab-pane {
+  overflow-y: auto;
+  flex-grow: 1;
+  height: 100%;
+}
 .nav-item:first-child {
   max-width:                    3.75rem;
 }
@@ -231,7 +237,7 @@ nav a:hover {
 
 .listaCompra
 {
-  max-height: calc(100dvh - 140px);
+  /*max-height: calc(100dvh - 140px);*/
   overflow-y: scroll;
 }
 

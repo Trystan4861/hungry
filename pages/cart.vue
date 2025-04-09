@@ -1,5 +1,4 @@
 <template>
-  <!-- Cabecera con selector de supermercado y botón de limpiar lista -->
   <div v-show="hayProductosSeleccionados">
     <div class="me-0 d-flex filaAcciones">
       <MySelect

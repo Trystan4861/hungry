@@ -15,6 +15,7 @@
 .tab-pane {
   overflow-y: auto;
   flex-grow: 1;
+  height: 100%;
 }
 li.nav-item:first-child {
   max-width: 3.75rem;
