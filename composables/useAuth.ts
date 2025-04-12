@@ -4,18 +4,7 @@ import { _DOM, DID } from '~/utils/dom';
 import { myStore } from '~/composables/useStore';
 import apiService from '~/services/apiService';
 import { showSuccess, showErrorSwal as showError, showLoginForm, showLogoutConfirm, showValidationMessage, getSwalPopup } from '~/utils/sweetalert';
-
-// Usar la misma interfaz que el ApiService
-type LoginResponse = {
-  result: boolean;
-  token?: string;
-  device?: {
-    id: number;
-    fingerID: string;
-    is_master: number;
-  };
-  error_msg?: string;
-};
+import type { LoginResponse } from '~/types/api/response';
 
 /**
  * useAuth

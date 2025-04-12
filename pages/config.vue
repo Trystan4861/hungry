@@ -185,7 +185,7 @@
   //creamos un array numerico únicamente con los ids de los supermercados visibles
   const supermarketsVisibles = ref<number[]>(store.supermercados.value.filter(supermercado => supermercado.visible).map(supermercado => supermercado.id));
   const fullScreen = ref<boolean>(store.fullScreen.value);
-  const tabselected = ref<Tab>(store.tabs[defaultTabActive.value]);
+  const tabselected = ref<Tab>(store.tabs.find(tab => tab.id === defaultTabActive.value) || store.tabs[0]);
   // Usar el composable useFormChanges para gestionar los cambios
   const { changes: changes2Save, markAsChanged, saveChanges } = useFormChanges({
     categoriasVisibles: false,
@@ -222,8 +222,8 @@
     markAsChanged('supermarketsVisible');
   }
 
-  const handleDefaultTabActiveChange = (value: number): void => {
-    defaultTabActive.value = value;
+  const handleDefaultTabActiveChange = (value: Tab): void => {
+    defaultTabActive.value = value.id;
     markAsChanged('defaultTabActive');
   }
 

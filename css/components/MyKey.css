@@ -4,6 +4,8 @@
   --key-active-bg: #d0d0d0;
   --key-color: #333;
   --accent-color: #007bff;
+  --accent-hover-color: #00d907;
+  --accent-shift-color: #ffcc00;
   --accent-active-color: #0056b3;
 }
 
@@ -67,6 +69,15 @@
   opacity: 0.7;
 }
 
+.alt-char {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.7em;
+  color: var(--accent-color);
+  opacity: 0.7;
+}
+
 /* Teclas especiales */
 .key.shift-key,
 .key.numeric-key,
@@ -85,11 +96,21 @@
   width: calc(var(--key-size) * 1.5);
   height: var(--key-size);
   background-color: var(--accent-color);
+  color: var(--key-bg);
+  font-size: 1.25rem;
+  padding-bottom: .3125rem;
 }
-
+.key.shift-locked::before{
+  color: white;
+}
+.key.shift-active {
+  background-color: var(--accent-shift-color);
+}
+.key.shift-locked,
 .key.enter-key:active {
   background-color: var(--accent-active-color);
 }
+
 
 .enter-arrow {
   font-size: 1.5em;

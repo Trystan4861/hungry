@@ -48,8 +48,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 import { myStore } from '~/composables/useStore';
+import { useTouch } from '~/composables/useTouch';
 import type { Producto } from '~/types';
 import { parseEmoji } from '~/utils';
 import '~/css/components/MyProduct.css';
@@ -81,6 +82,30 @@ const categoryColor = computed(() =>
 );
 
 const productName = computed(() => parseEmoji(props.product.text));
+
+const { handleTouchStart, handleTouchEnd, handleTouchMove, cleanup } = useTouch();
+
+const handleInteraction = (event: MouseEvent | TouchEvent) => {
+  if (isDragging.value) return;
+  
+  if (!props.product.selected) {
+    emit('update:selected', true);
+    emit('update:amount', 1);
+  }
+};
+
+const handleTouchEvents = {
+  onTap: handleInteraction,
+  onDoubleTap: () => {
+    if (props.product.selected && props.canBeDone) {
+      emit('update:done', !props.product.done);
+    }
+  }
+};
+
+onBeforeUnmount(() => {
+  cleanup();
+});
 
 // Métodos
 function handleTap() {

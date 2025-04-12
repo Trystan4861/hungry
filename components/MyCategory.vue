@@ -12,6 +12,7 @@
   <script lang="ts" setup>
     import { ref, watch } from 'vue';
     import '~/css/components/MyCategory.css';
+    import { useTouch } from '~/composables/useTouch';
 
     interface Props {
       text:             string;
@@ -26,31 +27,40 @@
       longClickTimeout: { type: Number,   default: 2000         },
     });
 
-    let longPressTimeout: ReturnType<typeof setTimeout> | null = null;
-    let wasLongClick: boolean = false;
-    const esActivo        = ref(props.isActive)
     const emit            = defineEmits(['categoryClick','categoryLongClick']);
+    const esActivo        = ref(props.isActive);
+
+    const { handleTouchStart, handleTouchEnd, isLongPress } = useTouch({
+      longPressDelay: props.longClickTimeout
+    });
+
     const handleClick     = () => {
-      if (!wasLongClick) {
+      if (!isLongPress.value) {
         emit('categoryClick');
       }
-      wasLongClick = false; // Reset for next click
     };
+
     const handlePointerDown = (event: PointerEvent) => {
-      wasLongClick = false;
       if (event.pointerType === 'touch') {
-        event.preventDefault(); // Prevent scrolling on touch devices
+        event.preventDefault();
+        handleTouchStart(event as unknown as TouchEvent, {
+          onLongPress: () => {
+            if (esActivo.value) {
+              emit('categoryLongClick');
+            }
+          }
+        });
       }
-      esActivo.value ? longPressTimeout = setTimeout(() => {
-        wasLongClick = true;
-        emit('categoryLongClick');
-      }, props.longClickTimeout) : undefined;
     };
+
     const handlePointerUp   = (event: PointerEvent) => {
-      if (esActivo.value && longPressTimeout) {
-        clearTimeout(longPressTimeout);
+      if (event.pointerType === 'touch') {
+        handleTouchEnd(event as unknown as TouchEvent);
       }
     };
-    watch(()=>props.isActive,newValue=>{esActivo.value=newValue; (!newValue && longPressTimeout && clearTimeout(longPressTimeout))})
+
+    watch(()=>props.isActive, newValue => {
+      esActivo.value = newValue;
+    });
   </script>
 

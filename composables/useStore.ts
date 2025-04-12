@@ -611,7 +611,11 @@ export const myStore = () => {
   };
 
   const appName = useState<string>('appName', () => 'Hungry!');
-  const defaultTabActive = useState<number>('defaultTabActive', () => 2);
+  // Inicializar defaultTabActive con el valor del localStorage o 2 como respaldo
+  const defaultTabActive = useState<number>('defaultTabActive', () => {
+    const storedValue = localStorageService.getSubItem('defaultTabActive');
+    return storedValue !== null ? storedValue : 2;
+  });
   const setDefaultTabActive = (tabIndex: number) => {
     defaultTabActive.value = tabIndex;
     saveDataToLocalStorage();

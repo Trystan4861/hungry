@@ -552,10 +552,6 @@
     font-size: 0.9rem;
   }
 
-  /* Ocultar la tecla enter con forma de L original */
-  .enter-key.l-shape {
-    display: none;
-  }
 
   /* Mostrar la tecla enter en la última fila */
   .small-screen-enter {
@@ -592,44 +588,9 @@
 
 /* Ajustes específicos para la tecla enter en diferentes resoluciones */
 /* Pantallas grandes (>=769px) */
-@media (min-width: 769px) {
-  .enter-key.l-shape {
-    top: 5.5rem; /* Alinear con las filas 2 y 3 */
-    right: 0.5rem;
-    width: 3rem;
-    height: 5.25rem;
-  }
-}
 
-/* Pantallas entre 517px y 768px */
-@media (min-width: 517px) and (max-width: 768px) {
-  .enter-key.l-shape {
-    top: 5.5rem; /* Alinear con las filas 2 y 3 */
-    right: 0.5rem;
-    width: 3rem;
-    height: 4.5rem;
-  }
-}
 
 /* Pantallas entre 481px y 516px */
-@media (min-width: 481px) and (max-width: 516px) {
-  .enter-key.l-shape {
-    top: 5.5rem; /* Alinear con las filas 2 y 3 */
-    right: 0.4rem;
-    width: 2.5rem;
-    height: 4.25rem;
-  }
-}
-
-/* Pantallas entre 361px y 480px */
-@media (min-width: 361px) and (max-width: 480px) {
-  .enter-key.l-shape {
-    width: 2.2rem;
-    height: 4rem; /* Ajustar para dos teclas más pequeñas */
-    right: 0.35rem;
-    top: 5.5rem; /* Alinear con las filas 2 y 3 */
-  }
-}
 
 
 

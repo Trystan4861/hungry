@@ -7,11 +7,11 @@ export * from './data/supermercados';
 export * from './auth/login';
 
 // UI Types
-export * from './ui/keyboard';
 export * from './ui/notify';
 export * from './ui/tabs';
 export * from './ui/form';
 export * from './ui/select';
+export * from './ui/keyboard';
 
 // Sync Types
 export * from './sync/sync';

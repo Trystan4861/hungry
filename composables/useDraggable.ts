@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
+import type { DraggableEvent } from '~/types/ui/draggable';
 
 /**
  * useDraggable
@@ -21,27 +22,12 @@ export function useDraggable<T extends { id: number }>(
   // Referencia a los elementos ordenados
   const orderedItems = ref([...initialItems]) as Ref<T[]>;
 
-  // Definir la interfaz para el evento de arrastre
-  interface DraggableEvent {
-    oldIndex: number;
-    newIndex: number;
-    preventDefault: () => void;
-    draggedContext: {
-      element: T;
-      index: number;
-    };
-    relatedContext: {
-      element: T;
-      index: number;
-    };
-  }
-
   /**
    * onDragStart
    * Función que se ejecuta al iniciar el arrastre
    * @param evt Evento de arrastre
    */
-  const onDragStart = (evt: DraggableEvent) => {
+  const onDragStart = (evt: DraggableEvent<T>) => {
     if (fixedFirstItem) {
       // Verificar si el elemento que se está arrastrando es el primero
       const itemId = orderedItems.value[evt.oldIndex].id;
@@ -57,7 +43,7 @@ export function useDraggable<T extends { id: number }>(
    * Función que se ejecuta al finalizar el arrastre
    * @param evt Evento de arrastre
    */
-  const onDragEnd = (evt: DraggableEvent) => {
+  const onDragEnd = (evt: DraggableEvent<T>) => {
     // Llamar a la función de cambio de orden si se proporciona
     if (onOrderChange) {
       onOrderChange(orderedItems.value);
@@ -70,7 +56,7 @@ export function useDraggable<T extends { id: number }>(
    * @param evt Evento de arrastre
    * @returns Booleano indicando si el movimiento es válido
    */
-  const checkMove = (evt: DraggableEvent): boolean => {
+  const checkMove = (evt: DraggableEvent<T>): boolean => {
     if (fixedFirstItem) {
       // No permitir mover el elemento con id=0
       if (evt.draggedContext.element.id === 0) {

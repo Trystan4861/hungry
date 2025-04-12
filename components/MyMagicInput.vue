@@ -98,15 +98,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
+  import { ref, watch, onMounted, onUnmounted, computed, onBeforeUnmount } from 'vue';
   import type { PropType } from 'vue';
   import { generateID } from '~/utils';
   import { myStore } from '~/composables/useStore';
   import '~/css/components/MyMagicInput.css';
   import MyKey from '~/components/MyKey.vue';
   import MyKeyLayer from './MyKeyLayer.vue';
-  import type { KeyData,  KeyboardLayout } from '@/types';
+  import type { KeyData,  KeyboardLayout } from '~/types';
   import Graphemer from 'graphemer';
+  import { useTouch } from '~/composables/useTouch';
 
   // Importar layouts
   import qwertyLayout from '~/assets/osk/qwerty.layout.json';
@@ -869,6 +870,45 @@
     }
   });
 
+  const { handleTouchStart, handleTouchMove, handleTouchEnd, cleanup, isLongPress } = useTouch({
+    longPressDelay: 500,
+    swipeThreshold: 30
+  });
+
+  const handleKeyTouchEvents = (keyData: KeyData) => ({
+    onTap: () => {
+      if (keyData.type === 'normal') {
+        addChar(keyData.main || '');
+      } else {
+        handleKeyPress(keyData.type || '');
+      }
+    },
+    onLongPress: () => {
+      if (keyData.special) {
+        handleKeyMouseDown(new MouseEvent('mousedown'), keyData.main, keyData.special);
+      }
+    }
+  });
+
+  onBeforeUnmount(() => {
+    cleanup();
+    if (caretBlinkInterval.value !== null) {
+      window.clearInterval(caretBlinkInterval.value);
+    }
+  });
+
+  // Reemplazar los antiguos manejadores táctiles
+  const handleKeyTouch = (event: TouchEvent, keyData: KeyData) => {
+    handleTouchStart(event, handleKeyTouchEvents(keyData));
+  };
+
+  const handleKeyTouchMove = (event: TouchEvent) => {
+    handleTouchMove(event);
+  };
+
+  const handleKeyTouchEnd = (event: TouchEvent, keyData: KeyData) => {
+    handleTouchEnd(event, handleKeyTouchEvents(keyData));
+  };
 
   // Eventos del ciclo de vida
   onMounted(() => {
