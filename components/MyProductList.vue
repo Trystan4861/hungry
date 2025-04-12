@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <div class="my-product-list">
-      <MyProduct v-for="product in productList"
+  <div class="product-list">
+    <MyProduct v-for="product in visibleProducts"
       :key="product.id"
       :product="product"
       :can-be-done="canBeDone"
@@ -11,28 +10,36 @@
       @update:amount="handleUpdateAmount(product, $event)"
       @update:done="handleUpdateDone(product, $event)"
       @update:selected="handleUpdateSelected(product)"
-      />
-    </div>
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref }  from 'vue';
+import { ref, computed, onMounted }  from 'vue';
 import MyProduct from './MyProduct.vue';
-// Importación relativa mientras se resuelve el problema con el alias
 import type { Producto } from '~/types';
 import '~/css/components/MyProductList.css';
 
 const props = defineProps({
-  canBeDone:        { type: Boolean,  default:  false },
-  showEdit:         { type: Boolean,  default:  true   },
-  productList:      { type: Array<Producto>,    required: true  },
+  canBeDone: { type: Boolean, default: false },
+  showEdit: { type: Boolean, default: true },
+  productList: { type: Array<Producto>, required: true },
 });
 
-const lastClick           = ref(Date.now())
-const emit                = defineEmits(['click:edit',  'update:selected', 'update:amount', 'update:done']);
+const INITIAL_LOAD = 20;
+const CHUNK_SIZE = 10;
 
-const handleEditClick     = (product: Producto) => emit('click:edit', product)
+const lastClick = ref(Date.now());
+const loadedCount = ref(INITIAL_LOAD);
+const isLoadingMore = ref(false);
+
+const visibleProducts = computed(() => {
+  return props.productList.slice(0, loadedCount.value);
+});
+
+const emit = defineEmits(['click:edit', 'update:selected', 'update:amount', 'update:done']);
+
+const handleEditClick = (product: Producto) => emit('click:edit', product);
 const handleUpdateSelected = (product: Producto) => {
   if (Date.now() - lastClick.value > 100) {
     lastClick.value = Date.now();
@@ -51,7 +58,25 @@ const handleUpdateDone = (product: Producto, value: boolean) => {
   emit('update:done', product, value);
 };
 
+const loadProductsChunk = () => {
+  if (isLoadingMore.value || loadedCount.value >= props.productList.length) return;
+
+  isLoadingMore.value = true;
+  requestAnimationFrame(() => {
+    loadedCount.value = Math.min(
+      loadedCount.value + CHUNK_SIZE,
+      props.productList.length
+    );
+    isLoadingMore.value = false;
+
+    if (loadedCount.value < props.productList.length) {
+      requestAnimationFrame(loadProductsChunk);
+    }
+  });
+};
+
+onMounted(() => {
+  loadedCount.value = INITIAL_LOAD;
+  setTimeout(loadProductsChunk, 250);
+});
 </script>
-
-
-
