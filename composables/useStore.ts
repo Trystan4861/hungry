@@ -1,5 +1,7 @@
 import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab } from '~/types';
 import { localStorageService } from '~/localStorageService'; // Import the localStorageService
+import apiService from '~/services/apiService'
+import { SyncActionType } from '~/types/sync/sync'
 
 export const myStore = () => {
   const tabs: Tab[] = [
@@ -34,7 +36,7 @@ export const myStore = () => {
     timestamp: "0000-00-00 00:00:00" // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
   })));
 
-  const birthday = "1980-05-21 16:25:00";
+  const epochTime = "1980-05-21 16:25:00";
   const now= computed(() => new Date().toLocaleString('sv-SE').replace('T', ' '))
 
   const findProducto = (id: number) => productos.value.find(p => p.id === id);
@@ -104,7 +106,7 @@ export const myStore = () => {
           //si alguna de las categorias importadas no tiene timestamp, se lo añadimos con el valor defalt a dicha categoría
           data.categorias.forEach((categoria: Categoria) => {
             if (!categoria.timestamp) {
-              categoria.timestamp = birthday;
+              categoria.timestamp = epochTime;
             }
           });
 
@@ -114,7 +116,7 @@ export const myStore = () => {
           //si algun supermercado importado no tiene timestamp, se lo añadimos con el valor defalt a dicho supermercado
           data.supermercados.forEach((supermercado: Supermercado) => {
             if (!supermercado.timestamp) {
-              supermercado.timestamp = birthday;
+              supermercado.timestamp = epochTime;
             }
           });
 
@@ -126,7 +128,7 @@ export const myStore = () => {
         //si algun producto importado no tiene timestamp, se lo añadimos con el valor defalt a dicho producto
         data.productos.forEach((producto: Producto) => {
           if (!producto.timestamp) {
-            producto.timestamp = birthday;
+            producto.timestamp = epochTime;
           }
         });
         // Usar updateProductos en lugar de asignar directamente
@@ -205,7 +207,7 @@ export const myStore = () => {
           typeof s.visible === 'boolean'
         );
         if (validSupermercados.length === storedSupermercados.length) {
-          supermercados.value = storedSupermercados;
+          supermercados.value = validSupermercados;
           // Ordenar los supermercados por la propiedad 'order'
           sortSupermercadosByOrder();
         } else {
@@ -333,6 +335,18 @@ export const myStore = () => {
     const producto = findProducto(id);
     if (producto) {
       producto.amount = amount;
+
+      if (loginData.value.logged) {
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_PRODUCT_AMOUNT,
+          payload: {
+            id,
+            amount
+          },
+          timestamp: Date.now()
+        });
+      }
+
       saveDataToLocalStorage();
     }
   };
@@ -346,15 +360,13 @@ export const myStore = () => {
         const index = newProductos.findIndex(p => p.id === id);
         if (index !== -1) {
           const newSelected = !newProductos[index].selected;
+          const timestamp = new Date().toLocaleString('sv-SE').replace('T', ' ');
 
-          // Si estamos seleccionando el producto (selected cambia a true),
-          // también marcamos done como false para evitar que aparezca como comprado
           newProductos[index] = {
             ...newProductos[index],
             selected: newSelected,
-            // Si se está seleccionando, asegurarse de que done sea false
             done: newSelected ? false : newProductos[index].done,
-            timestamp: now.value
+            timestamp
           };
 
           // Actualizar todos los productos usando la función centralizada
@@ -364,22 +376,83 @@ export const myStore = () => {
   };
 
   const toggleDone = (id: number) => {
-      const producto = findProducto(id);
-      if (producto) {
-        // Crear una copia de todos los productos
-        const newProductos = [...productos.value];
-        // Encontrar el producto en la copia y actualizarlo
-        const index = newProductos.findIndex(p => p.id === id);
-        if (index !== -1) {
-          newProductos[index] = {
-            ...newProductos[index],
-            done: !newProductos[index].done,
-            timestamp: now.value
-          };
-          // Actualizar todos los productos usando la función centralizada
-          updateProductos(newProductos);
-        }
+    const producto = findProducto(id);
+    if (producto) {
+      producto.done = !producto.done;
+
+      if (loginData.value.logged) {
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_PRODUCT_DONE,
+          payload: {
+            id,
+            done: producto.done
+          },
+          timestamp: Date.now()
+        });
       }
+
+      saveDataToLocalStorage();
+    }
+  };
+
+  const updateProductText = (id: number, text: string) => {
+    const producto = findProducto(id);
+    if (producto) {
+      producto.text = text;
+
+      if (loginData.value.logged) {
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_PRODUCT_TEXT,
+          payload: {
+            id,
+            text
+          },
+          timestamp: Date.now()
+        });
+      }
+
+      saveDataToLocalStorage();
+    }
+  };
+
+  const updateCategoryText = (id: number, text: string) => {
+    const categoria = findCategoria(id);
+    if (categoria) {
+      categoria.text = text;
+
+      if (loginData.value.logged) {
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_CATEGORY_TEXT,
+          payload: {
+            id,
+            text
+          },
+          timestamp: Date.now()
+        });
+      }
+
+      saveDataToLocalStorage();
+    }
+  };
+
+  const updateCategoryVisible = (id: number, visible: boolean) => {
+    const categoria = findCategoria(id);
+    if (categoria) {
+      categoria.visible = visible;
+
+      if (loginData.value.logged) {
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_CATEGORY_VISIBLE,
+          payload: {
+            id,
+            visible
+          },
+          timestamp: Date.now()
+        });
+      }
+
+      saveDataToLocalStorage();
+    }
   };
 
   const setEmail = (email: string) => {
@@ -594,6 +667,13 @@ export const myStore = () => {
   // Asegurarse de que los supermercados estén ordenados al iniciar la aplicación
   sortSupermercadosByOrder();
 
+  // Procesar cola cuando cambia el estado de login
+  watch(() => loginData.value.logged, (newValue) => {
+    if (newValue) {
+      apiService.forceProcessQueue();
+    }
+  });
+
   return {
     appName,
     defaultTabActive,
@@ -622,6 +702,9 @@ export const myStore = () => {
     setAmount,
     toggleSelected,
     toggleDone,
+    updateProductText,
+    updateCategoryText,
+    updateCategoryVisible,
     setEmail,
     setToken,
     setFingerID,

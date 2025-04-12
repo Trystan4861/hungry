@@ -2,8 +2,20 @@ import { ref } from 'vue';
 import md5 from 'md5';
 import { _DOM, DID } from '~/utils/dom';
 import { myStore } from '~/composables/useStore';
-import { apiService } from '~/services/apiService';
+import apiService from '~/services/apiService';
 import { showSuccess, showErrorSwal as showError, showLoginForm, showLogoutConfirm, showValidationMessage, getSwalPopup } from '~/utils/sweetalert';
+
+// Usar la misma interfaz que el ApiService
+type LoginResponse = {
+  result: boolean;
+  token?: string;
+  device?: {
+    id: number;
+    fingerID: string;
+    is_master: number;
+  };
+  error_msg?: string;
+};
 
 /**
  * useAuth
@@ -82,22 +94,26 @@ const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
 
           try {
             // Usar el servicio de API para login o registro
-            const response = await (showRegisterMessage.value
-              ? apiService.login(email, pass, store.loginData.value.fingerID)
-              : apiService.register(email, pass, store.loginData.value.fingerID));
+            const response: LoginResponse = await (!showRegisterMessage.value
+              ? apiService.register({ email, pass })
+              : apiService.login({ email, pass, fingerid: store.loginData.value.fingerID }));
 
-            if (response.result) {
-              store.loginData.value.token = response.token;
-              store.loginData.value.logged = true;
+            if (response.result && response.token) {
+              store.loginData.value = {
+                email: email,
+                token: response.token,
+                fingerID: store.loginData.value.fingerID,
+                logged: true
+              };
 
               showSuccess(
-                'Sesión iniciada',
-                'Has iniciado sesión correctamente'
+                showRegisterMessage.value ? 'Registro completado' : 'Sesión iniciada',
+                showRegisterMessage.value ? 'Te has registrado correctamente' : 'Has iniciado sesión correctamente'
               );
             } else {
               showError(
                 'ERROR',
-                response.error_msg
+                response.error_msg || 'Error en la operación'
               );
             }
           } catch (error) {

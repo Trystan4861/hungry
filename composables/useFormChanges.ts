@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';
+import type { FormChanges } from '~/types/ui/form';
 import { showSuccess } from '~/utils/sweetalert';
 
 /**
@@ -18,13 +19,7 @@ import { showSuccess } from '~/utils/sweetalert';
  *   - resetChanges: Función para restablecer el estado de los cambios
  *   - saveChanges: Función para guardar los cambios utilizando callbacks
  */
-export function useFormChanges<T extends Record<string, boolean>>(initialState: T): {
-  changes: Ref<T>;
-  markAsChanged: (field: keyof T) => void;
-  hasChanges: () => boolean;
-  resetChanges: () => void;
-  saveChanges: (saveCallbacks: Record<keyof T, () => void>) => void;
-} {
+export function useFormChanges<T extends Record<string, boolean>>(initialState: T): FormChanges<T> {
   // Referencia a los cambios pendientes de guardar
   const changes = ref<T>({ ...initialState }) as Ref<T>;
 
