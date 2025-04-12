@@ -1,0 +1,97 @@
+# PRINCIPIOS FUNDAMENTALES
+principles:
+  simplicity:
+    - "Implementar siempre la solución más simple que resuelva el problema"
+    - "Evitar sobre-ingeniería y complejidad innecesaria"
+    - "Preferir claridad sobre elegancia"
+
+  verification:
+    - "Buscar patrones existentes antes de crear nuevos"
+    - "Reutilizar código y soluciones existentes"
+    - "Verificar el contexto completo antes de proponer cambios"
+
+  typescript:
+    strictness: true
+    rules:
+      - "Usar tipos explícitos siempre que sea posible"
+      - "Evitar 'any' y tipos implícitos"
+      - "Aprovechar el sistema de tipos para prevenir errores"
+    errorHandling:
+      - "Manejar todos los casos posibles de error"
+      - "Usar Result/Option patterns cuando sea apropiado"
+
+  methodology:
+    approach:
+      - "Dividir problemas grandes en subproblemas manejables"
+      - "Implementar y probar de forma incremental"
+      - "Refactorizar cuando la solución se vuelva compleja"
+
+# Estilo y Convenciones
+style:
+  code:
+    indent: 2
+    maxLineLength: 80
+    quoteMark: single
+  naming:
+    components: PascalCase
+    composables: camelCase
+    prefix:
+      components: My
+      composables: use
+  css:
+    location: "~/css"
+    naming: "mismo nombre del componente que lo usa, con extensión .css"
+
+# Patrones a Seguir
+patterns:
+  preferred:
+    - "Composables para lógica reutilizable"
+    - "TypeScript interfaces para modelos de datos"
+    - "Vue Composition API"
+  avoid:
+    - "Código duplicado"
+    - "Funciones con más de 20 líneas"
+    - "Componentes con múltiples responsabilidades"
+    - "Estado global innecesario"
+
+# Documentación
+documentation:
+  required:
+    - "Propósito del componente/función"
+    - "Tipos de entrada/salida"
+    - "Ejemplos de uso cuando no sea obvio"
+  components:
+    - props
+    - emits
+    - composables utilizados
+  functions:
+    - "Nombre de la función"
+    - "Uso de la función"
+    - "Variables que toma con su descripción"
+    - "Lo que devuelve (si aplica)"
+
+# Testing
+testing:
+  required: true
+  framework: vitest
+  coverage:
+    statements: 80
+    branches: 80
+
+# PHP Convenciones
+php:
+  database:
+    connection: "$DAO (objeto PDO)"
+    queries:
+      sql: "$sql"
+      statement: "$consulta"
+      results: "$result"
+    preferences:
+      - "Priorizar arrays asociativos en consultas cuando sea posible"
+
+# Directrices Adicionales
+additional:
+  - "Responder y programar siempre en español"
+  - "Limitarse exactamente a lo solicitado"
+  - "Verificar que las funcionalidades no existan previamente"
+  - "Asegurar que las modificaciones no generen errores TS o PHP"
