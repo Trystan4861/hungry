@@ -15,7 +15,8 @@
     "postinstall": "nuxt prepare",
     "version": "node scripts/updateVersion.js",
     "minorVersion": "node scripts/updateVersion.js minor",
-    "revision": "node scripts/updateVersion.js revision"
+    "revision": "node scripts/updateVersion.js revision",
+    "generate-config": "node scripts/generateRuntimeConfig.js"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.6.1",

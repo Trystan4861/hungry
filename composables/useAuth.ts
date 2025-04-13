@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import md5 from 'md5';
 import { _DOM, DID } from '~/utils/dom';
 import { myStore } from '~/composables/useStore';
-import apiService from '~/services/apiService';
+import getApiService from '~/services/apiService';
 import { showSuccess, showErrorSwal as showError, showLoginForm, showLogoutConfirm, showValidationMessage, getSwalPopup } from '~/utils/sweetalert';
 import type { LoginResponse } from '~/types/api/response';
 
@@ -16,6 +16,7 @@ export function useAuth() {
   const showRegisterMessage = ref(true);
   const dll = ref('loginLinks');
 
+  const apiService = getApiService();
 
   /**
    * handleForgetPass
@@ -38,8 +39,8 @@ export function useAuth() {
       titleElement.innerText = showRegisterMessage.value ? "Realizar Registro" : "Iniciar Sesión";
       confirmButton.innerHTML = showRegisterMessage.value ? "Registrarse" : "Aceptar";
     }
-
     showRegisterMessage.value = !showRegisterMessage.value;
+
   };
 
   /**
@@ -88,16 +89,16 @@ const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
               : apiService.login({ email, pass, fingerid: store.loginData.value.fingerID }));
 
             if (response.result && response.token) {
-              store.loginData.value = {
+              store.updateLoginData({
                 email: email,
                 token: response.token,
                 fingerID: store.loginData.value.fingerID,
                 logged: true
-              };
+              });
 
               showSuccess(
-                showRegisterMessage.value ? 'Registro completado' : 'Sesión iniciada',
-                showRegisterMessage.value ? 'Te has registrado correctamente' : 'Has iniciado sesión correctamente'
+                !showRegisterMessage.value ? 'Registro completado' : 'Sesión iniciada',
+                !showRegisterMessage.value ? 'Te has registrado correctamente' : 'Has iniciado sesión correctamente'
               );
             } else {
               showError(
@@ -135,8 +136,7 @@ const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
       // Mostramos un diálogo de confirmación para cerrar la sesión
       showLogoutConfirm(() => {
         // Actualizar loginData en el store
-        store.loginData.value = { email: '', token: '', fingerID: store.loginData.value.fingerID, logged: false };
-
+        store.updateLoginData({ email: '', token: '', fingerID: store.loginData.value.fingerID, logged: false });
         showSuccess(
           'Sesión cerrada',
           'Has cerrado sesión correctamente'

@@ -1,22 +1,50 @@
 import type { LoginCredentials, RegisterCredentials } from '~/types/api/credentials';
 import type { LoginResponse, RegisterResponse, ApiResponse, SyncDataResponse } from '~/types/api/response';
 import { SyncActionType, type SyncAction, type QueueItem, type SyncData } from '~/types/sync/sync';
-
+import { getEnvVar } from '~/composables/useEnvVar';
 /**
  * Clase principal del servicio API
  * Maneja todas las comunicaciones con el backend de Hungry
  */
 export class ApiService {
-  private baseUrl: string;
+  private baseUrl: string | null = null;
   private token: string | null = null;
   private isOnline: boolean = navigator.onLine;
   private processQueue: QueueItem[] = [];
   private readonly QUEUE_STORAGE_KEY = 'hungry_api_queue';
 
-  constructor(baseUrl: string = 'https://infoinnova.es/lolo/api') {
-    this.baseUrl = baseUrl
-    this.initializeQueue()
-    this.setupOnlineListener()
+  constructor(baseUrl: string | null = null) {
+    // Guardamos la URL base proporcionada, si existe
+    this.baseUrl = baseUrl || this.getBaseUrl();
+
+    // Inicializamos la cola y los listeners independientemente de la URL base
+    // La URL base se obtendrá de forma diferida cuando sea necesaria
+    this.initializeQueue();
+    this.setupOnlineListener();
+  }
+
+  /**
+   * Obtiene la URL base del API, inicializándola si es necesario
+   * @returns La URL base del API
+   */
+  private getBaseUrl(): string | null {
+    // Si ya tenemos una URL base, la devolvemos
+    if (this.baseUrl) {
+      return this.baseUrl;
+    }
+
+    // Si no tenemos URL base, intentamos obtenerla de las variables de entorno
+    try {
+      this.baseUrl = getEnvVar('NUXT_PUBLIC_API_URL');
+
+      if (!this.baseUrl) {
+        console.warn("La variable NUXT_PUBLIC_API_URL no está definida o es null");
+      }
+    } catch (error) {
+      console.error("Error al obtener la URL base del API:", error);
+    }
+
+    return this.baseUrl;
   }
 
   /**
@@ -361,5 +389,13 @@ export class ApiService {
   }
 }
 
-// Exportar una instancia por defecto
-export default new ApiService()
+// En lugar de exportar una instancia directamente, creamos una función que devuelve la instancia
+// Esto evita que useRuntimeConfig() se llame durante la carga del módulo
+let apiServiceInstance: ApiService | null = null;
+
+export default function getApiService(): ApiService {
+  if (!apiServiceInstance) {
+    apiServiceInstance = new ApiService();
+  }
+  return apiServiceInstance;
+}

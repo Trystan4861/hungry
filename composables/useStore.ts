@@ -1,9 +1,10 @@
 import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab } from '~/types';
 import { localStorageService } from '~/localStorageService'; // Import the localStorageService
-import apiService from '~/services/apiService'
+import getApiService from '~/services/apiService'
 import { SyncActionType } from '~/types/sync/sync'
 
 export const myStore = () => {
+  const apiService = getApiService();
   const tabs: Tab[] = [
     { id: 0, text: 'Configuración',          page: 'config', logo: 'config.svg',        selectable: false,  },
     { id: 1, text: 'Añadir Productos',       page: 'add',    logo: 'add.svg',           selectable: true,   },
@@ -266,6 +267,11 @@ export const myStore = () => {
       // En caso de error, podríamos limpiar el localStorage para evitar futuros problemas
       // localStorageService.removeItem();
     }
+  };
+
+  const updateLoginData = (newData: Partial<LoginData>) => {
+    Object.assign(loginData.value, newData);
+    saveDataToLocalStorage();
   };
 
   const saveDataToLocalStorage = () => {
@@ -685,6 +691,7 @@ export const myStore = () => {
     fullScreen,
     maxLenght,
     loginData,
+    updateLoginData,
     supermercados,
     categorias,
     productos,
