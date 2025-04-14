@@ -246,6 +246,28 @@ export class ApiService {
     return this.makeRequest('POST', '/updateCategoriaVisible', { id_categoria, visible })
   }
 
+   /**
+   * Actualiza la visibilidad de un supermercado
+   * @param id_supermercado ID del supermercado
+   * @param visible Estado de visibilidad (0=oculto, 1=visible)
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
+    async updateSupermarketVisible(id_supermercado: number, visible: number): Promise<ApiResponse> {
+      return this.makeRequest('POST', '/updateSupermercadoVisible', { id_supermercado, visible })
+    }
+
+   /**
+   * Actualiza el orden de un supermercado
+   * @param id_supermercado ID del supermercado
+   * @param order Orden del supermercado
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
+      async updateSupermarketOrder(id_supermercado: number, order: number): Promise<ApiResponse> {
+      return this.makeRequest('POST', '/updateSupermercadoOrder', { id_supermercado, order })
+    }
+
   /**
    * Crea un nuevo producto
    * @param data Datos del producto (categoría, supermercado, texto, cantidad opcional)
@@ -289,6 +311,13 @@ export class ApiService {
   async updateProductoAmount(id_producto: number, amount: number): Promise<ApiResponse> {
     return this.makeRequest('POST', '/updateProductoAmount', { id_producto, amount })
   }
+  async updateProductoDone(id_producto: number, done: number): Promise<ApiResponse> {
+    return this.makeRequest('POST', '/updateProductoAmount', { id_producto, done })
+  }
+  async updateProductoSelected(id_producto: number, selected: number): Promise<ApiResponse> {
+    return this.makeRequest('POST', '/updateProductoAmount', { id_producto, selected })
+  }
+
 
   async updateProductoText(id_producto: number, text: string): Promise<ApiResponse> {
     return this.makeRequest('POST', '/updateProductoText', { id_producto, text });
@@ -301,36 +330,46 @@ export class ApiService {
    */
   private async processSyncAction(action: SyncAction): Promise<ApiResponse> {
     switch (action.type) {
-      case SyncActionType.UPDATE_PRODUCT_DONE:
-        return this.updateProducto({
-          id_producto: action.payload.id,
-          done: action.payload.done ? 1 : 0
-        });
-
       case SyncActionType.UPDATE_PRODUCT_AMOUNT:
         return this.updateProductoAmount(
           action.payload.id,
           action.payload.amount
         );
-
+      case SyncActionType.UPDATE_PRODUCT_DONE:
+        return this.updateProductoDone(
+          action.payload.id,
+          action.payload.done ? 1 : 0
+        );
+      case SyncActionType.UPDATE_PRODUCT_SELECTED:
+        return this.updateProductoSelected(
+          action.payload.id,
+          action.payload.selected ? 1 : 0
+        );
       case SyncActionType.UPDATE_PRODUCT_TEXT:
         return this.updateProductoText(
           action.payload.id,
           action.payload.text
         );
-
       case SyncActionType.UPDATE_CATEGORY_TEXT:
         return this.updateCategoriaText(
           action.payload.id,
           action.payload.text
         );
-
       case SyncActionType.UPDATE_CATEGORY_VISIBLE:
         return this.updateCategoriaVisible(
           action.payload.id,
           action.payload.visible ? 1 : 0
         );
-
+      case SyncActionType.UPDATE_SUPERMARKET_ORDER:
+        return this.updateSupermarketOrder(
+          action.payload.id,
+          action.payload.order
+        );
+      case SyncActionType.UPDATE_SUPERMARKET_VISIBLE:
+        return this.updateSupermarketVisible(
+          action.payload.id,
+          action.payload.visible ? 1 : 0
+        );
       default:
         throw new Error(`Tipo de acción no soportada: ${action.type}`);
     }
