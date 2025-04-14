@@ -1,6 +1,6 @@
 <script setup>
 import { myStore } from '~/composables/useStore'
-import { localStorageService as ls } from '~/localStorageService'
+import { localStorageService as ls } from '~/services/localStorageService'
 
 const router = useRouter()
 const store = myStore()
@@ -10,8 +10,7 @@ if (import.meta.client) {
   onMounted(() => {
     // Intentamos obtener la última pestaña seleccionada del localStorage
     const lastTab = ls.getSubItem('lastTab')
-    
-    if (lastTab) {
+      if (lastTab) {
       // Si hay una última pestaña guardada, redirigimos a ella
       router.push(lastTab)
     } else {

@@ -1,5 +1,5 @@
 import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab } from '~/types';
-import { localStorageService } from '~/localStorageService'; // Import the localStorageService
+import { localStorageService } from '~/services/localStorageService'; // Import the localStorageService
 import getApiService from '~/services/apiService'
 import { SyncActionType } from '~/types/sync/sync'
 

@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { myStore } from "~/composables/useStore";
 import { useHead, useSeoMeta } from "#imports";
-import { localStorageService as ls } from "~/localStorageService";
+import { localStorageService as ls } from "~/services/localStorageService";
 import { defineAsyncComponent } from "vue";
 import { onMounted } from "@vue/runtime-core";
 import { ref } from 'vue';
