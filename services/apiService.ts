@@ -2,11 +2,13 @@ import type { LoginCredentials, RegisterCredentials } from '~/types/api/credenti
 import type { LoginResponse, RegisterResponse, ApiResponse, SyncDataResponse } from '~/types/api/response';
 import { SyncActionType, type SyncAction, type QueueItem, type SyncData } from '~/types/sync/sync';
 import { getEnvVar } from '~/composables/useEnvVar';
+import { myStore } from "~/composables/useStore";
 /**
  * Clase principal del servicio API
  * Maneja todas las comunicaciones con el backend de Hungry
  */
 export class ApiService {
+  private store = myStore();
   private baseUrl: string | null = null;
   private token: string | null = null;
   private isOnline: boolean = navigator.onLine;
@@ -90,6 +92,7 @@ export class ApiService {
       timestamp: Date.now(),
       type: data.type
     }
+    if (!this.store.loginData.value.logged) return;
     this.processQueue.push(queueItem)
     this.saveQueue()
   }
@@ -282,6 +285,18 @@ export class ApiService {
   }): Promise<ApiResponse> {
     return this.makeRequest('POST', '/newProducto', data)
   }
+  /**
+   * Crea un nuevo supermercado
+   * @param data Datos del supermercado (id, orden)
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
+  async newSupermarket(data: {
+    id: number
+    order: number
+  }): Promise<ApiResponse> {
+    return this.makeRequest('POST', '/newSupermarket', data)
+  }
 
   /**
    * Actualiza un producto existente
@@ -311,17 +326,48 @@ export class ApiService {
   async updateProductoAmount(id_producto: number, amount: number): Promise<ApiResponse> {
     return this.makeRequest('POST', '/updateProductoAmount', { id_producto, amount })
   }
+
+  /**
+   * Actualiza el estado done de un producto
+   * @param id_producto ID del producto
+   * @param done Nuevo estado done
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
   async updateProductoDone(id_producto: number, done: number): Promise<ApiResponse> {
     return this.makeRequest('POST', '/updateProductoAmount', { id_producto, done })
   }
+  /**
+   * Actualiza el estado selected de un producto
+   * @param id_producto ID del producto
+   * @param selected Nuevo estado selected
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
   async updateProductoSelected(id_producto: number, selected: number): Promise<ApiResponse> {
     return this.makeRequest('POST', '/updateProductoAmount', { id_producto, selected })
   }
 
-
+  /**
+   * Actualiza el nombre de un producto
+   * @param id_producto ID del producto
+   * @param text Nuevo nombre del producto
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
   async updateProductoText(id_producto: number, text: string): Promise<ApiResponse> {
     return this.makeRequest('POST', '/updateProductoText', { id_producto, text });
   }
+
+  /**
+   * Elimina un producto
+   * @param id_producto ID del producto a eliminar
+   * @returns Resultado de la operación
+   * @requires Autenticación
+   */
+   async deleteProducto(id_producto: number): Promise<ApiResponse> {
+     return this.makeRequest('POST', '/deleteProducto', { id_producto });
+   }
 
   /**
    * Procesa una acción de sincronización
@@ -330,6 +376,25 @@ export class ApiService {
    */
   private async processSyncAction(action: SyncAction): Promise<ApiResponse> {
     switch (action.type) {
+      case SyncActionType.NEW_PRODUCT:
+        return this.newProducto({
+          id_categoria: action.payload.categoryId,
+          id_supermercado: action.payload.supermarketId,
+          text: action.payload.name,
+          amount: action.payload.amount
+        });
+      case SyncActionType.DELETE_PRODUCT:
+        return this.deleteProducto(action.payload.id);
+      case SyncActionType.UPDATE_PRODUCT:
+        return this.updateProducto({
+          id_producto: action.payload.id,
+          id_categoria: action.payload.categoryId,
+          id_supermercado: action.payload.supermarketId,
+          text: action.payload.name,
+          amount: action.payload.amount,
+          selected: action.payload.selected ? 1 : 0,
+          done: action.payload.done ? 1 : 0
+        });
       case SyncActionType.UPDATE_PRODUCT_AMOUNT:
         return this.updateProductoAmount(
           action.payload.id,
@@ -360,6 +425,11 @@ export class ApiService {
           action.payload.id,
           action.payload.visible ? 1 : 0
         );
+      case SyncActionType.NEW_SUPERMARKET:
+        return this.newSupermarket({
+          id: action.payload.id,
+          order: action.payload.order
+        });
       case SyncActionType.UPDATE_SUPERMARKET_ORDER:
         return this.updateSupermarketOrder(
           action.payload.id,

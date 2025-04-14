@@ -274,9 +274,9 @@ export const myStore = () => {
     saveDataToLocalStorage();
   };
 
-  const saveDataToLocalStorage = () => {
+  const saveDataToLocalStorage = (ignoreSort:boolean=false) => {
     // Ordenar los supermercados por la propiedad 'order' antes de guardarlos
-    sortSupermercadosByOrder();
+    if (!ignoreSort) sortSupermercadosByOrder();
 
     localStorageService.setSubItem('productos', productos.value);
     localStorageService.setSubItem('supermercados', supermercados.value);
@@ -298,6 +298,11 @@ export const myStore = () => {
       amount: 1
     };
     productos.value.push(newItem);
+    apiService.addToSyncQueue({
+      type: SyncActionType.NEW_PRODUCT,
+      payload: newItem,
+      timestamp: Date.now()
+    });
     saveDataToLocalStorage();
   };
 
@@ -310,6 +315,13 @@ export const myStore = () => {
     const producto = findProducto(id);
     if (producto) {
       Object.assign(producto, newData);
+      if (loginData.value.logged) {
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_PRODUCT,
+          payload: newData,
+          timestamp: Date.now()
+        });
+      }
       saveDataToLocalStorage();
     }
   };
@@ -318,13 +330,33 @@ export const myStore = () => {
     const categoria = findCategoria(id);
     if (categoria) {
       categoria.text = newText;
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_CATEGORY_TEXT,
+        payload: {
+            id_categoria:id,
+            text: newText
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
 
   const updateCategorias = (visibleCategoriaIds: number[]) => {
     categorias.value.forEach(categoria => {
-      categoria.visible = visibleCategoriaIds.includes(categoria.id);
+      const wasVisible= categoria.visible;
+      const newVisible= visibleCategoriaIds.includes(categoria.id);
+      if (loginData.value.logged && wasVisible != newVisible){
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_CATEGORY_VISIBLE,
+          payload: {
+              id_categoria:categoria.id,
+              visible:newVisible
+          },
+          timestamp: Date.now()
+        });
+        categoria.visible = newVisible;
+      }
     });
     saveDataToLocalStorage();
   };
@@ -333,6 +365,14 @@ export const myStore = () => {
     const categoria = findCategoria(id);
     if (categoria) {
       categoria.visible = visible;
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_CATEGORY_VISIBLE,
+        payload: {
+            id_categoria:id,
+            visible: visible ? 1 : 0
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
@@ -341,18 +381,14 @@ export const myStore = () => {
     const producto = findProducto(id);
     if (producto) {
       producto.amount = amount;
-
-      if (loginData.value.logged) {
-        apiService.addToSyncQueue({
-          type: SyncActionType.UPDATE_PRODUCT_AMOUNT,
-          payload: {
-            id,
-            amount
-          },
-          timestamp: Date.now()
-        });
-      }
-
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_PRODUCT_AMOUNT,
+        payload: {
+          id,
+          amount
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
@@ -385,18 +421,14 @@ export const myStore = () => {
     const producto = findProducto(id);
     if (producto) {
       producto.done = !producto.done;
-
-      if (loginData.value.logged) {
-        apiService.addToSyncQueue({
-          type: SyncActionType.UPDATE_PRODUCT_DONE,
-          payload: {
-            id,
-            done: producto.done
-          },
-          timestamp: Date.now()
-        });
-      }
-
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_PRODUCT_DONE,
+        payload: {
+          id,
+          done: producto.done
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
@@ -405,18 +437,14 @@ export const myStore = () => {
     const producto = findProducto(id);
     if (producto) {
       producto.text = text;
-
-      if (loginData.value.logged) {
-        apiService.addToSyncQueue({
-          type: SyncActionType.UPDATE_PRODUCT_TEXT,
-          payload: {
-            id,
-            text
-          },
-          timestamp: Date.now()
-        });
-      }
-
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_PRODUCT_TEXT,
+        payload: {
+          id,
+          text
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
@@ -425,18 +453,14 @@ export const myStore = () => {
     const categoria = findCategoria(id);
     if (categoria) {
       categoria.text = text;
-
-      if (loginData.value.logged) {
-        apiService.addToSyncQueue({
-          type: SyncActionType.UPDATE_CATEGORY_TEXT,
-          payload: {
-            id,
-            text
-          },
-          timestamp: Date.now()
-        });
-      }
-
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_CATEGORY_TEXT,
+        payload: {
+          id,
+          text
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
@@ -445,18 +469,14 @@ export const myStore = () => {
     const categoria = findCategoria(id);
     if (categoria) {
       categoria.visible = visible;
-
-      if (loginData.value.logged) {
-        apiService.addToSyncQueue({
-          type: SyncActionType.UPDATE_CATEGORY_VISIBLE,
-          payload: {
-            id,
-            visible
-          },
-          timestamp: Date.now()
-        });
-      }
-
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_CATEGORY_VISIBLE,
+        payload: {
+          id,
+          visible
+        },
+        timestamp: Date.now()
+      });
       saveDataToLocalStorage();
     }
   };
@@ -518,29 +538,75 @@ export const myStore = () => {
 
   const clearList = (onlyDone: boolean) => {
     productos.value.forEach(p => {
+
       if ((onlyDone && p.done) || (!onlyDone && p.selected)) {
         p.selected = false;
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_PRODUCT_SELECTED,
+          payload: {
+              id:p.id,
+              selected: 0
+          },
+          timestamp: Date.now()
+        });
         p.done = false;
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_PRODUCT_DONE,
+          payload: {
+              id:p.id,
+              done: 0
+          },
+          timestamp: Date.now()
+        });
       }
     });
     saveDataToLocalStorage();
   };
 
+  /**
+   * TODO:
+   *  - Implementar esta funcionabilidad tanto en el backend como en el frontend.
+   *   - Needs:
+   *    - Obtener supermercados nuevos no asociados al usario actual.
+   *    - Selección de nuevos supermercados por parte del usuario. (NEW_COMPONENT??)
+   *   - Sincronización de los nuevos supermercados con el servidor.
+   */
+   /**
+   * addMarket
+   * Agrega un nuevo supermercado al almacenamiento local y lo muestra en la interfaz de usuario.
+   *
+   * @param market Objeto Supermercado que contiene información sobre el nuevo supermercado.
+   */
   const addMarket = (market: Supermercado) => {
     const maxOrder = supermercados.value.length;
     supermercados.value.push({ ...market, order: maxOrder });
-
+    apiService.addToSyncQueue({
+      type: SyncActionType.NEW_SUPERMARKET,
+      payload: {
+        id:market.id,
+        order: maxOrder
+      },
+      timestamp: Date.now()
+    });
     // Ordenar los supermercados por la propiedad 'order'
-    sortSupermercadosByOrder();
-
     saveDataToLocalStorage();
   };
 
-  const setMarketVisible = (id: number, visible: boolean) => {
-    const market = findSupermercado(id);
-    if (market) {
-      market.visible = visible;
-      saveDataToLocalStorage();
+  const setMarketVisible = (id: number, visible: boolean, save:boolean=true) => {
+    const index = supermercados.value.findIndex(market => market.id === id);
+    if (index<0) return;
+    else{
+      supermercados.value[index].visible = visible;
+      // Ordenar los supermercados por la propiedad 'order'
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_SUPERMARKET_VISIBLE,
+        payload: {
+          id,
+          visible: visible ? 1:0
+        },
+        timestamp: Date.now()
+      });
+      if (save) saveDataToLocalStorage();
     }
   };
 
@@ -552,13 +618,12 @@ export const myStore = () => {
   const updateSupermercados = (visibleSupermercadoIds: number[]) => {
     // Actualizar la visibilidad de los supermercados
     supermercados.value.forEach(supermercado => {
-      supermercado.visible = visibleSupermercadoIds.includes(supermercado.id);
+      const wasVisible = supermercado.visible;
+      const newVisible = visibleSupermercadoIds.includes(supermercado.id);
+      if (wasVisible !== newVisible){
+        setMarketVisible(supermercado.id, newVisible,false);
+      }
     });
-
-    // Ordenar los supermercados por la propiedad 'order'
-    sortSupermercadosByOrder();
-
-    // Guardar en localStorage
     saveDataToLocalStorage();
   };
 
@@ -572,10 +637,17 @@ export const myStore = () => {
 
     const targetMarket = supermercados.value[swapIndex];
     [currentMarket.order, targetMarket.order] = [targetMarket.order, currentMarket.order];
+    [currentMarket, targetMarket].forEach(market=>{
+      apiService.addToSyncQueue({
+        type: SyncActionType.UPDATE_SUPERMARKET_ORDER,
+        payload: {
+          id: market.id,
+          order: market.order
+        },
+        timestamp: Date.now()
+      });
 
-    // Ordenar los supermercados por la propiedad 'order'
-    sortSupermercadosByOrder();
-
+    })
     saveDataToLocalStorage();
   };
 
@@ -589,14 +661,20 @@ export const myStore = () => {
     newSupermercados.forEach((item, index) => {
       if (item.id !== 0) { // No cambiar el orden del supermercado genérico (id=0)
         item.order = index;
+        apiService.addToSyncQueue({
+          type: SyncActionType.UPDATE_SUPERMARKET_ORDER,
+          payload: {
+            id:item.id,
+            order:index
+          },
+          timestamp: Date.now()
+        });
       }
     });
-
     // Actualizar el array de supermercados en el store
     supermercados.value = [...newSupermercados];
-
     // Guardar en localStorage
-    saveDataToLocalStorage();
+    saveDataToLocalStorage(true);
   };
 
   const fullScreen = useState<boolean>('fullscreen', () => false);
