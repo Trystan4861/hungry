@@ -5,7 +5,7 @@
     :data-categoria="product.id_categoria"
   >
     <span
-      :style="{ backgroundColor: categoryColor }"
+      :style="{ '--product-bg-color': categoryColor }"
       class="productCategory"
       @click="handleCategoryClick"></span>
     <div
@@ -24,24 +24,20 @@
           v-if="props.product.selected"
           class="plus"
           @click.stop="incrementAmount"
-        >
-          ➕
-        </div>
+        ></div>
         <div
           v-if="props.product.selected"
           class="minus"
           @click.stop="decrementAmount"
         >
-          <div v-if="props.product.amount > 1">➖</div>
-          <div v-else class="rotate-45">➕</div>
+          <div v-if="props.product.amount > 1"></div>
+          <div v-else class="rotate-45"></div>
         </div>
         <div
           v-if="showEdit && !props.product.selected"
           class="edit"
           @click.stop="emitEdit"
-        >
-          ✏️
-        </div>
+        ></div>
       </div>
     </div>
   </div>
@@ -87,7 +83,7 @@ const { handleTouchStart, handleTouchEnd, handleTouchMove, cleanup } = useTouch(
 
 const handleInteraction = (event: MouseEvent | TouchEvent) => {
   if (isDragging.value) return;
-  
+
   if (!props.product.selected) {
     emit('update:selected', true);
     emit('update:amount', 1);

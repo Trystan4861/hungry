@@ -1,3 +1,12 @@
+/*
+* My Product CSS
+* Author: trystan4861
+* Date: 2025-04-16
+* Version: 1.0
+* Description: Estilo para el componente de productos.
+* @vars:
+* --product-bg-color: El color de la categoría del producto.
+*/
 .iconos {
   display: flex;
   align-items: center;
@@ -19,7 +28,7 @@
   width: 1.5625rem;
   margin-top: 1px;
   position: relative;
-
+  background-color: var(--product-bg-color);
 }
 
 .my-product {
@@ -71,4 +80,17 @@
 }
 .selected {
   font-weight: bold;
+}
+.plus:before,
+.minus div.rotate-45:before
+{
+  content: "➕";
+}
+.minus div:not(.rotate-45):before
+{
+    content: "➖";
+}
+.edit:before
+{
+    content: "✏️";
 }
