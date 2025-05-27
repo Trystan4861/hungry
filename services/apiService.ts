@@ -3,6 +3,7 @@ import type { LoginResponse, RegisterResponse, ApiResponse, SyncDataResponse } f
 import { SyncActionType, type SyncAction, type QueueItem, type SyncData } from '~/types/sync/sync';
 import { getEnvVar } from '~/composables/useEnvVar';
 import type { myStore as MyStoreType } from '~/composables/useStore';
+import type { Producto } from '~/types';
 
 /**
  * Clase principal del servicio API
@@ -350,7 +351,7 @@ export class ApiService {
    * @requires Autenticación
    */
   async updateProductoDone(id_producto: number, done: number): Promise<ApiResponse> {
-    return this.makeRequest('POST', '/updateProductoAmount', { id_producto, done })
+    return this.makeRequest('POST', '/updateProductoDone', { id_producto, done })
   }
   /**
    * Actualiza el estado selected de un producto
@@ -360,7 +361,7 @@ export class ApiService {
    * @requires Autenticación
    */
   async updateProductoSelected(id_producto: number, selected: number): Promise<ApiResponse> {
-    return this.makeRequest('POST', '/updateProductoAmount', { id_producto, selected })
+    return this.makeRequest('POST', '/updateProductoSelected', { id_producto, selected })
   }
 
   /**
@@ -392,23 +393,25 @@ export class ApiService {
   private async processSyncAction(action: SyncAction): Promise<ApiResponse> {
     switch (action.type) {
       case SyncActionType.NEW_PRODUCT:
+        const newProductPayload = action.payload as Producto; // Assert payload type
         return this.newProducto({
-          id_categoria: action.payload.categoryId,
-          id_supermercado: action.payload.supermarketId,
-          text: action.payload.name,
-          amount: action.payload.amount
+          id_categoria: newProductPayload.id_categoria,
+          id_supermercado: newProductPayload.id_supermercado,
+          text: newProductPayload.text,
+          amount: newProductPayload.amount
         });
       case SyncActionType.DELETE_PRODUCT:
         return this.deleteProducto(action.payload.id);
       case SyncActionType.UPDATE_PRODUCT:
+        const updateProductPayload = action.payload as Partial<Producto> & { id: number }; // Assert payload type, ensure id is present
         return this.updateProducto({
-          id_producto: action.payload.id,
-          id_categoria: action.payload.categoryId,
-          id_supermercado: action.payload.supermarketId,
-          text: action.payload.name,
-          amount: action.payload.amount,
-          selected: action.payload.selected ? 1 : 0,
-          done: action.payload.done ? 1 : 0
+          id_producto: updateProductPayload.id, // id_producto is the expected field name for this.updateProducto
+          id_categoria: updateProductPayload.id_categoria,
+          id_supermercado: updateProductPayload.id_supermercado,
+          text: updateProductPayload.text,
+          amount: updateProductPayload.amount,
+          selected: typeof updateProductPayload.selected === 'boolean' ? (updateProductPayload.selected ? 1 : 0) : undefined,
+          done: typeof updateProductPayload.done === 'boolean' ? (updateProductPayload.done ? 1 : 0) : undefined
         });
       case SyncActionType.UPDATE_PRODUCT_AMOUNT:
         return this.updateProductoAmount(
