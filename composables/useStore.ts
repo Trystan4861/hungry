@@ -1,7 +1,7 @@
 import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab, SyncData, SyncDataResponse } from '~/types';
 import { localStorageService } from '~/services/localStorageService'; // Import the localStorageService
 import getApiService from '~/services/apiService'
-import { SyncActionType, type SyncAction } from '~/types/sync/sync'
+import { SyncActionType, type SyncAction, type QueueItem } from '~/types/sync/sync'
 
 export const myStore = () => {
   const apiService = getApiService();
@@ -833,7 +833,7 @@ export const myStore = () => {
       productos.value.forEach(localItem => {
         if (!apiProductIds.has(localItem.id)) {
           const isPendingNew = pendingItems.some(
-            (action: SyncAction) => action.type === SyncActionType.NEW_PRODUCT && (action.payload as { id: number }).id === localItem.id
+            (item: QueueItem) => (item.data as SyncAction).type === SyncActionType.NEW_PRODUCT && ((item.data as SyncAction).payload as { id: number }).id === localItem.id
           );
           if (isPendingNew) {
             localProductosToKeep.push(localItem);
@@ -889,7 +889,7 @@ export const myStore = () => {
       supermercados.value.forEach(localItem => {
         if (!apiSupermercadoIds.has(localItem.id)) {
           const isPendingNew = pendingItems.some(
-            (action: SyncAction) => action.type === SyncActionType.NEW_SUPERMARKET && (action.payload as { id: number }).id === localItem.id
+            (item: QueueItem) => (item.data as SyncAction).type === SyncActionType.NEW_SUPERMARKET && ((item.data as SyncAction).payload as { id: number }).id === localItem.id
           );
           // Also keep the default 'Any Supermarket' (id: 0)
           if (isPendingNew || localItem.id === 0) {
