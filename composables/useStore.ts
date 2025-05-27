@@ -1,10 +1,11 @@
-import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab } from '~/types';
+import type { Producto, Categoria, LoginData, Supermercado, ImportData, Tab, SyncData, SyncDataResponse } from '~/types';
 import { localStorageService } from '~/services/localStorageService'; // Import the localStorageService
 import getApiService from '~/services/apiService'
-import { SyncActionType } from '~/types/sync/sync'
+import { SyncActionType, type SyncAction } from '~/types/sync/sync'
 
 export const myStore = () => {
   const apiService = getApiService();
+  let syncIntervalId: ReturnType<typeof setInterval> | null = null;
   const tabs: Tab[] = [
     { id: 0, text: 'Configuración',          page: 'config', logo: 'config.svg',        selectable: false,  },
     { id: 1, text: 'Añadir Productos',       page: 'add',    logo: 'add.svg',           selectable: true,   },
@@ -756,11 +757,151 @@ export const myStore = () => {
   sortSupermercadosByOrder();
 
   // Procesar cola cuando cambia el estado de login
-  watch(() => loginData.value.logged, (newValue) => {
+  watch(() => loginData.value.logged, async (newValue) => {
     if (newValue) {
       apiService.forceProcessQueue();
+      await periodicSyncWithAPI(); // Initial sync
+      if (syncIntervalId) clearInterval(syncIntervalId);
+      syncIntervalId = setInterval(periodicSyncWithAPI, 30000); // Periodic sync every 30 seconds
+    } else {
+      if (syncIntervalId) clearInterval(syncIntervalId);
+      syncIntervalId = null;
     }
   });
+
+  const periodicSyncWithAPI = async () => {
+    if (!loginData.value.logged || !navigator.onLine) {
+      return;
+    }
+    console.log("Attempting periodic sync...");
+    try {
+      const syncPayload: SyncData = {
+        productos: productos.value,
+        categorias: categorias.value,
+        supermercados: supermercados.value,
+        lastChangeTimestamp: lastSyncTimestamp.value || new Date(epochTime).getTime(),
+      };
+      const response = await apiService.syncData(loginData.value.fingerID, syncPayload);
+      
+      if (response.result && response.data) {
+        console.log("Periodic sync successful, merging data:", response.data);
+        await mergeSyncData(response.data); // Call mergeSyncData
+        lastSyncTimestamp.value = Date.now();
+        saveDataToLocalStorage(); // Save after successful merge
+      } else {
+        console.log("Periodic sync completed, but no data to merge or result was false:", response);
+        // Update lastSyncTimestamp even if there's no data to merge but the call was successful
+        if (response.result) {
+            lastSyncTimestamp.value = Date.now();
+            saveDataToLocalStorage();
+        }
+      }
+    } catch (error) {
+      console.error("Error during periodic sync:", error);
+    }
+  };
+
+  const isServerNewer = (serverTimestamp?: string, localTimestamp?: string): boolean => {
+    const serverTime = serverTimestamp ? new Date(serverTimestamp).getTime() : new Date(epochTime).getTime();
+    const localTime = localTimestamp ? new Date(localTimestamp).getTime() : new Date(epochTime).getTime();
+    return serverTime > localTime;
+  };
+
+  const mergeSyncData = async (syncResponse: SyncDataResponse) => {
+    const pendingItems = apiService.getQueueStatus().queue;
+
+    // Merge Productos
+    if (syncResponse.productos) {
+      const apiProductIds = new Set(syncResponse.productos.map(p => p.id));
+      const localProductosToKeep: Producto[] = [];
+
+      // Process server items
+      for (const apiItem of syncResponse.productos) {
+        const localItem = productos.value.find(p => p.id === apiItem.id);
+        if (localItem) {
+          if (isServerNewer(apiItem.timestamp, localItem.timestamp)) {
+            Object.assign(localItem, apiItem);
+          }
+          localProductosToKeep.push(localItem);
+        } else {
+          apiItem.timestamp = apiItem.timestamp || epochTime; // Ensure new items have a timestamp
+          localProductosToKeep.push(apiItem);
+        }
+      }
+      
+      // Add new local items pending sync (not yet on server)
+      productos.value.forEach(localItem => {
+        if (!apiProductIds.has(localItem.id)) {
+          const isPendingNew = pendingItems.some(
+            (action: SyncAction) => action.type === SyncActionType.NEW_PRODUCT && action.payload.id === localItem.id
+          );
+          if (isPendingNew) {
+            localProductosToKeep.push(localItem);
+          }
+        }
+      });
+      productos.value = localProductosToKeep;
+    }
+
+    // Merge Categorias
+    if (syncResponse.categorias) {
+      const apiCategoriaIds = new Set(syncResponse.categorias.map(c => c.id));
+      const localCategoriasToKeep: Categoria[] = [];
+
+      for (const apiItem of syncResponse.categorias) {
+        const localItem = categorias.value.find(c => c.id === apiItem.id);
+        if (localItem) {
+          if (isServerNewer(apiItem.timestamp, localItem.timestamp)) {
+            Object.assign(localItem, apiItem);
+          }
+          localCategoriasToKeep.push(localItem);
+        } else {
+          apiItem.timestamp = apiItem.timestamp || epochTime;
+          localCategoriasToKeep.push(apiItem);
+        }
+      }
+      
+      // Since categories are predefined and not user-creatable offline,
+      // the server's list of categories is authoritative.
+      // Any local category not in the server's response should be removed.
+      // The `localCategoriasToKeep` already contains all categories from the server (either updated existing ones or new ones from server).
+      categorias.value = localCategoriasToKeep.sort((a,b) => a.id - b.id);
+    }
+
+    // Merge Supermercados
+    if (syncResponse.supermercados) {
+      const apiSupermercadoIds = new Set(syncResponse.supermercados.map(s => s.id));
+      const localSupermercadosToKeep: Supermercado[] = [];
+
+      for (const apiItem of syncResponse.supermercados) {
+        const localItem = supermercados.value.find(s => s.id === apiItem.id);
+        if (localItem) {
+          if (isServerNewer(apiItem.timestamp, localItem.timestamp)) {
+            Object.assign(localItem, apiItem);
+          }
+          localSupermercadosToKeep.push(localItem);
+        } else {
+          apiItem.timestamp = apiItem.timestamp || epochTime;
+          localSupermercadosToKeep.push(apiItem);
+        }
+      }
+      
+      supermercados.value.forEach(localItem => {
+        if (!apiSupermercadoIds.has(localItem.id)) {
+          const isPendingNew = pendingItems.some(
+            (action: SyncAction) => action.type === SyncActionType.NEW_SUPERMARKET && action.payload.id === localItem.id // Assuming payload has id
+          );
+          // Also keep the default 'Any Supermarket' (id: 0)
+          if (isPendingNew || localItem.id === 0) {
+            localSupermercadosToKeep.push(localItem);
+          }
+        }
+      });
+      supermercados.value = localSupermercadosToKeep;
+      sortSupermercadosByOrder(); // Ensure order is maintained
+    }
+    // Note: saveDataToLocalStorage() is called in periodicSyncWithAPI after this function completes.
+  };
 
   return {
     appName,
