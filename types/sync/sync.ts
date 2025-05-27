@@ -32,5 +32,4 @@ export interface SyncData {
   categorias: any[];
   supermercados: any[];
   productos: any[];
-  lastChangeTimestamp: number;
 }

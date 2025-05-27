@@ -782,7 +782,7 @@ export const myStore = () => {
         lastChangeTimestamp: lastSyncTimestamp.value || new Date(epochTime).getTime(),
       };
       const response = await apiService.syncData(loginData.value.fingerID, syncPayload);
-
+      
       if (response.result && response.data) {
         console.log("Periodic sync successful, merging data:", response.data);
         await mergeSyncData(response.data); // Call mergeSyncData
@@ -828,12 +828,12 @@ export const myStore = () => {
           localProductosToKeep.push(apiItem);
         }
       }
-
+      
       // Add new local items pending sync (not yet on server)
       productos.value.forEach(localItem => {
         if (!apiProductIds.has(localItem.id)) {
           const isPendingNew = pendingItems.some(
-            (action: SyncAction) => action.type === SyncActionType.NEW_PRODUCT && action.payload.id === localItem.id
+            (action: SyncAction) => action.type === SyncActionType.NEW_PRODUCT && (action.payload as { id: number }).id === localItem.id
           );
           if (isPendingNew) {
             localProductosToKeep.push(localItem);
@@ -860,7 +860,7 @@ export const myStore = () => {
           localCategoriasToKeep.push(apiItem);
         }
       }
-
+      
       // Since categories are predefined and not user-creatable offline,
       // the server's list of categories is authoritative.
       // Any local category not in the server's response should be removed.
@@ -885,11 +885,11 @@ export const myStore = () => {
           localSupermercadosToKeep.push(apiItem);
         }
       }
-
+      
       supermercados.value.forEach(localItem => {
         if (!apiSupermercadoIds.has(localItem.id)) {
           const isPendingNew = pendingItems.some(
-            (action: SyncAction) => action.type === SyncActionType.NEW_SUPERMARKET && action.payload.id === localItem.id // Assuming payload has id
+            (action: SyncAction) => action.type === SyncActionType.NEW_SUPERMARKET && (action.payload as { id: number }).id === localItem.id
           );
           // Also keep the default 'Any Supermarket' (id: 0)
           if (isPendingNew || localItem.id === 0) {
