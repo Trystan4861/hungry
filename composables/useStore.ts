@@ -782,7 +782,7 @@ export const myStore = () => {
         lastChangeTimestamp: lastSyncTimestamp.value || new Date(epochTime).getTime(),
       };
       const response = await apiService.syncData(loginData.value.fingerID, syncPayload);
-      
+
       if (response.result && response.data) {
         console.log("Periodic sync successful, merging data:", response.data);
         await mergeSyncData(response.data); // Call mergeSyncData
@@ -828,7 +828,7 @@ export const myStore = () => {
           localProductosToKeep.push(apiItem);
         }
       }
-      
+
       // Add new local items pending sync (not yet on server)
       productos.value.forEach(localItem => {
         if (!apiProductIds.has(localItem.id)) {
@@ -860,7 +860,7 @@ export const myStore = () => {
           localCategoriasToKeep.push(apiItem);
         }
       }
-      
+
       // Since categories are predefined and not user-creatable offline,
       // the server's list of categories is authoritative.
       // Any local category not in the server's response should be removed.
@@ -885,7 +885,7 @@ export const myStore = () => {
           localSupermercadosToKeep.push(apiItem);
         }
       }
-      
+
       supermercados.value.forEach(localItem => {
         if (!apiSupermercadoIds.has(localItem.id)) {
           const isPendingNew = pendingItems.some(
