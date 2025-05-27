@@ -2,13 +2,14 @@ import type { LoginCredentials, RegisterCredentials } from '~/types/api/credenti
 import type { LoginResponse, RegisterResponse, ApiResponse, SyncDataResponse } from '~/types/api/response';
 import { SyncActionType, type SyncAction, type QueueItem, type SyncData } from '~/types/sync/sync';
 import { getEnvVar } from '~/composables/useEnvVar';
-import { myStore } from "~/composables/useStore";
+import type { myStore as MyStoreType } from '~/composables/useStore';
+
 /**
  * Clase principal del servicio API
  * Maneja todas las comunicaciones con el backend de Hungry
  */
 export class ApiService {
-  private store = myStore();
+  private store: ReturnType<typeof MyStoreType> | null = null;
   private baseUrl: string | null = null;
   private token: string | null = null;
   private isOnline: boolean = navigator.onLine;
@@ -84,15 +85,25 @@ export class ApiService {
    * Añade un item a la cola de procesos
    */
   private addToQueue(method: string, url: string, data: any) {
+    if (!this.store) {
+      console.error("ApiService: Store not initialized. Cannot add to queue.");
+      // Optionally, you could throw an error or handle this situation differently,
+      // but for now, logging and returning is a safe approach to prevent crashes.
+      // Depending on application design, items might be queued in a temporary
+      // place even before store is ready, or this situation is considered fatal.
+      return; 
+    }
+    // Ensure the existing check for login status remains:
+    if (!this.store.loginData.value.logged) return; 
+
     const queueItem: QueueItem = {
       id: Math.random().toString(36).substring(7),
       method,
       url,
       data,
       timestamp: Date.now(),
-      type: data.type
+      type: data.type // Assuming data might have a 'type' property for sync actions
     }
-    if (!this.store.loginData.value.logged) return;
     this.processQueue.push(queueItem)
     this.saveQueue()
   }
@@ -168,6 +179,10 @@ export class ApiService {
       headers['Authorization'] = `Bearer ${this.token}`
     }
     return headers
+  }
+
+  public setStoreInstance(storeInstance: ReturnType<typeof MyStoreType>) {
+    this.store = storeInstance;
   }
 
   /**

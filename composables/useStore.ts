@@ -903,7 +903,7 @@ export const myStore = () => {
     // Note: saveDataToLocalStorage() is called in periodicSyncWithAPI after this function completes.
   };
 
-  return {
+  const storeInstance = {
     appName,
     defaultTabActive,
     alturaDisponible,
@@ -953,5 +953,10 @@ export const myStore = () => {
     setDefaultTabActive,
     resetToDefaults,
     updateProductos
+    // periodicSyncWithAPI, mergeSyncData, isServerNewer are local to myStore, not part of the returned instance
   };
+
+  apiService.setStoreInstance(storeInstance);
+
+  return storeInstance;
 };
