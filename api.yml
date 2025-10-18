@@ -1,0 +1,297 @@
+# api.yml
+# Especificación de los endpoints utilizados por la aplicación nHungry
+
+endpoints:
+  - path: /register
+    method: POST
+    description: Registro de nuevo usuario
+    payload:
+      email: string
+      pass: string
+    response:
+      result: boolean
+      token: string (opcional)
+      error_msg: string (opcional)
+
+  - path: /login
+    method: POST
+    description: Login de usuario
+    payload:
+      email: string
+      pass: string
+      fingerid: string (opcional)
+    response:
+      result: boolean
+      token: string (opcional)
+      device:
+        id: number
+        fingerID: string
+        is_master: number
+      error_msg: string (opcional)
+
+  - path: /getAll
+    method: GET
+    description: Obtener todos los datos del usuario
+    payload: {}
+    response:
+      result: boolean
+      data:
+        loginData:
+          email: string
+          token: string
+          fingerID: string
+          logged: boolean
+        categorias: 
+          - id: number
+            text: string
+            bgColor: string
+            visible: boolean
+            timestamp: string (opcional)
+        supermercados:
+          - id: number
+            text: string
+            logo: string
+            visible: boolean
+            order: number
+            timestamp: string (opcional)
+        productos:
+          - id: number
+            text: string
+            id_categoria: number
+            id_supermercado: number
+            amount: number
+            selected: boolean
+            done: boolean
+            timestamp: string (opcional)
+      error_msg: string (opcional)
+
+  - path: /getData
+    method: POST
+    description: Obtener datos específicos del usuario (requiere fingerid)
+    payload:
+      fingerid: string
+    response:
+      result: boolean
+      data:
+        loginData:
+          email: string
+          token: string
+          fingerID: string
+          logged: boolean
+        categorias: 
+          - id: number
+            text: string
+            bgColor: string
+            visible: boolean
+            timestamp: string (opcional)
+        supermercados:
+          - id: number
+            text: string
+            logo: string
+            visible: boolean
+            order: number
+            timestamp: string (opcional)
+        productos:
+          - id: number
+            text: string
+            id_categoria: number
+            id_supermercado: number
+            amount: number
+            selected: boolean
+            done: boolean
+            timestamp: string (opcional)
+      error_msg: string (opcional)
+
+  - path: /syncData
+    method: POST
+    description: Sincronizar datos entre cliente y servidor
+    payload:
+      fingerid: string
+      data:
+        categorias: array de Categoria
+        supermercados: array de Supermercado
+        productos: array de Producto
+    response:
+      result: boolean
+      data:
+        loginData:
+          email: string
+          token: string
+          fingerID: string
+          logged: boolean
+        categorias: 
+          - id: number
+            text: string
+            bgColor: string
+            visible: boolean
+            timestamp: string (opcional)
+        supermercados:
+          - id: number
+            text: string
+            logo: string
+            visible: boolean
+            order: number
+            timestamp: string (opcional)
+        productos:
+          - id: number
+            text: string
+            id_categoria: number
+            id_supermercado: number
+            amount: number
+            selected: boolean
+            done: boolean
+            timestamp: string (opcional)
+      error_msg: string (opcional)
+
+  - path: /getCategorias
+    method: GET
+    description: Obtener categorías del usuario
+    payload: {}
+    response:
+      result: boolean
+      data:
+        categorias:
+          - id: number
+            text: string
+            bgColor: string
+            visible: boolean
+            timestamp: string (opcional)
+      error_msg: string (opcional)
+
+  - path: /updateCategoriaText
+    method: POST
+    description: Actualizar texto de una categoría
+    payload:
+      id_categoria: number
+      text: string
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateCategoriaVisible
+    method: POST
+    description: Actualizar visibilidad de una categoría
+    payload:
+      id_categoria: number
+      visible: number (0 u 1)
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateSupermercadoVisible
+    method: POST
+    description: Actualizar visibilidad de un supermercado
+    payload:
+      id_supermercado: number
+      visible: number (0 u 1)
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateSupermercadoOrder
+    method: POST
+    description: Actualizar orden de un supermercado
+    payload:
+      id_supermercado: number
+      order: number
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /newProducto
+    method: POST
+    description: Crear nuevo producto
+    payload:
+      id_categoria: number
+      id_supermercado: number
+      text: string
+      amount: number (opcional)
+    response:
+      result: boolean
+      data:
+        id: number (id del nuevo producto)
+      error_msg: string (opcional)
+
+  - path: /newSupermarket
+    method: POST
+    description: Crear nuevo supermercado
+    payload:
+      id: number
+      order: number
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateProducto
+    method: POST
+    description: Actualizar datos de un producto
+    payload:
+      id_producto: number
+      id_categoria: number (opcional)
+      id_supermercado: number (opcional)
+      text: string (opcional)
+      amount: number (opcional)
+      selected: number (opcional, 0 u 1)
+      done: number (opcional, 0 u 1)
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateProductoAmount
+    method: POST
+    description: Actualizar cantidad de un producto
+    payload:
+      id_producto: number
+      amount: number
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateProductoDone
+    method: POST
+    description: Actualizar estado done de un producto
+    payload:
+      id_producto: number
+      done: number (0 u 1)
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateProductoSelected
+    method: POST
+    description: Actualizar estado selected de un producto
+    payload:
+      id_producto: number
+      selected: number (0 u 1)
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /updateProductoText
+    method: POST
+    description: Actualizar nombre de un producto
+    payload:
+      id_producto: number
+      text: string
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /deleteProducto
+    method: POST
+    description: Eliminar un producto
+    payload:
+      id_producto: number
+    response:
+      result: boolean
+      error_msg: string (opcional)
+
+  - path: /sync
+    method: POST
+    description: Procesar acción de sincronización (cola offline)
+    payload:
+      type: string (tipo de acción de sincronización)
+      payload: objeto variable según acción (ver tipos SyncAction)
+    response:
+      result: boolean
+      error_msg: string (opcional)
