@@ -1,3 +1,8 @@
+import type { Producto } from '../data/productos';
+import type { Categoria } from '../data/categorias';
+import type { Supermercado } from '../data/supermercados';
+import type { LoginData } from '../auth/login';
+
 export interface LoginResponse {
   result: boolean;
   token?: string;
@@ -22,13 +27,8 @@ export interface ApiResponse<T = any> {
 }
 
 export interface SyncDataResponse {
-  loginData?: {
-    email: string;
-    token: string;
-    fingerID: string;
-    logged: boolean;
-  };
-  categorias: any[];
-  supermercados: any[];
-  productos: any[];
+  loginData?: LoginData;
+  categorias: Categoria[];
+  supermercados: Supermercado[];
+  productos: Producto[];
 }

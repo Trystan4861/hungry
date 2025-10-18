@@ -1,3 +1,7 @@
+import type { Producto } from '../data/productos';
+import type { Categoria } from '../data/categorias';
+import type { Supermercado } from '../data/supermercados';
+
 export enum SyncActionType {
   NEW_PRODUCT = 'NEW_PRODUCT',
   DELETE_PRODUCT = 'DELETE_PRODUCT',
@@ -29,7 +33,8 @@ export interface QueueItem {
 }
 
 export interface SyncData {
-  categorias: any[];
-  supermercados: any[];
-  productos: any[];
+  categorias: Categoria[];
+  supermercados: Supermercado[];
+  productos: Producto[];
+  lastChangeTimestamp?: number;
 }
