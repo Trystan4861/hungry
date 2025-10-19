@@ -7,11 +7,11 @@ export const myStore = () => {
   const apiService = getApiService();
   let syncIntervalId: ReturnType<typeof setInterval> | null = null;
   const tabs: Tab[] = [
-    { id: 0, text: 'Configuración',          page: 'config', logo: 'config.svg',        selectable: false,  },
-    { id: 1, text: 'Añadir Productos',       page: 'add',    logo: 'add.svg',           selectable: true,   },
-    { id: 2, text: 'Por orden alfabético',   page: 'a2z',    logo: 'a2z.svg',           selectable: true,   },
-    { id: 3, text: 'Por categoría',          page: 'categorias', logo: 'categorias.svg',    selectable: true,   },
-    { id: 4, text: 'Lista de la compra',     page: 'cart',   logo: 'cart.svg',          selectable: true,   },
+    { id: 0, text: 'Configuración',          page: 'config',      logo: 'config.svg',        selectable: false,  },
+    { id: 1, text: 'Añadir Productos',       page: 'add',         logo: 'add.svg',           selectable: true,   },
+    { id: 2, text: 'Por orden alfabético',   page: 'a2z',         logo: 'a2z.svg',           selectable: true,   },
+    { id: 3, text: 'Por categoría',          page: 'categorias',  logo: 'categorias.svg',    selectable: true,   },
+    { id: 4, text: 'Lista de la compra',     page: 'cart',        logo: 'cart.svg',          selectable: true,   },
   ];
   const bgColors = [
     "#d83c3d", "#d8993c", "#b9d83c", "#5bd83c", "#3dd87a", "#47ffff",
@@ -32,7 +32,7 @@ export const myStore = () => {
   const loginData = useState<LoginData>('loginData', () => ({ email: '', token: '', fingerID: '', logged: false }));
   const categorias = useState<Categoria[]>('categorias', () => Array.from({ length: 20 }, (_, i) => ({
     id: i,
-    text: `Categoría ${String(i).padStart(2, '0')}`,
+    text: `Categoría ${String(i+1).padStart(2, '0')}`,
     bgColor: bgColors[i],
     visible: true,
     timestamp: "0000-00-00 00:00:00" // Cambiado a string para manejar formato YYYY-MM-DD HH:MM:SS
@@ -41,9 +41,9 @@ export const myStore = () => {
   const epochTime = "1980-05-21 16:25:00";
   const now= computed(() => new Date().toLocaleString('sv-SE').replace('T', ' '))
 
-  const findProducto = (id: number) => productos.value.find(p => p.id === id);
-  const findSupermercado = (id: number) => supermercados.value.find(m => m.id === id);
-  const findCategoria = (id: number) => categorias.value.find(c => c.id === id);
+  const findProducto      = (id: number) => productos.value.find(p => p.id === id);
+  const findSupermercado  = (id: number) => supermercados.value.find(m => m.id === id);
+  const findCategoria     = (id: number) => categorias.value.find(c => c.id === id);
 
   /**
    * sortSupermercadosByOrder
@@ -729,7 +729,7 @@ export const myStore = () => {
     // Restablecer categorías a los valores por defecto
     categorias.value = Array.from({ length: 20 }, (_, i) => ({
       id: i,
-      text: `Categoría ${String(i).padStart(2, '0')}`,
+      text: `Categoría ${String(i+1).padStart(2, '0')}`,
       bgColor: bgColors[i],
       visible: true
     }));
