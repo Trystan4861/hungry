@@ -4,8 +4,8 @@ import { register } from 'register-service-worker'
 import Swal from 'sweetalert2'
 import { Notifications } from '@kyvg/vue3-notification'
 
-if (process.env.NODE_ENV === 'production') {
-  register(`${process.env.BASE_URL}service-worker.js`, {
+if (import.meta.env.PROD) {
+  register(`${import.meta.env.BASE_URL}service-worker.js`, {
     ready () {
       console.log(
         'App is being served from cache by a service worker.\n' +

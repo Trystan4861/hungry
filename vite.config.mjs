@@ -1,9 +1,10 @@
 import { fileURLToPath, URL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { VitePWA } from 'vite-plugin-pwa';
 
 const srcPath = (path) => fileURLToPath(new URL(path, import.meta.url));
+const appPackage = JSON.parse(readFileSync(srcPath('./package.json'), 'utf8'));
 
 export default defineConfig({
   server: {
@@ -12,13 +13,15 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
+    {
+      name: 'hungry-service-worker',
+      apply: 'build',
+      generateBundle() {
+        const worker = readFileSync(srcPath('./src/service-worker.js'), 'utf8')
+          .replace('__APP_VERSION__', `${appPackage.version}-${appPackage.revision}`);
+        this.emitFile({ type: 'asset', fileName: 'service-worker.js', source: worker });
       },
-    }),
+    },
   ],
   resolve: {
     alias: {

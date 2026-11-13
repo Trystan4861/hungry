@@ -4,9 +4,9 @@
   "revision": "20261113.1205",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "serve": "vite --host",
+    "build": "vite build",
+    "lint": "eslint src --ext .js,.vue",
     "dev": "vite --host",
     "bump:major": "node scripts/updateVersion.js major",
     "bump:minor": "node scripts/updateVersion.js minor",
@@ -19,7 +19,6 @@
     "crypto-js": "^4.2.0",
     "register-service-worker": "^1.7.2",
     "sweetalert2": "^11.6.13",
-    "vite-plugin-pwa": "^1.3.0",
     "vue": "^3.4.19",
     "vue3-touch-events": "^4.1.8",
     "vuex": "^4.1.0"
@@ -28,15 +27,11 @@
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@vitejs/plugin-vue": "^6.0.8",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-plugin-pwa": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "sass": "^1.75.0",
     "sass-loader": "^14.2.1",
-    "vite": "^8.2.2"
+    "vite": "^8.3.8"
   },
   "eslintConfig": {
     "root": true,
