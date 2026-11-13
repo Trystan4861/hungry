@@ -1,27 +1,45 @@
-// scripts/updateVersion.js
+const fs = require('fs')
+const path = require('path')
 
-const fs = require('fs');
-const { execSync } = require('child_process');
+const root = path.resolve(__dirname, '..')
+const packagePath = path.join(root, 'package.json')
+const lockPath = path.join(root, 'package-lock.json')
+const action = process.argv[2]
+const validActions = ['major', 'minor', 'patch']
 
-// Obtener la versión actual desde package.json
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+if (!validActions.includes(action)) {
+  console.error(`Usage: node scripts/updateVersion.js <${validActions.join('|')}>`)
+  process.exit(1)
+}
 
+const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'))
+const lockJson = JSON.parse(fs.readFileSync(lockPath, 'utf8'))
 
-const [,, strategy] = process.argv;
-let [ major, minor, patch ] = packageJson.version.split('.').map(Number)
+const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(packageJson.version)
+if (!match) {
+  throw new Error(`Invalid semantic version: ${packageJson.version}`)
+}
 
-patch += (strategy?.toLowerCase() === 'minor') ? (100 - patch) : ((strategy?.toLowerCase() === 'revision') ? 0 : 1);
-// Ajustar las partes de la versión si es necesario
-minor += Math.floor(patch / 100);
-major += Math.floor(minor / 100);
+let [, major, minor, patch] = match.map(Number)
+if (action === 'major') {
+  major += 1
+  minor = 0
+  patch = 0
+} else if (action === 'minor') {
+  minor += 1
+  patch = 0
+} else {
+  patch += 1
+}
 
-packageJson.version = `${major}.${minor % 100}.${patch % 100}`;
-packageJson.revision = new Date().toISOString().slice(0, 16).replace(/(-|:)/ig,"").replace(/t/i,".")
-// Actualizar la versión en package.json
-fs.writeFileSync('./package.json', JSON.stringify(packageJson, null, 2));
-// Añadir los cambios al área de preparación de Git y realizar una confirmación con un mensaje automático
-execSync(`git add package.json && git commit -m "Bump version to ${packageJson.version}-${packageJson.revision}"`);
+packageJson.version = `${major}.${minor}.${patch}`
+packageJson.revision = new Date().toISOString().slice(0, 16).replace(/(-|:)/g, '').replace(/t/i, '.')
+lockJson.version = packageJson.version
+if (lockJson.packages && lockJson.packages['']) {
+  lockJson.packages[''].version = packageJson.version
+}
 
-console.log('La versión se ha actualizado correctamente.');
-console.log('Nueva versión:', packageJson.version);
-console.log('Revisión:', packageJson.revision);
+fs.writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
+fs.writeFileSync(lockPath, `${JSON.stringify(lockJson, null, 2)}\n`)
+
+console.log(`Version updated to ${packageJson.version}; revision updated to ${packageJson.revision}`)
