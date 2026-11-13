@@ -179,11 +179,6 @@ defineExpose({seleccionarCategoria,selected})
   scroll-snap-type:   x proximity;
   background-image: url('@/public/images/box-shadow-bg.png');
 }
-.my-categories-list-container:hover {
-  height:             7.28rem;
-}
-.my-categories-list-container:hover::-webkit-scrollbar             { height:           10px;}
-
 .my-categories-list {
   display:            flex;
   position:           relative;

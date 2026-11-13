@@ -85,7 +85,7 @@
         id_supermercado:id_supermercado
       });
       notify({group:"app", text:`Producto «${nuevoProducto}» añadido correctamente en ${categoriesData.value[id_categoria].text} para poder comprarlo en ${supermarketsData[id_supermercado].text}`,type:"success", duration:3000})
-      store.dispatch('setProductos',   localStorageService.setSubItem('productos',   productsData));
+      store.dispatch('setProductos',   localStorageService.setSubItem('productos',   productsData.value));
       slotAddNewProductRef.value.clearInput()
     }
     else
