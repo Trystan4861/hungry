@@ -1,24 +1,42 @@
+.configuration-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+
 .header-container {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin-bottom: 1rem;
+  padding: 4px 0 8px;
+}
+
+#header {
+  flex: 0 0 auto;
 }
 
 .logo-text-container {
-  display: flex;
+  display: grid;
+  grid-template-areas:
+    "logo title"
+    "version version";
+  grid-template-columns: 33% 67%;
+  grid-template-rows: auto auto;
   align-items: center;
-  max-width: 500px;
+  width: 100%;
+  max-width: 154px;
   margin: 0 auto;
-  gap: 0;
 }
 
 .logo-container {
-  height: 100%;
+  grid-area: logo;
   display: flex;
   align-items: center;
-  padding-right: 0;
-  margin-right: 0;
+  justify-content: flex-start;
 }
 
 .logo-container img,
@@ -31,16 +49,18 @@
 }
 
 .text-container {
+  grid-area: title;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-left: -5px;
+  margin-left: -9px;
   text-align: left;
 }
 
 .appName {
   font-size: 1.5rem;
   font-weight: bold;
+  transform: translateY(-3px);
 }
 
 .author {
@@ -49,15 +69,23 @@
   padding-left: 10px;
 }
 
-.revision {
-  display: inline-block;
-  font-size: small;
+.app-version {
+  grid-area: version;
+  justify-self: center;
+  display: block;
+  font-size: .65rem;
+  margin-top: 4px;
+  text-align: center;
+  transform: translateY(-2px);
+  white-space: nowrap;
 }
 
 .configWithScroll{
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100dvh - 155px);
+  padding-bottom: .5rem;
 }
 
 .my-container{

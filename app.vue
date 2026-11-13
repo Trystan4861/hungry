@@ -12,11 +12,6 @@
           @click="currentPage = tab.page">
           <MyImage :image="tab.logo"/>
         </div>
-        <DevOnly>
-          <div to="/test" class="nav-item nav-link" @click="currentPage = 'dev'">
-            <MyImage image="hungry.svg"/>
-          </div>
-        </DevOnly>
       </nav>
     </header>
     <main class="tab-content">
@@ -26,9 +21,6 @@
         :style="{ display: currentPage === tab.page ? 'block' : 'none' }"
       >
         <component :is="componentsMap[tab.page]" />
-      </div>
-      <div class="tab-pane" :style="{ display: currentPage === 'dev' ? 'block' : 'none' }">
-        <component :is="componentsMap['dev']" />
       </div>
     </main>
   </div>
@@ -82,8 +74,6 @@ const componentsMap = tabsData.reduce((acc, tab) => {
   acc[tab.page] = defineAsyncComponent(() => import(`~/pages/${tab.page}.vue`));
   return acc;
 }, {} as Record<string, ReturnType<typeof defineAsyncComponent>>);
-componentsMap.dev = defineAsyncComponent(() => import(`~/pages/test.vue`));
-
 useSeoMeta({
   description: 'Lista de la compra realizada en Nuxt',
   ogTitle: 'Hungry! by Trystan4861',

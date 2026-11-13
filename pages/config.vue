@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div id="header" class="text-center mb-3">
+  <div class="configuration-panel">
+    <div id="header" class="text-center">
       <div class="header-container">
         <div class="logo-text-container">
           <div class="logo-container">
@@ -10,8 +10,8 @@
             <div class="appName">Hungry!</div>
             <div class="author">by {{ packageJson.author }}</div>
           </div>
+          <div class="app-version">v{{ packageJson.version }} ({{ packageJson.revision }})</div>
         </div>
-        <div class="revision">{{ store.loginData.value.fingerID + ' - ' }}v{{ packageJson.version }}</div>
       </div>
     </div>
     <div class="configWithScroll">

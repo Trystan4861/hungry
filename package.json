@@ -2,8 +2,8 @@
   "name": "hungry-by-trystan4861",
   "author": "trystan4861",
   "license": "MIT",
-  "version": "0.0.1",
-  "revision": "20250312.1341",
+  "version": "0.5.0",
+  "revision": "20261113.1348",
   "description": "Lista de la compra realizada en Nuxt",
   "private": true,
   "type": "module",
@@ -13,9 +13,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "version": "node scripts/updateVersion.js",
-    "minorVersion": "node scripts/updateVersion.js minor",
-    "revision": "node scripts/updateVersion.js revision"
+    "bump:major": "node scripts/updateVersion.js major",
+    "bump:minor": "node scripts/updateVersion.js minor",
+    "bump:patch": "node scripts/updateVersion.js patch"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.6.1",
@@ -34,6 +34,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
-    "@types/md5": "^2.3.5"
+    "@types/md5": "^2.3.5",
+    "playwright": "^1.65.0"
   }
 }
