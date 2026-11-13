@@ -15,7 +15,7 @@
           </div>
           <div class="col-lg-8 col-12 col-md-6">
             <div class="row h-100">
-              <div class="col-lg-6 col-12 mt-lg-0 mt-2">
+              <div class="col-lg-6 col-12 supermarkets-column">
                 <slot-configuration-supermarkets 
                   @supermarketsChecked="handleSupermarketsChecked"
                 />
@@ -76,7 +76,7 @@
         </div>
       </div>
     </div>
-    <div class="revision">{{ packageJson.revision }}{{ isCordoba?'c':'' }}</div>
+    <div class="revision">{{ packageJson.revision }}{{ isCordova?'c':'' }}</div>
   </my-card>
   <div id="anchorLoginLinks-configuration" class="d-none">
     <div class="justify-content-between d-flex mt-2" :id="id">
@@ -262,6 +262,7 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
           }).then(result=>{
             result.isConfirmed && exportRef.value.exportConfig()
             store.commit('resetStore');
+            localStorageService.setItem(storeGet.getConfiguracion());
           });    
         }
       });    
@@ -361,6 +362,16 @@ const supermarketsVisibles= ref(supermarketsData.value.map(supermercado => ({ ..
   }
 </script>
 <style scoped>
+.supermarkets-column {
+  margin-top: .5rem;
+}
+
+@media (min-width: 48em) {
+  .supermarkets-column {
+    margin-top: 0;
+  }
+}
+
 .configWithScroll{
   overflow-y: auto;
   max-height: 610px;
